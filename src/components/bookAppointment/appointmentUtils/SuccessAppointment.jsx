@@ -1,5 +1,3 @@
-import React from "react";
-import Loader from "../../Loader";
 import { BsFillCalendar2CheckFill } from "react-icons/bs";
 
 const AppointmentSuccess = ({ bookedAppointment }) => {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import dayjs from "dayjs";
 import { useSlotsContext } from "../../../contexts/SlotsContextProvider";
 import { Button, Empty, Popover } from "antd";
@@ -7,9 +7,9 @@ import Loader from "../../Loader";
 import DatePicker from "./DatePicker";
 import BookButton from "../../bookAppointment/appointmentUtils/BookButton";
 import { useUserContext } from "../../../contexts/UserContextProvider";
-const BookCard = ({ doctorId, socket, timeZone, isPayment, setIsPayment }) => {
+const BookCard = ({ doctorId, socket, timeZone }) => {
   const { slotsData, isLoading, fetchSlotsData } = useSlotsContext();
-  const { messageApi, fetchUserData, userData } = useUserContext();
+  const { userData } = useUserContext();
   const [selectedDate, setSelectedDate] = useState(() => ({
     count: 0,
     date: dayjs().format("YYYY-MM-DD"),

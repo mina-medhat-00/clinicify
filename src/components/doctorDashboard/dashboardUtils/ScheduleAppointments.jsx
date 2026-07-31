@@ -1,5 +1,5 @@
-import { Button, Drawer, Empty, message, Popover, Tag } from "antd";
-import React, { useEffect, useState } from "react";
+import { Drawer, Empty, message } from "antd";
+import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import { useSlotsContext } from "../../../contexts/SlotsContextProvider";
 import { scheduleAppointments, cancelAppointment } from "../dashboardServices";
@@ -9,25 +9,11 @@ import PopUp from "../../utils/PopUp";
 import AppointmentForm from "./scheduleUtils/AppointmentForm";
 import { AiOutlineAppstoreAdd } from "react-icons/ai";
 import AppointmentCard from "./scheduleUtils/AppointmentCard";
-import { useNavigate } from "react-router-dom";
-import {
-  CloseCircleOutlined,
-  Loading3QuartersOutlined,
-  LoadingOutlined,
-} from "@ant-design/icons";
 import AccountVerify from "./scheduleUtils/AccountVerify";
-const isMatch = (arr1, arr2) => {
-  if (arr1?.length == 0 && arr2?.length == 0) return true;
-  if (arr1?.length !== arr2?.length) return false;
-  const arrClone1 = new Array(...arr1).sort();
-  const arrClone2 = new Array(...arr2).sort();
-  return arrClone1.every((val, i) => val == arrClone2[i]);
-};
 const ScheduleAppointments = ({
   doctorData,
   userid,
   isDoctorLoading,
-  buttonLabel,
   fetchUserData,
   offsetWidth,
   setDashType,
@@ -50,7 +36,6 @@ const ScheduleAppointments = ({
         : dayjs()
       : dayjs(),
   );
-  const navigate = useNavigate();
   const isVerified = doctorData?.is_verified;
   useEffect(() => {
     if (userid) socket.emit("join_doctor", userid);
@@ -85,9 +70,6 @@ const ScheduleAppointments = ({
     setSelectedDate(val);
     window?.localStorage?.setItem("schedule_date", val?.format("YYYY-MM-DD"));
   };
-  const isToday = (val) =>
-    new Date(selectedDate.format("YYYY-MM-DD") + " " + val) >
-    Date.now() + 1000 * 60 * 60;
   const isUpToDate =
     selectedDate?.$d?.setHours(0, 0, 0, 0) >= new Date().setHours(0, 0, 0, 0);
   const tAppointments = slotsData?.totalSlots;

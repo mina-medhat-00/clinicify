@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect } from "react";
 import "./CountdownTimer.css";
 import { BsFillArrowUpSquareFill } from "react-icons/bs";
 import { BsFillArrowDownSquareFill } from "react-icons/bs";
@@ -119,7 +119,6 @@ const CountdownTimer = ({
   order,
   appointmentDetails,
   setAppointmentDetails,
-  isEdit,
   directMode,
   directHour,
 }) => {
@@ -131,8 +130,8 @@ const CountdownTimer = ({
       directHour,
     );
   }, [directHour]);
-  const hours = appointmentDetails?.slotTime?.h;
-  const minutes = appointmentDetails?.slotTime?.m;
+  appointmentDetails?.slotTime?.h;
+  appointmentDetails?.slotTime?.m;
   // const time = new Date().toLocaleString("en", {
   //   timeStyle: "short",
   // });

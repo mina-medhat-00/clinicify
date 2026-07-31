@@ -1,7 +1,5 @@
-import React from "react";
-import { Spin } from "antd";
 import { GridLoader } from "react-spinners";
-const Loader = ({ height, gray }) => {
+const Loader = ({ gray }) => {
   return (
     <div className="!my-4 flex w-full items-center justify-center">
       <GridLoader color={gray ? "#4a5568" : "#2b6cb0"} />

@@ -1,16 +1,13 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import {
   Select,
   Upload,
   message,
-  Checkbox,
   Button,
   Form,
   Input,
   DatePicker,
   Radio,
-  Space,
-  InputNumber,
 } from "antd";
 import {
   LockOutlined,
@@ -20,7 +17,7 @@ import {
 } from "@ant-design/icons";
 import { useState } from "react";
 import { useMediaQuery } from "react-responsive";
-import { suffixSelector, prefixSelector } from "./signupUtils/utils";
+import { prefixSelector } from "./signupUtils/utils";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import UserType from "./signupUtils/UserType";
@@ -142,7 +139,7 @@ function Signup() {
             headers: { "Content-Type": "application/json" },
           },
         )
-        .then(({ data }) => {
+        .then(() => {
           messageApi.open(
             getMessage(
               1,

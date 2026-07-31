@@ -1,10 +1,8 @@
-import React from "react";
-import { Input, Space, Radio, InputNumber, Form, Select, Switch } from "antd";
+import { Input, InputNumber, Form, Select, Switch } from "antd";
 import HeaderLine from "./HeaderLine";
 import { useState } from "react";
-import { DoctorOptions, NurseOptions } from "./signData";
+import { DoctorOptions } from "./signData";
 const { Item } = Form;
-const { Option } = Select;
 const UserType = ({ userType, setFormValues }) => {
   const [moreInf, setMoreInf] = useState(false);
   return userType === "patient" ? (

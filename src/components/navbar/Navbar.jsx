@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Button, Typography, Menu, Avatar, Select } from "antd";
+import { useEffect, useRef, useState } from "react";
+import { Button, Typography, Menu, Avatar } from "antd";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import clinicLogo from "../../images/clinic.png";
 import { useMediaQuery } from "react-responsive";
@@ -10,7 +10,7 @@ import { useUtilsContext } from "../../contexts/UtilsContextProvider";
 import { useUserContext } from "../../contexts/UserContextProvider";
 import LangItem from "./navbarUtils/LangItem";
 
-const { Title, Item } = { ...Typography, ...Menu };
+const { Title } = { ...Typography, ...Menu };
 const Navbar = ({ DoctorRef }) => {
   const { messageApi, lan, t } = useUtilsContext();
   const { setUserData, userData: user, isLoading } = useUserContext();

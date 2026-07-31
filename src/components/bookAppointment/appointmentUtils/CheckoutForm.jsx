@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   PaymentElement,
   LinkAuthenticationElement,
@@ -24,7 +24,7 @@ const CheckoutForm = ({
   const { fetchUserData } = useUserContext();
   const elements = useElements();
 
-  const [email, setEmail] = useState("");
+  const [, setEmail] = useState("");
   const [message, setMessage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();

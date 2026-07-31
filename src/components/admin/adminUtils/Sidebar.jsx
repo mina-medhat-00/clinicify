@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import {
   MdMessage,
@@ -9,9 +8,7 @@ import {
 } from "react-icons/md";
 import { DashboardOutlined, HomeOutlined } from "@ant-design/icons";
 import { GiDoctorFace } from "react-icons/gi";
-import { GrUserSettings } from "react-icons/gr";
 import { FiUserCheck } from "react-icons/fi";
-import { BsHouseDoorFill } from "react-icons/bs";
 import { FaUserLock } from "react-icons/fa";
 const links = [
   {

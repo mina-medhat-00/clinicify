@@ -1,10 +1,8 @@
-import React from "react";
 import { TitleHeader } from "../home/HomePage";
 import { useUtilsContext } from "../../contexts/UtilsContextProvider";
 import { useUserContext } from "../../contexts/UserContextProvider";
 import { Button, Form, Input, Radio } from "antd";
 import { TbReport } from "react-icons/tb";
-import RadioItems from "./reportProblemUtils/RadioItems";
 import submitReport from "./reportServices/submitReport";
 import HeaderLine from "../sign/signup/signupUtils/HeaderLine";
 const { Item } = Form;
@@ -39,7 +37,7 @@ const reportTypeData = [
   },
 ];
 const ReportProblem = () => {
-  const { t, messageApi } = useUtilsContext();
+  const { messageApi } = useUtilsContext();
   const [form] = Form.useForm();
   const { fetchUserData } = useUserContext();
   return (

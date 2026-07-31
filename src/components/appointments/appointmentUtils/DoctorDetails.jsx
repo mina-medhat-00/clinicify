@@ -1,10 +1,9 @@
 import { StopOutlined } from "@ant-design/icons";
-import React from "react";
 
 const DoctorDetails = ({ data }) => {
   return (
     <div className="flex md:flex-col flex-wrap gap-3 justify-end items-center">
-      {data?.map(({ label, value, icon }) => (
+      {data?.map(({ label, value }) => (
         <div
           key={label}
           className="doctor--more--details shadow-lg bg-gray-300 rounded p-2"

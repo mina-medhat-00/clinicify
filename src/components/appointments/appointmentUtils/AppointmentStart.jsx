@@ -1,11 +1,6 @@
-import {
-  Loading3QuartersOutlined,
-  LoadingOutlined,
-  VideoCameraFilled,
-  VideoCameraTwoTone,
-} from "@ant-design/icons";
+import { LoadingOutlined, VideoCameraFilled } from "@ant-design/icons";
 import axios from "axios";
-import React, { useState } from "react";
+import { useState } from "react";
 import { BsFillChatFill } from "react-icons/bs";
 import { Link, useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
@@ -14,26 +9,6 @@ import { useUtilsContext } from "../../../contexts/UtilsContextProvider";
 const APPLICATION_SERVER_URL = import.meta.env.PROD
   ? ""
   : `http://${window.location.hostname}:5000`;
-const getAppointmentVal = (
-  appointment_state,
-  valDone,
-  valBooked,
-  valCanceled,
-  valFree,
-  valRunning,
-  valDefault,
-) =>
-  appointment_state == "done"
-    ? valDone
-    : appointment_state == "booked"
-      ? valBooked
-      : appointment_state == "canceled"
-        ? valCanceled
-        : appointment_state == "free"
-          ? valFree
-          : appointment_state == "running"
-            ? valRunning
-            : valDefault;
 const AppointmentStart = ({ appointmentDetails }) => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState();

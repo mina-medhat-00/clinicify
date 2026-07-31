@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useUtilsContext } from "../../../contexts/UtilsContextProvider";
 import { GiUsaFlag } from "react-icons/gi";
 import { Avatar, Button } from "antd";
 import arImg from "./../../../images/arabic.png";
 import { ArrowDownOutlined, ArrowUpOutlined } from "@ant-design/icons";
-import { isMobile } from "react-device-detect";
 let timeId;
 const LangItem = ({ isMobile }) => {
   const { i18n, lan } = useUtilsContext();

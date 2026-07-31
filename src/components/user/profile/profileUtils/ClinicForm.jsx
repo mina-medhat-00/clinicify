@@ -1,5 +1,4 @@
 import { Button, Form, Input, Select } from "antd";
-import React from "react";
 import { prefixSelector } from "../../../sign/signup/signupUtils/utils";
 import ProfileTable from "./ProfileTable";
 import { cityOption } from "../../../sign/signup/signupUtils/signData";

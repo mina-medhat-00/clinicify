@@ -1,7 +1,7 @@
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Avatar, Button, Input, Space, Table } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { FaRegUser, FaUserSecret, FaUserTie } from "react-icons/fa";
 import { GiDoctorFace } from "react-icons/gi";
 import doctorPhoto from "../../../images/doctorPhoto.png";
@@ -174,7 +174,7 @@ const AdminReports = () => {
       action: (
         <div className="flex flex-col gap-2 items-center">
           <Button
-            onClick={(e) => {
+            onClick={() => {
               setSelectedUser({
                 user_id,
                 img_url:

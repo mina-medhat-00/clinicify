@@ -1,12 +1,5 @@
-import { message } from "antd";
 import axios from "axios";
-import {
-  createContext,
-  useState,
-  useContext,
-  useLayoutEffect,
-  useReducer,
-} from "react";
+import { createContext, useState, useContext } from "react";
 const handleQuery = (obj) =>
   !obj
     ? ""
@@ -17,7 +10,7 @@ const handleQuery = (obj) =>
         )
         .join("&");
 const CommentsData = createContext(null);
-const CommentsContextProvider = ({ children, noFirstRender, query }) => {
+const CommentsContextProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [commentsData, setCommentsData] = useState(null);

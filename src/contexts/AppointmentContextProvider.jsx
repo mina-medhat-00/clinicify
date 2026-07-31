@@ -1,14 +1,5 @@
-import { message } from "antd";
 import axios from "axios";
-import {
-  createContext,
-  useState,
-  useContext,
-  useLayoutEffect,
-  useReducer,
-} from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import Cookies from "universal-cookie";
+import { createContext, useState, useContext } from "react";
 import { useUserContext } from "./UserContextProvider";
 
 const AppointmentData = createContext(null);

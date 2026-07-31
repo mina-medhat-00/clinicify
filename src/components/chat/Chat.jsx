@@ -1,24 +1,16 @@
-import { Avatar, Empty, Input, Rate, Segmented } from "antd";
-import React, { useEffect, useRef, useState } from "react";
+import { Avatar, Rate } from "antd";
+import { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import Cookies from "universal-cookie";
 import { useChatContext } from "../../contexts/ChatContextProvider";
 import MessagesContextProvider from "../../contexts/MessagesContextProvider";
 import Cards from "./chatUtils/Cards";
 import Messages from "./chatUtils/Messages";
-import Loader from "../Loader";
-import {
-  BsArrowLeftSquare,
-  BsArrowUpSquare,
-  BsFillPersonBadgeFill,
-  BsPersonPlus,
-  BsPersonSquare,
-} from "react-icons/bs";
+import { BsFillPersonBadgeFill, BsPersonPlus } from "react-icons/bs";
 import userPhoto from "../../images/userPhoto.png";
 import doctorPhoto from "../../images/doctorPhoto.png";
 import { Link } from "react-router-dom";
 import { AiOutlineArrowLeft, AiOutlineArrowUp } from "react-icons/ai";
-import ServerError from "../utils/ServerError";
 import { MdError } from "react-icons/md";
 import { useUserContext } from "../../contexts/UserContextProvider";
 import { useUtilsContext } from "../../contexts/UtilsContextProvider";

@@ -1,5 +1,5 @@
-import { Alert, Avatar, Empty, message, Rate } from "antd";
-import React, { useEffect, useState } from "react";
+import { Avatar, Empty, Rate } from "antd";
+import { useEffect, useState } from "react";
 import { useAppointmentContext } from "../../contexts/AppointmentContextProvider";
 import Loader from "../Loader";
 import userPhoto from "../../images/userPhoto.png";
@@ -62,7 +62,7 @@ const Appointments = ({ fromDash }) => {
   const [appointmentState, setAppointmentState] = useState("total");
   const [showPop, setShowPop] = useState({ show: false, data: null });
   const [cancelAppoint, setCancelAppoint] = useState();
-  const { appointmentData, isLoading, setDashType, fetchAppointmentData } =
+  const { appointmentData, isLoading, fetchAppointmentData } =
     useAppointmentContext();
   useEffect(() => {
     fetchAppointmentData(true, new Cookies().get("accessToken"), null, null, {
@@ -185,7 +185,6 @@ const Appointments = ({ fromDash }) => {
                   appointment_id,
                   appointment_type,
                   appointment_duration,
-                  booked_time,
                   slot_time,
                   doctorName,
                   rate,
@@ -197,8 +196,6 @@ const Appointments = ({ fromDash }) => {
                   specialty,
                   clinic_city,
                   clinic_street,
-                  clinic_pnumber,
-                  clinic_tnumber,
                 },
                 i,
               ) =>
@@ -267,7 +264,7 @@ const Appointments = ({ fromDash }) => {
                                     doctorId,
                                     appointmentId: appointment_id,
                                   });
-                                  setShowPop((val) => ({
+                                  setShowPop(() => ({
                                     show: true,
                                     data: {
                                       selectedDate: dayjs(schedule_date),
@@ -425,7 +422,7 @@ const Appointments = ({ fromDash }) => {
           handleClose={() => {
             setShowPop((val) => ({ data: val?.data, show: false }));
             setTimeout(
-              () => setShowPop((val) => ({ show: false, data: null })),
+              () => setShowPop(() => ({ show: false, data: null })),
               400,
             );
           }}

@@ -1,8 +1,8 @@
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Avatar, Button, Input, Space, Table, Tag } from "antd";
 import { useDoctorsContext } from "../../../contexts/DoctorsContextProvider";
 import { SlotsContextProvider } from "../../../contexts";
-import { ScheduleOutlined, SearchOutlined } from "@ant-design/icons";
+import { SearchOutlined } from "@ant-design/icons";
 import "./DoctorManagment.css";
 import changeState from "../adminServices/changeState";
 import { useUserContext } from "../../../contexts/UserContextProvider";
@@ -12,12 +12,9 @@ import { Link } from "react-router-dom";
 import PopUp from "../../utils/PopUp";
 import ClinicDetails from "../../user/profile/profileUtils/ClinicDetails";
 
-const appendValue = (val1, val2) => (val1 && val2 ? `${val1} ${val2}` : "");
-const DoctorManagment = ({ socket, timeZone }) => {
-  const [searchText, setSearchText] = useState("");
-  const [searchedColumn, setSearchedColumn] = useState("");
+const DoctorManagment = () => {
   const searchInput = useRef(null);
-  const handleSearch = (selectedKeys, confirm, dataIndex) => {
+  const handleSearch = (selectedKeys, confirm) => {
     confirm();
     //setSearchText(selectedKeys[0]);
     //setSearchedColumn(dataIndex);
@@ -162,18 +159,10 @@ const DoctorManagment = ({ socket, timeZone }) => {
   const [openKey, setOpenKey] = useState();
   const [doctorRecord, setDoctorRecord] = useState();
   const [showPopUp, setShowPopUp] = useState();
-  const [isVerLoading, setIsLoading] = useState(false);
+  const [, setIsLoading] = useState(false);
   const doctorsDetails = doctorsData?.map(
     (
-      {
-        doctor_id,
-        fees,
-        img_url,
-        nick_name,
-        specialty,
-        is_verified,
-        clinic_street,
-      },
+      { doctor_id, img_url, nick_name, specialty, is_verified, clinic_street },
       i,
     ) => ({
       key: doctor_id,

@@ -1,13 +1,12 @@
-import React, { useRef, useState } from "react";
-import { Avatar, Button, Input, Space, Table, Tag } from "antd";
-import { useDoctorsContext } from "../../../contexts/DoctorsContextProvider";
-import { ScheduleOutlined, SearchOutlined } from "@ant-design/icons";
+import { useRef, useState } from "react";
+import { Avatar, Button, Input, Space, Table } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 import "./DoctorManagment.css";
 import changeState from "../adminServices/changeState";
 import { useUserContext } from "../../../contexts/UserContextProvider";
 import { useUsersContext } from "../../../contexts/UsersContextProvider";
 import { BsGenderFemale, BsGenderMale } from "react-icons/bs";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { FaRegUser, FaUserSecret, FaUserTie } from "react-icons/fa";
 import { GiDoctorFace } from "react-icons/gi";
 import doctorPhoto from "../../../images/doctorPhoto.png";
@@ -15,13 +14,11 @@ import userPhoto from "../../../images/userPhoto.png";
 import PopUp from "../../utils/PopUp";
 import Restrictions from "./userManagmentUtils/Restrictions";
 
-const UserManagment = ({ socket }) => {
-  const [searchText, setSearchText] = useState("");
+const UserManagment = () => {
   const [selectedUser, setSelectedUser] = useState("");
   const [showPop, setShowPop] = useState(false);
-  const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
-  const handleSearch = (selectedKeys, confirm, dataIndex) => {
+  const handleSearch = (selectedKeys, confirm) => {
     confirm();
     //setSearchText(selectedKeys[0]);
     //setSearchedColumn(dataIndex);
@@ -233,7 +230,7 @@ const UserManagment = ({ socket }) => {
 
   const { fetchUserData, messageApi } = useUserContext();
   const { usersData, isLoading, fetchUsersData } = useUsersContext();
-  const [isVerLoading, setIsLoading] = useState(false);
+  const [, setIsLoading] = useState(false);
   const usersDetails = usersData?.map(
     ({ user_id, img_url, nick_name, user_type, gender, bdate }) => ({
       key: user_id,
@@ -244,7 +241,7 @@ const UserManagment = ({ socket }) => {
         <div className="flex flex-col gap-2 items-center">
           {
             <Button
-              onClick={(e) => {
+              onClick={() => {
                 changeState(
                   fetchUserData,
                   fetchUsersData,
@@ -262,7 +259,7 @@ const UserManagment = ({ socket }) => {
           }
           {
             <Button
-              onClick={(e) => {
+              onClick={() => {
                 setSelectedUser({
                   user_id,
                   img_url:

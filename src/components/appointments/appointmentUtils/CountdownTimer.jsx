@@ -1,14 +1,7 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import "./CountdownTimer.css";
 
-const CountdownTimer = ({
-  targetDate,
-  order,
-  hours,
-  seconds,
-  minutes,
-  complete,
-}) => {
+const CountdownTimer = ({ targetDate, order }) => {
   useEffect(() => {
     function getTimeSegmentElements(segmentElement) {
       const segmentDisplay = segmentElement.querySelector(

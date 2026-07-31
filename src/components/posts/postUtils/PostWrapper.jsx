@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import PopUp from "../../utils/PopUp";
 import Post from "./Post";
 

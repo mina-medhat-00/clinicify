@@ -1,24 +1,10 @@
-import React, { Children, useEffect, useRef, useState } from "react";
-import { Rate, Typography } from "antd";
-import { useMediaQuery } from "react-responsive";
-import { AiOutlineArrowRight } from "react-icons/ai";
-import { BiEdit } from "react-icons/bi";
 import { Feedbacks } from "../../../../components";
 import { FeedbackContextProvider } from "../../../../contexts";
 import { FaNotesMedical } from "react-icons/fa";
 import { BsFillPersonLinesFill } from "react-icons/bs";
 import ProfileTable from "./ProfileTable";
 
-const UserDetails = ({
-  headers,
-  data,
-  userValues,
-  setUserValues,
-  isAuth,
-  showEdit,
-  headerColor,
-  propColor,
-}) => {
+const UserDetails = ({ headers, data, userValues, headerColor, propColor }) => {
   return (
     <div className="flex justify-between gap-2 flex-wrap items-center">
       <ProfileTable

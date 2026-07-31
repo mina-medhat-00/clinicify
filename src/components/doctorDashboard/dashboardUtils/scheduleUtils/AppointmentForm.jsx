@@ -1,12 +1,10 @@
 import { Button, Input, Popover, Select } from "antd";
-import axios from "axios";
 import { scheduleAppointments } from "../../dashboardServices";
-import React, { forwardRef, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { MdDeleteForever } from "react-icons/md";
 import { FaUserClock } from "react-icons/fa";
 import CountdownTimer from "./CountdownTimer";
 import { BiAddToQueue } from "react-icons/bi";
-import { GrMoney } from "react-icons/gr";
 import { PoundOutlined } from "@ant-design/icons";
 const adjustHMin = (val) => (val > 9 ? val : "0" + val);
 const chkTimeSlot = (data) =>
@@ -22,7 +20,7 @@ const chkTimeSlot = (data) =>
   );
 const chkUpToDate = (data, date, timeZone) =>
   data?.every(
-    ({ slotTime: t }, i1) =>
+    ({ slotTime: t }) =>
       new Date(
         date?.format("YYYY-MM-DD") + " " + t + (timeZone || ""),
       ).getTime() > new Date().getTime() &&

@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import { loadStripe } from "@stripe/stripe-js";
+import { useState, useEffect } from "react";
 import { Elements } from "@stripe/react-stripe-js";
 import CheckoutForm from "./CheckoutForm";
 import "./CheckoutForm.css";
@@ -18,7 +17,6 @@ import { useUtilsContext } from "../../../contexts/UtilsContextProvider";
 const stripePromise = getStripe();
 const AppointmentPayment = ({
   bookedAppointment,
-  selectedDate,
   doctorId,
   setBookedAppointment,
   setIsPayment,

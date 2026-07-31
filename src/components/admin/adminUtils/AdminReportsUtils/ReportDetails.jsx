@@ -1,4 +1,3 @@
-import React from "react";
 import { useReportContext } from "../../../../contexts/ReportContextProvider";
 import ProfileTable from "../../../user/profile/profileUtils/ProfileTable";
 import { Empty } from "antd";

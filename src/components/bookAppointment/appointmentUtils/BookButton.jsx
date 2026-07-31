@@ -1,9 +1,4 @@
-import {
-  CheckCircleOutlined,
-  ClockCircleOutlined,
-  Loading3QuartersOutlined,
-} from "@ant-design/icons";
-import React from "react";
+import { Loading3QuartersOutlined } from "@ant-design/icons";
 import { BiMessageAltDetail } from "react-icons/bi";
 import { FaClinicMedical } from "react-icons/fa";
 const adjustTime = (date, time, timeZone) =>
@@ -18,8 +13,6 @@ const BookButton = ({
   slotTime,
   schedule_date,
   timeZone,
-  setBookedSlot,
-  isActive,
 }) => {
   return (
     <div>

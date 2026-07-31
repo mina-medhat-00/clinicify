@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAppointmentContext } from "../../../contexts/AppointmentContextProvider";
 import Cookies from "universal-cookie";
 import { Link } from "react-router-dom";

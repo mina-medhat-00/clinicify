@@ -1,12 +1,5 @@
-import { message } from "antd";
 import axios from "axios";
-import {
-  createContext,
-  useState,
-  useContext,
-  useLayoutEffect,
-  useReducer,
-} from "react";
+import { createContext, useState, useContext } from "react";
 import Cookies from "universal-cookie";
 const handleQuery = (obj) =>
   !obj
@@ -19,12 +12,7 @@ const handleQuery = (obj) =>
         .join("&");
 const cookies = new Cookies();
 const MessagesData = createContext(null);
-const MessagesContextProvider = ({
-  children,
-  fetchUserData,
-  noFirstRender,
-  query,
-}) => {
+const MessagesContextProvider = ({ children, fetchUserData }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [messagesData, setMessagesData] = useState(null);

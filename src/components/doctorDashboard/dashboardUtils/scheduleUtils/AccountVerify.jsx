@@ -1,4 +1,3 @@
-import React from "react";
 import { CloseCircleOutlined, LoadingOutlined } from "@ant-design/icons";
 import { Tag } from "antd";
 const AccountVerify = ({ isVerified }) => {

@@ -1,4 +1,3 @@
-import React from "react";
 import "./DashNav.css";
 import { RiQuestionAnswerLine } from "react-icons/ri";
 import { AiOutlineSchedule } from "react-icons/ai";
@@ -6,7 +5,6 @@ import { ImStatsDots } from "react-icons/im";
 import { ImProfile } from "react-icons/im";
 import { useMediaQuery } from "react-responsive";
 import { Popover } from "antd";
-import { HomeOutlined } from "@ant-design/icons";
 const DashNav = ({ setDashType, dashType }) => {
   const items = [
     {
@@ -50,7 +48,7 @@ const DashNav = ({ setDashType, dashType }) => {
         } flex-wrap
    cursor-pointer`}
       >
-        {items?.map(({ label, icon, name }, i) => (
+        {items?.map(({ icon, name }, i) => (
           <Popover
             placement={isMobile ? "rightBottom" : undefined}
             key={i}

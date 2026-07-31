@@ -1,5 +1,4 @@
 import { StopOutlined } from "@ant-design/icons";
-import React from "react";
 import { FaFileMedicalAlt, FaNotesMedical } from "react-icons/fa";
 import ProfileTable from "./ProfileTable";
 
@@ -30,7 +29,7 @@ const PatientRecords = ({ records, setHandleDrawer, profileData, isAuth }) => {
               <StopOutlined className="text-2xl" />
             )
           }
-          data={Object.entries(records).map(([name, value], i) => ({
+          data={Object.entries(records).map(([name, value]) => ({
             name: name?.replace(/[A-Z]/, (val) => ` ${val}`),
             value,
           }))}

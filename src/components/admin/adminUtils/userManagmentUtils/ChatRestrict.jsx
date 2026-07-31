@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useChatContext } from "../../../../contexts/ChatContextProvider";
 import Cookies from "universal-cookie";
 import Loader from "../../../Loader";
@@ -10,7 +10,7 @@ import { useUserContext } from "../../../../contexts/UserContextProvider";
 import { useUtilsContext } from "../../../../contexts/UtilsContextProvider";
 const ChatRestrict = ({ userid }) => {
   const { fetchChatData, chatData, isLoading } = useChatContext();
-  const [isRestLoading, setIsLoading] = useState();
+  const [, setIsLoading] = useState();
   const { messageApi } = useUtilsContext();
   const { fetchUserData } = useUserContext();
   useEffect(() => {

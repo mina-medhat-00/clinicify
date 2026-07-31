@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { data } from "./dataTrans.js";
 const TransitionContent = ({
   id = "",
@@ -24,7 +24,7 @@ const TransitionContent = ({
   // control show elements when scrolling to it
   const showingUpFunc = useCallback(function showingUpFunc(
     e,
-    step = 150,
+    _step = 150,
     offset = 0,
   ) {
     const handleTrans = () => {

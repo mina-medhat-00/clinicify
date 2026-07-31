@@ -1,16 +1,5 @@
 import React from "react";
-import millify from "millify";
-import {
-  Typography,
-  Row,
-  Col,
-  Statistic,
-  Rate,
-  Avatar,
-  Carousel,
-  Skeleton,
-} from "antd";
-import { useMediaQuery } from "react-responsive";
+import { Row, Col, Statistic, Rate, Avatar, Skeleton } from "antd";
 import { Link } from "react-router-dom";
 import Feedbacks from "./../feedback/Feedbacks";
 import Loader from "../Loader";
@@ -38,7 +27,6 @@ import TransitionContent from "../utils/transition/TransitionContent";
 import { useUserContext } from "../../contexts/UserContextProvider";
 import { useUtilsContext } from "../../contexts/UtilsContextProvider";
 
-const { Title } = Typography;
 const TitleHeader = ({
   icon,
   img,
@@ -107,7 +95,7 @@ border-white mb-2 text-center ${contClass} ${
   );
 };
 const HomePage = () => {
-  const { socket, timeZone, isMobile, lan, t, i18n } = useUtilsContext();
+  const { socket, isMobile, lan, t } = useUtilsContext();
   const { isLoading: isUserLoading, userData: user } = useUserContext();
   const { homeData, isLoading } = useHomeContext();
   const globalStats = homeData;

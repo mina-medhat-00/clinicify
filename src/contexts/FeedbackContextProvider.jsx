@@ -20,7 +20,7 @@ const FeedbackContextProvider = ({
   const [isError, setIsError] = useState(false);
   const [feedbackData, setFeedbackData] = useState(null);
   const host = window?.location?.hostname;
-  const fetchFeedbackData = async (query, notWaiting) => {
+  const fetchFeedbackData = async (query) => {
     if (!noLoading) setIsLoading(true);
     try {
       const { data } = await axios.request(

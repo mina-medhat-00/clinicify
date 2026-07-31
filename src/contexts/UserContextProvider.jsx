@@ -1,14 +1,7 @@
 import { message } from "antd";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
-import {
-  createContext,
-  useState,
-  useContext,
-  useLayoutEffect,
-  useReducer,
-  useCallback,
-} from "react";
+import { createContext, useState, useContext, useLayoutEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Cookies from "universal-cookie";
 
@@ -90,7 +83,7 @@ const UserContextProvider = ({ children, token }) => {
           },
           Math.abs(+(record?.exp + "000") - Date.now()),
         );
-      } catch (err) {
+      } catch {
         //     console.log(err, "err");
       }
     };

@@ -1,14 +1,5 @@
-import React, { useState, useEffect } from "react";
-import {
-  Card,
-  Avatar,
-  Button,
-  Rate,
-  Image,
-  Segmented,
-  Empty,
-  Popover,
-} from "antd";
+import { useState } from "react";
+import { Card, Rate, Image, Popover } from "antd";
 import { MessageOutlined, StopOutlined } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
 import { SlotsContextProvider } from "../../../contexts";

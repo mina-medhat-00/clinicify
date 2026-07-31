@@ -30,7 +30,7 @@ const submitClinic = async (
         },
       },
     )
-    .then((res) => {
+    .then(() => {
       messageApi.open({
         key: 1,
         content: "clinic informations updated",

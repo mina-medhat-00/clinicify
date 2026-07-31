@@ -1,14 +1,11 @@
 import { GiDoctorFace, GiArchiveRegister } from "react-icons/gi";
-import { FcRatings } from "react-icons/fc";
 import { MdQuestionAnswer, MdReportProblem, MdReviews } from "react-icons/md";
 import { AiOutlineLogin } from "react-icons/ai";
 import { SiGnuprivacyguard } from "react-icons/si";
-import { HomeOutlined, LogoutOutlined } from "@ant-design/icons";
+import { HomeOutlined } from "@ant-design/icons";
 import { TiMessages } from "react-icons/ti";
 import { Link } from "react-router-dom";
-import SignBanner from "../../sign/SignBanner";
 import UserItem from "./UserItem";
-import { isMobile } from "react-device-detect";
 import { Avatar, Skeleton } from "antd";
 import { ImProfile } from "react-icons/im";
 function getItem(label, key, icon, children, type) {

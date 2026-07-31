@@ -48,7 +48,7 @@ const changeState = async (
         },
       },
     )
-    .then((res) => {
+    .then(() => {
       messageApi.open({
         key: 1,
         content: `${isUser ? "user" : "doctor"} account ${

@@ -1,16 +1,14 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { Row, Col, Avatar, message, Button, Card, Skeleton } from "antd";
+import { useEffect, useState } from "react";
+import { Button, Skeleton } from "antd";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { CgProfile } from "react-icons/cg";
 import { PoweroffOutlined } from "@ant-design/icons";
 import Cookies from "universal-cookie";
 import { useMediaQuery } from "react-responsive";
 import { useUtilsContext } from "../../../contexts/UtilsContextProvider";
 import { useUserContext } from "../../../contexts/UserContextProvider";
-let TimeId;
 
 const UserItem = () => {
-  const { t, messageApi } = useUtilsContext();
+  const { messageApi } = useUtilsContext();
   const { isloading, setUserData, userData: user } = useUserContext();
   const navigate = useNavigate();
   const isMobile = useMediaQuery({
@@ -18,7 +16,7 @@ const UserItem = () => {
   });
   const [showLogout, setShowLogout] = useState(false);
   useEffect(() => {
-    const wrap = document.querySelector(".user--nav--wrapper");
+    document.querySelector(".user--nav--wrapper");
   }, []);
   const location = useLocation();
   return !isloading && user ? (

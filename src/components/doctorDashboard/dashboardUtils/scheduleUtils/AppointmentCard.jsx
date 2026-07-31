@@ -1,13 +1,6 @@
-import React, { useEffect, useState } from "react";
-import {
-  Loading3QuartersOutlined,
-  PoundCircleOutlined,
-} from "@ant-design/icons";
-import {
-  CheckCircleOutlined,
-  ClockCircleOutlined,
-  CloseCircleOutlined,
-} from "@ant-design/icons";
+import { useEffect, useState } from "react";
+import { Loading3QuartersOutlined } from "@ant-design/icons";
+import { CheckCircleOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { FaClinicMedical } from "react-icons/fa";
 import { BiMessageAltDetail } from "react-icons/bi";
 import { TbEditCircle } from "react-icons/tb";
@@ -109,7 +102,7 @@ const AppointmentCard = ({
               <div
                 onClick={() => {
                   setBookedAppointment({ slotTime, appointmentId });
-                  setShowPop((val) => ({
+                  setShowPop(() => ({
                     show: true,
                     data: { slotTime, appointmentId },
                   }));

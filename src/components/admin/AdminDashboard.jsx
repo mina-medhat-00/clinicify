@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Navbar, Sidebar } from "./adminUtils";
 import "./AdminDashboard.css";
 import { useMediaQuery } from "react-responsive";

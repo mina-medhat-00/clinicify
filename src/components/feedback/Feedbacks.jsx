@@ -1,4 +1,4 @@
-import { Rate, Row, Col, Avatar, Typography, Empty, Carousel } from "antd";
+import { Col, Empty, Carousel } from "antd";
 import userPhoto from "./../../images/userPhoto.png";
 import doctorPhoto from "./../../images/doctorPhoto.png";
 import { useMediaQuery } from "react-responsive";
@@ -8,14 +8,10 @@ import { useEffect, useState } from "react";
 import ServerError from "../utils/ServerError";
 import FeedbackContent from "./feedbackUtils/FeedbackContent";
 import PopUp from "../utils/PopUp";
-import { VscFeedback } from "react-icons/vsc";
-import { FcFeedback } from "react-icons/fc";
 import { TitleHeader } from "../home/HomePage";
 import { MdFeedback } from "react-icons/md";
-import { CgFeed } from "react-icons/cg";
-const { Title, Text } = Typography;
 
-const Feedbacks = ({ home, data, noDirectFetch, username, fetchFeedback }) => {
+const Feedbacks = ({ home, noDirectFetch, username, fetchFeedback }) => {
   const { feedbackData, isLoading, isError, fetchFeedbackData } =
     useFeedbackContext();
   const isMobile = useMediaQuery({
@@ -55,7 +51,6 @@ const Feedbacks = ({ home, data, noDirectFetch, username, fetchFeedback }) => {
       bodyElement.style.padding = "10px";
     }
   };
-  const { Title, Text } = Typography;
   return (
     <>
       {!home && (

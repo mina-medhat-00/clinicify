@@ -1,9 +1,7 @@
-import { Table } from "antd";
-import React, { useState, useEffect } from "react";
+import { useEffect } from "react";
 
 import Cookies from "universal-cookie";
 import CountdownTimer from "./CountdownTimer";
-let k;
 const adjustTime = (date, time, timeZone) =>
   new Date(`${date} ${time} ${timeZone}`).toLocaleTimeString("en", {
     hour: "numeric",
@@ -16,7 +14,6 @@ const AppointmentTime = ({
   slot_time,
   doctorId,
   patientId,
-  getAppointmentVal,
   fetchAppointmentData,
   order,
   date,

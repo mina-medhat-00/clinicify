@@ -1,6 +1,4 @@
 import { Avatar, Col, Empty, Rate, Row } from "antd";
-import React from "react";
-import { BiMessageRoundedEdit } from "react-icons/bi";
 const FeedbackContent = ({
   order,
   font,

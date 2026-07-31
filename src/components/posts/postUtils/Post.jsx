@@ -1,8 +1,6 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ClockCircleFilled,
-  LikeFilled,
-  LinkOutlined,
   LoadingOutlined,
   MessageFilled,
 } from "@ant-design/icons";
@@ -17,7 +15,6 @@ import {
 import { Alert, Avatar, Button, Image, Input } from "antd";
 import { MdReply } from "react-icons/md";
 import { RiChatDeleteLine } from "react-icons/ri";
-import { TfiTime } from "react-icons/tfi";
 import { Link } from "react-router-dom";
 import submitComment from "../postServices/submitComment";
 import { useCommentsContext } from "../../../contexts/CommentsContextProvider";
@@ -27,9 +24,7 @@ import axios from "axios";
 import Cookies from "universal-cookie";
 import doctorPhoto from "../../../images/doctorPhoto.png";
 import userPhoto from "../../../images/userPhoto.png";
-import EmojiPicker from "emoji-picker-react";
 import "./post.css";
-let timeId;
 const getLike = async (setIsLike, postId, commentId) => {
   const host = window.location.hostname;
   const { data } = await axios(
@@ -53,7 +48,6 @@ const CommentActions = ({
   setComments,
   show,
   setReply,
-  order,
   numComments,
   showMore,
   lenViewedComments,
@@ -209,7 +203,7 @@ const CommentActions = ({
           {/* <LinkOutlined className="!flex items-center !text-blue-500 !text-xl" /> */}
           <div className="flex gap-2 flex-wrap items-center">
             <div className="flex flex-wrap gap-2 items-center bg-white p-2 rounded-lg shadow-sm">
-              {emojiData?.map(({ type, icon, total, color, fill }) => (
+              {emojiData?.map(({ type, icon, total, color }) => (
                 <div
                   key={type}
                   // onMouseEnter={() => {
@@ -690,7 +684,6 @@ const Post = ({
   issuedTime,
   numComments,
   userid,
-  order,
   postImg,
   socket,
   setShowPost,
@@ -810,7 +803,6 @@ const Post = ({
                 nick_name: nickname,
                 content,
                 issued_time: issuedTime,
-                is_reply: isReply,
                 num_replies: numReplies,
                 angry: numAngry,
                 dislike: numDisLike,

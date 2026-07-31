@@ -1,8 +1,4 @@
-import {
-  Loading3QuartersOutlined,
-  LoadingOutlined,
-  SendOutlined,
-} from "@ant-design/icons";
+import { LoadingOutlined, SendOutlined } from "@ant-design/icons";
 import { Input, Skeleton } from "antd";
 import EmojiPicker from "emoji-picker-react";
 import React, { useEffect, useRef, useState } from "react";

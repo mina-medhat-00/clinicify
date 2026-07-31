@@ -1,5 +1,3 @@
-import React from "react";
-
 const Message = ({ isMobile, me, content, issued_time }) => {
   return (
     <div className={!me ? "pl-2" : "pr-2"}>

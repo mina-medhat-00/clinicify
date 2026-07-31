@@ -1,9 +1,6 @@
 import { Button, DatePicker, Form, Input, Select } from "antd";
-import React from "react";
-import HeaderLine from "../../../sign/signup/signupUtils/HeaderLine";
 import { prefixSelector } from "../../../sign/signup/signupUtils/utils";
 import { MailOutlined } from "@ant-design/icons";
-import { useMediaQuery } from "react-responsive";
 import submitPersonal from "../profileServices/submitPersonal";
 import ProfileTable from "./ProfileTable";
 import { cityOption } from "../../../sign/signup/signupUtils/signData";
@@ -16,9 +13,6 @@ const PersonalForm = ({
   userName,
   initialValues,
 }) => {
-  const isMobile = useMediaQuery({
-    query: "(max-width:660px)",
-  });
   const editData = [
     {
       headers: ["Personal"],

@@ -1,4 +1,3 @@
-import React from "react";
 import VideoMeeting from "./onlineMeetingUtils/VideoMeeting";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { useUserContext } from "../../contexts/UserContextProvider";
@@ -6,7 +5,7 @@ import Loader from "../Loader";
 
 const OnlineMeeting = () => {
   const { session } = useParams();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const appointment_id = searchParams.get("appointment_id");
   const { userData: user, isLoading } = useUserContext();
 

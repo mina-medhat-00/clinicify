@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import { Calendar, Checkbox, DatePicker } from "antd";
 const CalendarView = ({ offsetWidth, selectedDate, handleDate, colorView }) => {

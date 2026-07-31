@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import ScheduleAppointments from "./dashboardUtils/ScheduleAppointments";
 import {
   ChatContextProvider,
@@ -11,7 +10,6 @@ import Cookies from "universal-cookie";
 import { useMediaQuery } from "react-responsive";
 import DashNav from "./dashboardUtils/DashNav.jsx";
 import UserProfile from "../user/profile/UserProfile";
-import HeaderLine from "../sign/signup/signupUtils/HeaderLine";
 import Appointments from "../appointments/Appointments";
 import AppointmentContextProvider from "../../contexts/AppointmentContextProvider";
 import Chat from "../chat/Chat";
@@ -25,7 +23,7 @@ const DoctorDashboard = ({ setNavActive }) => {
     fetchUserData,
   } = useUserContext();
   const userid = user?.user_id;
-  const username = user?.user_name;
+  user?.user_name;
   const { dashboardData, isLoading, fetchDashboardData } =
     useDashboardContext();
   useEffect(() => {

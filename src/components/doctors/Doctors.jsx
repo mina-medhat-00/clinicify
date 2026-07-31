@@ -1,4 +1,4 @@
-import React, { forwardRef, useState } from "react";
+import { forwardRef, useState } from "react";
 import { Carousel, Empty } from "antd";
 import Loader from "../Loader";
 import { DoctorCard, SearchFilter } from "./doctorsUtils";

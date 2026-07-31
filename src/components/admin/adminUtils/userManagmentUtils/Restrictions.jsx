@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { ChatContextProvider } from "../../../../contexts";
 import ChatRestrict from "./ChatRestrict";
-import { Avatar, Select } from "antd";
-const { Option } = Select;
+import { Avatar } from "antd";
 const Restrictions = ({ selectedUser }) => {
-  const [restrictType, setRestrictType] = useState("chat");
+  const [restrictType] = useState("chat");
   return (
     <div className="">
       <div className="mb-2 flex flex-wrap justify-evenly sm:justify-between items-center gap-2">

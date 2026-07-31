@@ -1,12 +1,10 @@
 import { Skeleton } from "antd";
-import React from "react";
 
 const ProfileTable = ({
   data,
   headers,
   headerColor,
   propColor,
-  handleDrawer,
   icon,
   loadingProps = {},
 }) => {

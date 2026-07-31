@@ -8,7 +8,6 @@ const submitFeedback = async (
   messageApi,
   setFetchFeedback,
   fetchUserData,
-  doctorName,
 ) => {
   const data = {
     rate: rateValue || 0,

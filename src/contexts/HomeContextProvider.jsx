@@ -2,7 +2,7 @@ import axios from "axios";
 import { createContext, useState, useContext, useLayoutEffect } from "react";
 
 const HomeData = createContext(null);
-const HomeContextProvider = ({ children, query }) => {
+const HomeContextProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [homeData, setHomeData] = useState({});
   const host = window?.location?.hostname;

@@ -1,6 +1,6 @@
 import { HomeOutlined } from "@ant-design/icons";
 import { Avatar, Segmented, Skeleton } from "antd";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import userPhoto from "../../../images/userPhoto.png";
 import doctorPhoto from "../../../images/doctorPhoto.png";

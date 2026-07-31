@@ -1,8 +1,6 @@
-import React from "react";
 import { Typography, Space } from "antd";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import i18next from "i18next";
 
 const { Title } = Typography;
 const Footer = ({ isMobile }) => {

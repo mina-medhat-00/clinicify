@@ -1,9 +1,7 @@
-import React from "react";
-import { Row, Col, Avatar, message, Button, Card } from "antd";
+import { Avatar, Button } from "antd";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { CgProfile } from "react-icons/cg";
 import { PoweroffOutlined } from "@ant-design/icons";
-import Loader from "../Loader";
 import Cookies from "universal-cookie";
 const SignBanner = ({
   user,

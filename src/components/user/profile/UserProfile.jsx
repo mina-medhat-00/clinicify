@@ -1,40 +1,28 @@
-import React, { useContext, useState } from "react";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import { SlotsContextProvider } from "../../../contexts";
 import { BookAppointment } from "../../../components";
 import userPhoto from "./../../../images/userPhoto.png";
 import {
   Typography,
-  Row,
-  Col,
-  Select,
   Image,
   Rate,
-  Avatar,
   Button,
   Drawer,
-  message,
   Input,
-  Switch,
   Alert,
   Empty,
-  Popover,
   Form,
 } from "antd";
 import Loader from "../../Loader";
 import { ProfileDetails } from "./profileUtils";
-import { BsJournalBookmarkFill } from "react-icons/bs";
-import { GrCertificate } from "react-icons/gr";
-import { GiScalpel } from "react-icons/gi";
-import { AiOutlineArrowRight, AiOutlineMessage } from "react-icons/ai";
-import { FcRating } from "react-icons/fc";
+import { AiOutlineMessage } from "react-icons/ai";
 import { BiEdit } from "react-icons/bi";
 import { useEffect } from "react";
 import doctorPhoto from "./../../../images/doctorPhoto.png";
 import { useProfileContext } from "../../../contexts/ProfileContextProvider";
 import { submitFeedback } from "./profileServices";
 import { StopOutlined } from "@ant-design/icons";
-import { FaNotesMedical } from "react-icons/fa";
 import MedicalForm from "./profileUtils/MedicalForm";
 import PatientRecords from "./profileUtils/PatientRecords";
 import PersonalForm from "./profileUtils/PersonalForm";
@@ -67,7 +55,7 @@ const UserProfile = () => {
     userData: user,
   } = useUserContext();
   const [rateValue, setRateValue] = useState(0);
-  const [showEdit, setShowEdit] = useState(false);
+  const [showEdit] = useState(false);
   const [fetchFeedback, setFetchFeedback] = useState();
   const { isLoading, profileData, fetchProfileData, isError } =
     useProfileContext();

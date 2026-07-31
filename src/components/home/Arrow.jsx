@@ -1,5 +1,3 @@
-import React from "react";
-
 const Arrow = ({ color, arrowColor }) => {
   return (
     <div>

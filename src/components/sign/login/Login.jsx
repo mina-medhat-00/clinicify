@@ -1,17 +1,14 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { Checkbox, Button, Form, Input } from "antd";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import { useMediaQuery } from "react-responsive";
 import HeaderLine from "../signup/signupUtils/HeaderLine";
 import { useState } from "react";
-import { message } from "antd";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import Title from "antd/es/typography/Title";
 import Cookies from "universal-cookie";
 import { useUtilsContext } from "../../../contexts/UtilsContextProvider";
 import { useUserContext } from "../../../contexts/UserContextProvider";
-import { useTranslation } from "react-i18next";
 const getMessage = (key, type, content, duration) => ({
   key,
   type,
@@ -100,13 +97,10 @@ const Login = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { Item } = Form;
-  const isMobile = useMediaQuery({
-    query: "(max-width:778px)",
-  });
   useEffect(() => {
     if (user?.user_id) return navigate("/");
   }, [user]);
-  const [formValues, setFormValues] = useState(null);
+  const [, setFormValues] = useState(null);
   return (
     <div
       className="form--in--wrapper grow"

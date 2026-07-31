@@ -1,18 +1,10 @@
-import { message } from "antd";
 import axios from "axios";
-import {
-  createContext,
-  useState,
-  useContext,
-  useLayoutEffect,
-  useReducer,
-} from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { createContext, useState, useContext } from "react";
 
 const SlotsData = createContext(null);
 const SlotsContextProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
-  const [tokenExpired, setTokenExpired] = useState(false);
+  const [tokenExpired] = useState(false);
   const [slotsData, setSlotsData] = useState({
     bookedSlots: null,
     totalSlots: null,

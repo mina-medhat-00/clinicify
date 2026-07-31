@@ -1,6 +1,4 @@
 import { Input, Form, Button } from "antd";
-import React from "react";
-import HeaderLine from "../../../sign/signup/signupUtils/HeaderLine";
 import submitMedical from "../profileServices/submitMedical";
 import ProfileTable from "./ProfileTable";
 const { Item } = Form;

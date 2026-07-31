@@ -38,7 +38,7 @@ const submitPersonal = async (
         },
       },
     )
-    .then((res) => {
+    .then(() => {
       messageApi.open({
         key: 1,
         content: "your information updated",

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSlotsContext } from "../../../contexts/SlotsContextProvider";
 import { BiLoader } from "react-icons/bi";
 import { Empty } from "antd";
@@ -111,7 +111,6 @@ const AppointmentDetails = ({ doctorId }) => {
               ({
                 appointmentType,
                 appointmentState,
-                appointmentDuration,
                 appointmentFees,
                 appointmentId,
                 slotTime,

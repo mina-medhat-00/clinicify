@@ -1,20 +1,14 @@
 import { Alert, Button, Empty, Image, Input, message, Upload } from "antd";
-import React, { useEffect, useState } from "react";
-import Grid from "../grid/Grid";
+import { useEffect, useState } from "react";
 import submitPost from "./postServices/submitPost";
 import { usePostsContext } from "../../contexts/PostsContextProvider";
-import Post from "./postUtils/Post";
 import { useUserContext } from "../../contexts/UserContextProvider";
 import { CommentsContextProvider } from "../../contexts";
-import { PlusOutlined } from "@ant-design/icons";
 import { BiImageAdd } from "react-icons/bi";
 import { TitleHeader } from "../home/HomePage";
-import { BsQuestion } from "react-icons/bs";
 import { RiQuestionAnswerFill } from "react-icons/ri";
 import ServerError from "../utils/ServerError";
-import { useMediaQuery } from "react-responsive";
 import Loader from "../Loader";
-import PopUp from "../utils/PopUp";
 import TransitionContent from "../utils/transition/TransitionContent";
 import PostWrapper from "./postUtils/PostWrapper";
 import { useUtilsContext } from "../../contexts/UtilsContextProvider";
@@ -47,7 +41,6 @@ const Posts = ({ home }) => {
   const {
     fetchUserData,
     userData,
-    isLoading: isUserLoading,
     messageApi,
     userData: userAuth,
   } = useUserContext();

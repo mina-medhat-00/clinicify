@@ -1,19 +1,17 @@
 import { OpenVidu } from "openvidu-browser";
 
 import axios from "axios";
-import React, { Component, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import UserVideoComponent from "./UserVideoComponent";
 import { Button, Input } from "antd";
 import Cookies from "universal-cookie";
 import "./videoMeeting.css";
 import { TitleHeader } from "../../home/HomePage";
-import { FcVideoCall } from "react-icons/fc";
 import {
   LoadingOutlined,
   SettingFilled,
   VideoCameraFilled,
 } from "@ant-design/icons";
-import Loader from "../../Loader";
 import { Link, useNavigate } from "react-router-dom";
 import { useUserContext } from "../../../contexts/UserContextProvider";
 import { useUtilsContext } from "../../../contexts/UtilsContextProvider";
@@ -122,7 +120,7 @@ const VideoMeeting = ({ nickname, username, session, appointmentId }) => {
       console.log(event, "+++ streamDestroy");
       deleteSubscriber(event.stream.streamManager);
     });
-    mySession.on("sessionDisconnected", (event) => {
+    mySession.on("sessionDisconnected", () => {
       // Remove the stream from 'subscribers' array
       console.log("++ disconnected");
       setSessionDetails((sD) => ({
@@ -137,7 +135,7 @@ const VideoMeeting = ({ nickname, username, session, appointmentId }) => {
     });
 
     // On every asynchronous exception...
-    mySession.on("exception", (exception) => {
+    mySession.on("exception", () => {
       console.log("++ exception");
       // setSessionDetails((sD) => ({
       //   ...sD,
@@ -307,7 +305,7 @@ const VideoMeeting = ({ nickname, username, session, appointmentId }) => {
           }));
         }
       }
-    } catch (e) {
+    } catch {
       // setSessionDetails((sD) => ({
       //   ...sD,
       //   session: undefined,
@@ -575,7 +573,7 @@ const VideoMeeting = ({ nickname, username, session, appointmentId }) => {
                 <UserVideoComponent streamManager={this.state.publisher} />
                 </div>
               ) : null} */}
-              {sessionDetails.subscribers.map((sub, i) => (
+              {sessionDetails.subscribers.map((sub) => (
                 <div
                   key={sub.id}
                   className="stream-container w-1/5 sm:w-1/4 lg:w-1/4 xl:w-1/5"
