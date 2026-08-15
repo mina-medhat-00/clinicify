@@ -1,1 +1,276 @@
+@layer theme, base, antd, components, utilities;
 @import "tailwindcss";
+
+@theme {
+  --color-text-primary: #000;
+  --color-bg-primary: #fff;
+  --color-bg-secondary: #f9f9f9;
+  --color-bg-bar: #001529;
+  --color-pink: #0071bd;
+  --color-light-blue: #e6f7ff;
+  --color-border: #d9d9d9;
+  --color-main-bg: #fafbfb;
+  --color-main-dark-bg: #20232a;
+  --color-secondary-dark-bg: #33373e;
+  --animate-flip-top: flip-top 0.8s linear;
+  --animate-flip-bottom: flip-bottom 0.8s linear;
+  --animate-flip-top-fast: flip-top 0.4s linear;
+  --animate-flip-bottom-fast: flip-bottom 0.4s linear;
+}
+
+@keyframes flip-top {
+  0% {
+    transform: rotateX(0deg);
+  }
+  50%,
+  100% {
+    transform: rotateX(-90deg);
+  }
+}
+
+@keyframes flip-bottom {
+  0%,
+  50% {
+    transform: rotateX(90deg);
+  }
+  100% {
+    transform: rotateX(0deg);
+  }
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    @apply min-h-full;
+  }
+
+  html {
+    @apply min-h-screen;
+  }
+
+  body {
+    @apply m-0 bg-white text-[14px] text-black/85;
+    font-family:
+      -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+      Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+      "Segoe UI Symbol", "Noto Color Emoji";
+  }
+
+  a {
+    @apply text-[#1890ff] no-underline;
+  }
+}
+
+/* Scrollbars and Ant Design internals that cannot live on a single className */
+@layer utilities {
+  .scroll--v::-webkit-scrollbar,
+  ul[id*="sub31"]::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .scroll--h::-webkit-scrollbar {
+    height: 5px;
+  }
+
+  .scroll--h::-webkit-scrollbar-thumb {
+    @apply rounded-[20px] bg-[#6f797d];
+  }
+
+  .scroll--v::-webkit-scrollbar-thumb,
+  ul[id*="sub31"]::-webkit-scrollbar-thumb {
+    @apply rounded-[20px] bg-[#3a73b0];
+  }
+
+  ul[id*="sub31"]::-webkit-scrollbar-track {
+    @apply rounded-[20px] bg-[#e8e6ee];
+  }
+
+  .scroll--v--comment::-webkit-scrollbar-thumb {
+    @apply border border-solid border-[rgb(137,168,188)] bg-[#395460];
+  }
+
+  .scroll--v--comment::-webkit-scrollbar-track {
+    @apply rounded-[10px];
+  }
+
+  .scroll--v--chat::-webkit-scrollbar-thumb {
+    @apply border border-solid border-[rgb(219,231,239)] bg-[#373149aa];
+  }
+
+  .scroll--h--chat--white::-webkit-scrollbar-thumb {
+    background-color: #ececedd6;
+  }
+
+  .scroll--v--chat::-webkit-scrollbar {
+    width: 4.5px;
+  }
+
+  .scroll--h--chat::-webkit-scrollbar {
+    height: 3px;
+  }
+
+  .scroll--h--chat:hover::-webkit-scrollbar {
+    height: 3.6px;
+  }
+
+  .epr-body::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .epr-body::-webkit-scrollbar-thumb {
+    @apply rounded-[25px] bg-[#344a60];
+  }
+
+  .flip .segment-overlay__top {
+    animation: var(--animate-flip-top);
+  }
+
+  .flip .segment-overlay__bottom {
+    animation: var(--animate-flip-bottom);
+  }
+
+  .segment-overlay-slot.flip .segment-overlay__top {
+    animation: var(--animate-flip-top-fast) !important;
+  }
+
+  .segment-overlay-slot.flip .segment-overlay__bottom {
+    animation: var(--animate-flip-bottom-fast) !important;
+  }
+}
+
+@layer components {
+  .ant-menu-root {
+    @apply text-[medium];
+  }
+
+  .ant-menu-root li:hover {
+    background-color: #1f3458 !important;
+    color: #000 !important;
+  }
+
+  ul[id*="subdoc3"] {
+    margin-right: 10px !important;
+    border-top-left-radius: 15px !important;
+    border-top-right-radius: 15px !important;
+    background-color: rgb(23, 65, 107) !important;
+  }
+
+  ul[id*="sub31"] {
+    height: 200px !important;
+    @apply overflow-x-hidden overflow-y-scroll;
+    border-top-left-radius: 15px !important;
+    border-top-right-radius: 15px !important;
+    background-color: rgb(31, 88, 126) !important;
+  }
+
+  .ant-statistic-content-value {
+    display: inline-flex !important;
+  }
+
+  .ant-upload-list-item-container {
+    flex-grow: 1 !important;
+  }
+
+  .ant-upload-list-item {
+    @apply bg-bg-bar text-lg text-white;
+  }
+
+  .ant-upload-list {
+    @apply block flex-wrap justify-between;
+  }
+
+  .ant-upload-list-item:hover {
+    background-color: rgb(32, 74, 75) !important;
+  }
+
+  .ant-upload-list-item-action svg {
+    color: #ccb7be !important;
+    word-break: break-all !important;
+    @apply text-[20px];
+  }
+
+  .ant-upload-list-item-action svg:hover {
+    color: #b12051 !important;
+  }
+
+  .ant-upload-list-item-name {
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .ant-menu-root li[data-menu-id*="user"] {
+    padding-left: 3px !important;
+    @apply flex items-center justify-start;
+  }
+
+  .sm.ar--nav.ant-menu-root li {
+    @apply flex items-center justify-end pr-[30px];
+  }
+
+  .sm.ar--nav.ant-menu-root li[data-menu-id*="user"] {
+    @apply justify-start;
+  }
+
+  .sm.ar--nav.ant-menu-root .ant-menu-submenu.ant-menu-submenu-vertical {
+    @apply pr-0;
+  }
+
+  .sm.ar--nav.ant-menu-root li div[data-menu-id*="subdoc3"] {
+    @apply flex items-center justify-end;
+  }
+
+  .admin--table .ant-table-pagination {
+    justify-content: flex-start !important;
+  }
+
+  .users--table .ant-table-content {
+    @apply rounded-[10px] bg-gray-700 text-white;
+  }
+
+  .users--table .ant-table-cell-row-hover {
+    background-color: rgb(75 85 99) !important;
+  }
+
+  .reports--table .ant-table-content {
+    @apply rounded-[10px] bg-[rgb(64,128,160)] text-white;
+  }
+
+  .reports--table .ant-table-cell-row-hover {
+    background-color: rgb(64, 136, 172) !important;
+  }
+
+  .table--grid div[class*="xl:w-1/3"] {
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  .h--full.table--grid div[class*="xl:w-1/3"] {
+    height: 100% !important;
+  }
+
+  .table--grid td > div,
+  .table--grid td {
+    margin: 0 !important;
+  }
+
+  .table--grid td {
+    border: 0 !important;
+    width: 100%;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .table--grid .ant-table-tbody {
+    @apply flex flex-wrap justify-between gap-[5px];
+  }
+
+  .table--grid.no--gap .ant-table-tbody {
+    @apply gap-0;
+  }
+
+  .table--grid.no--gap .ant-table-tbody td {
+    @apply p-[5px];
+  }
+}

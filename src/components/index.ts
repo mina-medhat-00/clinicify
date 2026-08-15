@@ -1,0 +1,14 @@
+export { default as Navbar } from "@/components/navbar/Navbar";
+export { default as HomePage } from "@/components/home/HomePage";
+export { default as Doctors } from "@/components/doctors/Doctors";
+export { default as BookAppointment } from "@/components/booking/BookAppointment";
+export { default as Feedbacks } from "@/components/feedback/Feedbacks";
+export { default as UserProfile } from "@/components/user/UserProfile";
+export { default as Loader } from "@/utils/loader/Loader";
+export { default as Login } from "@/components/login/Login";
+export { default as Signup } from "@/components/signup/Signup";
+export { default as SignBanner } from "@/components/banner/SignBanner";
+export { default as DoctorDashboard } from "@/components/dashboard/DoctorDashboard";
+export { default as Chat } from "@/components/chat/Chat";
+export { default as Posts } from "@/components/posts/Posts";
+export { default as OnlineMeeting } from "@/components/meeting/OnlineMeeting";
