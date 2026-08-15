@@ -49,7 +49,7 @@ const PopUp = ({
           >
             <RiDeleteBack2Line
               onClick={handleClose}
-              className={`flex !shrink-0 cursor-pointer ${
+              className={`flex shrink-0 cursor-pointer ${
                 closeColor ? closeColor : "text-gray-700 hover:text-gray-800"
               } justify-center ml-auto my-2 items-center text-4xl`}
             />

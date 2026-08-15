@@ -24,13 +24,13 @@ const links = [
       {
         link: "users",
         key: "user",
-        value: "Users Managment",
+        value: "Users Management",
         icon: <FiUserCheck />,
       },
       {
         link: "doctors",
         key: "doctor",
-        value: "Doctors Managment",
+        value: "Doctors Management",
         icon: <MdOutlineManageAccounts />,
       },
       {

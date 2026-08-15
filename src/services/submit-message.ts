@@ -1,5 +1,6 @@
 import axios from "axios";
 import Cookies from "universal-cookie";
+import { apiUrl } from "@/utils/api";
 
 const cookies = new Cookies();
 const submitMessage = async (
@@ -16,11 +17,10 @@ const submitMessage = async (
   fetchChatData?: any,
 ) => {
   const data = { content, message_to, isFirst };
-  const host = window?.location?.hostname;
   setIsLoading(true);
   axios
     .post(
-      `http://${host}:5000/submit/message`,
+      apiUrl("/submit/message"),
       {
         data,
       },

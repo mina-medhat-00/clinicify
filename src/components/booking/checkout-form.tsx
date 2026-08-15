@@ -150,7 +150,7 @@ const CheckoutForm = ({
         <button
           className={`block w-full rounded border-0 bg-[#5469d4] px-4 py-3 font-sans text-base font-semibold text-white shadow-[0_4px_5.5px_rgba(0,0,0,0.07)] transition-all duration-200 hover:contrast-115 disabled:cursor-default disabled:opacity-50 ${
             isLoading || !stripe || !elements
-              ? "!cursor-not-allowed"
+              ? "cursor-not-allowed"
               : "cursor-pointer"
           }`}
           disabled={isLoading || !stripe || !elements}
@@ -160,7 +160,7 @@ const CheckoutForm = ({
           <span
             id="button-text"
             className={`${
-              isLoading || !stripe || !elements ? "!cursor-not-allowed" : ""
+              isLoading || !stripe || !elements ? "cursor-not-allowed" : ""
             }`}
           >
             {isLoading ? (

@@ -2,7 +2,7 @@ import { MailOutlined } from "@ant-design/icons";
 import { Button, DatePicker, Form, Input, Select, Space } from "antd";
 import ProfileTable from "@/components/profile/profile-table";
 import submitPersonal from "@/services/submit-personal";
-import { cityOption } from "@/utils/sign-data";
+import { cityOptions } from "@/utils/sign-data";
 import { prefixSelector } from "@/utils/signup-utils";
 
 const { Item } = Form;
@@ -59,7 +59,7 @@ const PersonalForm = ({
               rules={[
                 {
                   required: true,
-                  message: "you enter your birthdate",
+                  message: "please enter your birthdate",
                 },
                 {
                   message: "your age must be more than 13",
@@ -118,7 +118,7 @@ const PersonalForm = ({
                 },
                 {
                   type: "email",
-                  message: "write correct email please!!",
+                  message: "please enter a valid email",
                 },
               ]}
             >
@@ -169,9 +169,9 @@ const PersonalForm = ({
                           className="w-full"
                           placeholder="Select city"
                           showSearch
-                        >
-                          {cityOption}
-                        </Select>
+                          optionFilterProp="label"
+                          options={cityOptions}
+                        />
                       </Item>
                     ),
                   },

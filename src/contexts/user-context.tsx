@@ -5,6 +5,7 @@ import type { AuthTokenPayload, User } from "@/types";
 import { createContext, useContext, useLayoutEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
+import { apiUrl } from "@/utils/api";
 
 const UserData = createContext<any>(null);
 const UserContextProvider = ({ children, token }: any) => {
@@ -15,7 +16,6 @@ const UserContextProvider = ({ children, token }: any) => {
   const [messageApi, contextHolder] = message.useMessage();
   const [userData, setUserData] = useState<User | null>(null);
   const [isError, setIsError] = useState(false);
-  const host = window?.location?.hostname;
   const fetchUserData = async (
     active?: any,
     directToken?: any,
@@ -31,7 +31,7 @@ const UserContextProvider = ({ children, token }: any) => {
     try {
       if (directError) throw directError;
       const { data } = await axios.request({
-        url: `http://${host}:5000/user`,
+        url: apiUrl("/user"),
         ...{
           headers: { Authorization: `Bearer ${active ? directToken : token}` },
           timeout: 10000,
@@ -55,7 +55,7 @@ const UserContextProvider = ({ children, token }: any) => {
             messageApi.open({
               key: 1,
               type: "error",
-              content: "your Time has Expired, Redirecting to login page ...",
+              content: "your time has expired, redirecting to login page ...",
               duration: 3,
             });
             setTimeout(() => {

@@ -140,7 +140,7 @@ const BookCard = ({ doctorId, socket, timeZone }: any) => {
                   className={`my-4 m-auto sm:font-medium h-12 w-2/3 block ${
                     !bookedAppointment ||
                     !(userData && userData?.user_id != doctorId)
-                      ? "bg-gray-100 text-gray-400 bg-gray-200 border-gray-400"
+                      ? "bg-gray-100 text-gray-400 border-gray-400"
                       : "hover:bg-gray-800 bg-gray-700"
                   }  rounded-lg`}
                 >

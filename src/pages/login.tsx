@@ -7,6 +7,7 @@ import Cookies from "universal-cookie";
 import HeaderLine from "@/components/ui/header-line";
 import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
+import { apiUrl } from "@/utils/api";
 
 const { Title } = Typography;
 
@@ -31,12 +32,11 @@ const signing = (
   fetchUserData?: any,
   location?: any,
 ) => {
-  messageApi.open(getMessage(1, "loading", "verfying...", 8));
-  const host = window?.location?.hostname;
+  messageApi.open(getMessage(1, "loading", "verifying...", 8));
   delete values?.remember;
   axios
     .post(
-      `http://${host}:5000/login`,
+      apiUrl("/login"),
       {
         data: values,
       },
@@ -51,7 +51,7 @@ const signing = (
       const cookies = new Cookies();
       if (data?.data?.token) cookies.set("accessToken", data?.data?.token);
 
-      messageApi.open(getMessage(1, "success", "login successfully", 2));
+      messageApi.open(getMessage(1, "success", "logged in successfully", 2));
       setTimeout(() => {
         const loc = new URLSearchParams(location?.search)?.get("redirect");
         navigate(loc ? loc : "/");
@@ -81,7 +81,7 @@ const signing = (
     });
 };
 const Login = () => {
-  const { messageApi, t } = useUtilsContext();
+  const { messageApi } = useUtilsContext();
   const {
     tokenExpired: isTokenExpired,
     fetchUserData,
@@ -114,7 +114,7 @@ const Login = () => {
       flex justify-start mt-20 flex-col items-center"
       >
         <HeaderLine
-          value={t("Login")}
+          value={"Login"}
           center
           invisible
           size="no"
@@ -124,7 +124,7 @@ const Login = () => {
         />
         {isTokenExpired && (
           <Title level={5} className=" text-red-400 text-xs">
-            {t("Your Time Has Expired, you can sign-in again")}
+            {"Your Time Has Expired, you can sign-in again"}
           </Title>
         )}
         <Form
@@ -153,21 +153,23 @@ const Login = () => {
             name="username"
             validateStatus={validState.invalidUser ? "error" : ""}
             help={
-              validState.invalidUser ? `be sure you write correct user` : null
+              validState.invalidUser
+                ? `be sure you wrote the correct username`
+                : null
             }
 
             rules={[
               {
                 required: true,
-                message: `${t("Please input your username!")}`,
+                message: "Please input your username!",
               },
               {
                 pattern: new RegExp("^([A-Z]|[a-z])+.{0,22}$"),
-                message: `${t("must begin with letters and max 22 character")}`,
+                message: "must begin with letters and max 22 characters",
               },
             ]}
           >
-            <Input prefix={<UserOutlined />} placeholder={t("Username")} />
+            <Input prefix={<UserOutlined />} placeholder={"Username"} />
           </Item>
           <Item
             name="password"
@@ -180,12 +182,11 @@ const Login = () => {
             rules={[
               {
                 required: true,
-                message: `${t("Please input your password!")}`,
+                message: "Please input your password!",
               },
               {
-                message: `${t(
+                message:
                   "Minimum 8 and maximum 14 characters, at least one uppercase letter, one lowercase letter",
-                )}  `,
                 pattern: new RegExp(
                   "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,14}$",
                 ),
@@ -194,11 +195,11 @@ const Login = () => {
           >
             <Input.Password
               prefix={<LockOutlined />}
-              placeholder={t("Password")}
+              placeholder={"Password"}
             />
           </Item>
           <Item name="remember" valuePropName="checked">
-            <Checkbox style={{ color: "white" }}>{t("Remember me")}</Checkbox>
+            <Checkbox style={{ color: "white" }}>{"Remember me"}</Checkbox>
           </Item>
           <Item>
             <Button
@@ -206,7 +207,7 @@ const Login = () => {
               className="w-full bg-blue-600/80 hover:bg-blue-600 border border-white"
               htmlType="submit"
             >
-              {t("Submit")}
+              {"Submit"}
             </Button>
           </Item>
         </Form>

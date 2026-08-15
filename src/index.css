@@ -205,22 +205,6 @@
     @apply flex items-center justify-start;
   }
 
-  .sm.ar--nav.ant-menu-root li {
-    @apply flex items-center justify-end pr-7.5;
-  }
-
-  .sm.ar--nav.ant-menu-root li[data-menu-id*="user"] {
-    @apply justify-start;
-  }
-
-  .sm.ar--nav.ant-menu-root .ant-menu-submenu.ant-menu-submenu-vertical {
-    @apply pr-0;
-  }
-
-  .sm.ar--nav.ant-menu-root li div[data-menu-id*="subdoc3"] {
-    @apply flex items-center justify-end;
-  }
-
   .admin--table .ant-table-pagination {
     justify-content: flex-start !important;
   }

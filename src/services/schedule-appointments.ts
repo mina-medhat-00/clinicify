@@ -1,5 +1,6 @@
 import axios from "axios";
 import Cookies from "universal-cookie";
+import { apiUrl } from "@/utils/api";
 
 const cookies = new Cookies();
 const scheduleAppointments = (
@@ -38,12 +39,11 @@ const scheduleAppointments = (
     },
   };
   if (!deletedAppointments) setIsDone(false);
-  const host = window?.location?.hostname;
   axios
     .post(
-      `http://${host}:5000/${
+      apiUrl(`/${
         isEdit ? "edit/appointment" : "schedule/appointments"
-      }`,
+      }`),
       data,
       {
         headers: {
@@ -59,7 +59,7 @@ const scheduleAppointments = (
         content: deletedAppointments
           ? "your schedule Appointment deleted"
           : isEdit
-            ? "your appointment edited successfull ..."
+            ? "your appointment edited successfully ..."
             : "Your schedule Appointments updated",
 
         duration: 3,

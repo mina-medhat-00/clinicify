@@ -1,10 +1,4 @@
-import {
-  Avatar,
-  Col,
-  Empty,
-  Rate,
-  Row,
-} from "antd";
+import { Avatar, Col, Empty, Rate, Row } from "antd";
 
 const FeedbackContent = ({
   order,
@@ -79,7 +73,7 @@ const FeedbackContent = ({
           className="box-content h-0 min-h-0 overflow-hidden rounded-lg bg-blue-500/80 p-0 transition-[height,padding] duration-400 ease-in-out"
           id={`feedback--body--${order + 1}`}
         >
-          <div id={`feedback--pragraph--${order + 1}`}>
+          <div id={`feedback--paragraph--${order + 1}`}>
             <span className="text-white break-all font-medium">
               {feedback || (
                 <Empty

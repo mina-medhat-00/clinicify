@@ -45,10 +45,10 @@ const UserItem = (_props?: any) => {
               ? `/admin`
               : `/dashboard`
         }
-        className="text-white grow !inline-block
-          font-bold hover:text-white !z-10"
+        className="text-white grow inline-block
+          font-bold hover:text-white z-10"
       >
-        <Button className="w-full h-full bg-transparent text-white p-1 border-0 !font-bold hover:text-white">
+        <Button className="w-full h-full bg-transparent text-white p-1 border-0 font-bold hover:text-white">
           {user?.nick_name || "Profile"}
         </Button>
       </Link>

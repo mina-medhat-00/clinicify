@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import BookCard from "@/components/doctor/book-card";
 import { SlotsContextProvider } from "@/contexts";
-import { useUtilsContext } from "@/contexts/utils-context";
 
 const DoctorCard = ({
   profileImage,
@@ -23,7 +22,6 @@ const DoctorCard = ({
   phone,
   isLast,
 }: any) => {
-  const { t } = useUtilsContext();
   const navigate = useNavigate();
   const [isPayment, setIsPayment] = useState<any>(null);
   const cardDetails = [
@@ -141,9 +139,9 @@ const DoctorCard = ({
                   <div className="flex flex-wrap justify-between gap-2 font-bold font-mono">
                     {data?.map(({ label, value }: any) => (
                       <div key={label}>
-                        <span>{t(label)}: </span>
+                        <span>{label}: </span>
                         {value ? (
-                          <span className="text-blue-800">{t(value)}</span>
+                          <span className="text-blue-800">{value}</span>
                         ) : (
                           <StopOutlined />
                         )}

@@ -2,6 +2,7 @@ import axios from "axios";
 import { createContext, useContext, useState } from "react";
 import { useUserContext } from "@/contexts/user-context";
 import type { Appointment } from "@/types";
+import { apiUrl } from "@/utils/api";
 
 const AppointmentData = createContext<any>(null);
 const AppointmentContextProvider = ({ children, token, isDoctor }: any) => {
@@ -10,7 +11,6 @@ const AppointmentContextProvider = ({ children, token, isDoctor }: any) => {
   const [appointmentData, setAppointmentData] = useState<Appointment[] | null>(
     null,
   );
-  const host = window?.location?.hostname;
   const fetchAppointmentData = async (
     active?: any,
     directToken?: any,
@@ -27,11 +27,11 @@ const AppointmentContextProvider = ({ children, token, isDoctor }: any) => {
     try {
       if (done) {
         const { data } = await axios.post(
-          `http://${host}:5000/update/appointment${
+          apiUrl(`/update/appointment${
             isDoctor || query?.doctor
               ? `?doctor=true${query.date && `&date=${query.date}`}`
               : `?date=${query?.date}`
-          }`,
+          }`),
           { data: postData },
           {
             headers: {
@@ -45,11 +45,11 @@ const AppointmentContextProvider = ({ children, token, isDoctor }: any) => {
         return data;
       } else {
         const { data } = await axios.request({
-          url: `http://${host}:5000/get/appointments?${
+          url: apiUrl(`/get/appointments?${
             query?.date ? `&date=${query?.date}` : ""
           }${query?.doctorId ? `&doctor_id=${query?.doctorId}` : ""}${
             isDoctor || query?.doctor ? `&doctor=true` : ""
-          }`,
+          }`),
           ...{
             headers: {
               Authorization: `Bearer ${active ? directToken : token}`,

@@ -1,6 +1,5 @@
 import { Avatar } from "antd";
 import { Link } from "react-router-dom";
-import { useUtilsContext } from "@/contexts/utils-context";
 
 const TitleHeader = ({
   icon,
@@ -11,7 +10,6 @@ const TitleHeader = ({
   contentBg,
   contClass = "",
 }: any) => {
-  const { t } = useUtilsContext();
   return to ? (
     <Link
       to={`/${to}`}
@@ -28,7 +26,7 @@ border-white mb-2 text-center ${contClass} ${
         }`}
       >
         <h1 className="break-all text-2xl sm:text-3xl xl:text-4xl text-white text-center capitalize">
-          {t(title)}
+          {title}
         </h1>
         {icon ? (
           icon
@@ -55,7 +53,7 @@ border-white mb-2 text-center ${contClass} ${
         }`}
       >
         <h1 className="break-all text-2xl sm:text-3xl xl:text-4xl text-white text-center capitalize">
-          {t(title)}
+          {title}
         </h1>
         {icon ? (
           icon

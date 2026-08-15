@@ -27,7 +27,7 @@ const MedicalForm = ({
     >
       <div className="bg-gray-200 shadow-sm rounded-lg p-2">
         <ProfileTable
-          headers={["Medical Informations"]}
+          headers={["Medical Information"]}
           data={[
             {
               name: "Current issue",

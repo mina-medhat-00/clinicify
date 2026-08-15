@@ -16,3 +16,8 @@ declare module "react" {
     specialty?: string;
   }
 }
+
+declare module "currency-symbol-map" {
+  function getSymbolFromCurrency(currencyCode: string): string | undefined;
+  export default getSymbolFromCurrency;
+}

@@ -17,7 +17,6 @@ import {
 } from "@/contexts";
 import AppointmentContextProvider from "@/contexts/appointment-context";
 import { useUserContext } from "@/contexts/user-context";
-import { useUtilsContext } from "@/contexts/utils-context";
 import AdminDashboard from "@/pages/admin-dashboard";
 import Appointments from "@/pages/appointments";
 import Chat from "@/pages/chat";
@@ -47,14 +46,13 @@ const handleRoute = (
   ) : isError ? (
     <Navigate to="/error" replace />
   ) : (
-    <Navigate to="/forbbiden" replace />
+    <Navigate to="/forbidden" replace />
   );
 const App = () => {
   const [navActive, setNavActive] = useState(true);
   const DoctorRef = useRef<any>(null);
   const location = useLocation();
   const { userData, isLoading, isError } = useUserContext();
-  const { lan } = useUtilsContext();
   const userAuth = userData;
 
   return (
@@ -65,7 +63,6 @@ const App = () => {
           className="flex w-4/5 grow flex-col bg-[#bbc8d4] max-[678px]:w-full"
           style={{
             backgroundColor: "#f5f5f5",
-            direction: lan == "ar" ? "rtl" : "ltr",
           }}
         >
           <Routes>
@@ -80,7 +77,7 @@ const App = () => {
             <Route path="/join/meeting/:session" element={<OnlineMeeting />} />
 
             <Route
-              path="/forbbiden"
+              path="/forbidden"
               element={
                 <ServerError
                   statusTitle={"403"}

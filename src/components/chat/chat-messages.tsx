@@ -62,9 +62,9 @@ const Messages = ({
           : [...m, m1];
       });
     };
-    socket?.on("recieve_message", addMessage);
+    socket?.on("receive_message", addMessage);
     return () => {
-      socket.off("recieve_message", addMessage);
+      socket.off("receive_message", addMessage);
     };
   }, []);
   useEffect(() => {

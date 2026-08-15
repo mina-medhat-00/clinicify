@@ -10,7 +10,7 @@ import { MdDashboard } from "react-icons/md";
 import { RiQuestionAnswerLine } from "react-icons/ri";
 import { VscFeedback } from "react-icons/vsc";
 import { Link } from "react-router-dom";
-import heroClinic from "@/assets/images/back2.jpg";
+import heroClinic from "@/assets/images/background.jpg";
 import doctorIcon from "@/assets/images/doctor-icon.jpg";
 import Arrow from "@/components/ui/arrow";
 import Loader from "@/components/ui/loader";
@@ -32,7 +32,7 @@ const Countup =
   typeof CountUpPkg === "function" ? CountUpPkg : (CountUpPkg as any)?.default;
 
 const HomePage = () => {
-  const { socket, isMobile, lan, t } = useUtilsContext();
+  const { socket, isMobile } = useUtilsContext();
   const { isLoading: isUserLoading, userData: user } = useUserContext();
   const { homeData, isLoading } = useHomeContext();
   const globalStats = homeData;
@@ -95,12 +95,7 @@ const HomePage = () => {
       >
         {!isUserLoading ? (
           <TransitionContent id="home--hero">
-            <div
-              style={{
-                direction: lan == "ar" ? "ltr" : "ltr",
-              }}
-              className="mb-8 sm:mx-6"
-            >
+            <div className="mb-8 sm:mx-6">
               <h1
                 className="mt-10 text-gray-100 shadow-lg py-6 sm:py-8 xl:py-10
           rounded-lg text-xl sm:text-4xl ml-auto mr-auto"
@@ -110,7 +105,7 @@ const HomePage = () => {
                     "linear-gradient(to right, #194d84, #34659b, #407dbf)",
                 }}
               >
-                {t("Online Clinic")}
+                {"Online Clinic"}
               </h1>
               {user && (
                 <div className="flex gap-8 mt-2 justify-center px-2">
@@ -118,7 +113,7 @@ const HomePage = () => {
                     <Arrow />
                     <div className="mt-2">
                       <Link
-                        className="p-2 py-4 flex flex-col items-center gap-1 bg-blue-900 hover:text-white text-center hover:bg-blue-500 text-xs sm:text-base block rounded-lg bg-blue-400 font-medium text-gray-100"
+                        className="p-2 py-4 flex flex-col items-center gap-1 bg-blue-900 hover:text-white text-center hover:bg-blue-500 text-xs sm:text-base rounded-lg font-medium text-gray-100"
                         to={
                           user?.user_type == "user"
                             ? `/profile/${user?.user_name}`
@@ -134,13 +129,11 @@ const HomePage = () => {
                         ) : (
                           <MdDashboard className="mb-2 flex justify-center items-center w-full text-lg sm:text-2xl" />
                         )}
-                        {t(
-                          user?.user_type == "user"
-                            ? `My Profile`
-                            : user?.user_type == "admin"
-                              ? `My Admin Dashboard`
-                              : `My Doctor Dashboard`,
-                        )}
+                        {user?.user_type == "user"
+                          ? "My Profile"
+                          : user?.user_type == "admin"
+                            ? "My Admin Dashboard"
+                            : "My Doctor Dashboard"}
                       </Link>
                     </div>
                   </div>
@@ -156,11 +149,11 @@ const HomePage = () => {
                     <Arrow />
                     <div className="mt-2">
                       <Link
-                        className="p-2 py-4 bg-blue-800 hover:text-white text-center hover:bg-blue-500 text-xs sm:text-base block rounded-lg bg-blue-400 font-medium text-gray-100"
+                        className="p-2 py-4 bg-blue-800 hover:text-white text-center hover:bg-blue-500 text-xs sm:text-base block rounded-lg font-medium text-gray-100"
                         to="/chat"
                       >
                         <BsFillChatSquareTextFill className="mb-2 flex justify-center items-center w-full text-lg sm:text-2xl" />
-                        {t("Chatting")}
+                        {"Chatting"}
                       </Link>
                     </div>
                   </div>
@@ -169,11 +162,11 @@ const HomePage = () => {
                       <Arrow />
                       <div className="mt-2">
                         <Link
-                          className="p-2 py-4 bg-blue-700 hover:text-white text-center hover:bg-blue-600 text-xs sm:text-base block rounded-lg bg-blue-400 font-medium text-gray-100"
+                          className="p-2 py-4 bg-blue-700 hover:text-white text-center hover:bg-blue-600 text-xs sm:text-base block rounded-lg font-medium text-gray-100"
                           to="/appointments"
                         >
                           <AiOutlineSchedule className="mb-2 flex justify-center items-center w-full text-lg sm:text-2xl" />
-                          {t("Your Appointments")}
+                          {"Your Appointments"}
                         </Link>
                       </div>
                     </div>
@@ -185,11 +178,11 @@ const HomePage = () => {
                   <Arrow />
                   <div className="mt-2">
                     <Link
-                      className="p-2 py-4 bg-blue-600 hover:text-white text-center hover:bg-blue-700 text-xs sm:text-base block rounded-lg bg-blue-400 font-medium text-gray-100"
+                      className="p-2 py-4 bg-blue-600 hover:text-white text-center hover:bg-blue-700 text-xs sm:text-base block rounded-lg font-medium text-gray-100"
                       to="/doctors"
                     >
                       <GiDoctorFace className="mb-2 flex justify-center items-center w-full text-lg sm:text-2xl" />
-                      {t("Doctors")}
+                      {"Doctors"}
                     </Link>
                   </div>
                 </div>
@@ -197,11 +190,11 @@ const HomePage = () => {
                   <Arrow />
                   <div className="mt-2">
                     <Link
-                      className="p-2 hover:text-white text-center bg-blue-500 py-4 hover:bg-blue-800 text-xs sm:text-base block rounded-lg bg-blue-400 font-medium text-gray-100"
+                      className="p-2 hover:text-white text-center bg-blue-500 py-4 hover:bg-blue-800 text-xs sm:text-base block rounded-lg font-medium text-gray-100"
                       to="/posts"
                     >
                       <RiQuestionAnswerLine className="mb-2 flex justify-center items-center w-full text-lg sm:text-2xl" />
-                      {t("Questions")}
+                      {"Questions"}
                     </Link>
                   </div>
                 </div>
@@ -282,7 +275,7 @@ const HomePage = () => {
                         <Statistic
                           title={
                             <span className="text-gray-500 font-medium text-sm sm:text-lg">
-                              {t(title)}
+                              {title}
                             </span>
                           }
                           className="[&_div]:overflow-hidden [&_div]:text-ellipsis [&_div]:whitespace-nowrap [&_div_span]:block [&_div_span]:overflow-hidden [&_div_span]:text-ellipsis"

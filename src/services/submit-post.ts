@@ -1,5 +1,6 @@
 import axios from "axios";
 import Cookies from "universal-cookie";
+import { apiUrl } from "@/utils/api";
 
 const cookies = new Cookies();
 const submitPost = async (
@@ -19,10 +20,9 @@ const submitPost = async (
     type: "loading",
     duration: 8,
   });
-  const host = window?.location?.hostname;
   axios
     .post(
-      `http://${host}:5000/submit/post`,
+      apiUrl("/submit/post"),
       {
         data,
       },

@@ -1,5 +1,6 @@
 import axios from "axios";
 import Cookies from "universal-cookie";
+import { apiUrl } from "@/utils/api";
 
 const cookies = new Cookies();
 const changeState = async (
@@ -27,11 +28,10 @@ const changeState = async (
     type: "loading",
     duration: 8,
   });
-  const host = window?.location?.hostname;
   setIsLoading(true);
   axios
     .post(
-      `http://${host}:5000/change/${isUser ? "user" : "doctor"}`,
+      apiUrl(`/change/${isUser ? "user" : "doctor"}`),
       {
         data: {
           type,

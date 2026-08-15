@@ -168,7 +168,7 @@ const UserProfile = (_props?: any) => {
               </div>
               <div className="profile--intro ml-5 grow">
                 <div
-                  className="profile--intro---name
+                  className="profile--intro--name
               flex flex-wrap sm:flex-nowrap items-center justify-between"
                 >
                   <Title
@@ -277,7 +277,7 @@ const UserProfile = (_props?: any) => {
                         disabled
                         allowHalf
                       />
-                      <Title className="!inline-block relative -top-2 text-xs text-gray-700">
+                      <Title className="inline-block relative -top-2 text-xs text-gray-700">
                         &nbsp;&nbsp;{profileData?.["doctor"]?.num_rate || 0}{" "}
                         users rate
                       </Title>

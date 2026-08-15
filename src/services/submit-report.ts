@@ -1,5 +1,6 @@
 import axios from "axios";
 import Cookies from "universal-cookie";
+import { apiUrl } from "@/utils/api";
 
 const cookies = new Cookies();
 const submitReport = (issue?: any, reportType?: any, messageApi?: any, fetchUserData?: any, form?: any, ..._args: any[]) => {
@@ -15,9 +16,8 @@ const submitReport = (issue?: any, reportType?: any, messageApi?: any, fetchUser
     content: `submitting your issue...`,
     duration: 8,
   });
-  const host = window?.location?.hostname;
   axios
-    .post(`http://${host}:5000/submit/report`, data, {
+    .post(apiUrl("/submit/report"), data, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${cookies.get("accessToken")}`,

@@ -98,7 +98,7 @@ const ProfileDetails = ({
 my-5 rounded-xl"
       >
         <div className="flex justify-center items-center gap-2 mt-4 mb-4 text-white font-medium text-lg sm:text-xl p-4 bg-blue-600">
-          <BsFillPersonLinesFill /> Personal Informations
+          <BsFillPersonLinesFill /> Personal Information
         </div>
         {profileDetails?.map(({ data, headers, headerColor, propColor }: any, i?: any, ..._args: any[]) => (
           <UserDetails
@@ -134,7 +134,7 @@ my-5 rounded-xl"
                 ...draw,
                 isOpen: true,
                 type: "personal",
-                name: "My Personal Informations",
+                name: "My Personal Information",
               }))
             }
             className="bg-gray-300/50 gap-2 hover:bg-gray-300/80 flex justify-center items-center h-24 text-center cursor-pointer text-gray-500
@@ -144,7 +144,7 @@ my-5 rounded-xl"
             }}
           >
             <FaNotesMedical className="w-7 h-7" />
-            Edit Personal Informations
+            Edit Personal Information
           </div>
         )}
       </div>

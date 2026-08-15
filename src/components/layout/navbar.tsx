@@ -1,23 +1,17 @@
 import { MenuOutlined } from "@ant-design/icons";
-import {
-  Avatar,
-  Button,
-  Menu,
-  Typography,
-} from "antd";
+import { Avatar, Button, Menu, Typography } from "antd";
 import { useEffect, useRef, useState } from "react";
 import { FaEllipsisV } from "react-icons/fa";
 import { useMediaQuery } from "react-responsive";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import clinicLogo from "@/assets/images/clinic.png";
-import LangItem from "@/components/layout/lang-item";
 import items from "@/components/layout/nav-items";
 import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
 
 const { Title } = { ...Typography, ...Menu };
 const Navbar = ({ DoctorRef }: any) => {
-  const { messageApi, lan, t } = useUtilsContext();
+  const { messageApi } = useUtilsContext();
   const { setUserData, userData: user, isLoading } = useUserContext();
   const navigate = useNavigate();
   const isMobile = useMediaQuery({
@@ -119,10 +113,9 @@ const Navbar = ({ DoctorRef }: any) => {
                 isMobile ? "text-gray-100" : "text-blue-100"
               }`}
             >
-              {t("Online Clinic")}
+              {"Online Clinic"}
             </Title>
           </Link>
-          <LangItem isMobile={isMobile} />
           {isMobile ? (
             <Button
               onClick={toggle}
@@ -136,7 +129,7 @@ const Navbar = ({ DoctorRef }: any) => {
           ref={menuElement}
           theme="dark"
           mode={!isMobile ? "inline" : "vertical"}
-          className={`mt-7.5 overflow-hidden max-[678px]:mt-0 max-[678px]:w-full max-[678px]:[&_li:hover]:!bg-[rgb(93,207,148)] ${lan == "ar" ? "ar--nav" : ""} ${
+          className={`mt-7.5 overflow-hidden max-[678px]:mt-0 max-[678px]:w-full max-[678px]:[&_li:hover]:!bg-[rgb(93,207,148)] ${
             isMobile
               ? "sm absolute top-full"
               : "overflow-x-hidden overflow-y-auto"
@@ -152,7 +145,6 @@ const Navbar = ({ DoctorRef }: any) => {
             boxShadow: "inset -1px 0px white",
           }}
           items={items(
-            t,
             navigate,
             location,
             DoctorRef,

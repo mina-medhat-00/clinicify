@@ -13,10 +13,10 @@ import UserVideoComponent from "@/components/meeting/user-video";
 import TitleHeader from "@/components/ui/title-header";
 import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
+import { apiOrigin } from "@/utils/api";
 
-const APPLICATION_SERVER_URL = import.meta.env.PROD
-  ? ""
-  : `http://${window.location.hostname}:5000`;
+const APPLICATION_SERVER_URL = apiOrigin;
+
 const VideoMeeting = ({ nickname, username, session, appointmentId }: any) => {
   const [sessionDetails, setSessionDetails] = useState<any>({
     myNickName: nickname,
@@ -445,7 +445,7 @@ const VideoMeeting = ({ nickname, username, session, appointmentId }: any) => {
               <Button
                 disabled={sessionDetails?.isLoading}
                 className="rounded-lg px-8 p-4 text-white flex justify-center font-medium m-0 
-              items-center bg-blue-500 hover:bg-gray-400 hover:bg-blue-800"
+              items-center bg-blue-500 hover:bg-blue-800"
                 onClick={() => {
                   if (
                     !sessionDetails?.appointmentId ||

@@ -2,6 +2,7 @@ import axios from "axios";
 import { createContext, useContext, useState } from "react";
 import { useUserContext } from "@/contexts/user-context";
 import type { ChatThread } from "@/types";
+import { apiUrl } from "@/utils/api";
 
 const handleQuery = (obj?: any, ..._args: any[]) =>
   !obj
@@ -18,7 +19,6 @@ const ChatContextProvider = ({ children, token }: any) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [chatData, setChatData] = useState<ChatThread[] | null>(null);
-  const host = window?.location?.hostname;
   const fetchChatData = async (
     active?: any,
     directToken?: any,
@@ -33,7 +33,7 @@ const ChatContextProvider = ({ children, token }: any) => {
     }
     try {
       const { data } = await axios.request({
-        url: `http://${host}:5000/get/chat${handleQuery(query)}`,
+        url: apiUrl(`/get/chat${handleQuery(query)}`),
         ...{
           headers: {
             Authorization: `Bearer ${active ? directToken : token}`,

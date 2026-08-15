@@ -1,5 +1,6 @@
 import axios from "axios";
 import Cookies from "universal-cookie";
+import { apiUrl } from "@/utils/api";
 
 const cookies = new Cookies();
 const bookAppointment = (
@@ -28,12 +29,11 @@ const bookAppointment = (
         doctorId: profileId,
       },
     };
-    const host = window?.location?.hostname;
-    axios
+      axios
       .post(
-        `http://${host}:5000/book/appointment${isCheck ? "?check=true" : ""}${
-          pi ? `?pi=${pi?.id}` : ""
-        }`,
+        apiUrl(`/book/appointment${isCheck ? "?check=true" : ""}${
+          pi ? `&pi=${pi?.id}` : ""
+        }`),
         data,
         {
           headers: {

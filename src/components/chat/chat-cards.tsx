@@ -50,7 +50,7 @@ const Cards = ({
         to="/"
         className="bg-gray-700 hover:bg-gray-800 p-2 rounded-lg border"
       >
-        <HomeOutlined className="flex jusyify-center items-center text-4xl text-gray-100" />
+        <HomeOutlined className="flex justify-center items-center text-4xl text-gray-100" />
       </Link>
       <div className="w-0.5 h-full bg-gray-700"></div>
       <div
@@ -170,7 +170,7 @@ const Cards = ({
                       withUser == user_id && "text-gray-100"
                     }`}
                   >
-                    welcome to live chating {i + 1}
+                    welcome to live chatting {i + 1}
                   </span>
                 </div>
               </div>

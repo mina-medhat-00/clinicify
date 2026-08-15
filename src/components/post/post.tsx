@@ -24,6 +24,7 @@ import { useCommentsContext } from "@/contexts/comments-context";
 import { useUserContext } from "@/contexts/user-context";
 import submitComment from "@/services/submit-comment";
 import submitLike from "@/services/submit-like";
+import { apiUrl } from "@/utils/api";
 
 const getLike = async (
   setIsLike?: any,
@@ -31,11 +32,10 @@ const getLike = async (
   commentId?: any,
   ..._args: any[]
 ) => {
-  const host = window.location.hostname;
   const { data } = await axios(
-    `http://${host}:5000/get/like?postId=${postId}${
+    apiUrl(`/get/like?postId=${postId}${
       commentId ? `&commentId=${commentId}` : ""
-    }`,
+    }`),
     {
       headers: {
         "Content-Type": "application/json",
@@ -692,7 +692,7 @@ const Post = ({
   }, [showPost]);
   useEffect(() => {
     if (postId) {
-      const recieve_comment = (data?: any, ..._args: any[]) => {
+      const receive_comment = (data?: any, ..._args: any[]) => {
         const isUpdate = data?.updateEmoji;
         if (isUpdate) {
           const { comment_id, like_emoji, dislike, angry } = data;
@@ -731,8 +731,8 @@ const Post = ({
           }
         }
       };
-      socket.on(`recieve_comment_${postId}`, recieve_comment);
-      return () => socket.off(`recieve_comment_${postId}`, recieve_comment);
+      socket.on(`receive_comment_${postId}`, receive_comment);
+      return () => socket.off(`receive_comment_${postId}`, receive_comment);
     }
   }, [commentsData]);
   return (

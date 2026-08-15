@@ -67,7 +67,8 @@ const ChatAvailability = ({
           setRemainingTime("Right Now !!");
         }
         temp_app = temp_app?.filter(
-          ({ appointment_id }: any) => appointment_id != nearestTime?.appointment_id,
+          ({ appointment_id }: any) =>
+            appointment_id != nearestTime?.appointment_id,
         );
       }
     }
@@ -78,7 +79,7 @@ const ChatAvailability = ({
       {appointmentData?.length && remainingTime ? (
         <div className="flex flex-wrap justify-evenly gap-1">
           <div className="text-lg text-gray-300  font-bold">
-            Chating with Your Doctor opens at
+            Chatting with Your Doctor opens at
           </div>
           <span className="text-lg font-bold">{remainingTime}</span>
         </div>

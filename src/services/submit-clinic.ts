@@ -1,5 +1,6 @@
 import axios from "axios";
 import Cookies from "universal-cookie";
+import { apiUrl } from "@/utils/api";
 
 const cookies = new Cookies();
 const submitClinic = async (
@@ -13,14 +14,13 @@ const submitClinic = async (
   const data = { ...values, isEdit };
   messageApi.open({
     key: 1,
-    content: "submitting Clinic informations ...",
+    content: "submitting Clinic information ...",
     type: "loading",
     duration: 8,
   });
-  const host = window?.location?.hostname;
   axios
     .post(
-      `http://${host}:5000/submit/clinic`,
+      apiUrl("/submit/clinic"),
       {
         data,
       },
@@ -34,7 +34,7 @@ const submitClinic = async (
     .then(() => {
       messageApi.open({
         key: 1,
-        content: "clinic informations updated",
+        content: "clinic information updated",
         type: "success",
         duration: 2,
       });
@@ -49,7 +49,7 @@ const submitClinic = async (
       } else
         messageApi.open({
           key: 1,
-          content: "there's some issues cannot submit your informations now",
+          content: "there's some issues cannot submit your information now",
           type: "error",
           duration: 2,
         });

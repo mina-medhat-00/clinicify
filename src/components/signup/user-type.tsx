@@ -1,13 +1,7 @@
-import {
-  Form,
-  Input,
-  InputNumber,
-  Select,
-  Switch,
-} from "antd";
+import { Form, Input, InputNumber, Select, Switch } from "antd";
 import { useState } from "react";
 import HeaderLine from "@/components/ui/header-line";
-import { DoctorOptions } from "@/utils/sign-data";
+import { doctorSpecialtyOptions } from "@/utils/sign-data";
 
 const { Item } = Form;
 const UserType = ({ userType, setFormValues }: any) => {
@@ -34,12 +28,12 @@ const UserType = ({ userType, setFormValues }: any) => {
               <HeaderLine value="Introducing Your Self" />
               <div className="flex gap-1 flex-wrap justify-between">
                 <div className="grow">
-                  <Item name="chospital">
-                    <Input className="w-full" placeholder="Current hosbital" />
+                  <Item name="currentHospital">
+                    <Input className="w-full" placeholder="Current hospital" />
                   </Item>
                 </div>
                 <div className="grow">
-                  <Item name="gyear">
+                  <Item name="graduationYear">
                     <InputNumber
                       min={1960}
                       max={2023}
@@ -49,13 +43,23 @@ const UserType = ({ userType, setFormValues }: any) => {
                   </Item>
                 </div>
                 <div className="grow">
-                  <Item name="eyears">
+                  <Item name="experienceYears">
                     <InputNumber
                       min={0}
                       max={50}
                       className="w-full"
-                      placeholder="experinces years"
+                      placeholder="Experience years"
                     />
+                  </Item>
+                </div>
+                <div className="grow">
+                  <Item name="fees">
+                    <InputNumber
+                      className="w-full"
+                      placeholder="Fees"
+                      min={1000}
+                      max={500000}
+                    ></InputNumber>
                   </Item>
                 </div>
                 <div className="grow">
@@ -63,16 +67,6 @@ const UserType = ({ userType, setFormValues }: any) => {
                     <InputNumber
                       className="w-full"
                       placeholder="Salary"
-                      min={1000}
-                      max={500000}
-                    ></InputNumber>
-                  </Item>
-                </div>
-                <div className="grow">
-                  <Item name="fees">
-                    <InputNumber
-                      className="w-full"
-                      placeholder="fees"
                       min={10}
                       max={50000}
                     ></InputNumber>
@@ -81,14 +75,14 @@ const UserType = ({ userType, setFormValues }: any) => {
               </div>
               <Item name="about">
                 <Input.TextArea
-                  placeholder="breifly, information about your self"
+                  placeholder="briefly, information about yourself"
                   showCount
                   maxLength={200}
                 />
               </Item>
               <Item name="achievement">
                 <Input.TextArea
-                  placeholder="your experinces and certifcates"
+                  placeholder="your experiences and certificates"
                   showCount
                   maxLength={200}
                 />
@@ -109,7 +103,12 @@ const UserType = ({ userType, setFormValues }: any) => {
             },
           ]}
         >
-          <Select placeholder="Your specialty">{DoctorOptions}</Select>
+          <Select
+            placeholder="Your specialty"
+            showSearch
+            optionFilterProp="label"
+            options={doctorSpecialtyOptions}
+          />
         </Item>
       </>
     </>

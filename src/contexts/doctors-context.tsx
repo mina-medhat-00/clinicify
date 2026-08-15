@@ -1,13 +1,13 @@
 import axios from "axios";
 import { createContext, useContext, useLayoutEffect, useState } from "react";
 import type { User } from "@/types";
+import { apiUrl } from "@/utils/api";
 
 const DoctorsData = createContext<any>(null);
 const DoctorsContextProvider = ({ children, query, noFirstRender }: any) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [doctorsData, setDoctorsData] = useState<User[] | null>(null);
-  const host = window?.location?.hostname;
   const fetchDoctorsData = async (
     setQuery?: any,
     noWaiting?: any,
@@ -17,7 +17,7 @@ const DoctorsContextProvider = ({ children, query, noFirstRender }: any) => {
     if (!noWaiting) setIsLoading(true);
     try {
       const { data } = await axios.request({
-        url: `http://${host}:5000/doctors${
+        url: apiUrl(`/doctors${
           activeQuery
             ? `?${activeQuery.total ? `total=${activeQuery.total}&` : ""}${
                 activeQuery.limit ? `limit=${activeQuery.limit}&` : ""
@@ -29,7 +29,7 @@ const DoctorsContextProvider = ({ children, query, noFirstRender }: any) => {
                 activeQuery.location ? `location=${activeQuery.location}&` : ""
               }`
             : ""
-        }`,
+        }`),
         ...{ timeout: 10000 },
       });
       setDoctorsData(data?.data);

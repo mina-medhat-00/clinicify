@@ -3,6 +3,7 @@ import { createContext, useContext, useLayoutEffect, useState } from "react";
 import Cookies from "universal-cookie";
 import { useUserContext } from "@/contexts/user-context";
 import type { Report } from "@/types";
+import { apiUrl } from "@/utils/api";
 
 const ReportData = createContext<any>(null);
 const ReportContextProvider = ({ children, reportFrom }: any) => {
@@ -10,7 +11,6 @@ const ReportContextProvider = ({ children, reportFrom }: any) => {
   const [reportData, setReportData] = useState<Report[] | null>(null);
   const [isError, setIsError] = useState(false);
   const { fetchUserData } = useUserContext();
-  const host = window?.location?.hostname;
   const fetchReportData = async (
     directToken?: any,
     notWaiting?: any,
@@ -20,9 +20,9 @@ const ReportContextProvider = ({ children, reportFrom }: any) => {
     setIsError(false);
     try {
       const { data } = await axios.request({
-        url: `http://${host}:5000/get/${
+        url: apiUrl(`/get/${
           reportFrom ? `details/report?reportFrom=${reportFrom}` : "reports"
-        }`,
+        }`),
         ...{
           headers: {
             Authorization: `Bearer ${directToken}`,

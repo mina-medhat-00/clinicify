@@ -5,7 +5,7 @@ import { SiOpenstreetmap } from "react-icons/si";
 import { useProfileContext } from "@/contexts/profile-context";
 import { useUserContext } from "@/contexts/user-context";
 import submitClinic from "@/services/submit-clinic";
-import { cityOption } from "@/utils/sign-data";
+import { cityOptions } from "@/utils/sign-data";
 import { prefixSelector } from "@/utils/signup-utils";
 
 const { Item } = Form;
@@ -52,9 +52,12 @@ const ClinicRegister = () => {
                       ]}
                       className="m-0 p-0"
                     >
-                      <Select placeholder="Select Clinic Location" showSearch>
-                        {cityOption}
-                      </Select>
+                      <Select
+                        placeholder="Select Clinic Location"
+                        showSearch
+                        optionFilterProp="label"
+                        options={cityOptions}
+                      />
                     </Item>
                   </div>
                 </div>
@@ -72,7 +75,7 @@ const ClinicRegister = () => {
                         message: "Street is required",
                       },
                     ]}
-                    className="!grow"
+                    className="grow"
                   >
                     <Input placeholder="Clinic street" />
                   </Item>

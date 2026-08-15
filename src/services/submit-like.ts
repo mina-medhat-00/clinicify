@@ -1,5 +1,6 @@
 import axios from "axios";
 import Cookies from "universal-cookie";
+import { apiUrl } from "@/utils/api";
 
 const cookies = new Cookies();
 const submitLike = async (
@@ -19,10 +20,9 @@ const submitLike = async (
   setComments?: any,
 ) => {
   const data = { postId, commentId: commentId || null, likeType, isPost };
-  const host = window?.location?.hostname;
   axios
     .post(
-      `http://${host}:5000/submit/like`,
+      apiUrl("/submit/like"),
       {
         data,
       },

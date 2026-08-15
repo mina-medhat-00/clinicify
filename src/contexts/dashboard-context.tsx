@@ -6,13 +6,13 @@ import {
   useState,
 } from "react";
 import { useUserContext } from "@/contexts/user-context";
+import { apiUrl } from "@/utils/api";
 
 const DashboardData = createContext<any>(null);
 const DashboardContextProvider = ({ children, token }: any) => {
   const { fetchUserData } = useUserContext();
   const [isLoading, setIsLoading] = useState(true);
   const [dashboardData, setDashboardData] = useState({});
-  const host = window?.location?.hostname;
   const fetchDashboardData = async (active?: any, directToken?: any, ..._args: any[]) => {
     setIsLoading(true);
     if (!token && !active) {
@@ -20,7 +20,7 @@ const DashboardContextProvider = ({ children, token }: any) => {
       return setIsLoading(false);
     }
     try {
-      const { data } = await axios.request({ url: `http://${host}:5000/dashboard`, ...{
+      const { data } = await axios.request({ url: apiUrl("/dashboard"), ...{
         headers: { Authorization: `Bearer ${active ? directToken : token}` },
         timeout: 10000,
       } });

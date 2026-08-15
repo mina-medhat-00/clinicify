@@ -1,7 +1,7 @@
 import { Button, Form, Input, Select, Space } from "antd";
 import ProfileTable from "@/components/profile/profile-table";
 import submitClinic from "@/services/submit-clinic";
-import { cityOption } from "@/utils/sign-data";
+import { cityOptions } from "@/utils/sign-data";
 import { prefixSelector } from "@/utils/signup-utils";
 
 const { Item } = Form;
@@ -93,9 +93,9 @@ const ClinicForm = ({
                           className="w-full"
                           placeholder="Select city"
                           showSearch
-                        >
-                          {cityOption}
-                        </Select>
+                          optionFilterProp="label"
+                          options={cityOptions}
+                        />
                       </Item>
                     ),
                   },

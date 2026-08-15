@@ -41,7 +41,7 @@ const OnlineMeeting = () => {
   ) : (
     <div className="w-1/2 text-center m-auto text-white font-medium p-2 bg-blue-500/80 rounded-md">
       <div className="bg-red-500/80 rounded text-lg py-8 shadow">
-        Please, Fill All Required Informations
+        Please fill all required information
       </div>
       <div className="flex gap-2 items-center justify-center mt-8">
         <Link

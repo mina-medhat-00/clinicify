@@ -8,7 +8,7 @@ import {
   useState,
 } from "react";
 import HeaderLine from "@/components/ui/header-line";
-import { DoctorOptions } from "@/utils/sign-data";
+import { doctorSpecialtyOptions } from "@/utils/sign-data";
 
 const opt = (val?: any, ..._args: any[]) =>
   val == "null" || !val ? null : val;
@@ -90,10 +90,13 @@ const SearchFilter = forwardRef(
                 value={!searchFilter.specialty ? null : searchFilter.specialty}
                 placeholder="choose specialty"
                 className="w-full"
-              >
-                <Select.Option value="">All Doctors</Select.Option>
-                {DoctorOptions}
-              </Select>
+                showSearch
+                optionFilterProp="label"
+                options={[
+                  { value: "", label: "All Doctors" },
+                  ...doctorSpecialtyOptions,
+                ]}
+              />
             </div>
             <div className="grow w-full sm:w-1/3">
               <HeaderLine

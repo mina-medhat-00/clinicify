@@ -7,6 +7,7 @@ import Loader from "@/components/ui/loader";
 import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
 import getStripe from "@/utils/get-stripe";
+import { apiUrl } from "@/utils/api";
 
 const stripePromise = getStripe();
 const AppointmentPayment = ({
@@ -20,12 +21,11 @@ const AppointmentPayment = ({
   const { messageApi } = useUtilsContext();
   const { fetchUserData } = useUserContext();
   useEffect(() => {
-    const host = window?.location?.hostname;
-    // Create PaymentIntent as soon as the page loads
+      // Create PaymentIntent as soon as the page loads
     if (bookedAppointment?.appointmentId && doctorId) {
       axios
         .request({
-          url: `http://${host}:5000/create/payment`,
+          url: apiUrl("/create/payment"),
           ...{
             method: "POST",
             headers: {

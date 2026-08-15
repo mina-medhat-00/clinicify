@@ -1,5 +1,6 @@
 import axios from "axios";
 import Cookies from "universal-cookie";
+import { apiUrl } from "@/utils/api";
 
 const cookies = new Cookies();
 const submitMedical = async (
@@ -16,14 +17,13 @@ const submitMedical = async (
   };
   messageApi.open({
     key: 1,
-    content: "submitting your informations ...",
+    content: "submitting your information ...",
     type: "loading",
     duration: 8,
   });
-  const host = window?.location?.hostname;
   axios
     .post(
-      `http://${host}:5000/submit/medical`,
+      apiUrl("/submit/medical"),
       {
         data,
       },

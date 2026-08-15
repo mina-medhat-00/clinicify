@@ -116,7 +116,7 @@ const AppointmentDetails = ({
       </div>
       <div className="w-fit mb-2">
         <span className="font-medium text-gray-500 xl:text-lg">Time Slot</span>
-        <hr className="border-gray-500 border-gray-500 w-fill border-2" />
+        <hr className="border-gray-500 w-fill border-2" />
       </div>
       <div className="flex flex-wrap mb-2 justify-center">
         <CountdownTimer
@@ -135,7 +135,7 @@ const AppointmentDetails = ({
           appointmentDetails={appointmentDetails}
           setAppointmentDetails={setAppointmentDetails}
         />
-        <div className="flex flex-wrap gap-2 border-y w-full mt-1 border-gray-300 justify-center items-center w-full gap-2">
+        <div className="flex flex-wrap border-y mt-1 border-gray-300 justify-center items-center w-full gap-2">
           <div className="w-full sm:w-1/3 items-center justify-center grow gap-2">
             <div className="w-fit">
               <span className="font-medium text-gray-500 xl:text-lg">
@@ -196,7 +196,7 @@ const AppointmentDetails = ({
               ></Select>
             </div>
           </div>
-          <div className="w-full w-1/3 items-center justify-center grow gap-2">
+          <div className="w-full items-center justify-center grow gap-2">
             <div className="w-fit">
               <span className="font-medium text-gray-500 xl:text-lg">
                 Appointment Fees
@@ -425,7 +425,7 @@ const AppointmentForm = ({
               </span>
             ) : !isUpToDate ? (
               <span className="text-white font-medium">
-                choose recently date please
+                please choose a recent date
               </span>
             ) : !isAdjusted ? (
               <span className="text-white font-medium">
@@ -464,7 +464,7 @@ const AppointmentForm = ({
             type="primary"
             className={`m-auto mt-2 w-full sm:w-fit font-medium h-10 grow block ${
               !isDone
-                ? "bg-gray-50/50 text-gray-500 border-gray-400 !cursor-not-allowed"
+                ? "bg-gray-50/50 text-gray-500 border-gray-400"
                 : "hover:bg-blue-700 bg-blue-400"
             } rounded-lg`}
           >

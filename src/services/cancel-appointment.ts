@@ -1,5 +1,6 @@
 import axios from "axios";
 import Cookies from "universal-cookie";
+import { apiUrl } from "@/utils/api";
 
 const cookies = new Cookies();
 const cancelAppointment = (
@@ -31,9 +32,8 @@ const cancelAppointment = (
     content: "cancel your appointment...",
     duration: 8,
   });
-  const host = window?.location?.hostname;
   axios
-    .post(`http://${host}:5000/cancel/appointment`, data, {
+    .post(apiUrl("/cancel/appointment"), data, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${cookies.get("accessToken")}`,
@@ -72,7 +72,7 @@ const cancelAppointment = (
         messageApi.open({
           key: 1,
           type: "error",
-          content: "it's already canceled or there's missing informations",
+          content: "it's already canceled or there's missing information",
           duration: 3,
         });
       } else {

@@ -196,7 +196,7 @@ const ScheduleAppointments = ({
           className="mt-2"
           description={
             <span className="font-medium text-black">
-              choose recently date (uptodate)
+              choose a recent date (up to date)
             </span>
           }
         />

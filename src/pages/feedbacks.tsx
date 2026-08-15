@@ -37,8 +37,8 @@ const Feedbacks = ({ home, noDirectFetch, username, fetchFeedback }: any) => {
     "roboto mono,-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'";
   const bodyHandler = async (order?: any, ..._args: any[]) => {
     const bodyElement = document.getElementById(`feedback--body--${order + 1}`);
-    const pragraphElement = document.getElementById(
-      `feedback--pragraph--${order + 1}`,
+    const paragraphElement = document.getElementById(
+      `feedback--paragraph--${order + 1}`,
     );
     bodyElement.style.overflow = "hidden";
     setTimeout(() => (bodyElement.style.overflow = "auto"), 400);
@@ -46,7 +46,7 @@ const Feedbacks = ({ home, noDirectFetch, username, fetchFeedback }: any) => {
       bodyElement.style.height = "0px";
       bodyElement.style.padding = "0px";
     } else {
-      bodyElement.style.height = `${pragraphElement.offsetHeight}px`;
+      bodyElement.style.height = `${paragraphElement.offsetHeight}px`;
       bodyElement.style.padding = "10px";
     }
   };

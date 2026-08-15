@@ -1,10 +1,8 @@
 import { Space, Typography } from "antd";
-import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
 const { Title } = Typography;
 const Footer = ({ isMobile }: any) => {
-  const { t } = useTranslation();
   return (
     <div
       className={`footer border ${
@@ -13,20 +11,20 @@ const Footer = ({ isMobile }: any) => {
       style={{ backgroundColor: "rgb(8, 14, 20)" }}
     >
       <Title level={4} className="text-white">
-        {t("Online Clinic")} &reg;
+        {"Online Clinic"} &reg;
       </Title>
       <Space wrap={true} className="justify-center">
         <Link to="/" className="font-medium text-white underline">
-          {t("Home")}
+          {"Home"}
         </Link>
         <Link to="/ratings" className="font-medium text-white underline">
-          {t("Ratings")}
+          {"Ratings"}
         </Link>
         <Link to="/feedbacks" className="font-medium text-white underline">
-          {t("Feedbacks")}
+          {"Feedbacks"}
         </Link>
         <Link to="/doctors" className="font-medium text-white underline">
-          {t("Doctors")}
+          {"Doctors"}
         </Link>
       </Space>
     </div>

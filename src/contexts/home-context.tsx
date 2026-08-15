@@ -5,16 +5,16 @@ import {
   useLayoutEffect,
   useState,
 } from "react";
+import { apiUrl } from "@/utils/api";
 
 const HomeData = createContext<any>(null);
 const HomeContextProvider = ({ children }: any) => {
   const [isLoading, setIsLoading] = useState(true);
   const [homeData, setHomeData] = useState({});
-  const host = window?.location?.hostname;
   const fetchHomeData = async () => {
     setIsLoading(true);
     try {
-      const { data } = await axios.request({ url: `http://${host}:5000/general/statistics`, ...{
+      const { data } = await axios.request({ url: apiUrl("/general/statistics"), ...{
           timeout: 10000,
         } });
       setHomeData(data?.data);

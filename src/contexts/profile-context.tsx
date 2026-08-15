@@ -1,13 +1,13 @@
 import axios from "axios";
 import { createContext, useContext, useState } from "react";
 import type { ProfileData } from "@/types";
+import { apiUrl } from "@/utils/api";
 
 const ProfileData = createContext<any>(null);
 const ProfileContextProvider = ({ children }: any) => {
   const [isLoading, setIsLoading] = useState(true);
   const [profileData, setProfileData] = useState<ProfileData>({});
   const [isError, setIsError] = useState(false);
-  const host = window?.location?.hostname;
   const fetchProfileData = async (
     { path, username }: any,
     notWaiting?: any,
@@ -17,7 +17,7 @@ const ProfileContextProvider = ({ children }: any) => {
     setIsError(false);
     try {
       const { data } = await axios.request({
-        url: `http://${host}:5000/${path}/${username}`,
+        url: apiUrl(`/${path}/${username}`),
         ...{ timeout: 8000 },
       });
       setProfileData(data?.data);

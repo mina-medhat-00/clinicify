@@ -1,6 +1,5 @@
 import { Alert, Button, Empty, Image, Input, message, Upload } from "antd";
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { BiImageAdd } from "react-icons/bi";
 import { RiQuestionAnswerFill } from "react-icons/ri";
 import PostWrapper from "@/components/post/post-wrapper";
@@ -37,7 +36,6 @@ const beforeUpload = (file?: any, ..._args: any[]) => {
   return isImg && isLt2M;
 };
 const Posts = ({ home }: any) => {
-  const { t } = useTranslation();
   const { socket, isMobile } = useUtilsContext();
   const {
     fetchUserData,
@@ -78,9 +76,9 @@ const Posts = ({ home }: any) => {
             : [data, ...p],
         );
     };
-    socket?.on(`recieve_post`, addPost);
+    socket?.on(`receive_post`, addPost);
     return () => {
-      socket?.off("recieve_post", addPost);
+      socket?.off("receive_post", addPost);
     };
   }, []);
 
@@ -138,9 +136,9 @@ const Posts = ({ home }: any) => {
         <div className="flex p-1 justify-center">
           <div className="border border-gray-150 shadow-md w-full p-4 bg-gray-300/30 rounded-lg sm:w-3/4 xl:w-1/2">
             <Input.TextArea
-              placeholder={t(
-                "Ask for any question, state your condition or medical issue",
-              )}
+              placeholder={
+                "Ask for any question, state your condition or medical issue"
+              }
               className="rounded-lg border scroll--v border-gray-400"
               value={content}
               rows={6}
@@ -212,11 +210,11 @@ const Posts = ({ home }: any) => {
             py-4 bg-blue-700/80 hover:bg-blue-700
             "
               >
-                {t("Post")}
+                {"Post"}
               </Button>
               {(!userid || !content) && showWarn && (
                 <Alert
-                  className="bg-red-500 rounded-md !top-full !absolute w-full"
+                  className="bg-red-500 rounded-md top-full absolute w-full"
                   closable={{
                     closeIcon: <span className="text-white text-base">X</span>,
                     onClose: () => setShowWarn(false),
@@ -282,7 +280,7 @@ const Posts = ({ home }: any) => {
                     : "text-gray-500"
                 }`}
               >
-                {t("there's no posts")}
+                {"There are no posts"}
               </span>
             }
           />

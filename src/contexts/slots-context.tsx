@@ -1,6 +1,7 @@
 import axios from "axios";
 import { createContext, useContext, useState } from "react";
 import type { SlotsData } from "@/types";
+import { apiUrl } from "@/utils/api";
 
 const SlotsData = createContext<any>(null);
 const SlotsContextProvider = ({ children }: any) => {
@@ -11,7 +12,6 @@ const SlotsContextProvider = ({ children }: any) => {
     totalSlots: null,
     freeSlots: null,
   });
-  const host = window?.location?.hostname;
   const fetchSlotsData = async (
     postData?: any,
     noLoading?: any,
@@ -20,7 +20,7 @@ const SlotsContextProvider = ({ children }: any) => {
     if (!noLoading) setIsLoading(true);
     try {
       const { data } = await axios.post(
-        `http://${host}:5000/get/slots`,
+        apiUrl("/get/slots"),
         {
           data: postData,
         },

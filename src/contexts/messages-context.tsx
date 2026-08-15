@@ -2,6 +2,7 @@ import axios from "axios";
 import { createContext, useContext, useState } from "react";
 import Cookies from "universal-cookie";
 import type { ChatMessage } from "@/types";
+import { apiUrl } from "@/utils/api";
 
 const handleQuery = (obj?: any, ..._args: any[]) =>
   !obj
@@ -18,7 +19,6 @@ const MessagesContextProvider = ({ children, fetchUserData }: any) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [messagesData, setMessagesData] = useState<ChatMessage[] | null>(null);
-  const host = window?.location?.hostname;
   const fetchMessagesData = async (
     token?: any,
     query?: any,
@@ -28,7 +28,7 @@ const MessagesContextProvider = ({ children, fetchUserData }: any) => {
     if (!noRender) setIsLoading(true);
     try {
       const { data } = await axios.request({
-        url: `http://${host}:5000/get/messages${handleQuery(query)}`,
+        url: apiUrl(`/get/messages${handleQuery(query)}`),
         ...{
           timeout: 10000,
           headers: {

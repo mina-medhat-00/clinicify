@@ -1,19 +1,19 @@
 import axios from "axios";
 import { createContext, useContext, useLayoutEffect, useState } from "react";
 import type { User } from "@/types";
+import { apiUrl } from "@/utils/api";
 
 const UsersData = createContext<any>(null);
 const UsersContextProvider = ({ children }: any) => {
   const [isLoading, setIsLoading] = useState(true);
   const [usersData, setUsersData] = useState<User[] | null>(null);
   const [isError, setIsError] = useState(false);
-  const host = window?.location?.hostname;
   const fetchUsersData = async (notWaiting?: any, ..._args: any[]) => {
     if (!notWaiting) setIsLoading(true);
     setIsError(false);
     try {
       const { data } = await axios.request({
-        url: `http://${host}:5000/users`,
+        url: apiUrl("/users"),
         ...{
           timeout: 8000,
         },

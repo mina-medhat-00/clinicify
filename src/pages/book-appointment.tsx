@@ -219,7 +219,7 @@ function BookAppointment({ userid, doctorId, socket, timeZone }: any) {
                           setIsPayment("payment_processing");
                         } else {
                           messageApi?.open({
-                            content: "choose recently date",
+                            content: "choose a recent date",
                             duration: 3,
                             type: "warning",
                           });
@@ -287,7 +287,7 @@ function BookAppointment({ userid, doctorId, socket, timeZone }: any) {
             className="mt-3"
             description={
               <span className="font-medium text-gray-400">
-                choose recent date
+                choose a recent date
               </span>
             }
           />
