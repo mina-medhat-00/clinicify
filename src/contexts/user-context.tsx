@@ -1,8 +1,9 @@
 import { message } from "antd";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
-import { createContext, useState, useContext, useLayoutEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import type { AuthTokenPayload, User } from "@/types";
+import { createContext, useContext, useLayoutEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
 
 const UserData = createContext<any>(null);
@@ -12,7 +13,7 @@ const UserContextProvider = ({ children, token }: any) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [messageApi, contextHolder] = message.useMessage();
-  const [userData, setUserData] = useState(null);
+  const [userData, setUserData] = useState<User | null>(null);
   const [isError, setIsError] = useState(false);
   const host = window?.location?.hostname;
   const fetchUserData = async (
@@ -86,7 +87,7 @@ const UserContextProvider = ({ children, token }: any) => {
     let timeId;
     const handleExpired = async () => {
       try {
-        const record = jwtDecode(accessToken);
+        const record = jwtDecode<AuthTokenPayload>(accessToken);
         timeId = setTimeout(
           () => {
             fetchUserData(true, new Cookies().get("accessToken"), null, true);

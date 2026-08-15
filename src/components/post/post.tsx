@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
 import {
   ClockCircleFilled,
   LoadingOutlined,
   MessageFilled,
 } from "@ant-design/icons";
+import { Alert, Avatar, Button, Image, Input } from "antd";
+import axios from "axios";
+import { useEffect, useState } from "react";
 import { AiFillDislike, AiFillLike } from "react-icons/ai";
 import {
   BsEmojiAngryFill,
@@ -12,18 +14,17 @@ import {
   BsFillArrowDownCircleFill,
   BsFillArrowUpCircleFill,
 } from "react-icons/bs";
-import { Alert, Avatar, Button, Image, Input } from "antd";
 import { MdReply } from "react-icons/md";
 import { RiChatDeleteLine } from "react-icons/ri";
 import { Link } from "react-router-dom";
-import submitComment from "@/services/submit-comment";
-import { useCommentsContext } from "@/contexts/comments-context";
-import { useUserContext } from "@/contexts/user-context";
-import submitLike from "@/services/submit-like";
-import axios from "axios";
 import Cookies from "universal-cookie";
 import doctorPhoto from "@/assets/images/doctor-photo.png";
 import userPhoto from "@/assets/images/user-photo.png";
+import { useCommentsContext } from "@/contexts/comments-context";
+import { useUserContext } from "@/contexts/user-context";
+import submitComment from "@/services/submit-comment";
+import submitLike from "@/services/submit-like";
+
 const getLike = async (
   setIsLike?: any,
   postId?: any,
@@ -107,8 +108,8 @@ const CommentActions = ({
   items-center p-0.5
   ${
     activeEmoji == "like"
-      ? "!fill-white bg-blue-800 shadow-md"
-      : "!fill-blue-400/80  hover:!fill-blue-700/80 hover:shadow-lg"
+      ? "fill-white bg-blue-800 shadow-md"
+      : "fill-blue-400/80  hover:fill-blue-700/80 hover:shadow-lg"
   } text-2xl`}
         />
       ),
@@ -151,8 +152,8 @@ const CommentActions = ({
     items-center p-0.5
   ${
     activeEmoji == "dislike"
-      ? "!fill-white bg-yellow-600 shadow-md"
-      : "!fill-yellow-400/80 hover:!fill-yellow-700/80 hover:shadow-lg"
+      ? "fill-white bg-yellow-600 shadow-md"
+      : "fill-yellow-400/80 hover:fill-yellow-700/80 hover:shadow-lg"
   }  text-2xl`}
         />
       ),
@@ -193,8 +194,8 @@ const CommentActions = ({
   items-center p-0.5
   ${
     activeEmoji == "angry"
-      ? "!fill-red-100 bg-red-600 shadow-md"
-      : "!fill-red-400/80 hover:shadow-lg hover:!fill-red-700/80"
+      ? "fill-red-100 bg-red-600 shadow-md"
+      : "fill-red-400/80 hover:shadow-lg hover:fill-red-700/80"
   }  text-2xl`}
         />
       ),
@@ -204,15 +205,12 @@ const CommentActions = ({
     <>
       <div className="p-2">
         <div className="flex flex-wrap gap-1 justify-between items-center">
-          {/* <LinkOutlined className="flex items-center text-blue-500 text-xl" /> */}
           <div className="flex gap-2 flex-wrap items-center">
             <div className="flex flex-wrap gap-2 items-center bg-white p-2 rounded-lg shadow-sm">
               {emojiData?.map(({ type, icon, total, color }: any) => (
                 <div key={type}>
                   {icon}
-                  <span
-                    className={`text-${color}-400 //absolute //bg-${color}-400 rounded-md p-1 z-20`}
-                  >
+                  <span className={`text-${color}-400 rounded-md p-1 z-20`}>
                     {total}
                   </span>
                 </div>
@@ -308,7 +306,7 @@ const Reply = ({
       ${makeComment == commentId || makeComment == postId ? "z-20" : ""}
         ${
           isComment ? "pl-5 sm:pl-10 bg-gray-700" : "pl-5 sm:pl-10 bg-white"
-        } mr-1 sticky rounded-lg relative`}
+        } mr-1 rounded-lg relative`}
     >
       <div
         className={`p-2 flex justify-between ${
@@ -386,23 +384,13 @@ const Reply = ({
             )}
           </div>
         </div>
-        {/* {emojiOpen && (
-          <EmojiPicker
-            searchDisabled
-            previewConfig={{
-              showPreview: false,
-            }}
-            width={"100%"}
-            height={"190px"}
-            onEmojiClick={(data) => setContent((m) => (m || "") + data?.emoji)}
-          />
-        )} */}
         {(!userid || !content) && showWarn && (
           <Alert
             className="bg-red-400 mt-2"
-            closeText={<span className="text-white text-base">X</span>}
-            closable
-            onClose={() => setShowWarn(false)}
+            closable={{
+              closeIcon: <span className="text-white text-base">X</span>,
+              onClose: () => setShowWarn(false),
+            }}
             description={
               <span className="text-white font-medium">
                 {!userid
@@ -567,11 +555,6 @@ const PostTemplate = ({
           {nickname || "Message 1"}
         </Link>
         <div className="flex justify-left items-center gap-2">
-          {/* <TfiTime
-          className={`flex hover:shadow-lg cursor-pointer 
-                  rounded-full hover:bg-gray-900 items-center 
-                  ${isComment ? "text-gray-700" : "text-gray-100"} text-sm`}
-        /> */}
           <span className="text-xs text-gray-300">
             {new Date(issuedTime).toLocaleString()}
           </span>
@@ -755,7 +738,6 @@ const Post = ({
   return (
     <div className="p-2 grow w-full rounded-lg bg-gray-700">
       <div className="flex relative flex-col">
-        {/*============================ Comment ===================================*/}
         <PostTemplate
           setPosts={setPosts}
           setShowPost={setShowPost}
@@ -844,8 +826,6 @@ const Post = ({
             ),
           )}
         </div>
-
-        {/*===================================================================== */}
       </div>
     </div>
   );

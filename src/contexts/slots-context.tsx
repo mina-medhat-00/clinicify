@@ -1,17 +1,22 @@
 import axios from "axios";
-import { createContext, useState, useContext } from "react";
+import { createContext, useContext, useState } from "react";
+import type { SlotsData } from "@/types";
 
 const SlotsData = createContext<any>(null);
 const SlotsContextProvider = ({ children }: any) => {
   const [isLoading, setIsLoading] = useState(true);
   const [tokenExpired] = useState(false);
-  const [slotsData, setSlotsData] = useState({
+  const [slotsData, setSlotsData] = useState<SlotsData>({
     bookedSlots: null,
     totalSlots: null,
     freeSlots: null,
   });
   const host = window?.location?.hostname;
-  const fetchSlotsData = async (postData?: any, noLoading?: any, ..._args: any[]) => {
+  const fetchSlotsData = async (
+    postData?: any,
+    noLoading?: any,
+    ..._args: any[]
+  ) => {
     if (!noLoading) setIsLoading(true);
     try {
       const { data } = await axios.post(

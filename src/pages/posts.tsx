@@ -1,19 +1,20 @@
 import { Alert, Button, Empty, Image, Input, message, Upload } from "antd";
 import { useEffect, useState } from "react";
-import submitPost from "@/services/submit-post";
+import { useTranslation } from "react-i18next";
+import { BiImageAdd } from "react-icons/bi";
+import { RiQuestionAnswerFill } from "react-icons/ri";
+import PostWrapper from "@/components/post/post-wrapper";
+import Loader from "@/components/ui/loader";
+import ServerError from "@/components/ui/server-error";
+import TableGrid from "@/components/ui/table-grid";
+import TitleHeader from "@/components/ui/title-header";
+import TransitionContent from "@/components/ui/transition-content";
+import { CommentsContextProvider } from "@/contexts";
 import { usePostsContext } from "@/contexts/posts-context";
 import { useUserContext } from "@/contexts/user-context";
-import { CommentsContextProvider } from "@/contexts";
-import { BiImageAdd } from "react-icons/bi";
-import TitleHeader from "@/components/ui/title-header";
-import { RiQuestionAnswerFill } from "react-icons/ri";
-import ServerError from "@/components/ui/server-error";
-import Loader from "@/components/ui/loader";
-import TransitionContent from "@/components/ui/transition-content";
-import PostWrapper from "@/components/post/post-wrapper";
 import { useUtilsContext } from "@/contexts/utils-context";
-import TableGrid from "@/components/ui/table-grid";
-import { useTranslation } from "react-i18next";
+import submitPost from "@/services/submit-post";
+
 const getBase64 = (img?: any, setPostImg?: any, ..._args: any[]) => {
   const reader = new FileReader();
   reader.addEventListener("load", () => setPostImg(reader?.result));
@@ -133,15 +134,7 @@ const Posts = ({ home }: any) => {
   const userid = userAuth?.user_id;
   return (
     <div className="mt-1 rounded-tr-lg rounded-tl-lg text-white font-medium">
-      {/* <div className="mt-2 bg-blue-900/80 border-y py-2 border-white mb-2 text-xl text-white text-center">
-        Chating Our Doctors
-      </div> */}
       <div className="p-4">
-        {/* <div className="mt-2 inline-block p-2 bg-gray-500/80 rounded-md shadow-lg">
-          <span className="p-2 bg-gray-300/50 rounded-md text-center inline-block">
-            Posts
-          </span>
-        </div> */}
         <div className="flex p-1 justify-center">
           <div className="border border-gray-150 shadow-md w-full p-4 bg-gray-300/30 rounded-lg sm:w-3/4 xl:w-1/2">
             <Input.TextArea
@@ -224,9 +217,10 @@ const Posts = ({ home }: any) => {
               {(!userid || !content) && showWarn && (
                 <Alert
                   className="bg-red-500 rounded-md !top-full !absolute w-full"
-                  closeText={<span className="text-white text-base">X</span>}
-                  closable
-                  onClose={() => setShowWarn(false)}
+                  closable={{
+                    closeIcon: <span className="text-white text-base">X</span>,
+                    onClose: () => setShowWarn(false),
+                  }}
                   description={
                     <span className="text-white font-medium">
                       {!userid
@@ -240,12 +234,6 @@ const Posts = ({ home }: any) => {
           </div>
         </div>
       </div>
-      {/* <div
-        className="flex justify-center p-2 border-y
-      border-white mb-2 bg-blue-900/80 items-center"
-      >
-        <span className="text-xl">Latest Questions</span>
-      </div> */}
       <TitleHeader
         to={home ? "posts" : ""}
         wrapperBg={"no"}
@@ -255,14 +243,6 @@ const Posts = ({ home }: any) => {
         title={home ? "Latest Questions" : "All Questions"}
       />
       <div className="pr-2">
-        {/* <div
-          className={`flex flex-wrap gap-2 ${
-            home
-              ? "overflow-auto trans--post scroll--v scroll--v--chat scroll--h"
-              : ""
-          } items-start py-2 px-1`}
-        > */}
-        {/* <Grid defaultCol={2} smCol={2}> */}
         {posts?.length > 0 ? (
           <TransitionContent
             id="posts"
@@ -277,7 +257,6 @@ const Posts = ({ home }: any) => {
                 ? "overflow-auto trans--post scroll--v scroll--v--chat scroll--h"
                 : ""
             } items-start py-2 px-1`}
-            // first
           >
             <TableGrid
               noMargin
@@ -308,8 +287,6 @@ const Posts = ({ home }: any) => {
             }
           />
         )}
-        {/* </Grid> */}
-        {/* </div> */}
       </div>
     </div>
   );

@@ -1,35 +1,30 @@
-import { useState } from "react";
-import { RiQuestionAnswerLine } from "react-icons/ri";
-import { AiOutlineSchedule } from "react-icons/ai";
-import { ImStatsDots } from "react-icons/im";
-import { ImProfile } from "react-icons/im";
-import { useMediaQuery } from "react-responsive";
 import { Popover } from "antd";
+import { useState } from "react";
+import { AiOutlineSchedule } from "react-icons/ai";
+import { ImProfile, ImStatsDots } from "react-icons/im";
+import { RiQuestionAnswerLine } from "react-icons/ri";
+import { useMediaQuery } from "react-responsive";
+
 const DashNav = ({ setDashType, dashType }: any) => {
   const items = [
     {
       name: "profile",
-      label: "Profile",
       icon: <ImProfile className="w-full text-lg sm:text-2xl" />,
     },
     {
       name: "schedule",
-      label: "Schedule Appointments",
       icon: <AiOutlineSchedule className="w-full text-lg sm:text-2xl" />,
     },
     {
       name: "appointments",
-      label: "My Appointments",
       icon: <ImProfile className="w-full text-lg sm:text-2xl" />,
     },
     {
       name: "chat",
-      label: "Answer Your Patient",
       icon: <RiQuestionAnswerLine className="w-full text-lg sm:text-2xl" />,
     },
     {
       name: "statistics",
-      label: "Statistics",
       icon: <ImStatsDots className="w-full text-lg sm:text-2xl" />,
     },
   ];
@@ -52,12 +47,14 @@ const DashNav = ({ setDashType, dashType }: any) => {
           <Popover
             placement={isMobile ? "rightBottom" : undefined}
             key={i}
-            showArrow={isMobile ? false : true}
+            arrow={!isMobile}
             content={<span className="text-white">{name}</span>}
             color="blue-inverse"
-            overlayInnerStyle={{
-              backgroundColor: "#4a5568",
-              fontWeight: "500",
+            styles={{
+              container: {
+                backgroundColor: "#4a5568",
+                fontWeight: "500",
+              },
             }}
           >
             <div
@@ -81,7 +78,6 @@ const DashNav = ({ setDashType, dashType }: any) => {
                 }`}
               >
                 {icon}
-                {/* <span className="w-full text-center inline-block">{label}</span> */}
               </button>
             </div>
           </Popover>
@@ -89,8 +85,8 @@ const DashNav = ({ setDashType, dashType }: any) => {
         <div
           className={`absolute bg-gray-600 opacity-0 transition-[opacity,left,top] duration-500 ${
             isMobile
-              ? "top-0 left-full h-1/5 w-[3px]"
-              : "top-full left-0 h-[3px] w-1/5"
+              ? "top-0 left-full h-1/5 w-0.75"
+              : "top-full left-0 h-0.75 w-1/5"
           }`}
           style={
             hoverIdx == null

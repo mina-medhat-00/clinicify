@@ -1,8 +1,8 @@
-import Feedbacks from "@/pages/feedbacks";
-import { FeedbackContextProvider } from "@/contexts";
-import { FaNotesMedical } from "react-icons/fa";
 import { BsFillPersonLinesFill } from "react-icons/bs";
+import { FaNotesMedical } from "react-icons/fa";
 import ProfileTable from "@/components/profile/profile-table";
+import { FeedbackContextProvider } from "@/contexts";
+import Feedbacks from "@/pages/feedbacks";
 
 const UserDetails = ({ headers, data, userValues, headerColor, propColor }: any) => {
   return (

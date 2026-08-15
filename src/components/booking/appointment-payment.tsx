@@ -1,12 +1,12 @@
-import { useState, useEffect } from "react";
 import { Elements } from "@stripe/react-stripe-js";
-import CheckoutForm from "@/components/booking/checkout-form";
 import axios from "axios";
+import { useEffect, useState } from "react";
 import Cookies from "universal-cookie";
+import CheckoutForm from "@/components/booking/checkout-form";
 import Loader from "@/components/ui/loader";
-import getStripe from "@/utils/get-stripe";
 import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
+import getStripe from "@/utils/get-stripe";
 
 const stripePromise = getStripe();
 const AppointmentPayment = ({

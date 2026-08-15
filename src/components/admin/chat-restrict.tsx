@@ -1,13 +1,19 @@
+import {
+  Avatar,
+  Empty,
+  Switch,
+  Tag,
+} from "antd";
 import { useEffect, useState } from "react";
-import { useChatContext } from "@/contexts/chat-context";
 import Cookies from "universal-cookie";
-import Loader from "@/components/ui/loader";
-import { Avatar, Empty, Switch, Tag } from "antd";
 import doctorPhoto from "@/assets/images/doctor-photo.png";
 import userPhoto from "@/assets/images/user-photo.png";
-import changeState from "@/services/change-state";
+import Loader from "@/components/ui/loader";
+import { useChatContext } from "@/contexts/chat-context";
 import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
+import changeState from "@/services/change-state";
+
 const ChatRestrict = ({ userid }: any) => {
   const { fetchChatData, chatData, isLoading } = useChatContext();
   const [, setIsLoading] = useState<any>(null);

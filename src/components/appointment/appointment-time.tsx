@@ -1,7 +1,7 @@
 import { useEffect } from "react";
-
 import Cookies from "universal-cookie";
 import CountdownTimer from "@/components/appointment/appointment-countdown-timer";
+
 const adjustTime = (date?: any, time?: any, timeZone?: any, ..._args: any[]) =>
   new Date(`${date} ${time} ${timeZone}`).toLocaleTimeString("en", {
     hour: "numeric",
@@ -66,8 +66,6 @@ const AppointmentTime = ({
                 new Cookies().get("accessToken"),
                 true,
                 {
-                  // p_state: appointment_state,
-                  // appointment_state: "done",
                   doctorId,
                   patientId,
                   appointmentId,
@@ -89,8 +87,6 @@ const AppointmentTime = ({
     <div className="flex gap-4 items-center">
       <div className="flex flex-wrap grow gap-2 justify-center items-center">
         <div className="text-white grow bg-gray-300/50 rounded-lg p-1 font-medium text-center">
-          {/* <span className="text-gray-700">Appointment date</span>
-          <hr className="border-gray-700" /> */}
           <div className="text-white flex justify-center">
             <table className="grow">
               <tbody>

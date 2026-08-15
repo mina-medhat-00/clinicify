@@ -1,7 +1,8 @@
-import { useState } from "react";
-import { ChatContextProvider } from "@/contexts";
-import ChatRestrict from "@/components/admin/chat-restrict";
 import { Avatar } from "antd";
+import { useState } from "react";
+import ChatRestrict from "@/components/admin/chat-restrict";
+import { ChatContextProvider } from "@/contexts";
+
 const Restrictions = ({ selectedUser }: any) => {
   const [restrictType] = useState("chat");
   return (

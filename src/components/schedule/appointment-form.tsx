@@ -1,11 +1,12 @@
-import { Button, Input, Popover, Select } from "antd";
-import scheduleAppointments from "@/services/schedule-appointments";
-import React, { useEffect, useState } from "react";
-import { MdDeleteForever } from "react-icons/md";
-import { FaUserClock } from "react-icons/fa";
-import CountdownTimer from "@/components/schedule/schedule-countdown-timer";
-import { BiAddToQueue } from "react-icons/bi";
 import { PoundOutlined } from "@ant-design/icons";
+import { Button, Input, Popover, Select } from "antd";
+import React, { useEffect, useState } from "react";
+import { BiAddToQueue } from "react-icons/bi";
+import { FaUserClock } from "react-icons/fa";
+import { MdDeleteForever } from "react-icons/md";
+import CountdownTimer from "@/components/schedule/schedule-countdown-timer";
+import scheduleAppointments from "@/services/schedule-appointments";
+
 const adjustHMin = (val?: any, ..._args: any[]) => (val > 9 ? val : "0" + val);
 const chkTimeSlot = (data?: any, ..._args: any[]) =>
   data?.every(
@@ -370,18 +371,12 @@ const AppointmentForm = ({
   }, [isFilled, isAdjusted, isUpToDate, isNotMatched]);
   return (
     <div className="p-2 sm:p-4">
-      {/* <input
-              placeholder=""
-                className="rounded-lg border-2 
-              border-gray-700 outline-none"
-              ></input> */}
       <div
         className="scroll--h scroll--v overflow-auto"
         style={{
           maxHeight: "560px",
         }}
       >
-        {/* <div className="mb-4 bg-gray-100 p-2 rounded-lg shadow-lg"> */}
         <div className="flex flex-wrap gap-2">
           {appointmentElements.map((ele?: any, i?: any, ..._args: any[]) =>
             React.cloneElement(ele, {
@@ -397,7 +392,6 @@ const AppointmentForm = ({
             }),
           )}
         </div>
-        {/* </div> */}
       </div>
       <div className="flex flex-wrap gap-2">
         {!isEdit && (
@@ -418,16 +412,8 @@ const AppointmentForm = ({
             </div>
           </div>
         )}
-        {/* <div
-        className="w-full border bg-gray-400/80"
-        style={{
-          position: "fixed",
-          left: "0%",
-          top: `calc(100vh - 120px)`,
-        }}
-      > */}
         <Popover
-          showArrow={false}
+          arrow={false}
           color="cyan"
           placement="bottomLeft"
           trigger={isDone ? [] : "click"}

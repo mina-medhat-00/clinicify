@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { RiDeleteBack2Line } from "react-icons/ri";
+
 const PopUp = ({
   children,
   show,

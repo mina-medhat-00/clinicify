@@ -1,20 +1,21 @@
 import { useEffect, useState } from "react";
+import { useMediaQuery } from "react-responsive";
+import Cookies from "universal-cookie";
+import DashNav from "@/components/dashboard/dash-nav";
 import ScheduleAppointments from "@/components/dashboard/schedule-appointments";
 import {
   ChatContextProvider,
   ProfileContextProvider,
   SlotsContextProvider,
 } from "@/contexts";
-import { useDashboardContext } from "@/contexts/dashboard-context";
-import Cookies from "universal-cookie";
-import { useMediaQuery } from "react-responsive";
-import DashNav from "@/components/dashboard/dash-nav";
-import UserProfile from "@/pages/user-profile";
-import Appointments from "@/pages/appointments";
 import AppointmentContextProvider from "@/contexts/appointment-context";
-import Chat from "@/pages/chat";
-import { useUtilsContext } from "@/contexts/utils-context";
+import { useDashboardContext } from "@/contexts/dashboard-context";
 import { useUserContext } from "@/contexts/user-context";
+import { useUtilsContext } from "@/contexts/utils-context";
+import Appointments from "@/pages/appointments";
+import Chat from "@/pages/chat";
+import UserProfile from "@/pages/user-profile";
+
 const DoctorDashboard = ({ setNavActive }: any) => {
   const { timeZone, messageApi, socket } = useUtilsContext();
   const {

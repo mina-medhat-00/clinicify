@@ -1,5 +1,10 @@
 import axios from "axios";
-import { createContext, useState, useContext, useLayoutEffect } from "react";
+import {
+  createContext,
+  useContext,
+  useLayoutEffect,
+  useState,
+} from "react";
 
 const HomeData = createContext<any>(null);
 const HomeContextProvider = ({ children }: any) => {

@@ -1,16 +1,17 @@
 import { Drawer, Empty, message } from "antd";
-import { useEffect, useState } from "react";
 import dayjs from "dayjs";
-import { useSlotsContext } from "@/contexts/slots-context";
-import scheduleAppointments from "@/services/schedule-appointments";
-import cancelAppointment from "@/services/cancel-appointment";
-import Loader from "@/components/ui/loader";
-import CalendarView from "@/components/profile/calendar-view";
-import PopUp from "@/components/ui/pop-up";
-import AppointmentForm from "@/components/schedule/appointment-form";
+import { useEffect, useState } from "react";
 import { AiOutlineAppstoreAdd } from "react-icons/ai";
-import AppointmentCard from "@/components/schedule/appointment-card";
+import CalendarView from "@/components/profile/calendar-view";
 import AccountVerify from "@/components/schedule/account-verify";
+import AppointmentCard from "@/components/schedule/appointment-card";
+import AppointmentForm from "@/components/schedule/appointment-form";
+import Loader from "@/components/ui/loader";
+import PopUp from "@/components/ui/pop-up";
+import { useSlotsContext } from "@/contexts/slots-context";
+import cancelAppointment from "@/services/cancel-appointment";
+import scheduleAppointments from "@/services/schedule-appointments";
+
 const ScheduleAppointments = ({
   doctorData,
   userid,
@@ -79,9 +80,6 @@ const ScheduleAppointments = ({
     <div
       className={`schedule--wrapper
      p-3 rounded`}
-      // style={{
-      //  filter: bookedAppointment ? "blur(5px)" : "",
-      // }}
     >
       <div className="text-right my-1">
         <span
@@ -101,7 +99,6 @@ const ScheduleAppointments = ({
         selectedDate={selectedDate}
         handleDate={handleDate}
       />
-      {/* =================================== for book appointment page ===================================== */}
       {isUpToDate && !isLoading && !isDoctorLoading && isVerified ? (
         <>
           <div className="flex gap-2 flex-wrap">
@@ -161,11 +158,13 @@ const ScheduleAppointments = ({
               }, 500);
             }}
             closable
-            bodyStyle={{
-              padding: "0px",
-            }}
-            contentWrapperStyle={{
-              width: "100%",
+            styles={{
+              body: {
+                padding: "0px",
+              },
+              wrapper: {
+                width: "100%",
+              },
             }}
             title={
               isAction ? `Edit Appointment ${isAction}` : "New Appointment"

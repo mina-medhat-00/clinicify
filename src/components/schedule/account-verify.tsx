@@ -1,5 +1,6 @@
 import { CloseCircleOutlined, LoadingOutlined } from "@ant-design/icons";
 import { Tag } from "antd";
+
 const AccountVerify = ({ isVerified }: any) => {
   return isVerified == null ? (
     <div className="flex p-2  text-center bg-yellow-600/60 rounded-lg flex-wrap gap-2 items-center justify-center">

@@ -1,15 +1,15 @@
-import { Col, Empty, Carousel } from "antd";
-import userPhoto from "@/assets/images/user-photo.png";
-import doctorPhoto from "@/assets/images/doctor-photo.png";
-import { useMediaQuery } from "react-responsive";
-import { useFeedbackContext } from "@/contexts/feedback-context";
-import Loader from "@/components/ui/loader";
+import { Carousel, Col, Empty } from "antd";
 import { useEffect, useState } from "react";
-import ServerError from "@/components/ui/server-error";
-import FeedbackContent from "@/components/feedback/feedback-content";
-import PopUp from "@/components/ui/pop-up";
-import TitleHeader from "@/components/ui/title-header";
 import { MdFeedback } from "react-icons/md";
+import { useMediaQuery } from "react-responsive";
+import doctorPhoto from "@/assets/images/doctor-photo.png";
+import userPhoto from "@/assets/images/user-photo.png";
+import FeedbackContent from "@/components/feedback/feedback-content";
+import Loader from "@/components/ui/loader";
+import PopUp from "@/components/ui/pop-up";
+import ServerError from "@/components/ui/server-error";
+import TitleHeader from "@/components/ui/title-header";
+import { useFeedbackContext } from "@/contexts/feedback-context";
 
 const Feedbacks = ({ home, noDirectFetch, username, fetchFeedback }: any) => {
   const { feedbackData, isLoading, isError, fetchFeedbackData } =
@@ -33,7 +33,6 @@ const Feedbacks = ({ home, noDirectFetch, username, fetchFeedback }: any) => {
       );
   }, [fetchFeedback]);
   if (isLoading) return <Loader />;
-  /* ###################### after rendering page ########################## */
   const font =
     "roboto mono,-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'";
   const bodyHandler = async (order?: any, ..._args: any[]) => {

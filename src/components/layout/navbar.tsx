@@ -1,14 +1,19 @@
+import { MenuOutlined } from "@ant-design/icons";
+import {
+  Avatar,
+  Button,
+  Menu,
+  Typography,
+} from "antd";
 import { useEffect, useRef, useState } from "react";
-import { Button, Typography, Menu, Avatar } from "antd";
+import { FaEllipsisV } from "react-icons/fa";
+import { useMediaQuery } from "react-responsive";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import clinicLogo from "@/assets/images/clinic.png";
-import { useMediaQuery } from "react-responsive";
-import { MenuOutlined } from "@ant-design/icons";
-import items from "@/components/layout/nav-items";
-import { FaEllipsisV } from "react-icons/fa";
-import { useUtilsContext } from "@/contexts/utils-context";
-import { useUserContext } from "@/contexts/user-context";
 import LangItem from "@/components/layout/lang-item";
+import items from "@/components/layout/nav-items";
+import { useUserContext } from "@/contexts/user-context";
+import { useUtilsContext } from "@/contexts/utils-context";
 
 const { Title } = { ...Typography, ...Menu };
 const Navbar = ({ DoctorRef }: any) => {
@@ -53,7 +58,7 @@ const Navbar = ({ DoctorRef }: any) => {
     ) && (
       <div
         ref={navElement}
-        className={`z-20 min-w-[150px] bg-bg-bar transition-[margin-left] duration-500 max-[678px]:flex max-[678px]:min-w-[220px] max-[678px]:w-full max-[678px]:flex-row max-[678px]:flex-wrap max-[678px]:items-center max-[678px]:justify-between ${
+        className={`z-20 min-w-37.5 bg-bg-bar transition-[margin-left] duration-500 max-[678px]:flex max-[678px]:min-w-55 max-[678px]:w-full max-[678px]:flex-row max-[678px]:flex-wrap max-[678px]:items-center max-[678px]:justify-between ${
           isMobile ? "relative bg-gray-800" : "fixed flex h-full w-1/5 flex-col"
         }`}
         style={{
@@ -99,7 +104,7 @@ const Navbar = ({ DoctorRef }: any) => {
         >
           <Link
             to="/"
-            className="text-center max-[678px]:relative max-[678px]:flex max-[678px]:flex-row max-[678px]:items-center max-[678px]:justify-start max-[678px]:gap-[3px] [&_h3]:max-[678px]:mb-0 [&_a]:!text-[#cdd5ff]"
+            className="text-center max-[678px]:relative max-[678px]:flex max-[678px]:flex-row max-[678px]:items-center max-[678px]:justify-start max-[678px]:gap-0.75 [&_h3]:max-[678px]:mb-0 [&_a]:!text-[#cdd5ff]"
           >
             <Avatar
               src={clinicLogo}
@@ -131,7 +136,7 @@ const Navbar = ({ DoctorRef }: any) => {
           ref={menuElement}
           theme="dark"
           mode={!isMobile ? "inline" : "vertical"}
-          className={`mt-[30px] overflow-hidden max-[678px]:mt-0 max-[678px]:w-full max-[678px]:[&_li:hover]:!bg-[rgb(93,207,148)] ${lan == "ar" ? "ar--nav" : ""} ${
+          className={`mt-7.5 overflow-hidden max-[678px]:mt-0 max-[678px]:w-full max-[678px]:[&_li:hover]:!bg-[rgb(93,207,148)] ${lan == "ar" ? "ar--nav" : ""} ${
             isMobile
               ? "sm absolute top-full"
               : "overflow-x-hidden overflow-y-auto"

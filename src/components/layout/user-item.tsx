@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
-import { Button, Skeleton } from "antd";
-import { Link, useLocation, useNavigate } from "react-router-dom";
 import { PoweroffOutlined } from "@ant-design/icons";
-import Cookies from "universal-cookie";
+import { Button, Skeleton } from "antd";
+import { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
-import { useUtilsContext } from "@/contexts/utils-context";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import Cookies from "universal-cookie";
 import { useUserContext } from "@/contexts/user-context";
+import { useUtilsContext } from "@/contexts/utils-context";
 
 const UserItem = (_props?: any) => {
   const { messageApi } = useUtilsContext();
@@ -91,7 +91,6 @@ const UserItem = (_props?: any) => {
                 );
                 setTimeout(() => {
                   navigate(`/`);
-                  //fetchUserData(true, null);
                   setUserData(null);
                 }, 2000);
               } else setTimeout(() => setUserData(null), 1000);

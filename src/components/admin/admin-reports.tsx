@@ -1,18 +1,18 @@
-import { useRef, useState } from "react";
-import { Avatar, Button, Input, Space, Table } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
-import { Link } from "react-router-dom";
+import { Avatar, Button, Input, Space, Table } from "antd";
+import { useRef, useState } from "react";
 import { FaRegUser, FaUserSecret, FaUserTie } from "react-icons/fa";
 import { GiDoctorFace } from "react-icons/gi";
+import { GoReport } from "react-icons/go";
+import { MdMessage } from "react-icons/md";
+import { Link } from "react-router-dom";
 import doctorPhoto from "@/assets/images/doctor-photo.png";
 import userPhoto from "@/assets/images/user-photo.png";
+import ReportDetails from "@/components/admin/report-details";
 import PopUp from "@/components/ui/pop-up";
 import ReportContextProvider, {
   useReportContext,
 } from "@/contexts/report-context";
-import ReportDetails from "@/components/admin/report-details";
-import { GoReport } from "react-icons/go";
-import { MdMessage } from "react-icons/md";
 
 const AdminReports = () => {
   const [selectedUser, setSelectedUser] = useState<any>("");
@@ -40,7 +40,6 @@ const AdminReports = () => {
         onKeyDown={(e?: any, ..._args: any[]) => e.stopPropagation()}
       >
         <Input
-          // eslint-disable-next-line react-hooks/refs -- antd filterDropdown render prop (official column-search pattern)
           ref={searchInput}
           placeholder={`Search ${dataIndex}`}
           value={selectedKeys[0]}
@@ -99,10 +98,12 @@ const AdminReports = () => {
         .toString()
         .toLowerCase()
         .includes(value.toLowerCase()),
-    onFilterDropdownOpenChange: (visible?: any, ..._args: any[]) => {
-      if (visible) {
-        setTimeout(() => searchInput.current?.select(), 100);
-      }
+    filterDropdownProps: {
+      onOpenChange: (visible?: any, ..._args: any[]) => {
+        if (visible) {
+          setTimeout(() => searchInput.current?.select(), 100);
+        }
+      },
     },
   });
   const columns = [

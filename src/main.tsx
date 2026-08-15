@@ -1,17 +1,17 @@
-import ReactDOM from "react-dom/client";
 import { StyleProvider } from "@ant-design/cssinjs";
 import { ConfigProvider } from "antd";
-import App from "@/App";
-import "@/index.css";
-import { UserContextProvider } from "@/contexts";
-import Cookies from "universal-cookie";
-import { BrowserRouter as Router } from "react-router-dom";
-import { SkeletonTheme } from "react-loading-skeleton";
-import UtilsContextProvider from "@/contexts/utils-context";
 import i18n from "i18next";
-import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import HttpApi from "i18next-http-backend";
+import ReactDOM from "react-dom/client";
+import { initReactI18next } from "react-i18next";
+import { SkeletonTheme } from "react-loading-skeleton";
+import { BrowserRouter as Router } from "react-router-dom";
+import Cookies from "universal-cookie";
+import App from "@/App";
+import { UserContextProvider } from "@/contexts";
+import UtilsContextProvider from "@/contexts/utils-context";
+import "@/index.css";
 
 const cookies = new Cookies();
 const DOMElement = document.getElementById("root");

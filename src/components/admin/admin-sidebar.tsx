@@ -1,4 +1,7 @@
-import { Link } from "react-router-dom";
+import { DashboardOutlined, HomeOutlined } from "@ant-design/icons";
+import { FaUserLock } from "react-icons/fa";
+import { FiUserCheck } from "react-icons/fi";
+import { GiDoctorFace } from "react-icons/gi";
 import {
   MdMessage,
   MdOutlineCancel,
@@ -6,10 +9,8 @@ import {
   MdPostAdd,
   MdReportProblem,
 } from "react-icons/md";
-import { DashboardOutlined, HomeOutlined } from "@ant-design/icons";
-import { GiDoctorFace } from "react-icons/gi";
-import { FiUserCheck } from "react-icons/fi";
-import { FaUserLock } from "react-icons/fa";
+import { Link } from "react-router-dom";
+
 const links = [
   {
     title: "Dashboard",

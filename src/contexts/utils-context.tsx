@@ -1,8 +1,14 @@
-import io from "socket.io-client";
-import { createContext, useContext, useEffect, useState } from "react";
-import { useMediaQuery } from "react-responsive";
 import { message } from "antd";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
+import { useMediaQuery } from "react-responsive";
+import io from "socket.io-client";
+
 const socket = io(`http://${window.location.hostname}:5000`);
 const timeZone = " gmt+0300";
 const UtilsData = createContext<any>(null);

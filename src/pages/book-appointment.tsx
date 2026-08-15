@@ -1,17 +1,16 @@
-import { Button, Empty, Popover } from "antd";
-import { Typography } from "antd";
-import { useEffect, useState } from "react";
+import { Button, Empty, Popover, Typography } from "antd";
 import dayjs from "dayjs";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSlotsContext } from "@/contexts/slots-context";
-import Loader from "@/components/ui/loader";
-import CalendarView from "@/components/profile/calendar-view";
-import PopUp from "@/components/ui/pop-up";
 import AppointmentPayment from "@/components/booking/appointment-payment";
-import getStripe from "@/utils/get-stripe";
-import SuccessAppointment from "@/components/booking/success-appointment";
 import BookButton from "@/components/booking/book-button";
+import SuccessAppointment from "@/components/booking/success-appointment";
+import CalendarView from "@/components/profile/calendar-view";
+import Loader from "@/components/ui/loader";
+import PopUp from "@/components/ui/pop-up";
+import { useSlotsContext } from "@/contexts/slots-context";
 import { useUserContext } from "@/contexts/user-context";
+import getStripe from "@/utils/get-stripe";
 
 const { Title } = Typography;
 
@@ -189,7 +188,7 @@ function BookAppointment({ userid, doctorId, socket, timeZone }: any) {
                 </div>
                 {freeSlots.length ? (
                   <Popover
-                    showArrow={false}
+                    arrow={false}
                     color={isUser && bookedAppointment ? "green" : "red"}
                     placement="topLeft"
                     trigger={"click"}
@@ -272,7 +271,6 @@ function BookAppointment({ userid, doctorId, socket, timeZone }: any) {
                   setBookedAppointment={setBookedAppointment}
                   messageApi={messageApi}
                   socket={socket}
-                  // AppointmentType={app}
                 />
               ) : isPayment == "payment_success" || appointmentSuccess ? (
                 <SuccessAppointment

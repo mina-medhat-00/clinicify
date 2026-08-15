@@ -1,30 +1,31 @@
-import { useEffect } from "react";
 import {
-  Select,
-  Upload,
-  message,
+  InboxOutlined,
+  LockOutlined,
+  MailOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
+import {
   Button,
+  DatePicker,
   Form,
   Input,
-  DatePicker,
+  message,
   Radio,
+  Select,
+  Space,
+  Upload,
 } from "antd";
-import {
-  LockOutlined,
-  UserOutlined,
-  MailOutlined,
-  InboxOutlined,
-} from "@ant-design/icons";
-import { useState } from "react";
-import { useMediaQuery } from "react-responsive";
-import { prefixSelector } from "@/utils/signup-utils";
 import axios from "axios";
+import { useEffect, useState } from "react";
+import { useMediaQuery } from "react-responsive";
 import { useNavigate } from "react-router-dom";
 import UserType from "@/components/signup/user-type";
 import HeaderLine from "@/components/ui/header-line";
-import { cityOption } from "@/utils/sign-data";
-import { useUtilsContext } from "@/contexts/utils-context";
 import { useUserContext } from "@/contexts/user-context";
+import { useUtilsContext } from "@/contexts/utils-context";
+import { cityOption } from "@/utils/sign-data";
+import { prefixSelector } from "@/utils/signup-utils";
+
 const { Option } = Select;
 
 const getMessage = (
@@ -40,10 +41,8 @@ const getMessage = (
   duration,
 });
 
-// function returns a promise
 const beforeUpload = (file?: any): any => {
   return new Promise((resolve?: any) => {
-    // check the file type - you can specify the types you'd like here:
     const isImg =
       file.type === "image/jpeg" ||
       file.type === "image/jpg" ||
@@ -72,31 +71,17 @@ const normFile = (e?: any, setImageUrls?: any, ..._args: any[]) => {
   return e?.fileList;
 };
 
-/*
-request to server at every change on username field, 
-used to check if new username already used
-
-respond with 
-status 200 means indicate that it's new username  
-status 400 means that name already exist,
-status 500 refer to internal server error,
-*/
-
 const checkUserName = (uname?: any, setValidState?: any, ..._args: any[]) => {
-  // setValidState("error");
   const host = window?.location?.hostname;
   axios
     .get(`http://${host}:5000/chkuname/${uname}`)
     .then(() => {
       if (uname) setValidState("success");
-      // new user name
-      else setValidState(""); // empty field
+      else setValidState("");
     })
     .catch((err?: any, ..._args: any[]) => {
-      if (err?.response?.status === 400)
-        // bad request, name already exists
-        setValidState("error");
-      else setValidState("error1"); // server error
+      if (err?.response?.status === 400) setValidState("error");
+      else setValidState("error1");
     });
 };
 
@@ -120,15 +105,6 @@ function Signup() {
       return;
     }
   }, []);
-
-  /*
-  request to server at submit, used to add user to database
-
-  respond with 
-  status 200 means that added successfully to database  
-  status 400 means that name already exist,
-  status 500 refer to internal server error,
-  */
 
   const addUser = (values?: any, ..._args: any[]) => {
     if (validState === "success" || validState === "") {
@@ -160,7 +136,6 @@ function Signup() {
         })
         .catch((err?: any, ..._args: any[]) => {
           if (err?.response?.data?.data?.err?.code == "ER_DUP_ENTRY") {
-            // bad request, name already exists
             setValidState("error");
             messageApi.open(
               getMessage(
@@ -182,7 +157,7 @@ function Signup() {
                 2,
               ),
             );
-          } // server error
+          }
         });
     }
   };
@@ -202,8 +177,6 @@ function Signup() {
       style={{
         background:
           "linear-gradient(to right top,rgb(93 98 128 / 85%) , rgb(108 146 192 / 90%))",
-        // "linear-gradient(to right top, rgba(32, 58, 89, 0.9), #334297d9)",
-        // background: "linear-gradient(225deg, rgb(32 58 89 / 90%), #a1858bff)",
       }}
     >
       <Form
@@ -442,10 +415,10 @@ function Signup() {
                 },
               ]}
             >
-              <Input
-                placeholder={t("Your phone number")}
-                addonBefore={prefixSelector}
-              />
+              <Space.Compact className="w-full">
+                {prefixSelector}
+                <Input placeholder={t("Your phone number")} />
+              </Space.Compact>
             </Item>
           </div>
           <div className={`grow ${!isMobile && "max-w-[65%]"}`}>
@@ -478,7 +451,6 @@ function Signup() {
             <Upload.Dragger
               name="file"
               beforeUpload={beforeUpload}
-              //onChange={handleChange}
               accept=".png, .jpg, .jpeg, .bpm, .webp"
               listType="picture"
               multiple={false}

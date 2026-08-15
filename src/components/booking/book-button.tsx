@@ -1,6 +1,7 @@
 import { Loading3QuartersOutlined } from "@ant-design/icons";
 import { BiMessageAltDetail } from "react-icons/bi";
 import { FaClinicMedical } from "react-icons/fa";
+
 const adjustTime = (date?: any, time?: any, timeZone?: any, ..._args: any[]) =>
   new Date(`${date} ${time} ${timeZone}`).toLocaleTimeString("en", {
     hour: "numeric",
@@ -35,7 +36,6 @@ const BookButton = ({
           </span>
         </div>
         <div className={`flex gap-2 bg-gray-400/40 p-2 rounded-lg`}>
-          {/* <PoundCircleOutlined className="flex items-center text-yellow-200 text-2xl" /> */}
           <span className="text-white font-medium">{appointmentFees} L.E</span>
         </div>
       </div>

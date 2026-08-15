@@ -1,12 +1,16 @@
+import {
+  CheckCircleOutlined,
+  ClockCircleOutlined,
+  Loading3QuartersOutlined,
+  VideoCameraFilled,
+} from "@ant-design/icons";
 import { useEffect, useState } from "react";
-import { Loading3QuartersOutlined } from "@ant-design/icons";
-import { CheckCircleOutlined, ClockCircleOutlined } from "@ant-design/icons";
-import { FaClinicMedical } from "react-icons/fa";
 import { BiMessageAltDetail } from "react-icons/bi";
-import { TbEditCircle } from "react-icons/tb";
+import { FaClinicMedical } from "react-icons/fa";
 import { HiStatusOnline } from "react-icons/hi";
-import { MdFreeCancellation, MdAutoDelete } from "react-icons/md";
-import { VideoCameraFilled } from "@ant-design/icons";
+import { MdAutoDelete, MdFreeCancellation } from "react-icons/md";
+import { TbEditCircle } from "react-icons/tb";
+
 const adjustTime = (date?: any, time?: any, timeZone?: any, ..._args: any[]) =>
   new Date(`${date} ${time} ${timeZone}`).toLocaleTimeString("en", {
     hour: "numeric",
@@ -152,7 +156,6 @@ const AppointmentCard = ({
           </span>
         </div>
         <div className={`flex gap-2 bg-gray-400/40 p-2 rounded-lg`}>
-          {/* <PoundCircleOutlined className="flex items-center text-yellow-200 text-2xl" /> */}
           <span className="text-white font-medium">{appointmentFees} L.E</span>
         </div>
         <div className={`flex gap-2 bg-gray-600/40 p-2 rounded-lg`}>
@@ -163,13 +166,6 @@ const AppointmentCard = ({
           ) : appointmentType == "videoChat" ? (
             <VideoCameraFilled className="flex items-center text-gray-200 text-xl" />
           ) : null}
-          {/* {
-                      getAppointmentVal(
-                        appointmentState,
-                        <CheckCircleOutlined className="flex items-center text-yellow-200 text-2xl" />,
-                        <ClockCircleOutlined className="flex items-center text-yellow-200 text-2xl" />,
-                        <AiOutlineLoading3Quarters className="flex items-center text-yellow-200 text-2xl" />
-                      )} */}
           <span className="text-white font-medium">
             {appointmentType?.toUpperCase()}
           </span>

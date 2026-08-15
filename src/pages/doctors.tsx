@@ -1,14 +1,14 @@
-import { forwardRef, useState } from "react";
 import { Carousel, Empty } from "antd";
-import Loader from "@/components/ui/loader";
+import { forwardRef, useState } from "react";
+import doctorPhoto from "@/assets/images/doctor-photo.png";
 import DoctorCard from "@/components/doctor/doctor-card";
 import SearchFilter from "@/components/doctor/search-filter";
-import doctorPhoto from "@/assets/images/doctor-photo.png";
-import { useDoctorsContext } from "@/contexts/doctors-context";
+import Loader from "@/components/ui/loader";
 import ServerError from "@/components/ui/server-error";
+import TableGrid from "@/components/ui/table-grid";
+import { useDoctorsContext } from "@/contexts/doctors-context";
 import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
-import TableGrid from "@/components/ui/table-grid";
 
 const Doctors = forwardRef(({ home }: any, ref?: any, ..._args: any[]) => {
   const { socket, timeZone, isMobile } = useUtilsContext();

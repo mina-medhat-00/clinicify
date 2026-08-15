@@ -1,16 +1,16 @@
 import { LoadingOutlined, SendOutlined } from "@ant-design/icons";
 import { Input, Skeleton } from "antd";
+import dayjs from "dayjs";
 import EmojiPicker from "emoji-picker-react";
 import React, { useEffect, useRef, useState } from "react";
 import { BsEmojiSmileFill } from "react-icons/bs";
 import Cookies from "universal-cookie";
+import ChatAvailability from "@/components/chat/chat-availability";
+import Message from "@/components/chat/chat-message";
+import { AppointmentContextProvider } from "@/contexts";
+import { useChatContext } from "@/contexts/chat-context";
 import { useMessagesContext } from "@/contexts/messages-context";
 import submitMessage from "@/services/submit-message";
-import Message from "@/components/chat/chat-message";
-import ChatAvailability from "@/components/chat/chat-availability";
-import { AppointmentContextProvider } from "@/contexts";
-import dayjs from "dayjs";
-import { useChatContext } from "@/contexts/chat-context";
 
 const getDate = (
   issued_date?: any,
@@ -155,11 +155,6 @@ const Messages = ({
                 emojiOpen ? "text-green-700" : "text-green-400"
               }`}
             />
-            {/* <div className="flex gap-2 items-center bg-white p-2 rounded-lg shadow-sm">
-    <LikeOutlined className="flex hover:shadow-lg cursor-pointer rounded-full hover:text-blue-600 items-center !fill-black text-blue-500 text-xl" />
-    <DislikeOutlined className="flex hover:shadow-lg cursor-pointer rounded-full hover:text-yellow-600 items-center !fill-black text-yellow-500 text-xl" />
-    <BsEmojiAngry className="flex hover:shadow-lg cursor-pointer rounded-full hover:text-red-800 items-center text-red-500 text-xl" />
-  </div> */}
             {message &&
               (isLoading ? (
                 <LoadingOutlined className="flex hover:text-blue-600 cursor-pointer items-center text-3xl text-blue-700" />

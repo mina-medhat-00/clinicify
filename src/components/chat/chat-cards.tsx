@@ -2,8 +2,8 @@ import { HomeOutlined } from "@ant-design/icons";
 import { Avatar, Segmented, Skeleton } from "antd";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import userPhoto from "@/assets/images/user-photo.png";
 import doctorPhoto from "@/assets/images/doctor-photo.png";
+import userPhoto from "@/assets/images/user-photo.png";
 
 const UserCard = ({ imgUrl, name, isMobile, active }: any) => (
   <div className="p-1 text-center">

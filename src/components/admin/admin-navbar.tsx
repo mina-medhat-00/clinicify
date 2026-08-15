@@ -1,9 +1,10 @@
+import { Popover } from "antd";
 import { useEffect } from "react";
 import { AiOutlineMenu } from "react-icons/ai";
 import { BsChatLeft } from "react-icons/bs";
-import { RiNotification3Line } from "react-icons/ri";
 import { MdKeyboardArrowDown } from "react-icons/md";
-import { Popover } from "antd";
+import { RiNotification3Line } from "react-icons/ri";
+
 const NavButton = ({
   name,
   title,
@@ -15,7 +16,7 @@ const NavButton = ({
 }: any) => (
   <Popover
     open={title == "Menu" || dashType == name ? false : null}
-    showArrow={false}
+    arrow={false}
     content={<span className="text-gray-700 font-medium">{title}</span>}
   >
     <button

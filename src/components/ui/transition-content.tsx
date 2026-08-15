@@ -1,5 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { data } from "@/utils/data-trans";
+
 const TransitionContent = ({
   id = "",
   children,

@@ -1,7 +1,7 @@
-import VideoMeeting from "@/components/meeting/video-meeting";
 import { Link, useParams, useSearchParams } from "react-router-dom";
-import { useUserContext } from "@/contexts/user-context";
+import VideoMeeting from "@/components/meeting/video-meeting";
 import Loader from "@/components/ui/loader";
+import { useUserContext } from "@/contexts/user-context";
 
 const OnlineMeeting = () => {
   const { session } = useParams();

@@ -1,5 +1,7 @@
 import axios from "axios";
-import { createContext, useState, useContext } from "react";
+import { createContext, useContext, useState } from "react";
+import type { Comment } from "@/types";
+
 const handleQuery = (obj?: any, ..._args: any[]) =>
   !obj
     ? ""
@@ -13,14 +15,21 @@ const CommentsData = createContext<any>(null);
 const CommentsContextProvider = ({ children }: any) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
-  const [commentsData, setCommentsData] = useState(null);
+  const [commentsData, setCommentsData] = useState<Comment[] | null>(null);
   const host = window?.location?.hostname;
-  const fetchCommentsData = async (query?: any, noRender?: any, ..._args: any[]) => {
+  const fetchCommentsData = async (
+    query?: any,
+    noRender?: any,
+    ..._args: any[]
+  ) => {
     if (!noRender) setIsLoading(true);
     try {
-      const { data } = await axios.request({ url: `http://${host}:5000/get/comments${handleQuery(query)}`, ...{
+      const { data } = await axios.request({
+        url: `http://${host}:5000/get/comments${handleQuery(query)}`,
+        ...{
           timeout: 10000,
-        } });
+        },
+      });
       setCommentsData(() => data?.data);
       setIsError(false);
       setIsLoading(false);

@@ -147,20 +147,20 @@ const CountdownTimer = ({ targetDate, order }: any) => {
         className="time-section text-center text-gray-100 text-xs sm:text-sm"
         id={`hours--${order}`}
       >
-        <div className="time-group flex gap-[5px]">
+        <div className="time-group flex gap-1.25">
           <div
             className={`time-segment time-segment--${order} block font-black w-6 sm:w-10 text-2xl sm:text-3xl`}
           >
             <div
               className={`segment-display segment-display--${order} relative h-full`}
             >
-              <div className="segment-display__top relative h-1/2 w-full overflow-hidden text-center leading-[1.5] text-[#eee] bg-gray-800"></div>
-              <div className="segment-display__bottom relative h-1/2 w-full overflow-hidden text-center leading-[0] text-white bg-gray-600"></div>
+              <div className="segment-display__top relative h-1/2 w-full overflow-hidden text-center leading-normal text-[#eee] bg-gray-800"></div>
+              <div className="segment-display__bottom relative h-1/2 w-full overflow-hidden text-center leading-0 text-white bg-gray-600"></div>
               <div
-                className={`segment-overlay segment-overlay--${order} absolute top-0 h-full [perspective:400px] w-6 sm:w-10`}
+                className={`segment-overlay segment-overlay--${order} absolute top-0 h-full perspective-[400px] w-6 sm:w-10`}
               >
-                <div className="segment-overlay__top absolute top-0 h-1/2 w-full origin-bottom overflow-hidden text-center leading-[1.5] text-white bg-gray-800"></div>
-                <div className="segment-overlay__bottom absolute bottom-0 h-1/2 w-full origin-top overflow-hidden text-center leading-[0] text-[#eee] bg-gray-600">
+                <div className="segment-overlay__top absolute top-0 h-1/2 w-full origin-bottom overflow-hidden text-center leading-normal text-white bg-gray-800"></div>
+                <div className="segment-overlay__bottom absolute bottom-0 h-1/2 w-full origin-top overflow-hidden text-center leading-0 text-[#eee] bg-gray-600">
                   {" "}
                 </div>
               </div>
@@ -172,13 +172,13 @@ const CountdownTimer = ({ targetDate, order }: any) => {
             <div
               className={`segment-display segment-display--${order} relative h-full`}
             >
-              <div className="segment-display__top relative h-1/2 w-full overflow-hidden text-center leading-[1.5] text-[#eee] bg-gray-800"></div>
-              <div className="segment-display__bottom relative h-1/2 w-full overflow-hidden text-center leading-[0] text-white bg-gray-600"></div>
+              <div className="segment-display__top relative h-1/2 w-full overflow-hidden text-center leading-normal text-[#eee] bg-gray-800"></div>
+              <div className="segment-display__bottom relative h-1/2 w-full overflow-hidden text-center leading-0 text-white bg-gray-600"></div>
               <div
-                className={`segment-overlay segment-overlay--${order} absolute top-0 h-full [perspective:400px] w-6 sm:w-10`}
+                className={`segment-overlay segment-overlay--${order} absolute top-0 h-full perspective-[400px] w-6 sm:w-10`}
               >
-                <div className="segment-overlay__top absolute top-0 h-1/2 w-full origin-bottom overflow-hidden text-center leading-[1.5] text-white bg-gray-800"></div>
-                <div className="segment-overlay__bottom absolute bottom-0 h-1/2 w-full origin-top overflow-hidden text-center leading-[0] text-[#eee] bg-gray-600"></div>
+                <div className="segment-overlay__top absolute top-0 h-1/2 w-full origin-bottom overflow-hidden text-center leading-normal text-white bg-gray-800"></div>
+                <div className="segment-overlay__bottom absolute bottom-0 h-1/2 w-full origin-top overflow-hidden text-center leading-0 text-[#eee] bg-gray-600"></div>
               </div>
             </div>
           </div>
@@ -190,20 +190,20 @@ const CountdownTimer = ({ targetDate, order }: any) => {
         className="time-section text-center text-gray-100 text-xs sm:text-sm"
         id={`minutes--${order}`}
       >
-        <div className="time-group flex gap-[5px]">
+        <div className="time-group flex gap-1.25">
           <div
             className={`time-segment time-segment--${order} block font-black w-6 sm:w-10 text-2xl sm:text-3xl`}
           >
             <div
               className={`segment-display segment-display--${order} relative h-full`}
             >
-              <div className="segment-display__top relative h-1/2 w-full overflow-hidden text-center leading-[1.5] text-[#eee] bg-gray-800"></div>
-              <div className="segment-display__bottom relative h-1/2 w-full overflow-hidden text-center leading-[0] text-white bg-gray-600"></div>
+              <div className="segment-display__top relative h-1/2 w-full overflow-hidden text-center leading-normal text-[#eee] bg-gray-800"></div>
+              <div className="segment-display__bottom relative h-1/2 w-full overflow-hidden text-center leading-0 text-white bg-gray-600"></div>
               <div
-                className={`segment-overlay segment-overlay--${order} absolute top-0 h-full [perspective:400px] w-6 sm:w-10`}
+                className={`segment-overlay segment-overlay--${order} absolute top-0 h-full perspective-[400px] w-6 sm:w-10`}
               >
-                <div className="segment-overlay__top absolute top-0 h-1/2 w-full origin-bottom overflow-hidden text-center leading-[1.5] text-white bg-gray-800"></div>
-                <div className="segment-overlay__bottom absolute bottom-0 h-1/2 w-full origin-top overflow-hidden text-center leading-[0] text-[#eee] bg-gray-600"></div>
+                <div className="segment-overlay__top absolute top-0 h-1/2 w-full origin-bottom overflow-hidden text-center leading-normal text-white bg-gray-800"></div>
+                <div className="segment-overlay__bottom absolute bottom-0 h-1/2 w-full origin-top overflow-hidden text-center leading-0 text-[#eee] bg-gray-600"></div>
               </div>
             </div>
           </div>
@@ -213,13 +213,13 @@ const CountdownTimer = ({ targetDate, order }: any) => {
             <div
               className={`segment-display segment-display--${order} relative h-full`}
             >
-              <div className="segment-display__top relative h-1/2 w-full overflow-hidden text-center leading-[1.5] text-[#eee] bg-gray-800"></div>
-              <div className="segment-display__bottom relative h-1/2 w-full overflow-hidden text-center leading-[0] text-white bg-gray-600"></div>
+              <div className="segment-display__top relative h-1/2 w-full overflow-hidden text-center leading-normal text-[#eee] bg-gray-800"></div>
+              <div className="segment-display__bottom relative h-1/2 w-full overflow-hidden text-center leading-0 text-white bg-gray-600"></div>
               <div
-                className={`segment-overlay segment-overlay--${order} absolute top-0 h-full [perspective:400px] w-6 sm:w-10`}
+                className={`segment-overlay segment-overlay--${order} absolute top-0 h-full perspective-[400px] w-6 sm:w-10`}
               >
-                <div className="segment-overlay__top absolute top-0 h-1/2 w-full origin-bottom overflow-hidden text-center leading-[1.5] text-white bg-gray-800"></div>
-                <div className="segment-overlay__bottom absolute bottom-0 h-1/2 w-full origin-top overflow-hidden text-center leading-[0] text-[#eee] bg-gray-600"></div>
+                <div className="segment-overlay__top absolute top-0 h-1/2 w-full origin-bottom overflow-hidden text-center leading-normal text-white bg-gray-800"></div>
+                <div className="segment-overlay__bottom absolute bottom-0 h-1/2 w-full origin-top overflow-hidden text-center leading-0 text-[#eee] bg-gray-600"></div>
               </div>
             </div>
           </div>
@@ -231,20 +231,20 @@ const CountdownTimer = ({ targetDate, order }: any) => {
         className="time-section text-center text-gray-100 text-xs sm:text-sm"
         id={`seconds--${order}`}
       >
-        <div className="time-group flex gap-[5px]">
+        <div className="time-group flex gap-1.25">
           <div
             className={`time-segment time-segment--${order} block font-black w-6 sm:w-10 text-2xl sm:text-3xl`}
           >
             <div
               className={`segment-display segment-display--${order} relative h-full`}
             >
-              <div className="segment-display__top relative h-1/2 w-full overflow-hidden text-center leading-[1.5] text-[#eee] bg-gray-800"></div>
-              <div className="segment-display__bottom relative h-1/2 w-full overflow-hidden text-center leading-[0] text-white bg-gray-600"></div>
+              <div className="segment-display__top relative h-1/2 w-full overflow-hidden text-center leading-normal text-[#eee] bg-gray-800"></div>
+              <div className="segment-display__bottom relative h-1/2 w-full overflow-hidden text-center leading-0 text-white bg-gray-600"></div>
               <div
-                className={`segment-overlay segment-overlay--${order} absolute top-0 h-full [perspective:400px] w-6 sm:w-10`}
+                className={`segment-overlay segment-overlay--${order} absolute top-0 h-full perspective-[400px] w-6 sm:w-10`}
               >
-                <div className="segment-overlay__top absolute top-0 h-1/2 w-full origin-bottom overflow-hidden text-center leading-[1.5] text-white bg-gray-800"></div>
-                <div className="segment-overlay__bottom absolute bottom-0 h-1/2 w-full origin-top overflow-hidden text-center leading-[0] text-[#eee] bg-gray-600"></div>
+                <div className="segment-overlay__top absolute top-0 h-1/2 w-full origin-bottom overflow-hidden text-center leading-normal text-white bg-gray-800"></div>
+                <div className="segment-overlay__bottom absolute bottom-0 h-1/2 w-full origin-top overflow-hidden text-center leading-0 text-[#eee] bg-gray-600"></div>
               </div>
             </div>
           </div>
@@ -254,13 +254,13 @@ const CountdownTimer = ({ targetDate, order }: any) => {
             <div
               className={`segment-display segment-display--${order} relative h-full`}
             >
-              <div className="segment-display__top relative h-1/2 w-full overflow-hidden text-center leading-[1.5] text-[#eee] bg-gray-800"></div>
-              <div className="segment-display__bottom relative h-1/2 w-full overflow-hidden text-center leading-[0] text-white bg-gray-600"></div>
+              <div className="segment-display__top relative h-1/2 w-full overflow-hidden text-center leading-normal text-[#eee] bg-gray-800"></div>
+              <div className="segment-display__bottom relative h-1/2 w-full overflow-hidden text-center leading-0 text-white bg-gray-600"></div>
               <div
-                className={`segment-overlay segment-overlay--${order} absolute top-0 h-full [perspective:400px] w-6 sm:w-10`}
+                className={`segment-overlay segment-overlay--${order} absolute top-0 h-full perspective-[400px] w-6 sm:w-10`}
               >
-                <div className="segment-overlay__top absolute top-0 h-1/2 w-full origin-bottom overflow-hidden text-center leading-[1.5] text-white bg-gray-800"></div>
-                <div className="segment-overlay__bottom absolute bottom-0 h-1/2 w-full origin-top overflow-hidden text-center leading-[0] text-[#eee] bg-gray-600"></div>
+                <div className="segment-overlay__top absolute top-0 h-1/2 w-full origin-bottom overflow-hidden text-center leading-normal text-white bg-gray-800"></div>
+                <div className="segment-overlay__bottom absolute bottom-0 h-1/2 w-full origin-top overflow-hidden text-center leading-0 text-[#eee] bg-gray-600"></div>
               </div>
             </div>
           </div>

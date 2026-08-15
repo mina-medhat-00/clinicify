@@ -1,6 +1,7 @@
-import { Form } from "antd";
-import { Select } from "antd";
+import { Form, Select } from "antd";
+
 const { Option } = Select;
+
 const prefixSelector = (
   <Form.Item
     name="prefix"

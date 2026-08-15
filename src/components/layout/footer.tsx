@@ -1,6 +1,6 @@
-import { Typography, Space } from "antd";
-import { Link } from "react-router-dom";
+import { Space, Typography } from "antd";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 
 const { Title } = Typography;
 const Footer = ({ isMobile }: any) => {

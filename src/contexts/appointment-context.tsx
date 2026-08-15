@@ -1,12 +1,15 @@
 import axios from "axios";
-import { createContext, useState, useContext } from "react";
+import { createContext, useContext, useState } from "react";
 import { useUserContext } from "@/contexts/user-context";
+import type { Appointment } from "@/types";
 
 const AppointmentData = createContext<any>(null);
 const AppointmentContextProvider = ({ children, token, isDoctor }: any) => {
   const { fetchUserData } = useUserContext();
   const [isLoading, setIsLoading] = useState(true);
-  const [appointmentData, setAppointmentData] = useState(null);
+  const [appointmentData, setAppointmentData] = useState<Appointment[] | null>(
+    null,
+  );
   const host = window?.location?.hostname;
   const fetchAppointmentData = async (
     active?: any,
@@ -41,16 +44,19 @@ const AppointmentContextProvider = ({ children, token, isDoctor }: any) => {
         setIsLoading(false);
         return data;
       } else {
-        const { data } = await axios.request({ url: `http://${host}:5000/get/appointments?${
+        const { data } = await axios.request({
+          url: `http://${host}:5000/get/appointments?${
             query?.date ? `&date=${query?.date}` : ""
           }${query?.doctorId ? `&doctor_id=${query?.doctorId}` : ""}${
             isDoctor || query?.doctor ? `&doctor=true` : ""
-          }`, ...{
+          }`,
+          ...{
             headers: {
               Authorization: `Bearer ${active ? directToken : token}`,
             },
             timeout: 10000,
-          } });
+          },
+        });
         setAppointmentData(data?.data);
         setIsLoading(false);
       }

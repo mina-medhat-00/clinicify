@@ -1,39 +1,39 @@
-import { useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import { SlotsContextProvider } from "@/contexts";
-import BookAppointment from "@/pages/book-appointment";
-import userPhoto from "@/assets/images/user-photo.png";
+import { StopOutlined } from "@ant-design/icons";
 import {
-  Typography,
-  Image,
-  Rate,
+  Alert,
   Button,
   Drawer,
-  Input,
-  Alert,
   Empty,
   Form,
+  Image,
+  Input,
+  Rate,
+  Typography,
 } from "antd";
-import Loader from "@/components/ui/loader";
-import ProfileDetails from "@/components/profile/profile-details";
+import dayjs from "dayjs";
+import { useEffect, useState } from "react";
 import { AiOutlineMessage } from "react-icons/ai";
 import { BiEdit } from "react-icons/bi";
-import { useEffect } from "react";
+import { Link, useParams } from "react-router-dom";
 import doctorPhoto from "@/assets/images/doctor-photo.png";
-import { useProfileContext } from "@/contexts/profile-context";
-import submitFeedback from "@/services/submit-feedback";
-import { StopOutlined } from "@ant-design/icons";
+import userPhoto from "@/assets/images/user-photo.png";
+import ClinicDetails from "@/components/profile/clinic-details";
+import ClinicForm from "@/components/profile/clinic-form";
+import ClinicRegister from "@/components/profile/clinic-register";
 import MedicalForm from "@/components/profile/medical-form";
 import PatientRecords from "@/components/profile/patient-records";
 import PersonalForm from "@/components/profile/personal-form";
-import dayjs from "dayjs";
-import ServerError from "@/components/ui/server-error";
-import ClinicForm from "@/components/profile/clinic-form";
-import ClinicRegister from "@/components/profile/clinic-register";
-import ClinicDetails from "@/components/profile/clinic-details";
+import ProfileDetails from "@/components/profile/profile-details";
 import AccountVerify from "@/components/schedule/account-verify";
+import Loader from "@/components/ui/loader";
+import ServerError from "@/components/ui/server-error";
+import { SlotsContextProvider } from "@/contexts";
+import { useProfileContext } from "@/contexts/profile-context";
 import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
+import BookAppointment from "@/pages/book-appointment";
+import submitFeedback from "@/services/submit-feedback";
+
 const editingObject = (
   value?: any,
   setValue?: any,
@@ -46,10 +46,6 @@ const editingObject = (
   tooltip: false,
   text: value,
   enterIcon: null,
-  // autoSize: {
-  //  maxRows: 5,
-  //  minRows: 3,
-  // }
 });
 
 const UserProfile = (_props?: any) => {
@@ -114,12 +110,11 @@ const UserProfile = (_props?: any) => {
   if (isLoading || isUserLoading) return <Loader />;
   else if (isError) return <ServerError />;
 
-  /* ================================================  Authorization part   ===========================================================*/
   const profileId = profileData?.["user"]?.user_id;
   const isVisitor = userid ? false : true;
   const isAdmin = profileData?.["user"]?.user_type == "admin";
-  const isUser = profileData?.["user"]?.user_type == "doctor" ? false : true; // check user profile
-  const isAuth = userid && profileId == userid ? true : false; // user visit his profile
+  const isUser = profileData?.["user"]?.user_type == "doctor" ? false : true;
+  const isAuth = userid && profileId == userid ? true : false;
   const isProfile = profileData?.["user"];
   const isVerified = profileData?.["doctor"]?.is_verified;
   const showDrawer = (
@@ -139,7 +134,7 @@ const UserProfile = (_props?: any) => {
               <Alert
                 className="my-2"
                 closable
-                message={
+                title={
                   <span className="text-blue-900 font-medium w-full inline-block text-center">
                     You need to login or signup to use our features
                   </span>
@@ -226,7 +221,6 @@ const UserProfile = (_props?: any) => {
                           &nbsp;Message me
                         </Button>
                       </Link>
-                      {/* </Popover> */}
                     </div>
                   ) : (
                     <div>
@@ -248,7 +242,6 @@ const UserProfile = (_props?: any) => {
                     </div>
                   )}
                 </div>
-                {/* ============================= about details for doctors and patient history for patient  ==========================*/}
                 <div className="profile--about text-white p-2 my-2 text-xs md:text-sm rounded bg-gray-200/50">
                   <Title className="text-xs text-gray-100">
                     {!isUser
@@ -323,13 +316,15 @@ const UserProfile = (_props?: any) => {
                   }
                   className={handleDrawer?.className}
                   placement="right"
-                  contentWrapperStyle={{
-                    width:
-                      handleDrawer.type == "medical" ||
-                      handleDrawer.type == "personal" ||
-                      handleDrawer.type == "clinic"
-                        ? "100%"
-                        : "",
+                  styles={{
+                    wrapper: {
+                      width:
+                        handleDrawer.type == "medical" ||
+                        handleDrawer.type == "personal" ||
+                        handleDrawer.type == "clinic"
+                          ? "100%"
+                          : "",
+                    },
                   }}
                   open={handleDrawer?.isOpen}
                   onClose={() =>
@@ -499,7 +494,6 @@ const UserProfile = (_props?: any) => {
                 />
               </div>
             ) : null}
-            {/* ===================================== Book Your Appointment ======================================== */}
             {!isUser && !isAuth && (
               <SlotsContextProvider>
                 <BookAppointment

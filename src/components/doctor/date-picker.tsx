@@ -1,5 +1,6 @@
-import { AiOutlineDoubleRight, AiOutlineDoubleLeft } from "react-icons/ai";
 import dayjs from "dayjs";
+import { AiOutlineDoubleLeft, AiOutlineDoubleRight } from "react-icons/ai";
+
 const DatePicker = ({ setSelectedDate, selectedDate, fromAppointment }: any) => {
   new Date(selectedDate.date).toLocaleString("en-us", {
     weekday: "long",

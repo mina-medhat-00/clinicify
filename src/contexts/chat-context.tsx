@@ -1,6 +1,7 @@
 import axios from "axios";
-import { createContext, useState, useContext } from "react";
+import { createContext, useContext, useState } from "react";
 import { useUserContext } from "@/contexts/user-context";
+import type { ChatThread } from "@/types";
 
 const handleQuery = (obj?: any, ..._args: any[]) =>
   !obj
@@ -16,20 +17,29 @@ const ChatContextProvider = ({ children, token }: any) => {
   const { fetchUserData } = useUserContext();
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
-  const [chatData, setChatData] = useState(null);
+  const [chatData, setChatData] = useState<ChatThread[] | null>(null);
   const host = window?.location?.hostname;
-  const fetchChatData = async (active?: any, directToken?: any, query?: any, noWaiting?: any, ..._args: any[]) => {
+  const fetchChatData = async (
+    active?: any,
+    directToken?: any,
+    query?: any,
+    noWaiting?: any,
+    ..._args: any[]
+  ) => {
     if (!noWaiting) setIsLoading(true);
     if (!token && !active) {
       setChatData(null);
       return setIsLoading(false);
     }
     try {
-      const { data } = await axios.request({ url: `http://${host}:5000/get/chat${handleQuery(query)}`, ...{
+      const { data } = await axios.request({
+        url: `http://${host}:5000/get/chat${handleQuery(query)}`,
+        ...{
           headers: {
             Authorization: `Bearer ${active ? directToken : token}`,
           },
-        } });
+        },
+      });
       setChatData(data?.data);
       setIsError(false);
       setIsLoading(false);

@@ -1,12 +1,13 @@
-import { useState, useEffect } from "react";
-import dayjs from "dayjs";
-import { useSlotsContext } from "@/contexts/slots-context";
 import { Button, Empty, Popover } from "antd";
+import dayjs from "dayjs";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Loader from "@/components/ui/loader";
-import DatePicker from "@/components/doctor/date-picker";
 import BookButton from "@/components/booking/book-button";
+import DatePicker from "@/components/doctor/date-picker";
+import Loader from "@/components/ui/loader";
+import { useSlotsContext } from "@/contexts/slots-context";
 import { useUserContext } from "@/contexts/user-context";
+
 const BookCard = ({ doctorId, socket, timeZone }: any) => {
   const { slotsData, isLoading, fetchSlotsData } = useSlotsContext();
   const { userData } = useUserContext();
@@ -48,7 +49,7 @@ const BookCard = ({ doctorId, socket, timeZone }: any) => {
           e.stopPropagation();
           e.preventDefault();
         }}
-        className={`doctor--slots //sm:w-1/3 //xl:w-1/4 flex flex-col shadow-lg rounded bg-gray-200`}
+        className={`doctor--slots flex flex-col shadow-lg rounded bg-gray-200`}
       >
         <DatePicker
           selectedDate={selectedDate}
@@ -106,7 +107,7 @@ const BookCard = ({ doctorId, socket, timeZone }: any) => {
               </div>
               <Popover
                 trigger={"click"}
-                showArrow={false}
+                arrow={false}
                 open={
                   bookedAppointment && userData && userData?.user_id != doctorId
                     ? false

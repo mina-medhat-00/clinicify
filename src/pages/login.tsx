@@ -1,14 +1,15 @@
-import { useEffect } from "react";
-import { Checkbox, Button, Form, Input } from "antd";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import HeaderLine from "@/components/ui/header-line";
-import { useState } from "react";
+import { Button, Checkbox, Form, Input, Typography } from "antd";
 import axios from "axios";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import Title from "antd/es/typography/Title";
 import Cookies from "universal-cookie";
-import { useUtilsContext } from "@/contexts/utils-context";
+import HeaderLine from "@/components/ui/header-line";
 import { useUserContext } from "@/contexts/user-context";
+import { useUtilsContext } from "@/contexts/utils-context";
+
+const { Title } = Typography;
+
 const getMessage = (
   key?: any,
   type?: any,
@@ -105,9 +106,7 @@ const Login = () => {
       className="grow bg-[linear-gradient(45deg,gray,rgb(85,114,115))]"
       style={{
         background:
-          "linear-gradient(to right top,rgb(93 98 128 / 85%) , rgb(108 146 192 / 90%))", // "linear-gradient(to right top, rgb(124 163 211 / 90%), rgb(77 82 108 / 85%))"
-        // "linear-gradient(to right top, rgba(32, 58, 89, 0.9), #334297d9)",
-        // "linear-gradient(to top right, rgb(32 58 89 / 90%), #a1858bff)",
+          "linear-gradient(to right top,rgb(93 98 128 / 85%) , rgb(108 146 192 / 90%))",
       }}
     >
       <div

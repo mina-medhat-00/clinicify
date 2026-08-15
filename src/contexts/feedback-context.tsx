@@ -1,5 +1,7 @@
 import axios from "axios";
-import { createContext, useState, useContext, useLayoutEffect } from "react";
+import { createContext, useContext, useLayoutEffect, useState } from "react";
+import type { Feedback } from "@/types";
+
 const handleQuery = (obj?: any, ..._args: any[]) =>
   !obj
     ? ""
@@ -18,18 +20,20 @@ const FeedbackContextProvider = ({
 }: any) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
-  const [feedbackData, setFeedbackData] = useState(null);
+  const [feedbackData, setFeedbackData] = useState<Feedback[] | null>(null);
   const host = window?.location?.hostname;
   const fetchFeedbackData = async (query?: any, ..._args: any[]) => {
     if (!noLoading) setIsLoading(true);
     try {
-      const { data } = await axios.request({ url: `http://${host}:5000/get/feedback${handleQuery(query || contextQuery)}`, ...{ timeout: 8000 } });
+      const { data } = await axios.request({
+        url: `http://${host}:5000/get/feedback${handleQuery(query || contextQuery)}`,
+        ...{ timeout: 8000 },
+      });
       setFeedbackData(data?.data);
       setIsLoading(false);
       setIsError(false);
       return data;
     } catch (err) {
-      //setFeedbackData(null);
       setIsError(true);
       setIsLoading(false);
     }

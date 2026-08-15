@@ -1,27 +1,35 @@
 import axios from "axios";
-import { createContext, useState, useContext, useLayoutEffect } from "react";
-import { useUserContext } from "@/contexts/user-context";
+import { createContext, useContext, useLayoutEffect, useState } from "react";
 import Cookies from "universal-cookie";
+import { useUserContext } from "@/contexts/user-context";
+import type { Report } from "@/types";
 
 const ReportData = createContext<any>(null);
 const ReportContextProvider = ({ children, reportFrom }: any) => {
   const [isLoading, setIsLoading] = useState(true);
-  const [reportData, setReportData] = useState(null);
+  const [reportData, setReportData] = useState<Report[] | null>(null);
   const [isError, setIsError] = useState(false);
   const { fetchUserData } = useUserContext();
   const host = window?.location?.hostname;
-  const fetchReportData = async (directToken?: any, notWaiting?: any, ..._args: any[]) => {
+  const fetchReportData = async (
+    directToken?: any,
+    notWaiting?: any,
+    ..._args: any[]
+  ) => {
     if (!notWaiting) setIsLoading(true);
     setIsError(false);
     try {
-      const { data } = await axios.request({ url: `http://${host}:5000/get/${
+      const { data } = await axios.request({
+        url: `http://${host}:5000/get/${
           reportFrom ? `details/report?reportFrom=${reportFrom}` : "reports"
-        }`, ...{
+        }`,
+        ...{
           headers: {
             Authorization: `Bearer ${directToken}`,
           },
           timeout: 10000,
-        } });
+        },
+      });
       setReportData(data?.data);
       setIsLoading(false);
       return data;

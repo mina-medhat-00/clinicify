@@ -3,7 +3,6 @@ import OpenViduVideoComponent from "@/components/meeting/ov-video";
 
 export default class UserVideoComponent extends Component<any> {
   getNicknameTag() {
-    // Gets the nickName of the user
     const str = this.props.streamManager.stream.connection.data.split("%/%");
     return JSON.parse(str[0]).clientData;
   }
@@ -14,7 +13,7 @@ export default class UserVideoComponent extends Component<any> {
         {this.props.streamManager !== undefined ? (
           <div className="relative">
             <OpenViduVideoComponent streamManager={this.props.streamManager} />
-            <div className="absolute rounded-br bg-[#f8f8f8] px-[5px] font-bold text-[#777]">
+            <div className="absolute rounded-br bg-[#f8f8f8] px-1.25 font-bold text-[#777]">
               <p className="m-0">{this.getNicknameTag()}</p>
             </div>
           </div>

@@ -1,12 +1,13 @@
-import { Button, Form, Input, Select } from "antd";
-import { cityOption } from "@/utils/sign-data";
-import { prefixSelector } from "@/utils/signup-utils";
+import { Button, Form, Input, Select, Space } from "antd";
+import { BsFillTelephoneFill, BsPhoneVibrate } from "react-icons/bs";
 import { GiModernCity } from "react-icons/gi";
 import { SiOpenstreetmap } from "react-icons/si";
-import { BsFillTelephoneFill, BsPhoneVibrate } from "react-icons/bs";
-import submitClinic from "@/services/submit-clinic";
-import { useUserContext } from "@/contexts/user-context";
 import { useProfileContext } from "@/contexts/profile-context";
+import { useUserContext } from "@/contexts/user-context";
+import submitClinic from "@/services/submit-clinic";
+import { cityOption } from "@/utils/sign-data";
+import { prefixSelector } from "@/utils/signup-utils";
+
 const { Item } = Form;
 const ClinicRegister = () => {
   const { messageApi, fetchUserData, userData } = useUserContext();
@@ -102,10 +103,10 @@ const ClinicRegister = () => {
                   },
                 ]}
               >
-                <Input
-                  placeholder="Your phone number"
-                  addonBefore={prefixSelector}
-                />
+                <Space.Compact className="w-full">
+                  {prefixSelector}
+                  <Input placeholder="Your phone number" />
+                </Space.Compact>
               </Item>
             </div>
             <div className="grow">
@@ -117,10 +118,10 @@ const ClinicRegister = () => {
                 </label>
               </div>
               <Item name="telephone">
-                <Input
-                  placeholder="Your phone number"
-                  addonBefore={prefixSelector}
-                />
+                <Space.Compact className="w-full">
+                  {prefixSelector}
+                  <Input placeholder="Your phone number" />
+                </Space.Compact>
               </Item>
             </div>
           </div>

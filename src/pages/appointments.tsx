@@ -1,31 +1,32 @@
-import { Avatar, Empty, Rate } from "antd";
-import { useEffect, useState } from "react";
-import { useAppointmentContext } from "@/contexts/appointment-context";
-import Loader from "@/components/ui/loader";
-import userPhoto from "@/assets/images/user-photo.png";
-import doctorPhoto from "@/assets/images/doctor-photo.png";
-import cancelAppointment from "@/services/cancel-appointment";
-import dayjs from "dayjs";
-import AppointmentTime from "@/components/appointment/appointment-time";
-import { Link } from "react-router-dom";
-import { VideoCameraOutlined } from "@ant-design/icons";
-import { ImCancelCircle } from "react-icons/im";
-import PopUp from "@/components/ui/pop-up";
 import {
   CheckCircleOutlined,
   ClockCircleOutlined,
   CloseCircleOutlined,
+  VideoCameraOutlined,
 } from "@ant-design/icons";
-import DatePicker from "@/components/doctor/date-picker";
-import Cookies from "universal-cookie";
+import { Avatar, Empty, Rate } from "antd";
+import dayjs from "dayjs";
+import { useEffect, useState } from "react";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import { FaClinicMedical } from "react-icons/fa";
 import { BiMessageAltDetail } from "react-icons/bi";
+import { FaClinicMedical } from "react-icons/fa";
 import { HiStatusOnline } from "react-icons/hi";
-import DoctorDetails from "@/components/appointment/doctor-details";
+import { ImCancelCircle } from "react-icons/im";
+import { Link } from "react-router-dom";
+import Cookies from "universal-cookie";
+import doctorPhoto from "@/assets/images/doctor-photo.png";
+import userPhoto from "@/assets/images/user-photo.png";
 import AppointmentStart from "@/components/appointment/appointment-start";
-import { useUtilsContext } from "@/contexts/utils-context";
+import AppointmentTime from "@/components/appointment/appointment-time";
+import DoctorDetails from "@/components/appointment/doctor-details";
+import DatePicker from "@/components/doctor/date-picker";
+import Loader from "@/components/ui/loader";
+import PopUp from "@/components/ui/pop-up";
+import { useAppointmentContext } from "@/contexts/appointment-context";
 import { useUserContext } from "@/contexts/user-context";
+import { useUtilsContext } from "@/contexts/utils-context";
+import cancelAppointment from "@/services/cancel-appointment";
+
 const chkEmpty = (
   appointmentState?: any,
   appointmentData?: any,
@@ -79,16 +80,6 @@ const Appointments = ({ fromDash }: any) => {
   const isEmpty = chkEmpty(appointmentState, appointmentData);
   return (
     <div>
-      {/* {fromDash && (
-        <div className="text-right my-4">
-          <span
-            onClick={() => setDashType("schedule")}
-            className="cursor-pointer hover:bg-gray-800 font-medium text-white bg-gray-700 w-fit p-2 rounded-lg"
-          >
-            schedule Your Appointments
-          </span>
-        </div>
-      )} */}
       <DatePicker
         fromAppointment
         selectedDate={selectedDate}

@@ -1,14 +1,14 @@
-import { useEffect, useState } from "react";
 import {
-  PaymentElement,
   LinkAuthenticationElement,
-  useStripe,
+  PaymentElement,
   useElements,
+  useStripe,
 } from "@stripe/react-stripe-js";
-import bookAppointment from "@/services/book-appointment";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useSlotsContext } from "@/contexts/slots-context";
 import { useUserContext } from "@/contexts/user-context";
-import { useNavigate } from "react-router-dom";
+import bookAppointment from "@/services/book-appointment";
 
 const CheckoutForm = ({
   bookedAppointment,
@@ -86,14 +86,6 @@ const CheckoutForm = ({
     stripe
       .confirmPayment({
         elements,
-
-        // options: {
-        //  handleActions: false,
-        // },
-        // confirmParams: {
-        //  // Make sure to change this to your payment completion page
-        //  return_url: `http://${window?.location?.host}/profile/${doctorId}`,
-        // },
         redirect: "if_required",
       })
       .then((paymentIntent?: any, ..._args: any[]) => {
@@ -141,7 +133,7 @@ const CheckoutForm = ({
         </div>
       )}
       <form
-        className="w-4/5 grow self-center rounded-[7px] p-10 shadow-[0_0_0_0.5px_rgba(50,50,93,0.1),0_2px_5px_rgba(50,50,93,0.1),0_1px_1.5px_rgba(0,0,0,0.07)]"
+        className="w-4/5 grow self-center rounded-1.75 p-10 shadow-[0_0_0_0.5px_rgba(50,50,93,0.1),0_2px_5px_rgba(50,50,93,0.1),0_1px_1.5px_rgba(0,0,0,0.07)]"
         id="payment-form"
       >
         <LinkAuthenticationElement
@@ -181,7 +173,6 @@ const CheckoutForm = ({
             )}
           </span>
         </button>
-        {/* Show any error or success messages */}
         {message && (
           <div
             id="payment--message"

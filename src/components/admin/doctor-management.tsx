@@ -1,19 +1,19 @@
-import { useRef, useState } from "react";
-import { Avatar, Button, Input, Space, Table, Tag } from "antd";
-import { useDoctorsContext } from "@/contexts/doctors-context";
-import { SlotsContextProvider } from "@/contexts";
 import { SearchOutlined } from "@ant-design/icons";
-import changeState from "@/services/change-state";
-import { useUserContext } from "@/contexts/user-context";
-import AppointmentDetails from "@/components/admin/appointment-details";
-import doctorPhoto from "@/assets/images/doctor-photo.png";
+import { Avatar, Button, Input, Space, Table, Tag } from "antd";
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import PopUp from "@/components/ui/pop-up";
+import doctorPhoto from "@/assets/images/doctor-photo.png";
+import AppointmentDetails from "@/components/admin/appointment-details";
 import ClinicDetails from "@/components/profile/clinic-details";
+import PopUp from "@/components/ui/pop-up";
+import { SlotsContextProvider } from "@/contexts";
+import { useDoctorsContext } from "@/contexts/doctors-context";
+import { useUserContext } from "@/contexts/user-context";
+import changeState from "@/services/change-state";
 
 const DoctorManagement = (_props?: any) => {
   const searchInput = useRef(null);
-  const handleSearch = (selectedKeys?: any, confirm?: any, ..._args: any[]) => {
+  const handleSearch = (confirm?: any, ..._args: any[]) => {
     confirm();
   };
   const handleReset = (clearFilters?: any, ..._args: any[]) => {
@@ -40,7 +40,7 @@ const DoctorManagement = (_props?: any) => {
           onChange={(e?: any, ..._args: any[]) =>
             setSelectedKeys(e.target.value ? [e.target.value] : [])
           }
-          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+          onPressEnter={() => handleSearch(confirm, dataIndex)}
           style={{
             marginBottom: 8,
             display: "block",
@@ -50,7 +50,7 @@ const DoctorManagement = (_props?: any) => {
           <Button
             type="primary"
             className="flex items-center justify-center"
-            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+            onClick={() => handleSearch(confirm, dataIndex)}
             icon={<SearchOutlined />}
             size="small"
             style={{
@@ -68,19 +68,6 @@ const DoctorManagement = (_props?: any) => {
           >
             Reset
           </Button>
-          {/* <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              confirm({
-                closeDropdown: false,
-              });
-              setSearchText(selectedKeys[0]);
-              setSearchedColumn(dataIndex);
-            }}
-          >
-          Filter
-          </Button> */}
           <Button
             type="link"
             size="small"
@@ -105,10 +92,12 @@ const DoctorManagement = (_props?: any) => {
         .toString()
         .toLowerCase()
         .includes(value.toLowerCase()),
-    onFilterDropdownOpenChange: (visible?: any, ..._args: any[]) => {
-      if (visible) {
-        setTimeout(() => searchInput.current?.select(), 100);
-      }
+    filterDropdownProps: {
+      onOpenChange: (visible?: any, ..._args: any[]) => {
+        if (visible) {
+          setTimeout(() => searchInput.current?.select(), 100);
+        }
+      },
     },
   });
   const columns = [

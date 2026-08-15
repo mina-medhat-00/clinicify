@@ -1,4 +1,5 @@
 import { Select } from "antd";
+
 const { Option } = Select;
 const DoctorOptions = (
   <>
@@ -72,7 +73,6 @@ const NurseOptions = (
     <Option value="Nurse Administrator">Nurse Administrator</Option>
     <Option value="Public Health Nurse">Public Health Nurse</Option>
     <Option value="Nurse Researcher">Nurse Researcher</Option>
-    <Option value="Nurse Informaticist">Nurse Informaticist</Option>
     <Option value="Case Management Nurse">Case Management Nurse</Option>
     <Option value="Home Health Nurse">Home Health Nurse</Option>
     <Option value="Clinic Nurse">Clinic Nurse</Option>
@@ -164,4 +164,5 @@ const cityOption = (
     <Option value="Bi’r al ‘Abd">Bi’r al ‘Abd</Option>
   </>
 );
-export { NurseOptions, DoctorOptions, cityOption };
+
+export { cityOption, DoctorOptions, NurseOptions };

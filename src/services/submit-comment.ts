@@ -1,5 +1,6 @@
-import Cookies from "universal-cookie";
 import axios from "axios";
+import Cookies from "universal-cookie";
+
 const cookies = new Cookies();
 const submitComment = async (
   user?: any,
@@ -51,7 +52,6 @@ const submitComment = async (
       );
       setLen((val?: any, ..._args: any[]) => val + 1);
       socket.emit("send_comment", {
-        //...res?.data?.data,
         reply_on: commentId,
         comment_id: res?.data?.data?.comment_id,
         post_id: postId,

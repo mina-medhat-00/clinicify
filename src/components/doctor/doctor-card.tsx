@@ -1,10 +1,11 @@
-import { useState } from "react";
-import { Card, Rate, Image, Popover } from "antd";
 import { MessageOutlined, StopOutlined } from "@ant-design/icons";
+import { Card, Image, Popover, Rate } from "antd";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { SlotsContextProvider } from "@/contexts";
 import BookCard from "@/components/doctor/book-card";
+import { SlotsContextProvider } from "@/contexts";
 import { useUtilsContext } from "@/contexts/utils-context";
+
 const DoctorCard = ({
   profileImage,
   rate,
@@ -93,9 +94,11 @@ const DoctorCard = ({
             </div>
           </Link>
         }
-        bodyStyle={{
-          padding: "5px",
-          flexGrow: 1,
+        styles={{
+          body: {
+            padding: "5px",
+            flexGrow: 1,
+          },
         }}
         actions={[]}
       >
@@ -150,11 +153,10 @@ const DoctorCard = ({
                 </div>
               ))}
             </div>
-            {/* ask a question*/}
             <Popover
               trigger="click"
               open={user ? false : null}
-              showArrow={false}
+              arrow={false}
               content={
                 <span className="font-medium">
                   you must signup/signin first

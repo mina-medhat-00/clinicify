@@ -1,5 +1,7 @@
 import axios from "axios";
-import { createContext, useState, useContext, useLayoutEffect } from "react";
+import { createContext, useContext, useLayoutEffect, useState } from "react";
+import type { Post } from "@/types";
+
 const handleQuery = (obj?: any, ..._args: any[]) =>
   !obj
     ? ""
@@ -13,14 +15,21 @@ const PostsData = createContext<any>(null);
 const PostsContextProvider = ({ children, noFirstRender, query }: any) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
-  const [postsData, setPostsData] = useState(null);
+  const [postsData, setPostsData] = useState<Post[] | null>(null);
   const host = window?.location?.hostname;
-  const fetchPostsData = async (query?: any, noRender?: any, ..._args: any[]) => {
+  const fetchPostsData = async (
+    query?: any,
+    noRender?: any,
+    ..._args: any[]
+  ) => {
     if (!noRender) setIsLoading(true);
     try {
-      const { data } = await axios.request({ url: `http://${host}:5000/get/posts${handleQuery(query)}`, ...{
+      const { data } = await axios.request({
+        url: `http://${host}:5000/get/posts${handleQuery(query)}`,
+        ...{
           timeout: 10000,
-        } });
+        },
+      });
       setPostsData(() => data?.data);
       setIsError(false);
       setIsLoading(false);

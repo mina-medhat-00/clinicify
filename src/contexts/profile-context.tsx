@@ -1,10 +1,11 @@
 import axios from "axios";
-import { createContext, useState, useContext } from "react";
+import { createContext, useContext, useState } from "react";
+import type { ProfileData } from "@/types";
 
 const ProfileData = createContext<any>(null);
 const ProfileContextProvider = ({ children }: any) => {
   const [isLoading, setIsLoading] = useState(true);
-  const [profileData, setProfileData] = useState({});
+  const [profileData, setProfileData] = useState<ProfileData>({});
   const [isError, setIsError] = useState(false);
   const host = window?.location?.hostname;
   const fetchProfileData = async (
@@ -23,14 +24,10 @@ const ProfileContextProvider = ({ children }: any) => {
       setIsLoading(false);
       return data;
     } catch (err) {
-      //setProfileData(null);
       setIsLoading(false);
       if (err?.response?.status !== 400) setIsError(true);
     }
   };
-  // useLayoutEffect(() => {
-  //  fetchProfileData();
-  // }, []);
   return (
     <ProfileData.Provider
       value={{ isLoading, profileData, isError, fetchProfileData }}

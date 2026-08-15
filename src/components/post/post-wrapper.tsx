@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import PopUp from "@/components/ui/pop-up";
 import Post from "@/components/post/post";
+import PopUp from "@/components/ui/pop-up";
 
 const PostWrapper = ({
   setPosts,

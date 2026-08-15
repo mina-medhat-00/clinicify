@@ -9,6 +9,7 @@ import {
 } from "react";
 import HeaderLine from "@/components/ui/header-line";
 import { DoctorOptions } from "@/utils/sign-data";
+
 const opt = (val?: any, ..._args: any[]) =>
   val == "null" || !val ? null : val;
 const SearchFilter = forwardRef(
@@ -70,38 +71,6 @@ const SearchFilter = forwardRef(
             marginTop: `${showSearch ? 0 : -heightSearch - 1}px`,
           }}
         >
-          {/* <div
-          className="flex flex-col cursor-pointer gap-2 opacity-90 justify-center items-center bg-gray-700"
-          onClick={() => setShowSearch((val) => !val)}
-          style={{
-            position: "absolute",
-            zIndex: 30,
-            left: `calc(100% - 40px)`,
-            top: `100%`,
-            width: "40px",
-            height: "60px",
-            borderRadius: "0px 0px 20px 20px",
-          }}
-        >
-          🔎
-          {showSearch ? (
-            <BsFillArrowUpCircleFill
-              color="white"
-              style={{
-                width: "20px",
-                height: "20px",
-              }}
-            />
-          ) : (
-            <BsFillArrowDownCircleFill
-              color="white"
-              style={{
-                width: "20px",
-                height: "20px",
-              }}
-            />
-          )}
-        </div> */}
           <HeaderLine value="Search For a Doctor" center />
           <div className="flex flex-wrap gap-2">
             <div className="grow w-full sm:w-1/3">
@@ -177,18 +146,6 @@ const SearchFilter = forwardRef(
             >
               Reset
             </Button>
-            {/* <Button
-            type="primary"
-            onClick={() =>
-              fetchDoctorsData({
-                specialty: specialty,
-                dname: doctorName,
-              })
-            }
-            className="bg-blue-500  w-2/3 sm:w-1/2 2xl:w-1/4 rounded-lg"
-          >
-            Search
-          </Button> */}
           </div>
         </div>
         <div

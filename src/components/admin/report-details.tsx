@@ -1,6 +1,6 @@
-import { useReportContext } from "@/contexts/report-context";
-import ProfileTable from "@/components/profile/profile-table";
 import { Empty } from "antd";
+import ProfileTable from "@/components/profile/profile-table";
+import { useReportContext } from "@/contexts/report-context";
 
 const ReportDetails = (_props?: any) => {
   const { reportData: reportDetailsData, isLoading } = useReportContext();

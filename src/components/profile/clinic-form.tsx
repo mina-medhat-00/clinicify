@@ -1,8 +1,9 @@
-import { Button, Form, Input, Select } from "antd";
-import { prefixSelector } from "@/utils/signup-utils";
+import { Button, Form, Input, Select, Space } from "antd";
 import ProfileTable from "@/components/profile/profile-table";
-import { cityOption } from "@/utils/sign-data";
 import submitClinic from "@/services/submit-clinic";
+import { cityOption } from "@/utils/sign-data";
+import { prefixSelector } from "@/utils/signup-utils";
+
 const { Item } = Form;
 const ClinicForm = ({
   messageApi,
@@ -33,10 +34,10 @@ const ClinicForm = ({
                 },
               ]}
             >
-              <Input
-                placeholder="Clinic phone number"
-                addonBefore={prefixSelector}
-              />
+              <Space.Compact className="w-full">
+                {prefixSelector}
+                <Input placeholder="Clinic phone number" />
+              </Space.Compact>
             </Item>
           ),
         },
@@ -44,10 +45,10 @@ const ClinicForm = ({
           name: "Clinic Telephone",
           value: (
             <Item className="mb-0" name="telephone">
-              <Input
-                placeholder="Clinic telephone"
-                addonBefore={prefixSelector}
-              />
+              <Space.Compact className="w-full">
+                {prefixSelector}
+                <Input placeholder="Clinic telephone" />
+              </Space.Compact>
             </Item>
           ),
         },

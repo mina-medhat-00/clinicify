@@ -1,17 +1,17 @@
 import { Avatar, Rate } from "antd";
 import { useEffect, useState } from "react";
+import { AiOutlineArrowLeft, AiOutlineArrowUp } from "react-icons/ai";
+import { BsFillPersonBadgeFill, BsPersonPlus } from "react-icons/bs";
+import { MdError } from "react-icons/md";
 import { useMediaQuery } from "react-responsive";
+import { Link } from "react-router-dom";
 import Cookies from "universal-cookie";
-import { useChatContext } from "@/contexts/chat-context";
-import MessagesContextProvider from "@/contexts/messages-context";
+import doctorPhoto from "@/assets/images/doctor-photo.png";
+import userPhoto from "@/assets/images/user-photo.png";
 import Cards from "@/components/chat/chat-cards";
 import Messages from "@/components/chat/chat-messages";
-import { BsFillPersonBadgeFill, BsPersonPlus } from "react-icons/bs";
-import userPhoto from "@/assets/images/user-photo.png";
-import doctorPhoto from "@/assets/images/doctor-photo.png";
-import { Link } from "react-router-dom";
-import { AiOutlineArrowLeft, AiOutlineArrowUp } from "react-icons/ai";
-import { MdError } from "react-icons/md";
+import { useChatContext } from "@/contexts/chat-context";
+import MessagesContextProvider from "@/contexts/messages-context";
 import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
 

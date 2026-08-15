@@ -1,5 +1,6 @@
-import Cookies from "universal-cookie";
 import axios from "axios";
+import Cookies from "universal-cookie";
+
 const cookies = new Cookies();
 const submitPost = async (
   user?: any,

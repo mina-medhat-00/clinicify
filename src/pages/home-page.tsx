@@ -1,35 +1,35 @@
+import { Avatar, Col, Rate, Row, Skeleton, Statistic } from "antd";
 import React from "react";
-import { Row, Col, Statistic, Rate, Avatar, Skeleton } from "antd";
+import CountUpPkg from "react-countup";
+import { AiOutlineSchedule } from "react-icons/ai";
+import { BsFillChatSquareTextFill } from "react-icons/bs";
+import { FcStatistics } from "react-icons/fc";
+import { GiDoctorFace } from "react-icons/gi";
+import { ImProfile } from "react-icons/im";
+import { MdDashboard } from "react-icons/md";
+import { RiQuestionAnswerLine } from "react-icons/ri";
+import { VscFeedback } from "react-icons/vsc";
 import { Link } from "react-router-dom";
-import Feedbacks from "@/pages/feedbacks";
+import heroClinic from "@/assets/images/back2.jpg";
+import doctorIcon from "@/assets/images/doctor-icon.jpg";
+import Arrow from "@/components/ui/arrow";
 import Loader from "@/components/ui/loader";
 import TitleHeader from "@/components/ui/title-header";
-import Doctors from "@/pages/doctors";
+import TransitionContent from "@/components/ui/transition-content";
 import {
-  PostsContextProvider,
   DoctorsContextProvider,
   FeedbackContextProvider,
+  PostsContextProvider,
 } from "@/contexts";
-import CountUpPkg from "react-countup";
+import { useHomeContext } from "@/contexts/home-context";
+import { useUserContext } from "@/contexts/user-context";
+import { useUtilsContext } from "@/contexts/utils-context";
+import Doctors from "@/pages/doctors";
+import Feedbacks from "@/pages/feedbacks";
+import Posts from "@/pages/posts";
 
 const Countup =
   typeof CountUpPkg === "function" ? CountUpPkg : (CountUpPkg as any)?.default;
-import { useHomeContext } from "@/contexts/home-context";
-import Posts from "@/pages/posts";
-import heroClinic from "@/assets/images/back2.jpg";
-import Arrow from "@/components/ui/arrow";
-import { AiOutlineSchedule } from "react-icons/ai";
-import { BsFillChatSquareTextFill } from "react-icons/bs";
-import { GiDoctorFace } from "react-icons/gi";
-import { RiQuestionAnswerLine } from "react-icons/ri";
-import { MdDashboard } from "react-icons/md";
-import { ImProfile } from "react-icons/im";
-import doctorIcon from "@/assets/images/doctor-icon.jpg";
-import { FcStatistics } from "react-icons/fc";
-import { VscFeedback } from "react-icons/vsc";
-import TransitionContent from "@/components/ui/transition-content";
-import { useUserContext } from "@/contexts/user-context";
-import { useUtilsContext } from "@/contexts/utils-context";
 
 const HomePage = () => {
   const { socket, isMobile, lan, t } = useUtilsContext();
@@ -226,19 +226,6 @@ const HomePage = () => {
         <PostsContextProvider>
           <Posts socket={socket} home isMobile={isMobile} />
         </PostsContextProvider>
-        {/*     
-        <div className="relative rounded-br-lg rounded-bl-lg p-2">
-        <img
-        className="z-10 rounded-lg"
-        src={heroClinic}
-          style={{
-            marginBlock: "auto",
-              marginLeft: "auto",
-              marginRight: "auto",
-              height: isMobile ? "" : "500px",
-            }}
-          />
-        </div> */}
         <TitleHeader
           wrapperBg={"no"}
           contentBg={"bg-blue-900/90"}
@@ -300,12 +287,14 @@ const HomePage = () => {
                           }
                           className="[&_div]:overflow-hidden [&_div]:text-ellipsis [&_div]:whitespace-nowrap [&_div_span]:block [&_div_span]:overflow-hidden [&_div_span]:text-ellipsis"
                           precision={2}
-                          valueStyle={{
-                            fontSize: isMobile ? "15px" : "20px",
-                            fontWeight: 500,
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
+                          styles={{
+                            content: {
+                              fontSize: isMobile ? "15px" : "20px",
+                              fontWeight: 500,
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                            },
                           }}
                           value={value}
                           formatter={
@@ -336,37 +325,9 @@ const HomePage = () => {
             title="Doctors"
             img={doctorIcon}
           />
-          {/* <div className="showmore--doctors">
-          <Title
-            className="text-xl sm:text-2xl lg:text-3xl text-gray-700"
-            style={{ marginTop: "10px", marginBottom: "10px" }}
-          >
-          Our Doctors
-          </Title>
-          <Title
-            className="text-sm sm:text-xl"
-            style={{ marginTop: "10px", marginBottom: "10px" }}
-          >
-            <Link to="/doctors">Show More</Link>
-          </Title>
-        </div> */}
           <DoctorsContextProvider query={{ limit: 5 }}>
             <Doctors home />
           </DoctorsContextProvider>
-          {/* <div className="showmore--reviews">
-          <Title
-          className="text-xl sm:text-2xl lg:text-3xl"
-          style={{ marginTop: "20px", marginBottom: "10px" }}
-          >
-          Top 5 Feedbacks
-          </Title>{" "}
-          <Title
-          className="text-sm sm:text-xl"
-          style={{ marginTop: "20px", marginBottom: "10px" }}
-          >
-            <Link to="/feedbacks">Show More</Link>
-          </Title>
-        </div> */}
           <TitleHeader
             wrapperBg={"no"}
             to="feedbacks"

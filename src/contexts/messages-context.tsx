@@ -1,6 +1,8 @@
 import axios from "axios";
-import { createContext, useState, useContext } from "react";
+import { createContext, useContext, useState } from "react";
 import Cookies from "universal-cookie";
+import type { ChatMessage } from "@/types";
+
 const handleQuery = (obj?: any, ..._args: any[]) =>
   !obj
     ? ""
@@ -15,18 +17,26 @@ const MessagesData = createContext<any>(null);
 const MessagesContextProvider = ({ children, fetchUserData }: any) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
-  const [messagesData, setMessagesData] = useState(null);
+  const [messagesData, setMessagesData] = useState<ChatMessage[] | null>(null);
   const host = window?.location?.hostname;
-  const fetchMessagesData = async (token?: any, query?: any, noRender?: any, ..._args: any[]) => {
+  const fetchMessagesData = async (
+    token?: any,
+    query?: any,
+    noRender?: any,
+    ..._args: any[]
+  ) => {
     if (!noRender) setIsLoading(true);
     try {
-      const { data } = await axios.request({ url: `http://${host}:5000/get/messages${handleQuery(query)}`, ...{
+      const { data } = await axios.request({
+        url: `http://${host}:5000/get/messages${handleQuery(query)}`,
+        ...{
           timeout: 10000,
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${cookies?.get("accessToken")}`,
           },
-        } });
+        },
+      });
       setMessagesData(() => data?.data);
       setIsError(false);
       setIsLoading(false);

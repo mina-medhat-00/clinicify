@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
 import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
+
 const APPLICATION_SERVER_URL = import.meta.env.PROD
   ? ""
   : `http://${window.location.hostname}:5000`;

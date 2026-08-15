@@ -1,21 +1,21 @@
 import { useEffect, useState } from "react";
-import Navbar from "@/components/admin/admin-navbar";
-import Sidebar from "@/components/admin/admin-sidebar";
 import { useMediaQuery } from "react-responsive";
+import Navbar from "@/components/admin/admin-navbar";
+import AdminReports from "@/components/admin/admin-reports";
+import Sidebar from "@/components/admin/admin-sidebar";
 import DoctorManagement from "@/components/admin/doctor-management";
+import UserManagement from "@/components/admin/user-management";
 import {
   ChatContextProvider,
   DoctorsContextProvider,
   ProfileContextProvider,
   UsersContextProvider,
 } from "@/contexts";
-import Chat from "@/pages/chat";
-import { useUserContext } from "@/contexts/user-context";
-import UserProfile from "@/pages/user-profile";
-import UserManagement from "@/components/admin/user-management";
-import { useUtilsContext } from "@/contexts/utils-context";
-import AdminReports from "@/components/admin/admin-reports";
 import ReportContextProvider from "@/contexts/report-context";
+import { useUserContext } from "@/contexts/user-context";
+import { useUtilsContext } from "@/contexts/utils-context";
+import Chat from "@/pages/chat";
+import UserProfile from "@/pages/user-profile";
 
 const AdminDashboard = () => {
   const isMobile = useMediaQuery({

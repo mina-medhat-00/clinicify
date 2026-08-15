@@ -1,19 +1,19 @@
-import { OpenVidu } from "openvidu-browser";
-
-import axios from "axios";
-import { useEffect, useRef, useState } from "react";
-import UserVideoComponent from "@/components/meeting/user-video";
-import { Button, Input } from "antd";
-import Cookies from "universal-cookie";
-import TitleHeader from "@/components/ui/title-header";
 import {
   LoadingOutlined,
   SettingFilled,
   VideoCameraFilled,
 } from "@ant-design/icons";
+import { Button, Input } from "antd";
+import axios from "axios";
+import { OpenVidu } from "openvidu-browser";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import Cookies from "universal-cookie";
+import UserVideoComponent from "@/components/meeting/user-video";
+import TitleHeader from "@/components/ui/title-header";
 import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
+
 const APPLICATION_SERVER_URL = import.meta.env.PROD
   ? ""
   : `http://${window.location.hostname}:5000`;
@@ -27,7 +27,7 @@ const VideoMeeting = ({ nickname, username, session, appointmentId }: any) => {
     isError: false,
     session: undefined,
     sessionException: false,
-    mainStreamManager: undefined, // Main video of the page. Will be the 'publisher' or one of the 'subscribers'
+    mainStreamManager: undefined,
     publisher: undefined,
     subscribers: [],
   });
@@ -36,13 +36,11 @@ const VideoMeeting = ({ nickname, username, session, appointmentId }: any) => {
   const navigate = useNavigate();
   const OVRef = useRef(null);
   const leaveSession = () => {
-    // 7) Leave the session by calling 'disconnect' method over the Session object ---
     const mySession = sessionDetails.session;
     if (mySession) {
       mySession.disconnect();
     }
 
-    // Empty all properties...
     OVRef.current = null;
     setSessionDetails((sD?: any, ..._args: any[]) => ({
       ...sD,
@@ -132,7 +130,6 @@ const VideoMeeting = ({ nickname, username, session, appointmentId }: any) => {
       }));
     });
 
-    // Get a token from the OpenVidu deployment
     getToken()
       .then((token?: any, ..._args: any[]) => {
         mySession
@@ -165,7 +162,6 @@ const VideoMeeting = ({ nickname, username, session, appointmentId }: any) => {
               (device?: any, ..._args: any[]) =>
                 device.deviceId === currentVideoDeviceId,
             );
-            // Set the main video in the page to display our webcam and store our Publisher
             setSessionDetails((sD?: any, ..._args: any[]) => ({
               ...sD,
               isLoading: false,
@@ -486,7 +482,6 @@ const VideoMeeting = ({ nickname, username, session, appointmentId }: any) => {
             className="flex w-6/7 grow flex-col gap-1 xl:w-3/4 2xl:w-4/5 [&_img]:inline-block [&_img]:h-auto [&_img]:w-full [&_img]:object-contain [&_img]:align-baseline"
           >
             <div id="session-header flex gap-2">
-              {/* <h1 id="session-title">{this.state.mySession}</h1> */}
               <Button
                 className="p-1 bg-red-500/70 text-white hover:bg-red-700 rounded"
                 onClick={leaveSession}
@@ -503,7 +498,7 @@ const VideoMeeting = ({ nickname, username, session, appointmentId }: any) => {
             {sessionDetails.mainStreamManager !== undefined ? (
               <div
                 id="main-video"
-                className="my-2 w-full [&_p]:absolute [&_p]:left-0 [&_p]:inline-block [&_p]:rounded-br [&_p]:bg-[#f8f8f8] [&_p]:px-[5px] [&_p]:text-[22px] [&_p]:font-bold [&_p]:text-[#777] [&_video]:h-[65vh] [&_video]:cursor-auto"
+                className="my-2 w-full [&_p]:absolute [&_p]:left-0 [&_p]:inline-block [&_p]:rounded-br [&_p]:bg-[#f8f8f8] [&_p]:px-1.25 [&_p]:text-[22px] [&_p]:font-bold [&_p]:text-[#777] [&_video]:h-[65vh] [&_video]:cursor-auto"
               >
                 <UserVideoComponent
                   streamManager={sessionDetails.mainStreamManager}
@@ -512,18 +507,8 @@ const VideoMeeting = ({ nickname, username, session, appointmentId }: any) => {
             ) : null}
             <div
               id="video-container"
-              className="scroll--h flex gap-2 overflow-auto [&_img]:relative [&_img]:float-left [&_img]:h-[180px] [&_img]:w-1/2 [&_img]:cursor-pointer [&_img]:object-cover [&_p]:inline-block [&_p]:rounded-br [&_p]:bg-[#f8f8f8] [&_p]:px-[5px] [&_p]:font-bold [&_p]:text-[#777] [&_video]:relative [&_video]:cursor-pointer"
+              className="scroll--h flex gap-2 overflow-auto [&_img]:relative [&_img]:float-left [&_img]:h-45 [&_img]:w-1/2 [&_img]:cursor-pointer [&_img]:object-cover [&_p]:inline-block [&_p]:rounded-br [&_p]:bg-[#f8f8f8] [&_p]:px-1.25 [&_p]:font-bold [&_p]:text-[#777] [&_video]:relative [&_video]:cursor-pointer"
             >
-              {/* {this.state.publisher !== undefined ? (
-                <div
-                  className="stream-container w-full"
-                  onClick={() =>
-                    this.handleMainVideoStream(this.state.publisher)
-                  }
-                >
-                <UserVideoComponent streamManager={this.state.publisher} />
-                </div>
-              ) : null} */}
               {sessionDetails.subscribers.map((sub?: any, ..._args: any[]) => (
                 <div
                   key={sub.id}

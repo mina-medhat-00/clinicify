@@ -1,15 +1,16 @@
-import { useEffect, useState } from "react";
-import { useSlotsContext } from "@/contexts/slots-context";
-import { BiLoader } from "react-icons/bi";
 import { Empty } from "antd";
-import scheduleAppointments from "@/services/schedule-appointments";
+import dayjs from "dayjs";
+import { useEffect, useState } from "react";
+import { BiLoader } from "react-icons/bi";
+import DatePicker from "@/components/doctor/date-picker";
 import AppointmentCard from "@/components/schedule/appointment-card";
 import PopUp from "@/components/ui/pop-up";
-import cancelAppointment from "@/services/cancel-appointment";
-import DatePicker from "@/components/doctor/date-picker";
-import dayjs from "dayjs";
-import { useUtilsContext } from "@/contexts/utils-context";
+import { useSlotsContext } from "@/contexts/slots-context";
 import { useUserContext } from "@/contexts/user-context";
+import { useUtilsContext } from "@/contexts/utils-context";
+import cancelAppointment from "@/services/cancel-appointment";
+import scheduleAppointments from "@/services/schedule-appointments";
+
 const AppointmentDetails = ({ doctorId }: any) => {
   const { timeZone, messageApi, socket } = useUtilsContext();
   const { fetchUserData } = useUserContext();
@@ -135,12 +136,6 @@ const AppointmentDetails = ({ doctorId }: any) => {
                     messageApi={messageApi}
                     scheduleAppointments={scheduleAppointments}
                   />
-                  {/* <AppointmentShape
-                slotTime={slotTime}
-                appointmentFees={appointmentFees}
-                appointmentType={appointmentType}
-                appointmentState={appointmentState}
-              /> */}
                 </div>
               ),
             )

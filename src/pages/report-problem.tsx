@@ -1,10 +1,11 @@
-import TitleHeader from "@/components/ui/title-header";
-import { useUtilsContext } from "@/contexts/utils-context";
-import { useUserContext } from "@/contexts/user-context";
 import { Button, Form, Input, Radio } from "antd";
 import { TbReport } from "react-icons/tb";
-import submitReport from "@/services/submit-report";
 import HeaderLine from "@/components/ui/header-line";
+import TitleHeader from "@/components/ui/title-header";
+import { useUserContext } from "@/contexts/user-context";
+import { useUtilsContext } from "@/contexts/utils-context";
+import submitReport from "@/services/submit-report";
+
 const { Item } = Form;
 const reportTypeData = [
   {
@@ -94,15 +95,6 @@ const ReportProblem = () => {
               fieldId="reportType"
               name="reportType"
             >
-              {/* <div>
-                <Radio.Group>
-                  <div>
-                    <Radio value={1}>d</Radio>
-                    <Radio value={2}>f</Radio>
-                    <Radio value={3}>f</Radio>
-                  </div>
-                </Radio.Group>
-              </div> */}
               <Radio.Group>
                 <div className="bg-gray-700 rounded shadow-xl">
                   <HeaderLine value="Report Cause" classText="ml-2" />

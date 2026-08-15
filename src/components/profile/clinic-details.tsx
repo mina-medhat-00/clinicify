@@ -1,9 +1,10 @@
-import { RiFileEditFill } from "react-icons/ri";
-import ProfileTable from "@/components/profile/profile-table";
 import { StopOutlined } from "@ant-design/icons";
 import { FaClinicMedical } from "react-icons/fa";
 import { GoLocation } from "react-icons/go";
 import { MdContactPhone } from "react-icons/md";
+import { RiFileEditFill } from "react-icons/ri";
+import ProfileTable from "@/components/profile/profile-table";
+
 const clinicDetails = [
   {
     headerColor: "bg-gray-800/80",

@@ -1,9 +1,10 @@
-import { Button, DatePicker, Form, Input, Select } from "antd";
-import { prefixSelector } from "@/utils/signup-utils";
 import { MailOutlined } from "@ant-design/icons";
-import submitPersonal from "@/services/submit-personal";
+import { Button, DatePicker, Form, Input, Select, Space } from "antd";
 import ProfileTable from "@/components/profile/profile-table";
+import submitPersonal from "@/services/submit-personal";
 import { cityOption } from "@/utils/sign-data";
+import { prefixSelector } from "@/utils/signup-utils";
+
 const { Item } = Form;
 const { Option } = Select;
 const PersonalForm = ({
@@ -97,10 +98,10 @@ const PersonalForm = ({
                 },
               ]}
             >
-              <Input
-                placeholder="Your phone number"
-                addonBefore={prefixSelector}
-              />
+              <Space.Compact className="w-full">
+                {prefixSelector}
+                <Input placeholder="Your phone number" />
+              </Space.Compact>
             </Item>
           ),
         },

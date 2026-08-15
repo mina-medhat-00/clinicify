@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { useAppointmentContext } from "@/contexts/appointment-context";
-import Cookies from "universal-cookie";
 import { Link } from "react-router-dom";
+import Cookies from "universal-cookie";
 import Loader from "@/components/ui/loader";
+import { useAppointmentContext } from "@/contexts/appointment-context";
 import { useChatContext } from "@/contexts/chat-context";
 
 const ChatAvailability = ({

@@ -1,7 +1,10 @@
 import { useEffect } from "react";
-import { BsFillArrowUpSquareFill } from "react-icons/bs";
-import { BsFillArrowDownSquareFill } from "react-icons/bs";
-import { BsClockFill } from "react-icons/bs";
+import {
+  BsClockFill,
+  BsFillArrowDownSquareFill,
+  BsFillArrowUpSquareFill,
+} from "react-icons/bs";
+
 const handleHours = (
   value?: any,
   type?: any,
@@ -208,18 +211,18 @@ const CountdownTimer = ({
           className="time-section text-center text-gray-700 font-medium text-xs sm:text-sm"
           id={`hours--${order}`}
         >
-          <div className="time-group flex gap-[5px]">
+          <div className="time-group flex gap-1.25">
             <div
               className={`time-segment block font-black w-6 sm:w-8 text-2xl sm:text-3xl`}
             >
               <div className={`segment-display relative h-full`}>
-                <div className="segment-display__top relative h-1/2 w-full overflow-hidden text-center leading-[1.5] text-[#eee] bg-blue-800"></div>
-                <div className="segment-display__bottom relative h-1/2 w-full overflow-hidden text-center leading-[0] text-white bg-blue-500"></div>
+                <div className="segment-display__top relative h-1/2 w-full overflow-hidden text-center leading-normal text-[#eee] bg-blue-800"></div>
+                <div className="segment-display__bottom relative h-1/2 w-full overflow-hidden text-center leading-0 text-white bg-blue-500"></div>
                 <div
-                  className={`segment-overlay segment-overlay-slot absolute top-0 h-full [perspective:400px] w-6 sm:w-8`}
+                  className={`segment-overlay segment-overlay-slot absolute top-0 h-full perspective-[400px] w-6 sm:w-8`}
                 >
-                  <div className="segment-overlay__top absolute top-0 h-1/2 w-full origin-bottom overflow-hidden text-center leading-[1.5] text-white bg-blue-800"></div>
-                  <div className="segment-overlay__bottom absolute bottom-0 h-1/2 w-full origin-top overflow-hidden text-center leading-[0] text-[#eee] bg-blue-500">
+                  <div className="segment-overlay__top absolute top-0 h-1/2 w-full origin-bottom overflow-hidden text-center leading-normal text-white bg-blue-800"></div>
+                  <div className="segment-overlay__bottom absolute bottom-0 h-1/2 w-full origin-top overflow-hidden text-center leading-0 text-[#eee] bg-blue-500">
                     {" "}
                   </div>
                 </div>
@@ -229,13 +232,13 @@ const CountdownTimer = ({
               className={`time-segment block font-black w-6 sm:w-8 text-2xl sm:text-3xl`}
             >
               <div className={`segment-display relative h-full`}>
-                <div className="segment-display__top relative h-1/2 w-full overflow-hidden text-center leading-[1.5] text-[#eee] bg-blue-800"></div>
-                <div className="segment-display__bottom relative h-1/2 w-full overflow-hidden text-center leading-[0] text-white bg-blue-500"></div>
+                <div className="segment-display__top relative h-1/2 w-full overflow-hidden text-center leading-normal text-[#eee] bg-blue-800"></div>
+                <div className="segment-display__bottom relative h-1/2 w-full overflow-hidden text-center leading-0 text-white bg-blue-500"></div>
                 <div
-                  className={`segment-overlay segment-overlay-slot absolute top-0 h-full [perspective:400px] w-6 sm:w-8`}
+                  className={`segment-overlay segment-overlay-slot absolute top-0 h-full perspective-[400px] w-6 sm:w-8`}
                 >
-                  <div className="segment-overlay__top absolute top-0 h-1/2 w-full origin-bottom overflow-hidden text-center leading-[1.5] text-white bg-blue-800"></div>
-                  <div className="segment-overlay__bottom absolute bottom-0 h-1/2 w-full origin-top overflow-hidden text-center leading-[0] text-[#eee] bg-blue-500"></div>
+                  <div className="segment-overlay__top absolute top-0 h-1/2 w-full origin-bottom overflow-hidden text-center leading-normal text-white bg-blue-800"></div>
+                  <div className="segment-overlay__bottom absolute bottom-0 h-1/2 w-full origin-top overflow-hidden text-center leading-0 text-[#eee] bg-blue-500"></div>
                 </div>
               </div>
             </div>
@@ -288,18 +291,18 @@ const CountdownTimer = ({
           className="time-section text-center text-gray-700 font-medium text-xs sm:text-sm"
           id={`minutes--${order}`}
         >
-          <div className="time-group flex gap-[5px]">
+          <div className="time-group flex gap-1.25">
             <div
               className={`time-segment block font-black w-6 sm:w-8 text-2xl sm:text-3xl`}
             >
               <div className={`segment-display relative h-full`}>
-                <div className="segment-display__top relative h-1/2 w-full overflow-hidden text-center leading-[1.5] text-[#eee] bg-blue-800"></div>
-                <div className="segment-display__bottom relative h-1/2 w-full overflow-hidden text-center leading-[0] text-white bg-blue-500"></div>
+                <div className="segment-display__top relative h-1/2 w-full overflow-hidden text-center leading-normal text-[#eee] bg-blue-800"></div>
+                <div className="segment-display__bottom relative h-1/2 w-full overflow-hidden text-center leading-0 text-white bg-blue-500"></div>
                 <div
-                  className={`segment-overlay segment-overlay-slot absolute top-0 h-full [perspective:400px] w-6 sm:w-8`}
+                  className={`segment-overlay segment-overlay-slot absolute top-0 h-full perspective-[400px] w-6 sm:w-8`}
                 >
-                  <div className="segment-overlay__top absolute top-0 h-1/2 w-full origin-bottom overflow-hidden text-center leading-[1.5] text-white bg-blue-800"></div>
-                  <div className="segment-overlay__bottom absolute bottom-0 h-1/2 w-full origin-top overflow-hidden text-center leading-[0] text-[#eee] bg-blue-500"></div>
+                  <div className="segment-overlay__top absolute top-0 h-1/2 w-full origin-bottom overflow-hidden text-center leading-normal text-white bg-blue-800"></div>
+                  <div className="segment-overlay__bottom absolute bottom-0 h-1/2 w-full origin-top overflow-hidden text-center leading-0 text-[#eee] bg-blue-500"></div>
                 </div>
               </div>
             </div>
@@ -307,13 +310,13 @@ const CountdownTimer = ({
               className={`time-segment block font-black w-6 sm:w-8 text-2xl sm:text-3xl`}
             >
               <div className={`segment-display relative h-full`}>
-                <div className="segment-display__top relative h-1/2 w-full overflow-hidden text-center leading-[1.5] text-[#eee] bg-blue-800"></div>
-                <div className="segment-display__bottom relative h-1/2 w-full overflow-hidden text-center leading-[0] text-white bg-blue-500"></div>
+                <div className="segment-display__top relative h-1/2 w-full overflow-hidden text-center leading-normal text-[#eee] bg-blue-800"></div>
+                <div className="segment-display__bottom relative h-1/2 w-full overflow-hidden text-center leading-0 text-white bg-blue-500"></div>
                 <div
-                  className={`segment-overlay segment-overlay-slot absolute top-0 h-full [perspective:400px] w-6 sm:w-8`}
+                  className={`segment-overlay segment-overlay-slot absolute top-0 h-full perspective-[400px] w-6 sm:w-8`}
                 >
-                  <div className="segment-overlay__top absolute top-0 h-1/2 w-full origin-bottom overflow-hidden text-center leading-[1.5] text-white bg-blue-800"></div>
-                  <div className="segment-overlay__bottom absolute bottom-0 h-1/2 w-full origin-top overflow-hidden text-center leading-[0] text-[#eee] bg-blue-500"></div>
+                  <div className="segment-overlay__top absolute top-0 h-1/2 w-full origin-bottom overflow-hidden text-center leading-normal text-white bg-blue-800"></div>
+                  <div className="segment-overlay__bottom absolute bottom-0 h-1/2 w-full origin-top overflow-hidden text-center leading-0 text-[#eee] bg-blue-500"></div>
                 </div>
               </div>
             </div>
@@ -322,7 +325,6 @@ const CountdownTimer = ({
         </div>
       </div>
       <div className="flex gap-2 select-none">
-        {/* {!isEvening && ( */}
         <div className="flex flex-col gap-1">
           <BsFillArrowUpSquareFill
             onClick={() =>
@@ -349,9 +351,7 @@ const CountdownTimer = ({
             className="cursor-pointer h-5 w-5 rounded-lg text-gray-500"
           />
         </div>
-        {/* )} */}
         <span className="text-2xl sm:text-3xl text-blue-500 font-medium">
-          {/* {isEvening ? "PM" : appointmentDetails.slotTime.timeMode} */}
           {directMode || appointmentDetails.slotTime.timeMode}
         </span>
       </div>

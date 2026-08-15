@@ -1,36 +1,36 @@
 import { useRef, useState } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import Cookies from "universal-cookie";
+import AppointmentPayment from "@/components/booking/appointment-payment";
+import Footer from "@/components/layout/footer";
 import Navbar from "@/components/layout/navbar";
-import HomePage from "@/pages/home-page";
+import Loader from "@/components/ui/loader";
+import ServerError from "@/components/ui/server-error";
+import {
+  ChatContextProvider,
+  DashboardContextProvider,
+  DoctorsContextProvider,
+  FeedbackContextProvider,
+  HomeContextProvider,
+  PostsContextProvider,
+  ProfileContextProvider,
+} from "@/contexts";
+import AppointmentContextProvider from "@/contexts/appointment-context";
+import { useUserContext } from "@/contexts/user-context";
+import { useUtilsContext } from "@/contexts/utils-context";
+import AdminDashboard from "@/pages/admin-dashboard";
+import Appointments from "@/pages/appointments";
+import Chat from "@/pages/chat";
+import DoctorDashboard from "@/pages/doctor-dashboard";
 import Doctors from "@/pages/doctors";
 import Feedbacks from "@/pages/feedbacks";
-import UserProfile from "@/pages/user-profile";
+import HomePage from "@/pages/home-page";
 import Login from "@/pages/login";
-import Signup from "@/pages/signup";
-import DoctorDashboard from "@/pages/doctor-dashboard";
-import Loader from "@/components/ui/loader";
-import Chat from "@/pages/chat";
-import Posts from "@/pages/posts";
 import OnlineMeeting from "@/pages/online-meeting";
-import Footer from "@/components/layout/footer";
-import Cookies from "universal-cookie";
-import {
-  DoctorsContextProvider,
-  HomeContextProvider,
-  ProfileContextProvider,
-  DashboardContextProvider,
-  FeedbackContextProvider,
-  PostsContextProvider,
-  ChatContextProvider,
-} from "@/contexts";
-import { useUserContext } from "@/contexts/user-context";
-import Appointments from "@/pages/appointments";
-import AppointmentContextProvider from "@/contexts/appointment-context";
-import AppointmentPayment from "@/components/booking/appointment-payment";
-import ServerError from "@/components/ui/server-error";
-import AdminDashboard from "@/pages/admin-dashboard";
-import { useUtilsContext } from "@/contexts/utils-context";
+import Posts from "@/pages/posts";
 import ReportProblem from "@/pages/report-problem";
+import Signup from "@/pages/signup";
+import UserProfile from "@/pages/user-profile";
 
 const cookies = new Cookies();
 const handleRoute = (
@@ -58,9 +58,7 @@ const App = () => {
   const userAuth = userData;
 
   return (
-    <div
-      className={`overflow-x-hidden //scroll--h app flex flex-col min-h-screen`}
-    >
+    <div className={`overflow-x-hidden app flex flex-col min-h-screen`}>
       <div className="relative flex grow flex-row flex-nowrap justify-between max-[678px]:min-h-full max-[678px]:flex-col max-[678px]:justify-start">
         {navActive && <Navbar DoctorRef={DoctorRef} />}
         <div

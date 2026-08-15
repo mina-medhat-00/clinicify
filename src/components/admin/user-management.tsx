@@ -1,30 +1,31 @@
-import { useRef, useState } from "react";
-import { Avatar, Button, Input, Space, Table } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
-import changeState from "@/services/change-state";
-import { useUserContext } from "@/contexts/user-context";
-import { useUsersContext } from "@/contexts/users-context";
+import { Avatar, Button, Input, Space, Table } from "antd";
+import { useRef, useState } from "react";
 import { BsGenderFemale, BsGenderMale } from "react-icons/bs";
-import { Link } from "react-router-dom";
 import { FaRegUser, FaUserSecret, FaUserTie } from "react-icons/fa";
 import { GiDoctorFace } from "react-icons/gi";
+import { Link } from "react-router-dom";
 import doctorPhoto from "@/assets/images/doctor-photo.png";
 import userPhoto from "@/assets/images/user-photo.png";
-import PopUp from "@/components/ui/pop-up";
 import Restrictions from "@/components/admin/restrictions";
+import PopUp from "@/components/ui/pop-up";
+import { useUserContext } from "@/contexts/user-context";
+import { useUsersContext } from "@/contexts/users-context";
+import changeState from "@/services/change-state";
 
 const UserManagement = (_props?: any) => {
   const [selectedUser, setSelectedUser] = useState<any>("");
   const [showPop, setShowPop] = useState(false);
   const searchInput = useRef(null);
-  const handleSearch = (selectedKeys?: any, confirm?: any, ..._args: any[]) => {
+  const handleSearch = (
+    _selectedKeys?: any,
+    confirm?: any,
+    ..._args: any[]
+  ) => {
     confirm();
-    //setSearchText(selectedKeys[0]);
-    //setSearchedColumn(dataIndex);
   };
   const handleReset = (clearFilters?: any, ..._args: any[]) => {
     clearFilters();
-    //setSearchText("");
   };
   const getColumnSearchProps = (dataIndex?: any, ..._args: any[]) => ({
     filterDropdown: ({
@@ -75,19 +76,6 @@ const UserManagement = (_props?: any) => {
           >
             Reset
           </Button>
-          {/* <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              confirm({
-                closeDropdown: false,
-              });
-              setSearchText(selectedKeys[0]);
-              setSearchedColumn(dataIndex);
-            }}
-          >
-          Filter
-          </Button> */}
           <Button
             type="link"
             size="small"
@@ -112,10 +100,12 @@ const UserManagement = (_props?: any) => {
         .toString()
         .toLowerCase()
         .includes(value.toLowerCase()),
-    onFilterDropdownOpenChange: (visible?: any, ..._args: any[]) => {
-      if (visible) {
-        setTimeout(() => searchInput.current?.select(), 100);
-      }
+    filterDropdownProps: {
+      onOpenChange: (visible?: any, ..._args: any[]) => {
+        if (visible) {
+          setTimeout(() => searchInput.current?.select(), 100);
+        }
+      },
     },
   });
   const columns = [

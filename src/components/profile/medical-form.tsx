@@ -1,6 +1,6 @@
-import { Input, Form, Button } from "antd";
-import submitMedical from "@/services/submit-medical";
+import { Button, Form, Input } from "antd";
 import ProfileTable from "@/components/profile/profile-table";
+import submitMedical from "@/services/submit-medical";
 
 const { Item } = Form;
 const MedicalForm = ({

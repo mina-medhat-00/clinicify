@@ -1,6 +1,12 @@
-import { Input, InputNumber, Form, Select, Switch } from "antd";
-import HeaderLine from "@/components/ui/header-line";
+import {
+  Form,
+  Input,
+  InputNumber,
+  Select,
+  Switch,
+} from "antd";
 import { useState } from "react";
+import HeaderLine from "@/components/ui/header-line";
 import { DoctorOptions } from "@/utils/sign-data";
 
 const { Item } = Form;
