@@ -32,10 +32,4 @@ export default defineConfig([
       "react-hooks/exhaustive-deps": "warn",
     },
   },
-  {
-    files: ["**/*.{test,spec}.{js,jsx}", "**/__test__/**/*.{js,jsx}"],
-    languageOptions: {
-      globals: { ...globals.browser, ...globals.node, ...globals.vitest },
-    },
-  },
 ]);

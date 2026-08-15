@@ -7,7 +7,6 @@ React front-end for the Clinicify online clinic platform.
 - React 19 + Vite 8
 - React Router 7
 - Ant Design 6 + Tailwind CSS 4
-- Vitest + Testing Library
 
 ## Getting started
 
@@ -26,5 +25,4 @@ backend API on port `5000` (`http://<hostname>:5000`).
 | `npm start` / `npm run dev` | Start the Vite development server |
 | `npm run build`             | Production build into `dist/`     |
 | `npm run preview`           | Preview the production build      |
-| `npm test`                  | Run the Vitest suite              |
 | `npm run lint`              | Run ESLint                        |
