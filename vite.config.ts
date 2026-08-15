@@ -11,6 +11,7 @@ export default defineConfig({
     babel({ presets: [reactCompilerPreset()] }),
     tailwindcss(),
   ],
+  envPrefix: ["VITE_", "STRIPE_"],
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),

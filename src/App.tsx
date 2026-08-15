@@ -1,20 +1,18 @@
 import { useRef, useState } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
-import {
-  Navbar,
-  HomePage,
-  Doctors,
-  Feedbacks,
-  UserProfile,
-  Login,
-  Signup,
-  DoctorDashboard,
-  Loader,
-  Chat,
-  Posts,
-  OnlineMeeting,
-} from "@/components";
-import Footer from "@/components/footer/Footer";
+import Navbar from "@/components/layout/navbar";
+import HomePage from "@/pages/home-page";
+import Doctors from "@/pages/doctors";
+import Feedbacks from "@/pages/feedbacks";
+import UserProfile from "@/pages/user-profile";
+import Login from "@/pages/login";
+import Signup from "@/pages/signup";
+import DoctorDashboard from "@/pages/doctor-dashboard";
+import Loader from "@/components/ui/loader";
+import Chat from "@/pages/chat";
+import Posts from "@/pages/posts";
+import OnlineMeeting from "@/pages/online-meeting";
+import Footer from "@/components/layout/footer";
 import Cookies from "universal-cookie";
 import {
   DoctorsContextProvider,
@@ -24,18 +22,24 @@ import {
   FeedbackContextProvider,
   PostsContextProvider,
   ChatContextProvider,
-} from "@/hooks";
-import { useUserContext } from "@/hooks/UserContextProvider";
-import Appointments from "@/components/appointments/Appointments";
-import AppointmentContextProvider from "@/hooks/AppointmentContextProvider";
-import AppointmentPayment from "@/utils/booking/AppointmentPayment";
-import ServerError from "@/utils/error/ServerError";
-import AdminDashboard from "@/components/admin/AdminDashboard";
-import { useUtilsContext } from "@/hooks/UtilsContextProvider";
-import ReportProblem from "@/components/report/ReportProblem";
+} from "@/contexts";
+import { useUserContext } from "@/contexts/user-context";
+import Appointments from "@/pages/appointments";
+import AppointmentContextProvider from "@/contexts/appointment-context";
+import AppointmentPayment from "@/components/booking/appointment-payment";
+import ServerError from "@/components/ui/server-error";
+import AdminDashboard from "@/pages/admin-dashboard";
+import { useUtilsContext } from "@/contexts/utils-context";
+import ReportProblem from "@/pages/report-problem";
 
 const cookies = new Cookies();
-const handleRoute = (element?: any, permission?: any, isLoading?: any, isError?: any, ..._args: any[]) =>
+const handleRoute = (
+  element?: any,
+  permission?: any,
+  isLoading?: any,
+  isError?: any,
+  ..._args: any[]
+) =>
   permission ? (
     element
   ) : isLoading ? (
@@ -51,8 +55,8 @@ const App = () => {
   const location = useLocation();
   const { userData, isLoading, isError } = useUserContext();
   const { lan } = useUtilsContext();
-  // if (userData) window.localStorage.setItem("user", JSON.stringify(userData));
   const userAuth = userData;
+
   return (
     <div
       className={`overflow-x-hidden //scroll--h app flex flex-col min-h-screen`}
