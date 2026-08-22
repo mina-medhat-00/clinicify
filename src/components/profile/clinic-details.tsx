@@ -1,8 +1,4 @@
-import { StopOutlined } from "@ant-design/icons";
-import { FaClinicMedical } from "react-icons/fa";
-import { GoLocation } from "react-icons/go";
-import { MdContactPhone } from "react-icons/md";
-import { RiFileEditFill } from "react-icons/ri";
+import { Ban, Hospital, MapPin, Pencil, Phone } from "lucide-react";
 import ProfileTable from "@/components/profile/profile-table";
 
 const clinicDetails = [
@@ -10,7 +6,7 @@ const clinicDetails = [
     headerColor: "bg-gray-800/80",
     headers: [
       <div className="flex gap-2 items-center">
-        <GoLocation />
+        <MapPin />
         Location Details
       </div>,
     ],
@@ -29,7 +25,7 @@ const clinicDetails = [
     headerColor: "bg-gray-700/80",
     headers: [
       <div className="flex gap-2 items-center">
-        <MdContactPhone />
+        <Phone />
         Contact
       </div>,
     ],
@@ -45,44 +41,55 @@ const clinicDetails = [
         preValue: "clinic_prefix",
       },
     ],
-    icon: <StopOutlined />,
+    icon: <Ban />,
   },
 ];
-const ClinicTable = ({
+function ClinicTable({
   headers,
   data,
   clinicValues,
   headerColor,
   propColor,
   icon,
-}: any) => {
+}: any) {
   return (
     <div className="flex justify-between gap-2 flex-wrap items-center">
       <ProfileTable
         icon={icon}
         headerColor={headerColor}
         propColor={propColor}
-        data={data?.map(({ label, name, preValue }: any) => ({
-          name: label,
-          value: clinicValues?.[name],
-          preValue: clinicValues?.[preValue],
-        }))}
+        data={data?.map(function ({ label, name, preValue }: any) {
+          return {
+            name: label,
+            value: clinicValues?.[name],
+            preValue: clinicValues?.[preValue],
+          };
+        })}
         headers={headers}
       />
     </div>
   );
-};
-const ClinicDetails = ({ admin, setHandleDrawer, clinicValues, showEdit }: any) => {
+}
+function ClinicDetails({
+  admin,
+  setHandleDrawer,
+  clinicValues,
+  showEdit,
+}: any) {
   return (
     <div
       className="clinic--wrapper--details 
 my-5 rounded-xl"
     >
       <div className="flex justify-center items-center gap-2 mt-4 mb-4 text-white font-medium text-lg sm:text-xl p-4 bg-gray-800">
-        <FaClinicMedical /> Clinic Information
+        <Hospital /> Clinic Information
       </div>
-      {clinicDetails?.map(
-        ({ data, headers, headerColor, propColor, icon }: any, i?: any, ..._args: any[]) => (
+      {clinicDetails?.map(function (
+        { data, headers, headerColor, propColor, icon }: any,
+        i?: any,
+        ..._args: any[]
+      ) {
+        return (
           <ClinicTable
             key={i + 1}
             icon={icon}
@@ -93,30 +100,29 @@ my-5 rounded-xl"
             showEdit={showEdit}
             clinicValues={clinicValues}
           />
-        ),
-      )}
+        );
+      })}
       {!admin && (
         <div
-          onClick={() =>
-            setHandleDrawer((draw?: any, ..._args: any[]) => ({
-              ...draw,
-              isOpen: true,
-              type: "clinic",
-              name: "Clinic Information",
-            }))
-          }
-          className="bg-gray-300/50 gap-2 hover:bg-gray-300/80 flex justify-center items-center h-24 text-center cursor-pointer text-gray-500
-     text-lg sm:text-xl xl:text-2xl font-medium rounded-lg hover:shadow-sm p-3 hover:text-gray-700"
-          style={{
-            flexGrow: 2,
+          onClick={function () {
+            setHandleDrawer(function (draw?: any, ..._args: any[]) {
+              return {
+                ...draw,
+                isOpen: true,
+                type: "clinic",
+                name: "Clinic Information",
+              };
+            });
           }}
+          className="bg-gray-300/50 gap-2 hover:bg-gray-300/80 flex justify-center items-center h-24 text-center cursor-pointer text-gray-500
+     text-lg sm:text-xl xl:text-2xl font-medium rounded-lg hover:shadow-sm p-3 hover:text-gray-700 grow"
         >
-          <RiFileEditFill className="w-7 h-7" />
+          <Pencil className="w-7 h-7" />
           Edit Clinic Information
         </div>
       )}
     </div>
   );
-};
+}
 
 export default ClinicDetails;

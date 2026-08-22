@@ -1,24 +1,13 @@
-const Arrow = ({ color, arrowColor }: any) => {
+import { ChevronsDown } from "lucide-react";
+
+function Arrow({ color, arrowColor }: any) {
   return (
-    <div>
-      <div className={`text-lg sm:text-2xl ${color ? color : "text-blue-400"}`}>
-        \&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/
-      </div>
-      <div className={`text-lg sm:text-2xl ${color ? color : "text-blue-400"}`}>
-        \&nbsp;&nbsp;&nbsp;/
-      </div>
-      <div className={`text-lg sm:text-2xl ${color ? color : "text-blue-400"}`}>
-        \/
-      </div>
-      <div
-        className={`text-lg sm:text-2xl ${
-          arrowColor ? arrowColor : color ? color : "text-blue-400"
-        }`}
-      >
-        \/
-      </div>
-    </div>
+    <ChevronsDown
+      className={`mx-auto size-8 sm:size-10 ${
+        arrowColor ? arrowColor : color ? color : "text-blue-400"
+      }`}
+    />
   );
-};
+}
 
 export default Arrow;

@@ -1,29 +1,31 @@
 import axios from "axios";
-import {
-  createContext,
-  useContext,
-  useLayoutEffect,
-  useState,
-} from "react";
+import { createContext, useContext, useLayoutEffect, useState } from "react";
 import { useUserContext } from "@/contexts/user-context";
 import { apiUrl } from "@/utils/api";
 
 const DashboardData = createContext<any>(null);
-const DashboardContextProvider = ({ children, token }: any) => {
+function DashboardContextProvider({ children, token }: any) {
   const { fetchUserData } = useUserContext();
   const [isLoading, setIsLoading] = useState(true);
   const [dashboardData, setDashboardData] = useState({});
-  const fetchDashboardData = async (active?: any, directToken?: any, ..._args: any[]) => {
+  async function fetchDashboardData(
+    active?: any,
+    directToken?: any,
+    ..._args: any[]
+  ) {
     setIsLoading(true);
     if (!token && !active) {
       setDashboardData(null);
       return setIsLoading(false);
     }
     try {
-      const { data } = await axios.request({ url: apiUrl("/dashboard"), ...{
-        headers: { Authorization: `Bearer ${active ? directToken : token}` },
-        timeout: 10000,
-      } });
+      const { data } = await axios.request({
+        url: apiUrl("/dashboard"),
+        ...{
+          headers: { Authorization: `Bearer ${active ? directToken : token}` },
+          timeout: 10000,
+        },
+      });
       setDashboardData(data?.data);
       setIsLoading(false);
       return data;
@@ -60,8 +62,8 @@ const DashboardContextProvider = ({ children, token }: any) => {
       }
       setIsLoading(false);
     }
-  };
-  useLayoutEffect(() => {
+  }
+  useLayoutEffect(function () {
     fetchDashboardData();
   }, []);
   return (
@@ -76,8 +78,10 @@ const DashboardContextProvider = ({ children, token }: any) => {
       {children}
     </DashboardData.Provider>
   );
-};
+}
 
 export default DashboardContextProvider;
 
-export const useDashboardContext = () => useContext(DashboardData);
+export function useDashboardContext() {
+  return useContext(DashboardData);
+}

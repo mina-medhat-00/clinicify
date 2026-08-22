@@ -1,7 +1,5 @@
-import { Button, Form, Input, Select, Space } from "antd";
-import { BsFillTelephoneFill, BsPhoneVibrate } from "react-icons/bs";
-import { GiModernCity } from "react-icons/gi";
-import { SiOpenstreetmap } from "react-icons/si";
+import { Button, Form, Input, Select, Space } from "@/components/ui/kit";
+import { Building2, Map, Phone, Smartphone } from "lucide-react";
 import { useProfileContext } from "@/contexts/profile-context";
 import { useUserContext } from "@/contexts/user-context";
 import submitClinic from "@/services/submit-clinic";
@@ -9,7 +7,7 @@ import { cityOptions } from "@/utils/sign-data";
 import { prefixSelector } from "@/utils/signup-utils";
 
 const { Item } = Form;
-const ClinicRegister = () => {
+function ClinicRegister() {
   const { messageApi, fetchUserData, userData } = useUserContext();
   const { fetchProfileData } = useProfileContext();
   return (
@@ -22,7 +20,7 @@ const ClinicRegister = () => {
         initialValues={{
           prefix: "20",
         }}
-        onFinish={(values?: any, ..._args: any[]) => {
+        onFinish={function (values?: any, ..._args: any[]) {
           submitClinic(
             values,
             messageApi,
@@ -34,60 +32,58 @@ const ClinicRegister = () => {
       >
         <div className="bg-gray-700 p-2 rounded-md">
           <Item className="w-full">
-            <Input.Group className="w-full">
-              <div className="flex flex-wrap gap-1 sm:flex-nowrap items-center">
-                <div className="mt-2 flex w-full sm:w-2/5 [&>div]:block">
-                  <div className="w-full">
-                    <div className="flex gap-0.5 pb-1 items-center">
-                      <GiModernCity className="text-white text-xl" />
-                      <label className="text-gray-300 px-2">Clinic City</label>
-                    </div>
-                    <Item
-                      name={["address", "city"]}
-                      rules={[
-                        {
-                          required: true,
-                          message: "city is required",
-                        },
-                      ]}
-                      className="m-0 p-0"
-                    >
-                      <Select
-                        placeholder="Select Clinic Location"
-                        showSearch
-                        optionFilterProp="label"
-                        options={cityOptions}
-                      />
-                    </Item>
-                  </div>
-                </div>
-                <div className="grow mt-2">
+            <div className="flex w-full flex-wrap gap-1 sm:flex-nowrap items-center">
+              <div className="mt-2 flex w-full sm:w-2/5 [&>div]:block">
+                <div className="w-full">
                   <div className="flex gap-0.5 pb-1 items-center">
-                    <SiOpenstreetmap className="text-white text-xl" />
-                    <label className="text-gray-300 px-2">Clinic Street</label>
+                    <Building2 className="text-white text-xl" />
+                    <label className="text-gray-300 px-2">Clinic City</label>
                   </div>
                   <Item
-                    name={["address", "street"]}
-                    noStyle
+                    name={["address", "city"]}
                     rules={[
                       {
                         required: true,
-                        message: "Street is required",
+                        message: "city is required",
                       },
                     ]}
-                    className="grow"
+                    className="m-0 p-0"
                   >
-                    <Input placeholder="Clinic street" />
+                    <Select
+                      placeholder="Select Clinic Location"
+                      showSearch
+                      optionFilterProp="label"
+                      options={cityOptions}
+                    />
                   </Item>
                 </div>
               </div>
-            </Input.Group>
+              <div className="grow mt-2">
+                <div className="flex gap-0.5 pb-1 items-center">
+                  <Map className="text-white text-xl" />
+                  <label className="text-gray-300 px-2">Clinic Street</label>
+                </div>
+                <Item
+                  name={["address", "street"]}
+                  noStyle
+                  rules={[
+                    {
+                      required: true,
+                      message: "Street is required",
+                    },
+                  ]}
+                  className="grow"
+                >
+                  <Input placeholder="Clinic street" />
+                </Item>
+              </div>
+            </div>
           </Item>
           <hr className="border-2 mb-2" />
           <div className="flex flex-wrap gap-1 sm:flex-nowrap items-center">
             <div className="grow">
               <div className="flex gap-0.5 pb-1 items-center">
-                <BsPhoneVibrate className="text-white text-xl" />
+                <Smartphone className="text-white text-xl" />
                 <label className="text-gray-300 px-2">
                   Contact Phone Number
                 </label>
@@ -114,7 +110,7 @@ const ClinicRegister = () => {
             </div>
             <div className="grow">
               <div className="flex gap-0.5 pb-1 items-center">
-                <BsFillTelephoneFill className="text-white text-xl" />
+                <Phone className="text-white text-xl" />
                 <label className="text-gray-300 px-2">
                   Contact Telephone
                   <span className="text-gray-200 font-bold"> (optional)</span>
@@ -140,6 +136,6 @@ const ClinicRegister = () => {
       </Form>
     </div>
   );
-};
+}
 
 export default ClinicRegister;

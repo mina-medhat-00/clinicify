@@ -3,7 +3,7 @@ import Cookies from "universal-cookie";
 import { apiUrl } from "@/utils/api";
 
 const cookies = new Cookies();
-const bookAppointment = (
+function bookAppointment(
   selectedDate?: any,
   bookedSlot?: any,
   appointmentId?: any,
@@ -19,7 +19,7 @@ const bookAppointment = (
   socket?: any,
   pi?: any,
   navigate?: any,
-) => {
+) {
   if (appointmentId) {
     const data = {
       data: {
@@ -29,11 +29,13 @@ const bookAppointment = (
         doctorId: profileId,
       },
     };
-      axios
+    axios
       .post(
-        apiUrl(`/book/appointment${isCheck ? "?check=true" : ""}${
-          pi ? `&pi=${pi?.id}` : ""
-        }`),
+        apiUrl(
+          `/book/appointment${isCheck ? "?check=true" : ""}${
+            pi ? `&pi=${pi?.id}` : ""
+          }`,
+        ),
         data,
         {
           headers: {
@@ -42,7 +44,7 @@ const bookAppointment = (
           },
         },
       )
-      .then(() => {
+      .then(function () {
         fetchSlotsData(
           {
             date: selectedDate,
@@ -61,17 +63,15 @@ const bookAppointment = (
 
         if (pi) {
           setIsLoading(false);
-          setTimeout(
-            () =>
-              navigate(
-                `/profile/${profileId}?payment_intent_client_secret=${pi?.client_secret}`,
-              ),
-            500,
-          );
+          setTimeout(function () {
+            navigate(
+              `/profile/${profileId}?payment_intent_client_secret=${pi?.client_secret}`,
+            );
+          }, 500);
         }
         if (isCheck) resolve("done");
       })
-      .catch((err?: any, ..._args: any[]) => {
+      .catch(function (err?: any, ..._args: any[]) {
         if (pi) setIsLoading(false);
         if (isCheck) resolve("err");
         if (err?.response?.status == 400) {
@@ -120,6 +120,6 @@ const bookAppointment = (
           });
       });
   }
-};
+}
 
 export default bookAppointment;

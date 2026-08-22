@@ -1,6 +1,6 @@
-import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import { Button, Checkbox, Form, Input, Typography } from "antd";
+import { Button, Checkbox, Form, Input, Typography } from "@/components/ui/kit";
 import axios from "axios";
+import { Lock, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
@@ -11,27 +11,29 @@ import { apiUrl } from "@/utils/api";
 
 const { Title } = Typography;
 
-const getMessage = (
+function getMessage(
   key?: any,
   type?: any,
   content?: any,
   duration?: any,
   ..._args: any[]
-) => ({
-  key,
-  type,
-  content,
-  duration,
-});
+) {
+  return {
+    key,
+    type,
+    content,
+    duration,
+  };
+}
 
-const signing = (
+function signing(
   values?: any,
   messageApi?: any,
   setValidState?: any,
   navigate?: any,
   fetchUserData?: any,
   location?: any,
-) => {
+) {
   messageApi.open(getMessage(1, "loading", "verifying...", 8));
   delete values?.remember;
   axios
@@ -47,31 +49,35 @@ const signing = (
         withCredentials: true,
       },
     )
-    .then(async ({ data }: any) => {
+    .then(async function ({ data }: any) {
       const cookies = new Cookies();
       if (data?.data?.token) cookies.set("accessToken", data?.data?.token);
 
       messageApi.open(getMessage(1, "success", "logged in successfully", 2));
-      setTimeout(() => {
+      setTimeout(function () {
         const loc = new URLSearchParams(location?.search)?.get("redirect");
         navigate(loc ? loc : "/");
         fetchUserData(true, cookies.get("accessToken"));
       }, 2000);
     })
-    .catch((err?: any, ..._args: any[]) => {
+    .catch(function (err?: any, ..._args: any[]) {
       const { isExist, isVerified } = err?.response?.data?.data || {};
       if (isExist == 0) {
         messageApi.open(getMessage(1, "error", "invalid username", 2));
-        setValidState((state?: any, ..._args: any[]) => ({
-          ...state,
-          invalidUser: 1,
-        }));
+        setValidState(function (state?: any, ..._args: any[]) {
+          return {
+            ...state,
+            invalidUser: 1,
+          };
+        });
       } else if (isVerified == 0) {
         messageApi.open(getMessage(1, "error", "incorrect password", 2));
-        setValidState((state?: any, ..._args: any[]) => ({
-          ...state,
-          invalidPass: 1,
-        }));
+        setValidState(function (state?: any, ..._args: any[]) {
+          return {
+            ...state,
+            invalidPass: 1,
+          };
+        });
       } else {
         messageApi.open(
           getMessage(1, "error", "there's some issues, try again later", 2),
@@ -79,8 +85,8 @@ const signing = (
         setValidState({ invalidUser: 0, invalidPass: 0 });
       }
     });
-};
-const Login = () => {
+}
+function Login() {
   const { messageApi } = useUtilsContext();
   const {
     tokenExpired: isTokenExpired,
@@ -94,21 +100,18 @@ const Login = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { Item } = Form;
-  useEffect(() => {
-    if (user?.user_id) {
-      navigate("/");
-      return;
-    }
-  }, [user]);
+  useEffect(
+    function () {
+      if (user?.user_id) {
+        navigate("/");
+        return;
+      }
+    },
+    [user],
+  );
   const [, setFormValues] = useState(null);
   return (
-    <div
-      className="grow bg-[linear-gradient(45deg,gray,rgb(85,114,115))]"
-      style={{
-        background:
-          "linear-gradient(to right top,rgb(93 98 128 / 85%) , rgb(108 146 192 / 90%))",
-      }}
-    >
+    <div className="grow bg-linear-to-tr from-slate-500/85 to-blue-400/90">
       <div
         className="py-10 px-3 sm:px-10  grow
       flex justify-start mt-20 flex-col items-center"
@@ -118,9 +121,7 @@ const Login = () => {
           center
           invisible
           size="no"
-          classText="text-5xl xl:text-6xl"
-          style={{ color: "white", marginBottom: "65px" }}
-          lineStyle={{ marginBottom: "65px" }}
+          classText="text-5xl xl:text-6xl text-white mb-16"
         />
         {isTokenExpired && (
           <Title level={5} className=" text-red-400 text-xs">
@@ -134,7 +135,7 @@ const Login = () => {
           className="w-full sm:w-3/4 lg:w-1/2 2xl:w-1/3 bg-transparent"
           initialValues={{ remember: false }}
           autoComplete="on"
-          onFinish={(val?: any, ..._args: any[]) =>
+          onFinish={function (val?: any, ..._args: any[]) {
             signing(
               val,
               messageApi,
@@ -142,9 +143,9 @@ const Login = () => {
               navigate,
               fetchUserData,
               location,
-            )
-          }
-          onValuesChange={(c?: any, values?: any, ..._args: any[]) => {
+            );
+          }}
+          onValuesChange={function (c?: any, values?: any, ..._args: any[]) {
             setFormValues(values);
             setValidState({ invalidUser: 0, invalidPass: 0 });
           }}
@@ -157,7 +158,6 @@ const Login = () => {
                 ? `be sure you wrote the correct username`
                 : null
             }
-
             rules={[
               {
                 required: true,
@@ -169,7 +169,10 @@ const Login = () => {
               },
             ]}
           >
-            <Input prefix={<UserOutlined />} placeholder={"Username"} />
+            <Input
+              prefix={<User className="size-4" />}
+              placeholder={"Username"}
+            />
           </Item>
           <Item
             name="password"
@@ -194,12 +197,12 @@ const Login = () => {
             ]}
           >
             <Input.Password
-              prefix={<LockOutlined />}
+              prefix={<Lock className="size-4" />}
               placeholder={"Password"}
             />
           </Item>
           <Item name="remember" valuePropName="checked">
-            <Checkbox style={{ color: "white" }}>{"Remember me"}</Checkbox>
+            <Checkbox className="text-white">{"Remember me"}</Checkbox>
           </Item>
           <Item>
             <Button
@@ -214,6 +217,6 @@ const Login = () => {
       </div>
     </div>
   );
-};
+}
 
 export default Login;

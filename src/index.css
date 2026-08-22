@@ -1,7 +1,34 @@
-@layer theme, base, antd, components, utilities;
 @import "tailwindcss";
 
+@font-face {
+  font-family: "SF Pro Display";
+  src: url("./assets/fonts/SFProDisplay-Regular.otf") format("opentype");
+  font-weight: 100 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "SF Pro Display";
+  src: url("./assets/fonts/SFProDisplay-Medium.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "SF Pro Display";
+  src: url("./assets/fonts/SFProDisplay-Bold.otf") format("opentype");
+  font-weight: 600 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
+  --font-sans: "SF Pro Display", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "SF Pro Display", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "SF Pro Display", ui-sans-serif, system-ui, sans-serif;
+  --default-font-family: var(--font-sans);
   --color-text-primary: #000;
   --color-bg-primary: #fff;
   --color-bg-secondary: #f9f9f9;
@@ -42,7 +69,7 @@
   html,
   body,
   #root {
-    @apply min-h-full;
+    @apply min-h-full font-sans;
   }
 
   html {
@@ -51,18 +78,22 @@
 
   body {
     @apply m-0 bg-white text-sm text-black/85;
-    font-family:
-      -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
-      Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-      "Segoe UI Symbol", "Noto Color Emoji";
+  }
+
+  button,
+  input,
+  textarea,
+  select,
+  optgroup {
+    font-family: inherit;
   }
 
   a {
-    @apply text-[#1890ff] no-underline;
+    @apply text-blue-500 no-underline;
   }
 }
 
-/* Scrollbars and Ant Design internals that cannot live on a single className */
+/* Scrollbars that cannot live on a single className */
 @layer utilities {
   .scroll--v::-webkit-scrollbar,
   ul[id*="sub31"]::-webkit-scrollbar {
@@ -74,28 +105,24 @@
   }
 
   .scroll--h::-webkit-scrollbar-thumb {
-    @apply rounded-5 bg-[#6f797d];
+    @apply bg-gray-500;
   }
 
   .scroll--v::-webkit-scrollbar-thumb,
   ul[id*="sub31"]::-webkit-scrollbar-thumb {
-    @apply rounded-5 bg-[#3a73b0];
+    @apply bg-blue-600;
   }
 
   ul[id*="sub31"]::-webkit-scrollbar-track {
-    @apply rounded-5 bg-[#e8e6ee];
+    @apply bg-zinc-200;
   }
 
   .scroll--v--comment::-webkit-scrollbar-thumb {
-    @apply border border-solid border-[rgb(137,168,188)] bg-[#395460];
-  }
-
-  .scroll--v--comment::-webkit-scrollbar-track {
-    @apply rounded-2.5;
+    @apply border border-solid border-slate-400 bg-slate-700;
   }
 
   .scroll--v--chat::-webkit-scrollbar-thumb {
-    @apply border border-solid border-[rgb(219,231,239)] bg-[#373149aa];
+    @apply border border-solid border-slate-200 bg-violet-950/70;
   }
 
   .scroll--h--chat--white::-webkit-scrollbar-thumb {
@@ -119,7 +146,7 @@
   }
 
   .epr-body::-webkit-scrollbar-thumb {
-    @apply rounded-6.25 bg-[#344a60];
+    @apply bg-slate-700;
   }
 
   .flip .segment-overlay__top {
@@ -140,36 +167,8 @@
 }
 
 @layer components {
-  .ant-menu-root {
-    @apply text-base;
-  }
-
-  .ant-menu-root li:hover {
-    background-color: #1f3458 !important;
-    color: #000 !important;
-  }
-
-  ul[id*="subdoc3"] {
-    margin-right: 10px !important;
-    border-top-left-radius: 15px !important;
-    border-top-right-radius: 15px !important;
-    background-color: rgb(23, 65, 107) !important;
-  }
-
-  ul[id*="sub31"] {
-    height: 200px !important;
-    @apply overflow-x-hidden overflow-y-scroll;
-    border-top-left-radius: 15px !important;
-    border-top-right-radius: 15px !important;
-    background-color: rgb(31, 88, 126) !important;
-  }
-
   .ant-statistic-content-value {
     display: inline-flex !important;
-  }
-
-  .ant-upload-list-item-container {
-    flex-grow: 1 !important;
   }
 
   .ant-upload-list-item {
@@ -177,7 +176,7 @@
   }
 
   .ant-upload-list {
-    @apply block flex-wrap justify-between;
+    @apply flex flex-wrap justify-between;
   }
 
   .ant-upload-list-item:hover {
@@ -186,7 +185,6 @@
 
   .ant-upload-list-item-action svg {
     color: #ccb7be !important;
-    word-break: break-all !important;
     @apply text-xl;
   }
 
@@ -194,67 +192,19 @@
     color: #b12051 !important;
   }
 
-  .ant-upload-list-item-name {
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    white-space: nowrap !important;
+  .users--table {
+    @apply bg-gray-700 text-white;
   }
 
-  .ant-menu-root li[data-menu-id*="user"] {
-    padding-left: 3px !important;
-    @apply flex items-center justify-start;
-  }
-
-  .admin--table .ant-table-pagination {
-    justify-content: flex-start !important;
-  }
-
-  .users--table .ant-table-content {
-    @apply rounded-2.5 bg-gray-700 text-white;
-  }
-
-  .users--table .ant-table-cell-row-hover {
+  .users--table tr:hover {
     background-color: rgb(75 85 99) !important;
   }
 
-  .reports--table .ant-table-content {
-    @apply rounded-2.5 bg-[rgb(64,128,160)] text-white;
+  .reports--table {
+    @apply bg-sky-700 text-white;
   }
 
-  .reports--table .ant-table-cell-row-hover {
+  .reports--table tr:hover {
     background-color: rgb(64, 136, 172) !important;
-  }
-
-  .table--grid div[class*="xl:w-1/3"] {
-    width: 100% !important;
-    margin: 0 !important;
-  }
-
-  .h--full.table--grid div[class*="xl:w-1/3"] {
-    height: 100% !important;
-  }
-
-  .table--grid td > div,
-  .table--grid td {
-    margin: 0 !important;
-  }
-
-  .table--grid td {
-    border: 0 !important;
-    width: 100%;
-    margin-left: auto !important;
-    margin-right: auto !important;
-  }
-
-  .table--grid .ant-table-tbody {
-    @apply flex flex-wrap justify-between gap-1.25;
-  }
-
-  .table--grid.no--gap .ant-table-tbody {
-    @apply gap-0;
-  }
-
-  .table--grid.no--gap .ant-table-tbody td {
-    @apply p-1.25;
   }
 }

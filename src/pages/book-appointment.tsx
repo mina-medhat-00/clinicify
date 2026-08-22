@@ -1,4 +1,4 @@
-import { Button, Empty, Popover, Typography } from "antd";
+import { Button, Empty, Popover, Typography } from "@/components/ui/kit";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -24,43 +24,48 @@ function BookAppointment({ userid, doctorId, socket, timeZone }: any) {
   const [freeSlots, setFreeSlots] = useState(null);
   const navigate = useNavigate();
   const bDate = window?.localStorage?.getItem("book_date");
-  const [selectedDate, setSelectedDate] = useState(() =>
-    bDate
+  const [selectedDate, setSelectedDate] = useState(function () {
+    return bDate
       ? dayjs(bDate) > dayjs() &&
         dayjs(bDate).month() == dayjs().month() &&
         dayjs(bDate).year() == dayjs().year()
         ? dayjs(bDate)
         : dayjs()
-      : dayjs(),
-  );
+      : dayjs();
+  });
   const clientSecret = new URLSearchParams(window.location.search).get(
     "payment_intent_client_secret",
   );
   const appointmentId = window?.localStorage?.getItem("book_appointment");
-  useEffect(() => {
-    if (appointmentId && !bookedAppointment && !isPayment && !isLoading) {
-      const appDetails = freeSlots?.filter(
-        ({ appointmentId: appointment_id }: any) =>
-          appointmentId == appointment_id,
-      );
-      if (appDetails) {
-        setIsPayment("payment_processing");
-        setBookedAppointment(appDetails?.[0]);
+  useEffect(
+    function () {
+      if (appointmentId && !bookedAppointment && !isPayment && !isLoading) {
+        const appDetails = freeSlots?.filter(function ({
+          appointmentId: appointment_id,
+        }: any) {
+          return appointmentId == appointment_id;
+        });
+        if (appDetails) {
+          setIsPayment("payment_processing");
+          setBookedAppointment(appDetails?.[0]);
+        }
       }
-    }
-    if (appointmentId && !isLoading)
-      window.localStorage.removeItem("book_appointment");
-  }, [appointmentId, freeSlots]);
+      if (appointmentId && !isLoading)
+        window.localStorage.removeItem("book_appointment");
+    },
+    [appointmentId, freeSlots],
+  );
 
-  useEffect(() => {
-    const handleBook = async () => {
-      const stripe = await getStripe();
-      if (!stripe || !clientSecret || isLoading) {
-        return;
-      }
-      stripe
-        .retrievePaymentIntent(clientSecret)
-        .then(({ paymentIntent }: any) => {
+  useEffect(
+    function () {
+      async function handleBook() {
+        const stripe = await getStripe();
+        if (!stripe || !clientSecret || isLoading) {
+          return;
+        }
+        stripe.retrievePaymentIntent(clientSecret).then(function ({
+          paymentIntent,
+        }: any) {
           switch (paymentIntent.status) {
             case "succeeded": {
               const appointmentRecord = JSON.parse(paymentIntent?.description);
@@ -81,46 +86,57 @@ function BookAppointment({ userid, doctorId, socket, timeZone }: any) {
             }
           }
         });
-    };
-    handleBook();
-  }, [clientSecret]);
-  useEffect(() => {
-    setFreeSlots(slotsData?.freeSlots);
-  }, [slotsData, selectedDate?.format("YYYY-MM-DD")]);
-  useEffect(() => {
+      }
+      handleBook();
+    },
+    [clientSecret],
+  );
+  useEffect(
+    function () {
+      setFreeSlots(slotsData?.freeSlots);
+    },
+    [slotsData, selectedDate?.format("YYYY-MM-DD")],
+  );
+  useEffect(function () {
     socket.emit("join_doctor", doctorId);
   }, []);
-  useEffect(() => {
-    const getSlots = (data?: any, ..._args: any[]) => {
-      if (selectedDate.format("YYYY-MM-DD") == data?.date)
-        fetchSlotsData(
-          {
-            date: selectedDate.format("YYYY-MM-DD"),
-            doctorId,
-          },
-          true,
-        );
-    };
-    if (doctorId && selectedDate.format("YYYY-MM-DD")) {
-      socket.on("update_slots", getSlots);
-      fetchSlotsData({
-        date: selectedDate.format("YYYY-MM-DD"),
-        doctorId,
-      });
-    }
-    return () => {
-      socket.off("update_slots", getSlots);
-    };
-  }, [selectedDate, doctorId]);
-  const handleDate = (val?: any, ..._args: any[]) => {
+  useEffect(
+    function () {
+      function getSlots(data?: any, ..._args: any[]) {
+        if (selectedDate.format("YYYY-MM-DD") == data?.date)
+          fetchSlotsData(
+            {
+              date: selectedDate.format("YYYY-MM-DD"),
+              doctorId,
+            },
+            true,
+          );
+      }
+      if (doctorId && selectedDate.format("YYYY-MM-DD")) {
+        socket.on("update_slots", getSlots);
+        fetchSlotsData({
+          date: selectedDate.format("YYYY-MM-DD"),
+          doctorId,
+        });
+      }
+      return function () {
+        socket.off("update_slots", getSlots);
+      };
+    },
+    [selectedDate, doctorId],
+  );
+  function handleDate(val?: any, ..._args: any[]) {
     setSelectedDate(val);
     window?.localStorage?.setItem("book_date", val?.format("YYYY-MM-DD"));
-  };
-  const isToday = (val?: any, ..._args: any[]) =>
-    new Date(
-      selectedDate.format("YYYY-MM-DD") + " " + val + timeZone,
-    ).getTime() >
-    Date.now() + 1000 * 60;
+  }
+  function isToday(val?: any, ..._args: any[]) {
+    return (
+      new Date(
+        selectedDate.format("YYYY-MM-DD") + " " + val + timeZone,
+      ).getTime() >
+      Date.now() + 1000 * 60
+    );
+  }
   const isUpToDate =
     selectedDate?.toDate()?.setHours(0, 0, 0, 0) >=
     new Date().setHours(0, 0, 0, 0);
@@ -148,17 +164,17 @@ function BookAppointment({ userid, doctorId, socket, timeZone }: any) {
             ) : (
               <>
                 <div className="flex flex-wrap gap-2 justify-center">
-                  {freeSlots?.map(
-                    (
-                      {
-                        slotTime: value,
-                        appointmentType,
-                        appointmentFees,
-                        appointmentState,
-                        schedule_date,
-                      },
-                      i,
-                    ) =>
+                  {freeSlots?.map(function (
+                    {
+                      slotTime: value,
+                      appointmentType,
+                      appointmentFees,
+                      appointmentState,
+                      schedule_date,
+                    },
+                    i,
+                  ) {
+                    return (
                       isToday(value) && (
                         <div
                           className={`flex cursor-pointer flex-col relative sm:w-1/3 lg:w-1/4 2xl:w-1/5 grow justify-between rounded-lg 
@@ -167,11 +183,13 @@ function BookAppointment({ userid, doctorId, socket, timeZone }: any) {
                               ? "bg-gray-700"
                               : "bg-blue-800/80"
                           } p-2`}
-                          onClick={() =>
-                            setBookedAppointment((val) =>
-                              val?.slotTime == value ? null : freeSlots?.[i],
-                            )
-                          }
+                          onClick={function () {
+                            setBookedAppointment(function (val) {
+                              return val?.slotTime == value
+                                ? null
+                                : freeSlots?.[i];
+                            });
+                          }}
                           key={value}
                         >
                           <BookButton
@@ -183,8 +201,9 @@ function BookAppointment({ userid, doctorId, socket, timeZone }: any) {
                             appointmentFees={appointmentFees}
                           />
                         </div>
-                      ),
-                  )}
+                      )
+                    );
+                  })}
                 </div>
                 {freeSlots.length ? (
                   <Popover
@@ -214,7 +233,7 @@ function BookAppointment({ userid, doctorId, socket, timeZone }: any) {
                     }
                   >
                     <Button
-                      onClick={() => {
+                      onClick={function () {
                         if (isToday(bookedAppointment?.slotTime)) {
                           setIsPayment("payment_processing");
                         } else {
@@ -254,7 +273,7 @@ function BookAppointment({ userid, doctorId, socket, timeZone }: any) {
               }
               mt="20px"
               customWidth={"w-5/6 sm:w-4/5 lg:w-3/4"}
-              handleClose={() => {
+              handleClose={function () {
                 if (isPayment == "payment_success") {
                   navigate(`/profile/${doctorId}`);
                 }

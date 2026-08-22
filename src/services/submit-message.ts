@@ -3,7 +3,7 @@ import Cookies from "universal-cookie";
 import { apiUrl } from "@/utils/api";
 
 const cookies = new Cookies();
-const submitMessage = async (
+async function submitMessage(
   fetchUserData?: any,
   fetchMessagesData?: any,
   messageApi?: any,
@@ -15,7 +15,7 @@ const submitMessage = async (
   user_id?: any,
   setIsLoading?: any,
   fetchChatData?: any,
-) => {
+) {
   const data = { content, message_to, isFirst };
   setIsLoading(true);
   axios
@@ -31,7 +31,7 @@ const submitMessage = async (
         },
       },
     )
-    .then((res?: any, ..._args: any[]) => {
+    .then(function (res?: any, ..._args: any[]) {
       setContent("");
       if (isFirst) {
         socket.emit("add_chat", message_to);
@@ -56,7 +56,7 @@ const submitMessage = async (
       );
       setIsLoading(false);
     })
-    .catch((err?: any, ..._args: any[]) => {
+    .catch(function (err?: any, ..._args: any[]) {
       setIsLoading(false);
       if (err?.response?.status == 401) {
         fetchUserData(true, cookies.get("accessToken"));
@@ -83,6 +83,6 @@ const submitMessage = async (
           duration: 2,
         });
     });
-};
+}
 
 export default submitMessage;

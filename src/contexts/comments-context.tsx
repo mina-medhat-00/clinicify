@@ -3,25 +3,28 @@ import { createContext, useContext, useState } from "react";
 import type { Comment } from "@/types";
 import { apiUrl } from "@/utils/api";
 
-const handleQuery = (obj?: any, ..._args: any[]) =>
-  !obj
+function handleQuery(obj?: any, ..._args: any[]) {
+  return !obj
     ? ""
     : Object.entries(obj)
-        .filter(([_, val]: any) => val || val === 0)
-        .map(([name, val]: any, i?: any, ..._args: any[]) =>
-          i == 0 ? `?${name}=${val}` : `${name}=${val}`,
-        )
+        .filter(function ([_, val]: any) {
+          return val || val === 0;
+        })
+        .map(function ([name, val]: any, i?: any, ..._args: any[]) {
+          return i == 0 ? `?${name}=${val}` : `${name}=${val}`;
+        })
         .join("&");
+}
 const CommentsData = createContext<any>(null);
-const CommentsContextProvider = ({ children }: any) => {
+function CommentsContextProvider({ children }: any) {
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [commentsData, setCommentsData] = useState<Comment[] | null>(null);
-  const fetchCommentsData = async (
+  async function fetchCommentsData(
     query?: any,
     noRender?: any,
     ..._args: any[]
-  ) => {
+  ) {
     if (!noRender) setIsLoading(true);
     try {
       const { data } = await axios.request({
@@ -30,7 +33,9 @@ const CommentsContextProvider = ({ children }: any) => {
           timeout: 10000,
         },
       });
-      setCommentsData(() => data?.data);
+      setCommentsData(function () {
+        return data?.data;
+      });
       setIsError(false);
       setIsLoading(false);
       return data;
@@ -39,7 +44,7 @@ const CommentsContextProvider = ({ children }: any) => {
       setIsError(true);
       throw err;
     }
-  };
+  }
 
   return (
     <CommentsData.Provider
@@ -54,8 +59,10 @@ const CommentsContextProvider = ({ children }: any) => {
       {children}
     </CommentsData.Provider>
   );
-};
+}
 
 export default CommentsContextProvider;
 
-export const useCommentsContext = () => useContext(CommentsData);
+export function useCommentsContext() {
+  return useContext(CommentsData);
+}

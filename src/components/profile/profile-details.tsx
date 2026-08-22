@@ -1,26 +1,33 @@
-import { BsFillPersonLinesFill } from "react-icons/bs";
-import { FaNotesMedical } from "react-icons/fa";
+import { Contact, FileHeart } from "lucide-react";
 import ProfileTable from "@/components/profile/profile-table";
 import { FeedbackContextProvider } from "@/contexts";
 import Feedbacks from "@/pages/feedbacks";
 
-const UserDetails = ({ headers, data, userValues, headerColor, propColor }: any) => {
+function UserDetails({
+  headers,
+  data,
+  userValues,
+  headerColor,
+  propColor,
+}: any) {
   return (
     <div className="flex justify-between gap-2 flex-wrap items-center">
       <ProfileTable
         headerColor={headerColor}
         propColor={propColor}
-        data={data?.map(({ label, name }: any) => ({
-          name: label,
-          value: userValues?.[name],
-        }))}
+        data={data?.map(function ({ label, name }: any) {
+          return {
+            name: label,
+            value: userValues?.[name],
+          };
+        })}
         headers={headers}
       />
     </div>
   );
-};
+}
 
-const ProfileDetails = ({
+function ProfileDetails({
   isAuth,
   isUser,
   showEdit,
@@ -29,7 +36,7 @@ const ProfileDetails = ({
   username,
   setHandleDrawer,
   fetchFeedback,
-}: any) => {
+}: any) {
   const profileDetails = [
     !isUser
       ? {
@@ -98,21 +105,27 @@ const ProfileDetails = ({
 my-5 rounded-xl"
       >
         <div className="flex justify-center items-center gap-2 mt-4 mb-4 text-white font-medium text-lg sm:text-xl p-4 bg-blue-600">
-          <BsFillPersonLinesFill /> Personal Information
+          <Contact /> Personal Information
         </div>
-        {profileDetails?.map(({ data, headers, headerColor, propColor }: any, i?: any, ..._args: any[]) => (
-          <UserDetails
-            key={i + 1}
-            isAuth={isAuth}
-            data={data}
-            headerColor={headerColor}
-            propColor={propColor}
-            headers={headers}
-            showEdit={showEdit}
-            setUserValues={setUserValues}
-            userValues={userValues}
-          />
-        ))}
+        {profileDetails?.map(function (
+          { data, headers, headerColor, propColor }: any,
+          i?: any,
+          ..._args: any[]
+        ) {
+          return (
+            <UserDetails
+              key={i + 1}
+              isAuth={isAuth}
+              data={data}
+              headerColor={headerColor}
+              propColor={propColor}
+              headers={headers}
+              showEdit={showEdit}
+              setUserValues={setUserValues}
+              userValues={userValues}
+            />
+          );
+        })}
         {!isUser && (
           <UserDetails
             isAuth={isAuth}
@@ -129,27 +142,26 @@ my-5 rounded-xl"
         )}
         {isAuth && (
           <div
-            onClick={() =>
-              setHandleDrawer((draw?: any, ..._args: any[]) => ({
-                ...draw,
-                isOpen: true,
-                type: "personal",
-                name: "My Personal Information",
-              }))
-            }
-            className="bg-gray-300/50 gap-2 hover:bg-gray-300/80 flex justify-center items-center h-24 text-center cursor-pointer text-gray-500
-           text-lg sm:text-xl xl:text-2xl font-medium rounded-lg hover:shadow-sm p-3 hover:text-gray-700"
-            style={{
-              flexGrow: 2,
+            onClick={function () {
+              setHandleDrawer(function (draw?: any, ..._args: any[]) {
+                return {
+                  ...draw,
+                  isOpen: true,
+                  type: "personal",
+                  name: "My Personal Information",
+                };
+              });
             }}
+            className="bg-gray-300/50 gap-2 hover:bg-gray-300/80 flex justify-center items-center h-24 text-center cursor-pointer text-gray-500
+           text-lg sm:text-xl xl:text-2xl font-medium rounded-lg hover:shadow-sm p-3 hover:text-gray-700 grow"
           >
-            <FaNotesMedical className="w-7 h-7" />
+            <FileHeart className="w-7 h-7" />
             Edit Personal Information
           </div>
         )}
       </div>
     </>
   );
-};
+}
 
 export default ProfileDetails;

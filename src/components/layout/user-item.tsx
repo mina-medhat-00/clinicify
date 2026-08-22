@@ -1,5 +1,5 @@
-import { PoweroffOutlined } from "@ant-design/icons";
-import { Button, Skeleton } from "antd";
+import { LogOut } from "lucide-react";
+import { Button, Skeleton } from "@/components/ui/kit";
 import { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -7,7 +7,7 @@ import Cookies from "universal-cookie";
 import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
 
-const UserItem = (_props?: any) => {
+function UserItem(_props?: any) {
   const { messageApi } = useUtilsContext();
   const { isloading, setUserData, userData: user } = useUserContext();
   const navigate = useNavigate();
@@ -15,22 +15,22 @@ const UserItem = (_props?: any) => {
     query: "(max-width:678px)",
   });
   const [showLogout, setShowLogout] = useState(false);
-  useEffect(() => {
+  useEffect(function () {
     document.querySelector(".user--nav--wrapper");
   }, []);
   const location = useLocation();
   return !isloading && user ? (
     <div
-      onTouchMove={() => {
+      onTouchMove={function () {
         setShowLogout(true);
       }}
-      onMouseEnter={() => {
+      onMouseEnter={function () {
         setShowLogout(true);
       }}
-      onTouchEnd={() => {
+      onTouchEnd={function () {
         setShowLogout(false);
       }}
-      onMouseLeave={() => {
+      onMouseLeave={function () {
         setShowLogout(false);
       }}
       className="user--nav--wrapper text-center rounded-bl-lg
@@ -53,25 +53,16 @@ const UserItem = (_props?: any) => {
         </Button>
       </Link>
       {(showLogout || isMobile) && (
-        <div
-          style={{
-            left: `calc(100% - 40px)`,
-          }}
-          className="absolute z-20 flex items-center"
-        >
+        <div className="absolute z-20 flex items-center right-10">
           <Button
             shape="circle"
             size="small"
-            icon={<PoweroffOutlined />}
-            className="text-white flex
-            justify-center align-center
+            icon={<LogOut className="size-3.5" />}
+            className="text-white flex size-9
+            justify-center items-center
             shadow-md mr-1 bg-red-700 hover:bg-red-600
             rounded border font-bold hover:text-white"
-            style={{
-              width: "35px",
-              height: "35px",
-            }}
-            onClick={() => {
+            onClick={function () {
               messageApi.open({
                 type: "loading",
                 content: "logout...",
@@ -79,21 +70,22 @@ const UserItem = (_props?: any) => {
               });
               new Cookies().remove("accessToken");
               if (location?.pathname != "/") {
-                setTimeout(
-                  () =>
-                    messageApi.open({
-                      key: 1,
-                      type: "loading",
-                      content: "Redirecting to your home page...",
-                      duration: 1,
-                    }),
-                  1000,
-                );
-                setTimeout(() => {
+                setTimeout(function () {
+                  messageApi.open({
+                    key: 1,
+                    type: "loading",
+                    content: "Redirecting to your home page...",
+                    duration: 1,
+                  });
+                }, 1000);
+                setTimeout(function () {
                   navigate(`/`);
                   setUserData(null);
                 }, 2000);
-              } else setTimeout(() => setUserData(null), 1000);
+              } else
+                setTimeout(function () {
+                  setUserData(null);
+                }, 1000);
             }}
           ></Button>
         </div>
@@ -102,6 +94,6 @@ const UserItem = (_props?: any) => {
   ) : (
     <Skeleton.Button active className="w-full" />
   );
-};
+}
 
 export default UserItem;

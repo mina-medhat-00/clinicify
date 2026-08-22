@@ -1,4 +1,4 @@
-import { message } from "antd";
+import { message } from "@/components/ui/kit";
 import { createContext, useContext } from "react";
 import { useMediaQuery } from "react-responsive";
 import io from "socket.io-client";
@@ -7,7 +7,7 @@ import { apiOrigin } from "@/utils/api";
 const socket = io(apiOrigin);
 const timeZone = " gmt+0300";
 const UtilsData = createContext<any>(null);
-const UtilsContextProvider = ({ children }: any) => {
+function UtilsContextProvider({ children }: any) {
   const [messageApi, contextHolder] = message.useMessage();
   const isMobile = useMediaQuery({
     query: "(max-width:778px)",
@@ -18,8 +18,10 @@ const UtilsContextProvider = ({ children }: any) => {
       {children}
     </UtilsData.Provider>
   );
-};
+}
 
 export default UtilsContextProvider;
 
-export const useUtilsContext = () => useContext(UtilsData);
+export function useUtilsContext() {
+  return useContext(UtilsData);
+}

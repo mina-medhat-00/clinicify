@@ -1,5 +1,5 @@
-import { Button, Form, Input, Radio } from "antd";
-import { TbReport } from "react-icons/tb";
+import { Button, Form, Input, Radio } from "@/components/ui/kit";
+import { Flag } from "lucide-react";
 import HeaderLine from "@/components/ui/header-line";
 import TitleHeader from "@/components/ui/title-header";
 import { useUserContext } from "@/contexts/user-context";
@@ -37,14 +37,14 @@ const reportTypeData = [
     value: "Other issue",
   },
 ];
-const ReportProblem = () => {
+function ReportProblem() {
   const { messageApi } = useUtilsContext();
   const [form] = Form.useForm();
   const { fetchUserData } = useUserContext();
   return (
     <div>
       <TitleHeader
-        icon={<TbReport className="text-white text-2xl m-auto" />}
+        icon={<Flag className="text-white size-6 m-auto" />}
         title={"Report a problem"}
         contentBg="bg-gray-400"
         wrapperBg={"no"}
@@ -55,7 +55,7 @@ const ReportProblem = () => {
       >
         <Form
           form={form}
-          onFinish={(values?: any, ..._args: any[]) => {
+          onFinish={function (values?: any, ..._args: any[]) {
             submitReport(
               values?.issue,
               values?.reportType,
@@ -77,12 +77,7 @@ const ReportProblem = () => {
               <Input.TextArea
                 maxLength={600}
                 placeholder="Please, type your issue"
-                className="bg-gray-900 text-white text-base sm:text-xl"
-                style={{
-                  overflow: "auto",
-                  padding: "4px",
-                  height: 150,
-                }}
+                className="bg-gray-900 text-white text-base sm:text-xl overflow-auto p-1 h-36"
               />
             </Item>
             <Item
@@ -103,15 +98,19 @@ const ReportProblem = () => {
                   p-4 flex gap-4
     items-center flex-wrap justify-between sm:justify-around`}
                   >
-                    {reportTypeData.map(({ value, name }: any) => (
-                      <Radio
-                        className={"sm:w-1/3 text-xs sm:text-sm text-gray-200"}
-                        key={name}
-                        value={name}
-                      >
-                        {value}
-                      </Radio>
-                    ))}
+                    {reportTypeData.map(function ({ value, name }: any) {
+                      return (
+                        <Radio
+                          className={
+                            "sm:w-1/3 text-xs sm:text-sm text-gray-200"
+                          }
+                          key={name}
+                          value={name}
+                        >
+                          {value}
+                        </Radio>
+                      );
+                    })}
                   </div>
                 </div>
               </Radio.Group>
@@ -119,13 +118,8 @@ const ReportProblem = () => {
             <Button
               type="primary"
               htmlType="submit"
-              style={{
-                color: "white",
-                fontFamily: "sans-serif",
-                fontSize: "28px",
-              }}
               className={`rounded-lg w-fit text-xs lg:text-sm
-              bg-blue-600 py-4 font-medium 
+              bg-blue-600 py-4 font-medium text-white
               border-white px-8 flex items-center hover:bg-blue-700`}
             >
               Send Now
@@ -135,6 +129,6 @@ const ReportProblem = () => {
       </div>
     </div>
   );
-};
+}
 
 export default ReportProblem;

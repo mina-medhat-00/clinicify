@@ -1,19 +1,25 @@
-import { MailOutlined } from "@ant-design/icons";
-import { Button, DatePicker, Form, Input, Select, Space } from "antd";
+import {
+  Button,
+  DatePicker,
+  Form,
+  Input,
+  Select,
+  Space,
+} from "@/components/ui/kit";
+import { Mail } from "lucide-react";
 import ProfileTable from "@/components/profile/profile-table";
 import submitPersonal from "@/services/submit-personal";
 import { cityOptions } from "@/utils/sign-data";
 import { prefixSelector } from "@/utils/signup-utils";
 
 const { Item } = Form;
-const { Option } = Select;
-const PersonalForm = ({
+function PersonalForm({
   messageApi,
   fetchProfileData,
   fetchUserData,
   userName,
   initialValues,
-}: any) => {
+}: any) {
   const editData = [
     {
       headers: ["Personal"],
@@ -43,10 +49,13 @@ const PersonalForm = ({
               name="gender"
               rules={[{ required: true, message: "Please select gender!" }]}
             >
-              <Select placeholder="Select your gender">
-                <Option value="male">Male</Option>
-                <Option value="female">Female</Option>
-              </Select>
+              <Select
+                placeholder="Select your gender"
+                options={[
+                  { value: "male", label: "Male" },
+                  { value: "female", label: "Female" },
+                ]}
+              />
             </Item>
           ),
         },
@@ -71,7 +80,7 @@ const PersonalForm = ({
                 },
               ]}
             >
-              <DatePicker style={{ width: "100%" }} placeholder="birthdate" />
+              <DatePicker className="w-full" placeholder="birthdate" />
             </Item>
           ),
         },
@@ -122,7 +131,10 @@ const PersonalForm = ({
                 },
               ]}
             >
-              <Input prefix={<MailOutlined />} placeholder="Your email" />
+              <Input
+                prefix={<Mail className="size-4" />}
+                placeholder="Your email"
+              />
             </Item>
           ),
         },
@@ -133,22 +145,26 @@ const PersonalForm = ({
     <div className="bg-gray-200 p-2 w-full rounded-lg">
       <Form
         initialValues={{ ...initialValues }}
-        onFinish={(values?: any, ..._args: any[]) =>
-          submitPersonal(
+        onFinish={function (values?: any, ..._args: any[]) {
+          return submitPersonal(
             values,
             messageApi,
             fetchProfileData,
             fetchUserData,
             userName,
-          )
-        }
+          );
+        }}
       >
-        {editData?.map(({ data, headers }: any, i?: any, ..._args: any[]) => (
-          <ProfileTable key={i + 1} data={data} headers={headers} />
-        ))}
+        {editData?.map(function (
+          { data, headers }: any,
+          i?: any,
+          ..._args: any[]
+        ) {
+          return <ProfileTable key={i + 1} data={data} headers={headers} />;
+        })}
         <div>
           <Item className="w-full">
-            <Input.Group className="w-full">
+            <div className="w-full">
               <ProfileTable
                 data={[
                   {
@@ -196,20 +212,15 @@ const PersonalForm = ({
                 ]}
                 headers={["Address"]}
               />
-            </Input.Group>
+            </div>
           </Item>
         </div>
         <div className="flex justify-center">
           <Button
             type="primary"
             htmlType="submit"
-            style={{
-              color: "white",
-              fontFamily: "sans-serif",
-              fontSize: "28px",
-            }}
             className={`rounded-lg text-xs lg:text-sm
-          bg-gray-600 py-6 font-medium 
+          bg-gray-600 py-6 font-medium text-white
           border-gray-700 px-8 flex items-center hover:bg-gray-700`}
           >
             Edit Now
@@ -218,6 +229,6 @@ const PersonalForm = ({
       </Form>
     </div>
   );
-};
+}
 
 export default PersonalForm;

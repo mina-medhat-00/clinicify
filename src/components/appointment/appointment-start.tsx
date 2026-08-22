@@ -1,7 +1,6 @@
-import { LoadingOutlined, VideoCameraFilled } from "@ant-design/icons";
 import axios from "axios";
+import { Loader2, MessageSquare, Video } from "lucide-react";
 import { useState } from "react";
-import { BsFillChatFill } from "react-icons/bs";
 import { Link, useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
 import { useUserContext } from "@/contexts/user-context";
@@ -9,12 +8,12 @@ import { useUtilsContext } from "@/contexts/utils-context";
 import { apiOrigin } from "@/utils/api";
 
 const APPLICATION_SERVER_URL = apiOrigin;
-const AppointmentStart = ({ appointmentDetails }: any) => {
+function AppointmentStart({ appointmentDetails }: any) {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<any>(null);
   const { messageApi } = useUtilsContext();
   const { fetchUserData } = useUserContext();
-  const createSession = async () => {
+  async function createSession() {
     setIsLoading(true);
     await axios
       .post(
@@ -27,13 +26,13 @@ const AppointmentStart = ({ appointmentDetails }: any) => {
           },
         },
       )
-      .then((res?: any, ..._args: any[]) => {
+      .then(function (res?: any, ..._args: any[]) {
         navigate(
           `/join/meeting/${res.data}?appointment_id=${appointmentDetails?.appointment_id}`,
         );
         setIsLoading(false);
       })
-      .catch((err?: any, ..._args: any[]) => {
+      .catch(function (err?: any, ..._args: any[]) {
         setIsLoading(false);
         if (err?.response?.status == 400) {
           messageApi.open({
@@ -60,7 +59,7 @@ const AppointmentStart = ({ appointmentDetails }: any) => {
           duration: 3,
         });
       });
-  };
+  }
   return (appointmentDetails?.appointment_state == "running" &&
     appointmentDetails?.appointment_type == "chat") ||
     appointmentDetails?.appointment_type == "videoCall" ? (
@@ -69,33 +68,38 @@ const AppointmentStart = ({ appointmentDetails }: any) => {
         <div className="chat--details h-full">
           <Link
             to="/chat"
-            onClick={() =>
-              window?.localStorage.setItem("chatTo", appointmentDetails?.withId)
-            }
+            onClick={function () {
+              window?.localStorage.setItem(
+                "chatTo",
+                appointmentDetails?.withId,
+              );
+            }}
             className="font-medium h-full hover:text-gray-200 text-xl flex justify-center items-center gap-2 hover:bg-blue-700 block text-white bg-blue-700/90 p-2 rounded-md"
           >
             Chat with {appointmentDetails?.withNickName}
-            <BsFillChatFill className="text-white text-xl" />
+            <MessageSquare className="text-white text-xl" />
           </Link>
         </div>
       ) : (
         <div
-          onClick={() => createSession()}
+          onClick={function () {
+            createSession();
+          }}
           className={`video--details p-2 bg-blue-600/80 hover:bg-blue-600 cursor-pointer
            rounded shadow-md h-full ${isLoading ? "cursor-not-allowed" : ""}`}
         >
           <div className="font-medium h-full flex items-center gap-2 flex-wrap hover:text-gray-200 text-xl flex justify-center items-center gap-2 hover:bg-blue-700 block text-white bg-blue-700/90 p-2 rounded-md">
             Video Call with {appointmentDetails?.withNickName}
             {!isLoading ? (
-              <VideoCameraFilled className="flex items-center text-white text-3xl" />
+              <Video className="flex items-center text-white text-3xl" />
             ) : (
-              <LoadingOutlined className="flex items-center text-white text-3xl" />
+              <Loader2 className="flex items-center text-white text-3xl animate-spin" />
             )}
           </div>
         </div>
       )}
     </div>
   ) : null;
-};
+}
 
 export default AppointmentStart;

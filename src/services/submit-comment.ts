@@ -3,7 +3,7 @@ import Cookies from "universal-cookie";
 import { apiUrl } from "@/utils/api";
 
 const cookies = new Cookies();
-const submitComment = async (
+async function submitComment(
   user?: any,
   fetchUserData?: any,
   fetchCommentsData?: any,
@@ -15,7 +15,7 @@ const submitComment = async (
   socket?: any,
   lenViewedComments?: any,
   setLen?: any,
-) => {
+) {
   const data = { content, postId, commentId };
   messageApi.open({
     key: 1,
@@ -36,10 +36,10 @@ const submitComment = async (
         },
       },
     )
-    .then((res?: any, ..._args: any[]) => {
+    .then(function (res?: any, ..._args: any[]) {
       messageApi.open({
         key: 1,
-        content: "thank you for your comment ❤",
+        content: "thank you for your comment",
         type: "success",
         duration: 2,
       });
@@ -50,7 +50,9 @@ const submitComment = async (
         },
         true,
       );
-      setLen((val?: any, ..._args: any[]) => val + 1);
+      setLen(function (val?: any, ..._args: any[]) {
+        return val + 1;
+      });
       socket.emit("send_comment", {
         reply_on: commentId,
         comment_id: res?.data?.data?.comment_id,
@@ -68,9 +70,11 @@ const submitComment = async (
           .slice(0, 19)
           .replace("T", " "),
       });
-      setReply(() => false);
+      setReply(function () {
+        return false;
+      });
     })
-    .catch((err?: any, ..._args: any[]) => {
+    .catch(function (err?: any, ..._args: any[]) {
       if (err?.response?.status == 401) {
         fetchUserData(true, cookies.get("accessToken"));
       } else
@@ -81,6 +85,6 @@ const submitComment = async (
           duration: 2,
         });
     });
-};
+}
 
 export default submitComment;

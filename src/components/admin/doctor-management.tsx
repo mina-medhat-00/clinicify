@@ -1,105 +1,106 @@
-import { SearchOutlined } from "@ant-design/icons";
-import { Avatar, Button, Input, Space, Table, Tag } from "antd";
+import { Button, Input, Space, Table, Tag } from "@/components/ui/kit";
+import { Search } from "lucide-react";
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import doctorPhoto from "@/assets/images/doctor-photo.png";
 import AppointmentDetails from "@/components/admin/appointment-details";
 import ClinicDetails from "@/components/profile/clinic-details";
 import PopUp from "@/components/ui/pop-up";
+import UserAvatar from "@/components/ui/user-avatar";
 import { SlotsContextProvider } from "@/contexts";
 import { useDoctorsContext } from "@/contexts/doctors-context";
 import { useUserContext } from "@/contexts/user-context";
 import changeState from "@/services/change-state";
 
-const DoctorManagement = (_props?: any) => {
+function DoctorManagement(_props?: any) {
   const searchInput = useRef(null);
-  const handleSearch = (confirm?: any, ..._args: any[]) => {
+  function handleSearch(confirm?: any, ..._args: any[]) {
     confirm();
-  };
-  const handleReset = (clearFilters?: any, ..._args: any[]) => {
+  }
+  function handleReset(clearFilters?: any, ..._args: any[]) {
     clearFilters();
-  };
-  const getColumnSearchProps = (dataIndex?: any, ..._args: any[]) => ({
-    filterDropdown: ({
-      setSelectedKeys,
-      selectedKeys,
-      confirm,
-      clearFilters,
-      close,
-    }: any) => (
-      <div
-        style={{
-          padding: 8,
-        }}
-        onKeyDown={(e?: any, ..._args: any[]) => e.stopPropagation()}
-      >
-        <Input
-          ref={searchInput}
-          placeholder={`Search ${dataIndex}`}
-          value={selectedKeys[0]}
-          onChange={(e?: any, ..._args: any[]) =>
-            setSelectedKeys(e.target.value ? [e.target.value] : [])
-          }
-          onPressEnter={() => handleSearch(confirm, dataIndex)}
-          style={{
-            marginBottom: 8,
-            display: "block",
-          }}
-        />
-        <Space>
-          <Button
-            type="primary"
-            className="flex items-center justify-center"
-            onClick={() => handleSearch(confirm, dataIndex)}
-            icon={<SearchOutlined />}
-            size="small"
-            style={{
-              width: 90,
+  }
+  function getColumnSearchProps(dataIndex?: any, ..._args: any[]) {
+    return {
+      filterDropdown: function ({
+        setSelectedKeys,
+        selectedKeys,
+        confirm,
+        clearFilters,
+        close,
+      }: any) {
+        return (
+          <div
+            className="p-2"
+            onKeyDown={function (e?: any, ..._args: any[]) {
+              e.stopPropagation();
             }}
           >
-            Search
-          </Button>
-          <Button
-            onClick={() => clearFilters && handleReset(clearFilters)}
-            size="small"
-            style={{
-              width: 90,
-            }}
-          >
-            Reset
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              close();
-            }}
-          >
-            close
-          </Button>
-        </Space>
-      </div>
-    ),
-    filterIcon: (filtered?: any, ..._args: any[]) => (
-      <SearchOutlined
-        style={{
-          color: filtered ? "#1890ff" : undefined,
-        }}
-      />
-    ),
-    onFilter: (value?: any, record?: any, ..._args: any[]) =>
-      record[dataIndex].nick_name
-        .toString()
-        .toLowerCase()
-        .includes(value.toLowerCase()),
-    filterDropdownProps: {
-      onOpenChange: (visible?: any, ..._args: any[]) => {
-        if (visible) {
-          setTimeout(() => searchInput.current?.select(), 100);
-        }
+            <Input
+              ref={searchInput}
+              placeholder={`Search ${dataIndex}`}
+              value={selectedKeys[0]}
+              onChange={function (e?: any, ..._args: any[]) {
+                setSelectedKeys(e.target.value ? [e.target.value] : []);
+              }}
+              onPressEnter={function () {
+                handleSearch(confirm, dataIndex);
+              }}
+              className="mb-2 block"
+            />
+            <Space>
+              <Button
+                type="primary"
+                className="flex items-center justify-center w-24"
+                onClick={function () {
+                  handleSearch(confirm, dataIndex);
+                }}
+                icon={<Search className="size-4" />}
+                size="small"
+              >
+                Search
+              </Button>
+              <Button
+                onClick={function () {
+                  clearFilters && handleReset(clearFilters);
+                }}
+                size="small"
+                className="w-24"
+              >
+                Reset
+              </Button>
+              <Button
+                type="link"
+                size="small"
+                onClick={function () {
+                  close();
+                }}
+              >
+                close
+              </Button>
+            </Space>
+          </div>
+        );
       },
-    },
-  });
+      filterIcon: function (filtered?: any, ..._args: any[]) {
+        return <Search className={filtered ? "text-blue-500" : undefined} />;
+      },
+      onFilter: function (value?: any, record?: any, ..._args: any[]) {
+        return record[dataIndex].nick_name
+          .toString()
+          .toLowerCase()
+          .includes(value.toLowerCase());
+      },
+      filterDropdownProps: {
+        onOpenChange: function (visible?: any, ..._args: any[]) {
+          if (visible) {
+            setTimeout(function () {
+              searchInput.current?.select();
+            }, 100);
+          }
+        },
+      },
+    };
+  }
   const columns = [
     Table.EXPAND_COLUMN,
     {
@@ -107,15 +108,17 @@ const DoctorManagement = (_props?: any) => {
       dataIndex: "name",
       key: "name",
       ...getColumnSearchProps("name"),
-      render: (rec?: any, record?: any, ..._args: any[]) => (
-        <Link
-          to={`/profile/${record?.key}`}
-          className="flex flex-col bg-gray-200/80 hover:bg-gray-200 px-4 py-2 text-center rounded-md shadow-md justify-center items-center gap-2"
-        >
-          <Avatar src={rec?.img_url || doctorPhoto} size="large" />
-          <span className="font-medium text-gray-600">{rec?.nick_name}</span>
-        </Link>
-      ),
+      render: function (rec?: any, record?: any, ..._args: any[]) {
+        return (
+          <Link
+            to={`/profile/${record?.key}`}
+            className="flex flex-col bg-gray-200/80 hover:bg-gray-200 px-4 py-2 text-center rounded-md shadow-md justify-center items-center gap-2"
+          >
+            <UserAvatar src={rec?.img_url} userType="doctor" size="large" />
+            <span className="font-medium text-gray-600">{rec?.nick_name}</span>
+          </Link>
+        );
+      },
     },
     {
       title: "Specialty",
@@ -126,11 +129,13 @@ const DoctorManagement = (_props?: any) => {
       title: "State",
       key: "state",
       dataIndex: "verified",
-      render: (value?: any, ..._args: any[]) => (
-        <Tag color={value ? "blue" : value == 0 ? "red" : "gold"}>
-          {value ? "VERIFIED" : value == 0 ? "REJECTED" : "PENDING"}
-        </Tag>
-      ),
+      render: function (value?: any, ..._args: any[]) {
+        return (
+          <Tag color={value ? "blue" : value == 0 ? "red" : "gold"}>
+            {value ? "VERIFIED" : value == 0 ? "REJECTED" : "PENDING"}
+          </Tag>
+        );
+      },
     },
     {
       title: "Action",
@@ -144,18 +149,18 @@ const DoctorManagement = (_props?: any) => {
   const [doctorRecord, setDoctorRecord] = useState<any>(null);
   const [showPopUp, setShowPopUp] = useState<any>(null);
   const [, setIsLoading] = useState(false);
-  const doctorsDetails = doctorsData?.map(
-    (
-      {
-        doctor_id,
-        img_url,
-        nick_name,
-        specialty,
-        is_verified,
-        clinic_street,
-      }: any,
-      i?: any,
-    ) => ({
+  const doctorsDetails = doctorsData?.map(function (
+    {
+      doctor_id,
+      img_url,
+      nick_name,
+      specialty,
+      is_verified,
+      clinic_street,
+    }: any,
+    i?: any,
+  ) {
+    return {
       key: doctor_id,
       specialty: <span className="">{specialty}</span>,
       verified: is_verified,
@@ -163,7 +168,7 @@ const DoctorManagement = (_props?: any) => {
         <div className="flex flex-col gap-2 items-center">
           {clinic_street && (
             <Button
-              onClick={() => {
+              onClick={function () {
                 setDoctorRecord(doctorsData?.[i]);
                 setShowPopUp(true);
               }}
@@ -174,7 +179,7 @@ const DoctorManagement = (_props?: any) => {
           )}
           {!is_verified && (
             <Button
-              onClick={() =>
+              onClick={function () {
                 changeState(
                   fetchUserData,
                   fetchDoctorsData,
@@ -182,8 +187,8 @@ const DoctorManagement = (_props?: any) => {
                   setIsLoading,
                   "verify",
                   doctor_id,
-                )
-              }
+                );
+              }}
               className="bg-blue-400 hover:bg-blue-600 rounded-lg font-medium text-white"
             >
               VERIFY
@@ -191,7 +196,7 @@ const DoctorManagement = (_props?: any) => {
           )}
           {is_verified !== 0 && (
             <Button
-              onClick={() =>
+              onClick={function () {
                 changeState(
                   fetchUserData,
                   fetchDoctorsData,
@@ -199,8 +204,8 @@ const DoctorManagement = (_props?: any) => {
                   setIsLoading,
                   "reject",
                   doctor_id,
-                )
-              }
+                );
+              }}
               className="bg-red-400 hover:bg-red-600 rounded-lg font-medium text-white"
             >
               REJECT
@@ -212,8 +217,8 @@ const DoctorManagement = (_props?: any) => {
         nick_name,
         img_url,
       },
-    }),
-  );
+    };
+  });
 
   return (
     <div className="px-4 admin--table">
@@ -221,23 +226,20 @@ const DoctorManagement = (_props?: any) => {
         show={showPopUp}
         mt="80px"
         customWidth={"w-5/6 sm:w-4/5 lg:w-3/4"}
-        handleClose={() => {
+        handleClose={function () {
           setShowPopUp(null);
-          setTimeout(() => setDoctorRecord(null), 400);
+          setTimeout(function () {
+            setDoctorRecord(null);
+          }, 400);
         }}
       >
         <ClinicDetails admin={true} clinicValues={doctorRecord} />
       </PopUp>
-      <div
-        className="flex overflow-auto scroll--h"
-        style={{
-          height: `calc(100vh - 75px)`,
-        }}
-      >
+      <div className="flex overflow-auto scroll--h h-screen">
         <div className="grow">
           <Table
             expandable={{
-              expandedRowRender: (record?: any, ..._args: any[]) => {
+              expandedRowRender: function (record?: any, ..._args: any[]) {
                 return (
                   <SlotsContextProvider>
                     <AppointmentDetails doctorId={record?.key} />
@@ -245,8 +247,11 @@ const DoctorManagement = (_props?: any) => {
                 );
               },
               expandedRowKeys: [openKey],
-              onExpand: (exp?: any, record?: any, ..._args: any[]) =>
-                setOpenKey(() => (!exp ? null : record?.key)),
+              onExpand: function (exp?: any, record?: any, ..._args: any[]) {
+                setOpenKey(function () {
+                  return !exp ? null : record?.key;
+                });
+              },
             }}
             pagination={doctorsData?.length > 4 ? { pageSize: 4 } : false}
             columns={columns as any}
@@ -257,6 +262,6 @@ const DoctorManagement = (_props?: any) => {
       </div>
     </div>
   );
-};
+}
 
 export default DoctorManagement;

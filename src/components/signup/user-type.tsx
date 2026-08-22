@@ -1,22 +1,26 @@
-import { Form, Input, InputNumber, Select, Switch } from "antd";
+import { Form, Input, InputNumber, Select, Switch } from "@/components/ui/kit";
 import { useState } from "react";
 import HeaderLine from "@/components/ui/header-line";
 import { doctorSpecialtyOptions } from "@/utils/sign-data";
 
 const { Item } = Form;
-const UserType = ({ userType, setFormValues }: any) => {
+function UserType({ userType, setFormValues }: any) {
   const [moreInf, setMoreInf] = useState(false);
   return userType === "doctor" ? (
     <>
       {
         <>
           <Switch
-            onChange={() => {
-              setFormValues((val?: any, ..._args: any[]) => ({
-                ...val,
-                moreInf: moreInf,
-              }));
-              setMoreInf((moreInf?: any, ..._args: any[]) => moreInf);
+            onChange={function () {
+              setFormValues(function (val?: any, ..._args: any[]) {
+                return {
+                  ...val,
+                  moreInf: moreInf,
+                };
+              });
+              setMoreInf(function (moreInf?: any, ..._args: any[]) {
+                return moreInf;
+              });
             }}
             checked={moreInf}
             unCheckedChildren="Show More"
@@ -113,6 +117,6 @@ const UserType = ({ userType, setFormValues }: any) => {
       </>
     </>
   ) : null;
-};
+}
 
 export default UserType;

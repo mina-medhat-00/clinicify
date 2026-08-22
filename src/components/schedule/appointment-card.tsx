@@ -1,30 +1,32 @@
-import {
-  CheckCircleOutlined,
-  ClockCircleOutlined,
-  Loading3QuartersOutlined,
-  VideoCameraFilled,
-} from "@ant-design/icons";
 import { useEffect, useState } from "react";
-import { BiMessageAltDetail } from "react-icons/bi";
-import { FaClinicMedical } from "react-icons/fa";
-import { HiStatusOnline } from "react-icons/hi";
-import { MdAutoDelete, MdFreeCancellation } from "react-icons/md";
-import { TbEditCircle } from "react-icons/tb";
+import {
+  CalendarX,
+  CheckCircle,
+  Clock,
+  Hospital,
+  Loader2,
+  MessageSquareText,
+  Pencil,
+  Radio,
+  Trash2,
+  Video,
+} from "lucide-react";
 
-const adjustTime = (date?: any, time?: any, timeZone?: any, ..._args: any[]) =>
-  new Date(`${date} ${time} ${timeZone}`).toLocaleTimeString("en", {
+function adjustTime(date?: any, time?: any, timeZone?: any, ..._args: any[]) {
+  return new Date(`${date} ${time} ${timeZone}`).toLocaleTimeString("en", {
     hour: "numeric",
     minute: "numeric",
   });
-const getAppointmentVal = (
+}
+function getAppointmentVal(
   appointment_state?: any,
   valDone?: any,
   valBooked?: any,
   valFree?: any,
   valRunning?: any,
   valDefault?: any,
-) =>
-  appointment_state == "done"
+) {
+  return appointment_state == "done"
     ? valDone
     : appointment_state == "booked"
       ? valBooked
@@ -33,7 +35,8 @@ const getAppointmentVal = (
         : appointment_state == "running"
           ? valRunning
           : valDefault;
-const AppointmentCard = ({
+}
+function AppointmentCard({
   setShowPop,
   appointmentState,
   appointmentType,
@@ -54,13 +57,20 @@ const AppointmentCard = ({
   socket,
   admin,
   timeZone,
-}: any) => {
+}: any) {
   const [showAction, setShowAction] = useState(false);
   const [showActionDelay, setShowActionDelay] = useState(false);
-  useEffect(() => {
-    const timeId = setTimeout(() => setShowActionDelay(showAction), 300);
-    return () => clearTimeout(timeId);
-  }, [showAction]);
+  useEffect(
+    function () {
+      const timeId = setTimeout(function () {
+        setShowActionDelay(showAction);
+      }, 300);
+      return function () {
+        clearTimeout(timeId);
+      };
+    },
+    [showAction],
+  );
   return (
     <div
       className={`${
@@ -74,11 +84,21 @@ const AppointmentCard = ({
         "bg-blue-800/80",
         "bg-blue-900/80",
       )} p-2`}
-      onMouseEnter={() => setShowAction(true)}
-      onClick={() => setShowAction(true)}
-      onMouseLeave={() => setShowAction(false)}
-      onTouchMove={() => setShowAction(true)}
-      onTouchCancel={() => setShowAction(false)}
+      onMouseEnter={function () {
+        setShowAction(true);
+      }}
+      onClick={function () {
+        setShowAction(true);
+      }}
+      onMouseLeave={function () {
+        setShowAction(false);
+      }}
+      onTouchMove={function () {
+        setShowAction(true);
+      }}
+      onTouchCancel={function () {
+        setShowAction(false);
+      }}
     >
       {(showAction ? showAction : showActionDelay) &&
         appointmentState != "running" && (
@@ -89,14 +109,14 @@ const AppointmentCard = ({
           >
             {appointmentState == "free" && !admin && (
               <div
-                onClick={() => {
+                onClick={function () {
                   setIsEdit(order);
                   setHandleDrawer(true);
                 }}
                 className="flex cursor-pointer items-center bg-gray-700/60 hover:bg-gray-700/80 grow gap-1 justify-center"
               >
                 <span className="text-white font-medium">Edit</span>
-                <TbEditCircle className="flex items-center text-gray-100 text-2xl" />
+                <Pencil className="flex items-center text-gray-100 text-2xl" />
               </div>
             )}
 
@@ -104,20 +124,22 @@ const AppointmentCard = ({
               appointmentState,
               null,
               <div
-                onClick={() => {
+                onClick={function () {
                   setBookedAppointment({ slotTime, appointmentId });
-                  setShowPop(() => ({
-                    show: true,
-                    data: { slotTime, appointmentId },
-                  }));
+                  setShowPop(function () {
+                    return {
+                      show: true,
+                      data: { slotTime, appointmentId },
+                    };
+                  });
                 }}
                 className="flex cursor-pointer items-center bg-red-700/60 hover:bg-red-700/80 grow gap-1 justify-center"
               >
                 <span className="text-white font-medium">Cancel</span>
-                <MdFreeCancellation className="flex items-center text-yellow-200 text-2xl" />
+                <CalendarX className="flex items-center text-yellow-200 text-2xl" />
               </div>,
               <div
-                onClick={() =>
+                onClick={function () {
                   scheduleAppointments(
                     selectedDate,
                     null,
@@ -132,12 +154,12 @@ const AppointmentCard = ({
                     null,
                     socket,
                     userid,
-                  )
-                }
+                  );
+                }}
                 className="flex cursor-pointer items-center bg-red-700/60 hover:bg-red-700/80 grow gap-1 justify-center"
               >
                 <span className="text-white font-medium">Delete</span>
-                <MdAutoDelete className="flex items-center text-yellow-200 text-2xl" />
+                <Trash2 className="flex items-center text-yellow-200 text-2xl" />
               </div>,
             )}
           </div>
@@ -146,10 +168,10 @@ const AppointmentCard = ({
         <div className={`flex gap-2 bg-gray-400/40 p-2 rounded-lg`}>
           {getAppointmentVal(
             appointmentState,
-            <CheckCircleOutlined className="flex items-center text-yellow-200 text-2xl" />,
-            <ClockCircleOutlined className="flex items-center text-yellow-200 text-2xl" />,
-            <Loading3QuartersOutlined className="flex items-center text-yellow-200 text-2xl" />,
-            <HiStatusOnline className="flex items-center text-yellow-200 text-2xl" />,
+            <CheckCircle className="flex items-center text-yellow-200 text-2xl" />,
+            <Clock className="flex items-center text-yellow-200 text-2xl" />,
+            <Loader2 className="flex items-center text-yellow-200 text-2xl animate-spin" />,
+            <Radio className="flex items-center text-yellow-200 text-2xl" />,
           )}
           <span className="text-white font-medium">
             {appointmentState?.toUpperCase()}
@@ -160,11 +182,11 @@ const AppointmentCard = ({
         </div>
         <div className={`flex gap-2 bg-gray-600/40 p-2 rounded-lg`}>
           {appointmentType == "inClinic" ? (
-            <FaClinicMedical className="flex items-center text-gray-200 text-xl" />
+            <Hospital className="flex items-center text-gray-200 text-xl" />
           ) : appointmentType == "chat" ? (
-            <BiMessageAltDetail className="flex items-center text-gray-200 text-xl" />
+            <MessageSquareText className="flex items-center text-gray-200 text-xl" />
           ) : appointmentType == "videoChat" ? (
-            <VideoCameraFilled className="flex items-center text-gray-200 text-xl" />
+            <Video className="flex items-center text-gray-200 text-xl" />
           ) : null}
           <span className="text-white font-medium">
             {appointmentType?.toUpperCase()}
@@ -183,6 +205,6 @@ const AppointmentCard = ({
       </div>
     </div>
   );
-};
+}
 
 export default AppointmentCard;

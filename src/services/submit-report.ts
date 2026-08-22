@@ -3,7 +3,14 @@ import Cookies from "universal-cookie";
 import { apiUrl } from "@/utils/api";
 
 const cookies = new Cookies();
-const submitReport = (issue?: any, reportType?: any, messageApi?: any, fetchUserData?: any, form?: any, ..._args: any[]) => {
+function submitReport(
+  issue?: any,
+  reportType?: any,
+  messageApi?: any,
+  fetchUserData?: any,
+  form?: any,
+  ..._args: any[]
+) {
   const data = {
     data: {
       reportType,
@@ -23,7 +30,7 @@ const submitReport = (issue?: any, reportType?: any, messageApi?: any, fetchUser
         Authorization: `Bearer ${cookies.get("accessToken")}`,
       },
     })
-    .then(() => {
+    .then(function () {
       messageApi.open({
         key: 1,
         type: "success",
@@ -32,7 +39,7 @@ const submitReport = (issue?: any, reportType?: any, messageApi?: any, fetchUser
       });
       form?.resetFields();
     })
-    .catch((err?: any, ..._args: any[]) => {
+    .catch(function (err?: any, ..._args: any[]) {
       if (err?.response?.status == 401) {
         fetchUserData(true, cookies.get("accessToken"));
       } else
@@ -43,6 +50,6 @@ const submitReport = (issue?: any, reportType?: any, messageApi?: any, fetchUser
           duration: 5,
         });
     });
-};
+}
 
 export default submitReport;

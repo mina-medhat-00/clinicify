@@ -1,30 +1,28 @@
 import axios from "axios";
-import {
-  createContext,
-  useContext,
-  useLayoutEffect,
-  useState,
-} from "react";
+import { createContext, useContext, useLayoutEffect, useState } from "react";
 import { apiUrl } from "@/utils/api";
 
 const HomeData = createContext<any>(null);
-const HomeContextProvider = ({ children }: any) => {
+function HomeContextProvider({ children }: any) {
   const [isLoading, setIsLoading] = useState(true);
   const [homeData, setHomeData] = useState({});
-  const fetchHomeData = async () => {
+  async function fetchHomeData() {
     setIsLoading(true);
     try {
-      const { data } = await axios.request({ url: apiUrl("/general/statistics"), ...{
+      const { data } = await axios.request({
+        url: apiUrl("/general/statistics"),
+        ...{
           timeout: 10000,
-        } });
+        },
+      });
       setHomeData(data?.data);
       setIsLoading(false);
       return data;
     } catch (err) {
       setIsLoading(false);
     }
-  };
-  useLayoutEffect(() => {
+  }
+  useLayoutEffect(function () {
     fetchHomeData();
   }, []);
   return (
@@ -32,8 +30,10 @@ const HomeContextProvider = ({ children }: any) => {
       {children}
     </HomeData.Provider>
   );
-};
+}
 
 export default HomeContextProvider;
 
-export const useHomeContext = () => useContext(HomeData);
+export function useHomeContext() {
+  return useContext(HomeData);
+}

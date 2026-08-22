@@ -16,7 +16,7 @@ import Appointments from "@/pages/appointments";
 import Chat from "@/pages/chat";
 import UserProfile from "@/pages/user-profile";
 
-const DoctorDashboard = ({ setNavActive }: any) => {
+function DoctorDashboard({ setNavActive }: any) {
   const { timeZone, messageApi, socket } = useUtilsContext();
   const {
     isLoading: isUserLoading,
@@ -27,7 +27,7 @@ const DoctorDashboard = ({ setNavActive }: any) => {
   user?.user_name;
   const { dashboardData, isLoading, fetchDashboardData } =
     useDashboardContext();
-  useEffect(() => {
+  useEffect(function () {
     const token = new Cookies().get("accessToken");
     fetchDashboardData(true, token);
   }, []);
@@ -37,13 +37,18 @@ const DoctorDashboard = ({ setNavActive }: any) => {
   const [dashType, setDashType] = useState(
     window.localStorage.getItem("dashType") || "profile",
   );
-  useEffect(() => {
-    window.localStorage.setItem("dashType", dashType);
-    if (dashType == "chat") setNavActive(false);
-    else setNavActive(true);
-  }, [dashType]);
-  useEffect(() => {
-    return () => setNavActive(true);
+  useEffect(
+    function () {
+      window.localStorage.setItem("dashType", dashType);
+      if (dashType == "chat") setNavActive(false);
+      else setNavActive(true);
+    },
+    [dashType],
+  );
+  useEffect(function () {
+    return function () {
+      setNavActive(true);
+    };
   }, []);
   const isVerified = dashboardData?.is_verified;
   return (
@@ -108,6 +113,6 @@ const DoctorDashboard = ({ setNavActive }: any) => {
       </div>
     </div>
   );
-};
+}
 
 export default DoctorDashboard;

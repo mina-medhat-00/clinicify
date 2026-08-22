@@ -1,12 +1,7 @@
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { data } from "@/utils/data-trans";
 
-const TransitionContent = ({
+function TransitionContent({
   id = "",
   children,
   parentClassName,
@@ -14,7 +9,7 @@ const TransitionContent = ({
   first,
   customStyle = {},
   speed = "slow",
-}: any) => {
+}: any) {
   const timeId = useRef(null);
   const showingUp = data;
   const dir =
@@ -30,7 +25,7 @@ const TransitionContent = ({
     _step: any = 150,
     offset: any = 0,
   ) {
-    const handleTrans = () => {
+    function handleTrans() {
       const ele = document.getElementById(showingUp?.[direction]?.id + id);
       const eleHeight = ele?.offsetHeight;
       const windowHeight = window.innerHeight;
@@ -46,18 +41,33 @@ const TransitionContent = ({
         if (first) window.removeEventListener("scroll", showingUpFunc);
         setShowContent(true);
       } else setShowContent(false);
-    };
+    }
     if (direction?.includes("top") || direction?.includes("bottom")) {
       clearTimeout(timeId.current);
-      timeId.current = setTimeout(() => handleTrans(), 50);
+      timeId.current = setTimeout(function () {
+        handleTrans();
+      }, 50);
     } else handleTrans();
   }, []);
 
-  useEffect(() => {
+  useEffect(function () {
     showingUpFunc();
     window.addEventListener("scroll", showingUpFunc);
-    return () => window.removeEventListener("scroll", showingUpFunc);
+    return function () {
+      window.removeEventListener("scroll", showingUpFunc);
+    };
   }, []);
+
+  const duration =
+    speed == "slow"
+      ? 1
+      : speed == "medium"
+        ? 0.8
+        : speed == "speed"
+          ? 0.6
+          : 0.3;
+  const opacityDuration =
+    speed == "slow" ? 2 : speed == "medium" ? 1.5 : speed == "speed" ? 1 : 0.6;
 
   return (
     <div
@@ -68,31 +78,7 @@ const TransitionContent = ({
         [dir?.[0]]: showContent ? "0px" : `${showingUp[direction][dir?.[0]]}`,
         [dir?.[1]]: showContent ? "0px" : `${showingUp[direction][dir?.[1]]}`,
         transition: showContent
-          ? `left ${
-              speed == "slow"
-                ? 1
-                : speed == "medium"
-                  ? 0.8
-                  : speed == "speed"
-                    ? 0.6
-                    : 0.3
-            }s linear,top ${
-              speed == "slow"
-                ? 1
-                : speed == "medium"
-                  ? 0.8
-                  : speed == "speed"
-                    ? 0.6
-                    : 0.3
-            }s linear,opacity ${
-              speed == "slow"
-                ? 2
-                : speed == "medium"
-                  ? 1.5
-                  : speed == "speed"
-                    ? 1
-                    : 0.6
-            }s ease-out`
+          ? `left ${duration}s linear,top ${duration}s linear,opacity ${opacityDuration}s ease-out`
           : "none",
         ...customStyle,
       }}
@@ -100,6 +86,6 @@ const TransitionContent = ({
       {children}
     </div>
   );
-};
+}
 
 export default TransitionContent;

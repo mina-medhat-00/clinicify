@@ -1,4 +1,4 @@
-import { Button, Empty, Popover } from "antd";
+import { Button, Empty, Popover } from "@/components/ui/kit";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -8,44 +8,54 @@ import Loader from "@/components/ui/loader";
 import { useSlotsContext } from "@/contexts/slots-context";
 import { useUserContext } from "@/contexts/user-context";
 
-const BookCard = ({ doctorId, socket, timeZone }: any) => {
+function BookCard({ doctorId, socket, timeZone }: any) {
   const { slotsData, isLoading, fetchSlotsData } = useSlotsContext();
   const { userData } = useUserContext();
-  const [selectedDate, setSelectedDate] = useState(() => ({
-    count: 0,
-    date: dayjs().format("YYYY-MM-DD"),
-  }));
+  const [selectedDate, setSelectedDate] = useState(function () {
+    return {
+      count: 0,
+      date: dayjs().format("YYYY-MM-DD"),
+    };
+  });
   const [bookedAppointment, setBookedAppointment] = useState<any>(null);
   const navigate = useNavigate();
-  useEffect(() => {
+  useEffect(function () {
     socket?.emit("join_doctor", doctorId);
   }, []);
-  useEffect(() => {
-    const fetchSlots = (data?: any, ..._args: any[]) => {
-      if (selectedDate.date == data?.date)
-        fetchSlotsData(
-          {
-            date: selectedDate.date,
-            doctorId,
-          },
-          true,
-        );
-    };
-    if (doctorId && selectedDate.date) {
-      fetchSlotsData({
-        date: selectedDate.date,
-        doctorId,
-      });
-      socket?.on("update_slots", fetchSlots);
-    }
-    return () => socket?.off("update_slots", fetchSlots);
-  }, [selectedDate.date]);
-  const isToday = (val?: any, ..._args: any[]) =>
-    new Date(selectedDate.date + " " + val).getTime() > Date.now() + 1000 * 60;
+  useEffect(
+    function () {
+      function fetchSlots(data?: any, ..._args: any[]) {
+        if (selectedDate.date == data?.date)
+          fetchSlotsData(
+            {
+              date: selectedDate.date,
+              doctorId,
+            },
+            true,
+          );
+      }
+      if (doctorId && selectedDate.date) {
+        fetchSlotsData({
+          date: selectedDate.date,
+          doctorId,
+        });
+        socket?.on("update_slots", fetchSlots);
+      }
+      return function () {
+        socket?.off("update_slots", fetchSlots);
+      };
+    },
+    [selectedDate.date],
+  );
+  function isToday(val?: any, ..._args: any[]) {
+    return (
+      new Date(selectedDate.date + " " + val).getTime() > Date.now() + 1000 * 60
+    );
+  }
   return (
     <>
       <div
-        onClick={(e?: any, ..._args: any[]) => {
+        onClick={function (e?: any, ..._args: any[]) {
           e.stopPropagation();
           e.preventDefault();
         }}
@@ -56,41 +66,38 @@ const BookCard = ({ doctorId, socket, timeZone }: any) => {
           setSelectedDate={setSelectedDate}
         />
         <div className="flex flex-col py-2 grow justify-center items-center">
-          {slotsData?.freeSlots?.some(({ slotTime: value }: any) =>
-            isToday(value),
-          ) ? (
+          {slotsData?.freeSlots?.some(function ({ slotTime: value }: any) {
+            return isToday(value);
+          }) ? (
             <>
-              <div
-                className="flex items-center justify-center flex-wrap rounded-md shadow-2xl p-2 grow gap-2 scroll--h scroll--v scroll--v--chat w-3/4"
-                style={{
-                  height: "200px",
-                  overflow: "auto",
-                }}
-              >
-                {slotsData?.freeSlots?.map(
-                  (
-                    {
-                      slotTime: value,
-                      appointmentType,
-                      appointmentFees,
-                      appointmentState,
-                      schedule_date,
-                    }: any,
-                    i?: any,
-                  ) =>
+              <div className="flex items-center justify-center flex-wrap rounded-md shadow-2xl p-2 grow gap-2 scroll--h scroll--v scroll--v--chat w-3/4 h-48 overflow-auto">
+                {slotsData?.freeSlots?.map(function (
+                  {
+                    slotTime: value,
+                    appointmentType,
+                    appointmentFees,
+                    appointmentState,
+                    schedule_date,
+                  }: any,
+                  i?: any,
+                ) {
+                  return (
                     isToday(value) && (
                       <div
                         className={`flex cursor-pointer flex-col relative rounded-lg 
     ${
       bookedAppointment?.slotTime == value ? "bg-gray-700" : "bg-blue-800/80"
     } p-2`}
-                        onClick={() =>
-                          setBookedAppointment((val?: any, ..._args: any[]) =>
-                            val?.slotTime == value
+                        onClick={function () {
+                          setBookedAppointment(function (
+                            val?: any,
+                            ..._args: any[]
+                          ) {
+                            return val?.slotTime == value
                               ? null
-                              : slotsData?.freeSlots?.[i],
-                          )
-                        }
+                              : slotsData?.freeSlots?.[i];
+                          });
+                        }}
                         key={value}
                       >
                         <BookButton
@@ -102,8 +109,9 @@ const BookCard = ({ doctorId, socket, timeZone }: any) => {
                           appointmentFees={appointmentFees}
                         />
                       </div>
-                    ),
-                )}
+                    )
+                  );
+                })}
               </div>
               <Popover
                 trigger={"click"}
@@ -124,7 +132,7 @@ const BookCard = ({ doctorId, socket, timeZone }: any) => {
                 }
               >
                 <Button
-                  onClick={() => {
+                  onClick={function () {
                     if (
                       bookedAppointment &&
                       userData &&
@@ -172,6 +180,6 @@ const BookCard = ({ doctorId, socket, timeZone }: any) => {
       </div>
     </>
   );
-};
+}
 
 export default BookCard;

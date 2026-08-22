@@ -5,43 +5,62 @@ import Loader from "@/components/ui/loader";
 import { useAppointmentContext } from "@/contexts/appointment-context";
 import { useChatContext } from "@/contexts/chat-context";
 
-const ChatAvailability = ({
+function ChatAvailability({
   withUser,
   withUserType,
   timeZone,
   withNickName,
-}: any) => {
+}: any) {
   const { appointmentData, isLoading, fetchAppointmentData } =
     useAppointmentContext();
   const { fetchChatData } = useChatContext();
   const [remainingTime, setRemainingTime] = useState(null);
-  useEffect(() => {
+  useEffect(function () {
     fetchAppointmentData(true, new Cookies().get("accessToken"), null, null, {
       doctorId: withUser,
     });
   }, []);
-  useEffect(() => {
-    let temp_app = new Array(...(appointmentData ? appointmentData : []));
-    let is_exist;
-    let timeId;
-    while (!is_exist && temp_app?.length) {
-      const nearestTime = temp_app?.reduce(
-        (pre?: any, curr?: any, ..._args: any[]) =>
-          new Date(`${pre?.schedule_date} ${pre?.slot_time}`) <
-          new Date(`${curr?.schedule_date} ${curr?.slot_time}`)
+  useEffect(
+    function () {
+      let temp_app = new Array(...(appointmentData ? appointmentData : []));
+      let is_exist;
+      let timeId;
+      while (!is_exist && temp_app?.length) {
+        const nearestTime = temp_app?.reduce(function (
+          pre?: any,
+          curr?: any,
+          ..._args: any[]
+        ) {
+          return new Date(`${pre?.schedule_date} ${pre?.slot_time}`) <
+            new Date(`${curr?.schedule_date} ${curr?.slot_time}`)
             ? pre
-            : curr,
-        null,
-      );
-      if (nearestTime) {
-        const schedule_date = nearestTime?.schedule_date;
-        const slotTime = nearestTime?.slot_time;
-        const targetDate = new Date(`${schedule_date} ${slotTime} ${timeZone}`);
-        const dateNow = new Date();
-        if (dateNow < targetDate) {
-          setRemainingTime(targetDate.toLocaleString());
-          is_exist = true;
-          timeId = setTimeout(() => {
+            : curr;
+        }, null);
+        if (nearestTime) {
+          const schedule_date = nearestTime?.schedule_date;
+          const slotTime = nearestTime?.slot_time;
+          const targetDate = new Date(
+            `${schedule_date} ${slotTime} ${timeZone}`,
+          );
+          const dateNow = new Date();
+          if (dateNow < targetDate) {
+            setRemainingTime(targetDate.toLocaleString());
+            is_exist = true;
+            timeId = setTimeout(function () {
+              fetchChatData(
+                true,
+                new Cookies().get("accessToken"),
+                {
+                  chat_to: withUser,
+                },
+                true,
+              );
+            }, targetDate?.getTime() + 1000);
+          } else if (
+            dateNow.getTime() <
+            targetDate.getTime() + nearestTime?.appointment_duration
+          ) {
+            is_exist = true;
             fetchChatData(
               true,
               new Cookies().get("accessToken"),
@@ -50,30 +69,19 @@ const ChatAvailability = ({
               },
               true,
             );
-          }, targetDate?.getTime() + 1000);
-        } else if (
-          dateNow.getTime() <
-          targetDate.getTime() + nearestTime?.appointment_duration
-        ) {
-          is_exist = true;
-          fetchChatData(
-            true,
-            new Cookies().get("accessToken"),
-            {
-              chat_to: withUser,
-            },
-            true,
-          );
-          setRemainingTime("Right Now !!");
+            setRemainingTime("Right Now !!");
+          }
+          temp_app = temp_app?.filter(function ({ appointment_id }: any) {
+            return appointment_id != nearestTime?.appointment_id;
+          });
         }
-        temp_app = temp_app?.filter(
-          ({ appointment_id }: any) =>
-            appointment_id != nearestTime?.appointment_id,
-        );
       }
-    }
-    return () => clearTimeout(timeId);
-  }, [appointmentData]);
+      return function () {
+        clearTimeout(timeId);
+      };
+    },
+    [appointmentData],
+  );
   return (
     <div className="bg-gray-600 px-1 rounded-tr-lg py-8 rounded-tl-lg font-medium text-white">
       {appointmentData?.length && remainingTime ? (
@@ -101,6 +109,6 @@ const ChatAvailability = ({
       )}
     </div>
   );
-};
+}
 
 export default ChatAvailability;

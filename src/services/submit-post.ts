@@ -3,7 +3,7 @@ import Cookies from "universal-cookie";
 import { apiUrl } from "@/utils/api";
 
 const cookies = new Cookies();
-const submitPost = async (
+async function submitPost(
   user?: any,
   fetchUserData?: any,
   fetchPostsData?: any,
@@ -12,7 +12,7 @@ const submitPost = async (
   postImg?: any,
   setContent?: any,
   socket?: any,
-) => {
+) {
   const data = { content, postImg };
   messageApi.open({
     key: 1,
@@ -33,10 +33,10 @@ const submitPost = async (
         },
       },
     )
-    .then((res?: any, ..._args: any[]) => {
+    .then(function (res?: any, ..._args: any[]) {
       messageApi.open({
         key: 1,
-        content: "thank you for your question ❤",
+        content: "thank you for your question",
         type: "success",
         duration: 2,
       });
@@ -59,7 +59,7 @@ const submitPost = async (
       });
       fetchPostsData(null, true);
     })
-    .catch((err?: any, ..._args: any[]) => {
+    .catch(function (err?: any, ..._args: any[]) {
       if (err?.response?.status == 401) {
         fetchUserData(true, cookies.get("accessToken"));
       } else
@@ -70,6 +70,6 @@ const submitPost = async (
           duration: 2,
         });
     });
-};
+}
 
 export default submitPost;

@@ -1,7 +1,11 @@
-import { MenuOutlined } from "@ant-design/icons";
-import { Avatar, Button, Menu, Typography } from "antd";
+import { Menu, EllipsisVertical } from "lucide-react";
+import {
+  Avatar,
+  Button,
+  Menu as AntMenu,
+  Typography,
+} from "@/components/ui/kit";
 import { useEffect, useRef, useState } from "react";
-import { FaEllipsisV } from "react-icons/fa";
 import { useMediaQuery } from "react-responsive";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import clinicLogo from "@/assets/images/clinic.png";
@@ -9,8 +13,8 @@ import items from "@/components/layout/nav-items";
 import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
 
-const { Title } = { ...Typography, ...Menu };
-const Navbar = ({ DoctorRef }: any) => {
+const { Title } = Typography;
+function Navbar({ DoctorRef }: any) {
   const { messageApi } = useUtilsContext();
   const { setUserData, userData: user, isLoading } = useUserContext();
   const navigate = useNavigate();
@@ -22,26 +26,30 @@ const Navbar = ({ DoctorRef }: any) => {
   const [navWidth, setNavWidth] = useState(290);
   const menuElement = useRef(null);
   const location = useLocation();
-  const toggle = () => {
-    setShowMenu((state?: any, ..._args: any[]) => !state);
-  };
-  useEffect(() => {
-    setShowMenu(false);
-    setTimeout(() => {
-      if (menuElement?.current?.menu?.list?.style && navElement.current) {
-        menuElement.current.menu.list.style.transition = "none !important";
-        navElement.current.style.transition = "none";
-        setTimeout(() => {
-          if (menuElement?.current?.menu?.list?.style && navElement.current) {
-            navElement.current.style.transition = "";
-            menuElement.current.menu.list.style.transition =
-              "background 0.3s, width 0.3s cubic-bezier(0.2, 0, 0, 1) 0s,height 0.5s ease";
-          }
-        });
-      }
+  function toggle() {
+    setShowMenu(function (state?: any, ..._args: any[]) {
+      return !state;
     });
-  }, [isMobile]);
-  // The mobile menu height is animated from the rendered menu's item count.
+  }
+  useEffect(
+    function () {
+      setShowMenu(false);
+      setTimeout(function () {
+        if (menuElement?.current?.menu?.list?.style && navElement.current) {
+          menuElement.current.menu.list.style.transition = "none !important";
+          navElement.current.style.transition = "none";
+          setTimeout(function () {
+            if (menuElement?.current?.menu?.list?.style && navElement.current) {
+              navElement.current.style.transition = "";
+              menuElement.current.menu.list.style.transition =
+                "background 0.3s, width 0.3s cubic-bezier(0.2, 0, 0, 1) 0s,height 0.5s ease";
+            }
+          });
+        }
+      });
+    },
+    [isMobile],
+  );
   const mobileMenuHeight = showMenu
     ? `${menuElement?.current?.menu?.list?.children?.length * 48}px`
     : "0px";
@@ -52,38 +60,27 @@ const Navbar = ({ DoctorRef }: any) => {
     ) && (
       <div
         ref={navElement}
-        className={`z-20 min-w-37.5 bg-bg-bar transition-[margin-left] duration-500 max-[678px]:flex max-[678px]:min-w-55 max-[678px]:w-full max-[678px]:flex-row max-[678px]:flex-wrap max-[678px]:items-center max-[678px]:justify-between ${
-          isMobile ? "relative bg-gray-800" : "fixed flex h-full w-1/5 flex-col"
+        className={`z-20 min-w-36 bg-blue-950 border-r border-white transition duration-500 max-md:flex max-md:min-w-56 max-md:w-full max-md:flex-row max-md:flex-wrap max-md:items-center max-md:justify-between ${
+          isMobile
+            ? "relative"
+            : "fixed flex h-full w-1/5 min-w-72 max-w-72 flex-col"
         }`}
         style={{
           marginLeft: `${!isMobile ? -navWidth : 0}px`,
-          minWidth: isMobile ? undefined : "290px",
-          maxWidth: isMobile ? undefined : "290px",
-          boxShadow: "inset -1px 0px white",
-          backgroundColor: "rgb(20, 57, 94)",
         }}
       >
         {!isMobile ? (
           <>
             <div
               className="show--navbar items-center justify-end flex
-          -z-10 absolute cursor-pointer"
-              style={{
-                backgroundColor: "rgb(20 57 94)",
-                width: "45px",
-                height: "45px",
-                top: "5%",
-                left: "calc(100% - 15px)",
-                borderTopRightRadius: "50%",
-                borderBottomRightRadius: "50%",
-              }}
-              onClick={() => {
-                setNavWidth((width?: any, ..._args: any[]) =>
-                  width == 0 ? navElement?.current?.offsetWidth : 0,
-                );
+          -z-10 absolute cursor-pointer bg-blue-950 size-11 top-8 left-full -ml-4 rounded-r-full"
+              onClick={function () {
+                setNavWidth(function (width?: any, ..._args: any[]) {
+                  return width == 0 ? navElement?.current?.offsetWidth : 0;
+                });
               }}
             >
-              <FaEllipsisV className="text-gray-100 text-2xl mr-1" />
+              <EllipsisVertical className="text-gray-100 size-6 mr-1" />
             </div>
           </>
         ) : null}
@@ -98,14 +95,13 @@ const Navbar = ({ DoctorRef }: any) => {
         >
           <Link
             to="/"
-            className="text-center max-[678px]:relative max-[678px]:flex max-[678px]:flex-row max-[678px]:items-center max-[678px]:justify-start max-[678px]:gap-0.75 [&_h3]:max-[678px]:mb-0 [&_a]:!text-[#cdd5ff]"
+            className="text-center max-md:relative max-md:flex max-md:flex-row max-md:items-center max-md:justify-start max-md:gap-1 [&_h3]:max-md:mb-0 [&_a]:!text-indigo-200"
           >
             <Avatar
               src={clinicLogo}
               size="large"
               shape="square"
-              style={{ marginTop: "15px" }}
-              className="navbar--logo--view mt-2 mb-1"
+              className="navbar--logo--view mt-4 mb-1"
             ></Avatar>
             <Title
               level={3}
@@ -113,36 +109,29 @@ const Navbar = ({ DoctorRef }: any) => {
                 isMobile ? "text-gray-100" : "text-blue-100"
               }`}
             >
-              {"Online Clinic"}
+              Clinicify
             </Title>
           </Link>
           {isMobile ? (
             <Button
               onClick={toggle}
-              className="flex h-10 grow items-center justify-center max-[678px]:w-[calc(30%-20px)]"
+              className="flex h-10 grow items-center justify-center max-md:w-1/3"
             >
-              <MenuOutlined />
+              <Menu className="size-4" />
             </Button>
           ) : null}
         </div>
-        <Menu
+        <AntMenu
           ref={menuElement}
           theme="dark"
           mode={!isMobile ? "inline" : "vertical"}
-          className={`mt-7.5 overflow-hidden max-[678px]:mt-0 max-[678px]:w-full max-[678px]:[&_li:hover]:!bg-[rgb(93,207,148)] ${
+          className={`mt-8 overflow-hidden px-1 text-base bg-blue-950 border-r border-white transition-all duration-300 ease-out max-md:mt-0 max-md:w-full max-md:[&_li:hover]:!bg-emerald-400 ${
             isMobile
               ? "sm absolute top-full"
               : "overflow-x-hidden overflow-y-auto"
           }`}
           style={{
-            paddingInline: "5px",
-            height: `
-        ${!isMobile ? "" : mobileMenuHeight}`,
-            transition:
-              "background 0.3s, width 0.3s cubic-bezier(0.2, 0, 0, 1) 0s,height 0.5s ease",
-            fontSize: "medium",
-            backgroundColor: "rgb(20, 57, 94)",
-            boxShadow: "inset -1px 0px white",
+            height: `${!isMobile ? "" : mobileMenuHeight}`,
           }}
           items={items(
             navigate,
@@ -155,10 +144,10 @@ const Navbar = ({ DoctorRef }: any) => {
             isLoading,
           )}
           onClick={toggle}
-        ></Menu>
+        ></AntMenu>
       </div>
     )
   );
-};
+}
 
 export default Navbar;

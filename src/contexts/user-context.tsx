@@ -1,4 +1,4 @@
-import { message } from "antd";
+import { message } from "@/components/ui/kit";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import type { AuthTokenPayload, User } from "@/types";
@@ -8,7 +8,7 @@ import Cookies from "universal-cookie";
 import { apiUrl } from "@/utils/api";
 
 const UserData = createContext<any>(null);
-const UserContextProvider = ({ children, token }: any) => {
+function UserContextProvider({ children, token }: any) {
   const [isLoading, setIsLoading] = useState(true);
   const [tokenExpired, setTokenExpired] = useState(false);
   const navigate = useNavigate();
@@ -16,13 +16,13 @@ const UserContextProvider = ({ children, token }: any) => {
   const [messageApi, contextHolder] = message.useMessage();
   const [userData, setUserData] = useState<User | null>(null);
   const [isError, setIsError] = useState(false);
-  const fetchUserData = async (
+  async function fetchUserData(
     active?: any,
     directToken?: any,
     directError?: any,
     noRender?: any,
     ..._args: any[]
-  ) => {
+  ) {
     if (!noRender) setIsLoading(true);
     if (!token && !directToken) {
       setUserData(null);
@@ -46,7 +46,7 @@ const UserContextProvider = ({ children, token }: any) => {
       switch (msg) {
         case "TokenExpiredError": {
           let userData;
-          setUserData((dat?: any, ..._args: any[]) => {
+          setUserData(function (dat?: any, ..._args: any[]) {
             userData = dat;
             return dat;
           });
@@ -58,7 +58,7 @@ const UserContextProvider = ({ children, token }: any) => {
               content: "your time has expired, redirecting to login page ...",
               duration: 3,
             });
-            setTimeout(() => {
+            setTimeout(function () {
               setUserData(null);
               navigate(`/login?redirect=${location?.pathname}`);
             }, 3000);
@@ -77,32 +77,35 @@ const UserContextProvider = ({ children, token }: any) => {
       }
       setIsLoading(false);
     }
-  };
-  useLayoutEffect(() => {
+  }
+  useLayoutEffect(function () {
     fetchUserData(true, new Cookies().get("accessToken"));
   }, []);
-  useLayoutEffect(() => {
-    const accessToken = new Cookies().get("accessToken");
-    if (!accessToken) return;
-    let timeId;
-    const handleExpired = async () => {
-      try {
-        const record = jwtDecode<AuthTokenPayload>(accessToken);
-        timeId = setTimeout(
-          () => {
-            fetchUserData(true, new Cookies().get("accessToken"), null, true);
-          },
-          Math.abs(+(record?.exp + "000") - Date.now()),
-        );
-      } catch {
-        return;
+  useLayoutEffect(
+    function () {
+      const accessToken = new Cookies().get("accessToken");
+      if (!accessToken) return;
+      let timeId;
+      async function handleExpired() {
+        try {
+          const record = jwtDecode<AuthTokenPayload>(accessToken);
+          timeId = setTimeout(
+            function () {
+              fetchUserData(true, new Cookies().get("accessToken"), null, true);
+            },
+            Math.abs(+(record?.exp + "000") - Date.now()),
+          );
+        } catch {
+          return;
+        }
       }
-    };
-    handleExpired();
-    return () => {
-      clearTimeout(timeId);
-    };
-  }, [new Cookies().get("accessToken")]);
+      handleExpired();
+      return function () {
+        clearTimeout(timeId);
+      };
+    },
+    [new Cookies().get("accessToken")],
+  );
   return (
     <UserData.Provider
       value={{
@@ -119,8 +122,10 @@ const UserContextProvider = ({ children, token }: any) => {
       {contextHolder}
     </UserData.Provider>
   );
-};
+}
 
 export default UserContextProvider;
 
-export const useUserContext = () => useContext(UserData);
+export function useUserContext() {
+  return useContext(UserData);
+}

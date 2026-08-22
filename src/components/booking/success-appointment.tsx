@@ -1,10 +1,10 @@
-import { BsFillCalendar2CheckFill } from "react-icons/bs";
+import { CalendarCheck } from "lucide-react";
 
-const AppointmentSuccess = ({ bookedAppointment }: any) => {
+function AppointmentSuccess({ bookedAppointment }: any) {
   return (
     <div>
       <div className="flex flex-col items-center justify-center gap-4">
-        <BsFillCalendar2CheckFill className="flex justify-center items-center text-green-600 text-6xl" />
+        <CalendarCheck className="flex justify-center items-center text-green-600 size-16" />
         <span className="text-gray-700 text-2xl font-medium text-center">
           Your Appointment Successfully Booked
         </span>
@@ -25,6 +25,6 @@ const AppointmentSuccess = ({ bookedAppointment }: any) => {
       </div>
     </div>
   );
-};
+}
 
 export default AppointmentSuccess;

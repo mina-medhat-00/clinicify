@@ -3,14 +3,14 @@ import Cookies from "universal-cookie";
 import { apiUrl } from "@/utils/api";
 
 const cookies = new Cookies();
-const submitClinic = async (
+async function submitClinic(
   values?: any,
   messageApi?: any,
   fetchProfileData?: any,
   fetchUserData?: any,
   username?: any,
   isEdit?: any,
-) => {
+) {
   const data = { ...values, isEdit };
   messageApi.open({
     key: 1,
@@ -31,19 +31,18 @@ const submitClinic = async (
         },
       },
     )
-    .then(() => {
+    .then(function () {
       messageApi.open({
         key: 1,
         content: "clinic information updated",
         type: "success",
         duration: 2,
       });
-      setTimeout(
-        () => fetchProfileData({ path: "profile", username }, true),
-        2000,
-      );
+      setTimeout(function () {
+        fetchProfileData({ path: "profile", username }, true);
+      }, 2000);
     })
-    .catch((err?: any, ..._args: any[]) => {
+    .catch(function (err?: any, ..._args: any[]) {
       if (err?.response?.status == 401) {
         fetchUserData(true, cookies.get("accessToken"));
       } else
@@ -54,6 +53,6 @@ const submitClinic = async (
           duration: 2,
         });
     });
-};
+}
 
 export default submitClinic;

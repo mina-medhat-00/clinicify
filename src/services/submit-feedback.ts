@@ -3,7 +3,7 @@ import Cookies from "universal-cookie";
 import { apiUrl } from "@/utils/api";
 
 const cookies = new Cookies();
-const submitFeedback = async (
+async function submitFeedback(
   rateValue?: any,
   feedbackValue?: any,
   feedback_to?: any,
@@ -11,7 +11,7 @@ const submitFeedback = async (
   setFetchFeedback?: any,
   fetchUserData?: any,
   ..._args: any[]
-) => {
+) {
   const data = {
     rate: rateValue || 0,
     feedback: feedbackValue || null,
@@ -36,24 +36,26 @@ const submitFeedback = async (
         },
       },
     )
-    .then((res?: any, ..._args: any[]) => {
+    .then(function (res?: any, ..._args: any[]) {
       if (!res?.data?.data?.update)
         messageApi.open({
           key: 1,
-          content: "thank you for your feedback ❤",
+          content: "thank you for your feedback",
           type: "success",
           duration: 2,
         });
       else
         messageApi.open({
           key: 1,
-          content: "thank you for your feedback update ❤",
+          content: "thank you for your feedback update",
           type: "success",
           duration: 2,
         });
-      setFetchFeedback((val?: any, ..._args: any[]) => !val);
+      setFetchFeedback(function (val?: any, ..._args: any[]) {
+        return !val;
+      });
     })
-    .catch((err?: any, ..._args: any[]) => {
+    .catch(function (err?: any, ..._args: any[]) {
       if (err?.response?.status == 401) {
         fetchUserData(true, cookies.get("accessToken"));
       } else
@@ -64,6 +66,6 @@ const submitFeedback = async (
           duration: 2,
         });
     });
-};
+}
 
 export default submitFeedback;

@@ -10,53 +10,55 @@ import getStripe from "@/utils/get-stripe";
 import { apiUrl } from "@/utils/api";
 
 const stripePromise = getStripe();
-const AppointmentPayment = ({
+function AppointmentPayment({
   bookedAppointment,
   doctorId,
   setBookedAppointment,
   setIsPayment,
   socket,
-}: any) => {
+}: any) {
   const [clientSecret, setClientSecret] = useState<any>("");
   const { messageApi } = useUtilsContext();
   const { fetchUserData } = useUserContext();
-  useEffect(() => {
-      // Create PaymentIntent as soon as the page loads
-    if (bookedAppointment?.appointmentId && doctorId) {
-      axios
-        .request({
-          url: apiUrl("/create/payment"),
-          ...{
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${new Cookies()?.get("accessToken")}`,
-            },
-            data: JSON.stringify({
-              data: {
-                doctorId,
-                ...bookedAppointment,
+  useEffect(
+    function () {
+      if (bookedAppointment?.appointmentId && doctorId) {
+        axios
+          .request({
+            url: apiUrl("/create/payment"),
+            ...{
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${new Cookies()?.get("accessToken")}`,
               },
-            }),
-          },
-        })
-        .then(({ data }: any) => {
-          setClientSecret(data.clientSecret);
-        })
-        .catch((err?: any, ..._args: any[]) => {
-          setIsPayment(null);
-          if (err?.response?.status == 401) {
-            fetchUserData(true, new Cookies().get("accessToken"));
-          } else
-            messageApi.open({
-              key: 1,
-              type: "error",
-              content: "there's some issues, please try again later",
-              duration: 5,
-            });
-        });
-    }
-  }, [bookedAppointment?.appointmentId, doctorId]);
+              data: JSON.stringify({
+                data: {
+                  doctorId,
+                  ...bookedAppointment,
+                },
+              }),
+            },
+          })
+          .then(function ({ data }: any) {
+            setClientSecret(data.clientSecret);
+          })
+          .catch(function (err?: any, ..._args: any[]) {
+            setIsPayment(null);
+            if (err?.response?.status == 401) {
+              fetchUserData(true, new Cookies().get("accessToken"));
+            } else
+              messageApi.open({
+                key: 1,
+                type: "error",
+                content: "there's some issues, please try again later",
+                duration: 5,
+              });
+          });
+      }
+    },
+    [bookedAppointment?.appointmentId, doctorId],
+  );
 
   const appearance = {
     theme: "stripe",
@@ -85,6 +87,6 @@ const AppointmentPayment = ({
       )}
     </div>
   );
-};
+}
 
 export default AppointmentPayment;

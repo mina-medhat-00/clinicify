@@ -1,21 +1,23 @@
-import { Avatar, Col, Rate, Row, Skeleton, Statistic } from "antd";
+import { Col, Rate, Row, Skeleton, Statistic } from "@/components/ui/kit";
 import React from "react";
 import CountUpPkg from "react-countup";
-import { AiOutlineSchedule } from "react-icons/ai";
-import { BsFillChatSquareTextFill } from "react-icons/bs";
-import { FcStatistics } from "react-icons/fc";
-import { GiDoctorFace } from "react-icons/gi";
-import { ImProfile } from "react-icons/im";
-import { MdDashboard } from "react-icons/md";
-import { RiQuestionAnswerLine } from "react-icons/ri";
-import { VscFeedback } from "react-icons/vsc";
 import { Link } from "react-router-dom";
+import {
+  Calendar,
+  ChartColumn,
+  LayoutDashboard,
+  MessageCircleQuestion,
+  MessageSquare,
+  Star,
+  Stethoscope,
+  User,
+} from "lucide-react";
 import heroClinic from "@/assets/images/background.jpg";
-import doctorIcon from "@/assets/images/doctor-icon.jpg";
 import Arrow from "@/components/ui/arrow";
 import Loader from "@/components/ui/loader";
 import TitleHeader from "@/components/ui/title-header";
 import TransitionContent from "@/components/ui/transition-content";
+import UserAvatar from "@/components/ui/user-avatar";
 import {
   DoctorsContextProvider,
   FeedbackContextProvider,
@@ -31,7 +33,7 @@ import Posts from "@/pages/posts";
 const Countup =
   typeof CountUpPkg === "function" ? CountUpPkg : (CountUpPkg as any)?.default;
 
-const HomePage = () => {
+function HomePage() {
   const { socket, isMobile } = useUtilsContext();
   const { isLoading: isUserLoading, userData: user } = useUserContext();
   const { homeData, isLoading } = useHomeContext();
@@ -85,12 +87,9 @@ const HomePage = () => {
   return (
     <>
       <div
-        className="text-center px-2"
+        className="text-center px-2 w-full bg-cover min-h-screen"
         style={{
           backgroundImage: `url(${heroClinic})`,
-          width: "100%",
-          backgroundSize: "cover",
-          minHeight: isMobile ? `calc(100vh - 52px)` : `100vh`,
         }}
       >
         {!isUserLoading ? (
@@ -98,14 +97,9 @@ const HomePage = () => {
             <div className="mb-8 sm:mx-6">
               <h1
                 className="mt-10 text-gray-100 shadow-lg py-6 sm:py-8 xl:py-10
-          rounded-lg text-xl sm:text-4xl ml-auto mr-auto"
-                style={{
-                  fontFamily: "cursive",
-                  backgroundImage:
-                    "linear-gradient(to right, #194d84, #34659b, #407dbf)",
-                }}
+          rounded-lg text-xl sm:text-4xl ml-auto mr-auto bg-linear-to-r from-blue-900 via-blue-700 to-blue-600"
               >
-                {"Online Clinic"}
+                Clinicify
               </h1>
               {user && (
                 <div className="flex gap-8 mt-2 justify-center px-2">
@@ -123,11 +117,14 @@ const HomePage = () => {
                         }
                       >
                         {user?.img_url ? (
-                          <Avatar src={user.img_url} size="large" />
+                          <UserAvatar
+                            src={user.img_url}
+                            userType={user?.user_type}
+                          />
                         ) : user?.user_type == "user" ? (
-                          <ImProfile className="mb-2 flex justify-center items-center w-full text-lg sm:text-2xl" />
+                          <User className="mb-2 flex justify-center items-center w-full size-5 sm:size-6" />
                         ) : (
-                          <MdDashboard className="mb-2 flex justify-center items-center w-full text-lg sm:text-2xl" />
+                          <LayoutDashboard className="mb-2 flex justify-center items-center w-full size-5 sm:size-6" />
                         )}
                         {user?.user_type == "user"
                           ? "My Profile"
@@ -152,7 +149,7 @@ const HomePage = () => {
                         className="p-2 py-4 bg-blue-800 hover:text-white text-center hover:bg-blue-500 text-xs sm:text-base block rounded-lg font-medium text-gray-100"
                         to="/chat"
                       >
-                        <BsFillChatSquareTextFill className="mb-2 flex justify-center items-center w-full text-lg sm:text-2xl" />
+                        <MessageSquare className="mb-2 flex justify-center items-center w-full size-5 sm:size-6" />
                         {"Chatting"}
                       </Link>
                     </div>
@@ -165,7 +162,7 @@ const HomePage = () => {
                           className="p-2 py-4 bg-blue-700 hover:text-white text-center hover:bg-blue-600 text-xs sm:text-base block rounded-lg font-medium text-gray-100"
                           to="/appointments"
                         >
-                          <AiOutlineSchedule className="mb-2 flex justify-center items-center w-full text-lg sm:text-2xl" />
+                          <Calendar className="mb-2 flex justify-center items-center w-full size-5 sm:size-6" />
                           {"Your Appointments"}
                         </Link>
                       </div>
@@ -181,7 +178,7 @@ const HomePage = () => {
                       className="p-2 py-4 bg-blue-600 hover:text-white text-center hover:bg-blue-700 text-xs sm:text-base block rounded-lg font-medium text-gray-100"
                       to="/doctors"
                     >
-                      <GiDoctorFace className="mb-2 flex justify-center items-center w-full text-lg sm:text-2xl" />
+                      <Stethoscope className="mb-2 flex justify-center items-center w-full size-5 sm:size-6" />
                       {"Doctors"}
                     </Link>
                   </div>
@@ -193,7 +190,7 @@ const HomePage = () => {
                       className="p-2 hover:text-white text-center bg-blue-500 py-4 hover:bg-blue-800 text-xs sm:text-base block rounded-lg font-medium text-gray-100"
                       to="/posts"
                     >
-                      <RiQuestionAnswerLine className="mb-2 flex justify-center items-center w-full text-lg sm:text-2xl" />
+                      <MessageCircleQuestion className="mb-2 flex justify-center items-center w-full size-5 sm:size-6" />
                       {"Questions"}
                     </Link>
                   </div>
@@ -224,90 +221,73 @@ const HomePage = () => {
           contentBg={"bg-blue-900/90"}
           title="Statistics"
           icon={
-            <FcStatistics className="text-3xl sm:text-5xl xl:text-6xl m-auto" />
+            <ChartColumn className="text-3xl sm:text-5xl xl:text-6xl m-auto" />
           }
         />
         {isLoading ? (
           <Loader />
         ) : (
           <TransitionContent key="statistics" speed="medium">
-            <Row
-              className="text-center bg-gray-200/30 shadow-md"
-              style={{ marginBottom: "15px", marginInline: "10px" }}
-            >
-              {HomeData?.map(
-                (
-                  {
-                    title,
-                    value,
-                    prefix,
-                    suffix,
-                    isLine,
-                    noLine,
-                    borderLine,
-                  }: any,
-                  i?: any,
-                ) => {
-                  const homeDetails = (
-                    <>
-                      <hr
-                        className={`${
-                          isLine
-                            ? `w-full ${
-                                noLine == "no" ? "" : `sm:hidden ${noLine}:w-0`
-                              }`
-                            : ""
-                        } ${
-                          borderLine == "2"
-                            ? "border-gray-600"
-                            : "border border-gray-300"
-                        }`}
-                        style={{
-                          borderWidth: borderLine == "2" ? "1.5px" : "",
-                        }}
-                      />
-                      <Col
-                        className={`w-full py-2 sm:w-1/2 home--col--${
-                          i + 1
-                        } hover:shadow-md hover:bg-blue-100`}
-                      >
-                        {" "}
-                        <Statistic
-                          title={
-                            <span className="text-gray-500 font-medium text-sm sm:text-lg">
-                              {title}
-                            </span>
-                          }
-                          className="[&_div]:overflow-hidden [&_div]:text-ellipsis [&_div]:whitespace-nowrap [&_div_span]:block [&_div_span]:overflow-hidden [&_div_span]:text-ellipsis"
-                          precision={2}
-                          styles={{
-                            content: {
-                              fontSize: isMobile ? "15px" : "20px",
-                              fontWeight: 500,
-                              display: "flex",
-                              justifyContent: "center",
-                              alignItems: "center",
-                            },
-                          }}
-                          value={value}
-                          formatter={
-                            title == "Average Rating"
-                              ? undefined
-                              : (val?: any) => (
-                                  <Countup end={Number(val) || 0} />
-                                )
-                          }
-                          suffix={suffix}
-                          prefix={prefix}
-                        />{" "}
-                      </Col>
-                    </>
-                  );
-                  return (
-                    <React.Fragment key={title}>{homeDetails}</React.Fragment>
-                  );
-                },
-              )}
+            <Row className="text-center bg-gray-200/30 shadow-md mb-3.5 mx-2.5">
+              {HomeData?.map(function (
+                {
+                  title,
+                  value,
+                  prefix,
+                  suffix,
+                  isLine,
+                  noLine,
+                  borderLine,
+                }: any,
+                i?: any,
+              ) {
+                const homeDetails = (
+                  <>
+                    <hr
+                      className={`${
+                        isLine
+                          ? `w-full ${
+                              noLine == "no" ? "" : `sm:hidden ${noLine}:w-0`
+                            }`
+                          : ""
+                      } ${
+                        borderLine == "2"
+                          ? "border-gray-600 border-[1.5px]"
+                          : "border border-gray-300"
+                      }`}
+                    />
+                    <Col
+                      className={`w-full py-2 sm:w-1/2 home--col--${
+                        i + 1
+                      } hover:shadow-md hover:bg-blue-100`}
+                    >
+                      {" "}
+                      <Statistic
+                        title={
+                          <span className="text-gray-500 font-medium text-sm sm:text-lg">
+                            {title}
+                          </span>
+                        }
+                        className="[&_div]:overflow-hidden [&_div]:text-ellipsis [&_div]:whitespace-nowrap [&_div_span]:block [&_div_span]:overflow-hidden [&_div_span]:text-ellipsis [&_.ant-statistic-content]:flex [&_.ant-statistic-content]:items-center [&_.ant-statistic-content]:justify-center [&_.ant-statistic-content]:font-medium [&_.ant-statistic-content]:text-sm md:[&_.ant-statistic-content]:text-xl"
+                        precision={2}
+                        value={value}
+                        formatter={
+                          title == "Average Rating"
+                            ? undefined
+                            : function (val?: any) {
+                                return <Countup end={Number(val) || 0} />;
+                              }
+                        }
+                        suffix={suffix}
+                        prefix={prefix}
+                      />{" "}
+                    </Col>
+                  </>
+                );
+                return (
+                  <React.Fragment key={title}>{homeDetails}</React.Fragment>
+                );
+              })}
             </Row>
           </TransitionContent>
         )}
@@ -316,7 +296,9 @@ const HomePage = () => {
             wrapperBg={"no"}
             to="doctors"
             title="Doctors"
-            img={doctorIcon}
+            icon={
+              <Stethoscope className="text-white size-12 sm:size-16 xl:size-20 m-auto" />
+            }
           />
           <DoctorsContextProvider query={{ limit: 5 }}>
             <Doctors home />
@@ -326,7 +308,7 @@ const HomePage = () => {
             to="feedbacks"
             title="Feedbacks"
             icon={
-              <VscFeedback className="text-white text-3xl sm:text-5xl xl:text-6xl m-auto" />
+              <Star className="text-white text-3xl sm:text-5xl xl:text-6xl m-auto" />
             }
           />
           <FeedbackContextProvider
@@ -340,5 +322,5 @@ const HomePage = () => {
       </div>
     </>
   );
-};
+}
 export default HomePage;

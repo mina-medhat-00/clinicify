@@ -17,7 +17,7 @@ import { useUtilsContext } from "@/contexts/utils-context";
 import Chat from "@/pages/chat";
 import UserProfile from "@/pages/user-profile";
 
-const AdminDashboard = () => {
+function AdminDashboard() {
   const isMobile = useMediaQuery({
     query: "(max-width:878px)",
   });
@@ -27,14 +27,17 @@ const AdminDashboard = () => {
   const [dashType, setDashType] = useState(
     window.localStorage.getItem("adminDashType"),
   );
-  useEffect(() => {
-    if (dashType) window.localStorage.setItem("adminDashType", dashType);
-  }, [dashType]);
+  useEffect(
+    function () {
+      if (dashType) window.localStorage.setItem("adminDashType", dashType);
+    },
+    [dashType],
+  );
   return (
     <div>
       <div className="flex relative dark:bg-main-dark-bg">
         {activeMenu ? (
-          <div className="sidebar fixed w-full bg-white shadow-[0_7px_30px_rgb(113_122_131/11%)] max-[800px]:z-1000 sm:w-64 dark:bg-secondary-dark-bg ">
+          <div className="sidebar fixed w-full bg-white shadow-lg max-lg:z-50 sm:w-64 dark:bg-secondary-dark-bg ">
             <Sidebar
               user={user}
               setDashType={setDashType}
@@ -64,7 +67,7 @@ const AdminDashboard = () => {
           }
         >
           <div className="mb-16 md:mb-0">
-            <div className="navbar fixed z-1000 w-full bg-main-bg md:static dark:bg-main-dark-bg ">
+            <div className="navbar fixed z-50 w-full bg-main-bg md:static dark:bg-main-dark-bg ">
               <Navbar
                 user={user}
                 dashType={dashType}
@@ -115,5 +118,5 @@ const AdminDashboard = () => {
       </div>
     </div>
   );
-};
+}
 export default AdminDashboard;

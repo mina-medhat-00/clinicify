@@ -1,41 +1,39 @@
-import {
-  ClockCircleFilled,
-  LoadingOutlined,
-  MessageFilled,
-} from "@ant-design/icons";
-import { Alert, Avatar, Button, Image, Input } from "antd";
+import { Alert, Button, Image, Input } from "@/components/ui/kit";
 import axios from "axios";
-import { useEffect, useState } from "react";
-import { AiFillDislike, AiFillLike } from "react-icons/ai";
 import {
-  BsEmojiAngryFill,
-  BsEmojiSmile,
-  BsEmojiSmileUpsideDown,
-  BsFillArrowDownCircleFill,
-  BsFillArrowUpCircleFill,
-} from "react-icons/bs";
-import { MdReply } from "react-icons/md";
-import { RiChatDeleteLine } from "react-icons/ri";
+  Angry,
+  CircleArrowDown,
+  CircleArrowUp,
+  Clock,
+  Loader2,
+  MessageCircle,
+  MessageSquareX,
+  Reply,
+  Smile,
+  ThumbsDown,
+  ThumbsUp,
+  X,
+} from "lucide-react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Cookies from "universal-cookie";
-import doctorPhoto from "@/assets/images/doctor-photo.png";
-import userPhoto from "@/assets/images/user-photo.png";
+import UserAvatar from "@/components/ui/user-avatar";
 import { useCommentsContext } from "@/contexts/comments-context";
 import { useUserContext } from "@/contexts/user-context";
 import submitComment from "@/services/submit-comment";
 import submitLike from "@/services/submit-like";
 import { apiUrl } from "@/utils/api";
 
-const getLike = async (
+async function getLike(
   setIsLike?: any,
   postId?: any,
   commentId?: any,
   ..._args: any[]
-) => {
+) {
   const { data } = await axios(
-    apiUrl(`/get/like?postId=${postId}${
-      commentId ? `&commentId=${commentId}` : ""
-    }`),
+    apiUrl(
+      `/get/like?postId=${postId}${commentId ? `&commentId=${commentId}` : ""}`,
+    ),
     {
       headers: {
         "Content-Type": "application/json",
@@ -44,8 +42,8 @@ const getLike = async (
     },
   );
   setIsLike(data?.data);
-};
-const CommentActions = ({
+}
+function CommentActions({
   isComment,
   postId,
   commentId,
@@ -64,21 +62,24 @@ const CommentActions = ({
   numDisLike,
   numLike,
   setPosts,
-}: any) => {
+}: any) {
   const [likeData, setLikeData] = useState<any>(null);
   const activeEmoji = likeData?.like_type;
   const { messageApi, fetchUserData, userData } = useUserContext();
-  useEffect(() => {
-    if (userData?.user_id) getLike(setLikeData, postId, commentId);
-  }, [userData]);
+  useEffect(
+    function () {
+      if (userData?.user_id) getLike(setLikeData, postId, commentId);
+    },
+    [userData],
+  );
   const emojiData = [
     {
       type: "like",
       total: numLike,
       color: "blue",
       icon: (
-        <AiFillLike
-          onClick={() => {
+        <ThumbsUp
+          onClick={function () {
             if (userData?.user_id)
               submitLike(
                 null,
@@ -119,10 +120,10 @@ const CommentActions = ({
       total: numDisLike,
       color: " text-yellow-400 ",
       icon: (
-        <AiFillDislike
+        <ThumbsDown
           fill="white"
           color="red"
-          onClick={() => {
+          onClick={function () {
             if (userData?.user_id)
               submitLike(
                 null,
@@ -163,8 +164,8 @@ const CommentActions = ({
       total: numAngry,
       color: "red",
       icon: (
-        <BsEmojiAngryFill
-          onClick={() => {
+        <Angry
+          onClick={function () {
             if (userData?.user_id)
               submitLike(
                 null,
@@ -207,22 +208,24 @@ const CommentActions = ({
         <div className="flex flex-wrap gap-1 justify-between items-center">
           <div className="flex gap-2 flex-wrap items-center">
             <div className="flex flex-wrap gap-2 items-center bg-white p-2 rounded-lg shadow-sm">
-              {emojiData?.map(({ type, icon, total, color }: any) => (
-                <div key={type}>
-                  {icon}
-                  <span className={`text-${color}-400 rounded-md p-1 z-20`}>
-                    {total}
-                  </span>
-                </div>
-              ))}
+              {emojiData?.map(function ({ type, icon, total, color }: any) {
+                return (
+                  <div key={type}>
+                    {icon}
+                    <span className={`text-${color}-400 rounded-md p-1 z-20`}>
+                      {total}
+                    </span>
+                  </div>
+                );
+              })}
               <div className="p-1 flex flex-col  gap-1 items-center shadow bg-blue-500/60 rounded-md">
-                <MessageFilled /> {numComments ? numComments : 0}
+                <MessageCircle /> {numComments ? numComments : 0}
               </div>
             </div>
           </div>
           {show && showMore && (
             <div
-              onClick={() => {
+              onClick={function () {
                 fetchCommentsData({
                   postId,
                   limit: lenViewedComments + 5,
@@ -233,9 +236,9 @@ const CommentActions = ({
           bg-gray-500 flex flex-wrap justify-center items-center gap-1"
             >
               {isLoading ? (
-                <LoadingOutlined />
+                <Loader2 className="animate-spin" />
               ) : (
-                <BsFillArrowDownCircleFill
+                <CircleArrowDown
                   className="flex hover:shadow-lg cursor-pointer 
                 rounded-full hover:bg-gray-900 items-center 
                 text-gray-100 text-xl"
@@ -248,32 +251,30 @@ const CommentActions = ({
           )}
           {!isComment ? (
             <div
-              onClick={() => {
+              onClick={function () {
                 setShowPost(postId);
                 if (showPost != postId)
-                  setTimeout(
-                    () =>
-                      setReply((val?: any, ..._args: any[]) =>
-                        val === postId ? false : postId,
-                      ),
-                    100,
-                  );
+                  setTimeout(function () {
+                    setReply(function (val?: any, ..._args: any[]) {
+                      return val === postId ? false : postId;
+                    });
+                  }, 100);
                 else
-                  setReply((val?: any, ..._args: any[]) =>
-                    val === postId ? false : postId,
-                  );
+                  setReply(function (val?: any, ..._args: any[]) {
+                    return val === postId ? false : postId;
+                  });
               }}
               className="cursor-pointer p-2 rounded-lg text-gray-700 hover:bg-gray-100 bg-white"
             >
               Comment
             </div>
           ) : (
-            <MdReply
-              onClick={() =>
-                setReply((val?: any, ..._args: any[]) =>
-                  val === commentId ? false : commentId,
-                )
-              }
+            <Reply
+              onClick={function () {
+                setReply(function (val?: any, ..._args: any[]) {
+                  return val === commentId ? false : commentId;
+                });
+              }}
               className="flex hover:shadow-lg cursor-pointer 
             rounded-full hover:text-blue-700 items-center 
             text-blue-600 text-xl"
@@ -283,8 +284,8 @@ const CommentActions = ({
       </div>
     </>
   );
-};
-const Reply = ({
+}
+function ReplyBox({
   isComment,
   setReply,
   postId,
@@ -294,7 +295,7 @@ const Reply = ({
   lenViewedComments,
   makeComment,
   setLen,
-}: any) => {
+}: any) {
   const { userData, messageApi, fetchUserData } = useUserContext();
   const [emojiOpen, setEmojiOpen] = useState<any>(null);
   const userid = userData?.user_id;
@@ -314,17 +315,16 @@ const Reply = ({
         } rounded`}
       >
         <div className="flex justify-left items-center gap-1">
-          <Avatar
-            src={
-              userData?.img_url ||
-              (userData?.user_type == "doctor" ? doctorPhoto : userPhoto)
-            }
-          />
+          <UserAvatar src={userData?.img_url} userType={userData?.user_type} />
           {userData?.nick_name || "user"}
         </div>
         <div className="flex justify-center items-center">
-          <RiChatDeleteLine
-            onClick={() => setReply(() => false)}
+          <MessageSquareX
+            onClick={function () {
+              setReply(function () {
+                return false;
+              });
+            }}
             className={`flex hover:shadow-lg cursor-pointer 
           rounded-full hover:text-red-700 items-center 
           ${isComment ? "text-gray-100" : "text-gray-700"} text-3xl`}
@@ -335,14 +335,16 @@ const Reply = ({
         <Input.TextArea
           className="rounded-xl h-20 sm:w-1/2"
           value={content}
-          onChange={(e?: any, ..._args: any[]) => setContent(e?.target?.value)}
+          onChange={function (e?: any, ..._args: any[]) {
+            setContent(e?.target?.value);
+          }}
         />
         <div className="p-3 flex justify-between gap-2">
           <Button
             className="rounded-lg justify-center font-medium flex items-center border border-blue-600 text-white m-0
           py-4 bg-blue-500/60 hover:bg-blue-400
         "
-            onClick={() => {
+            onClick={function () {
               if (userid && content)
                 submitComment(
                   userData,
@@ -364,19 +366,23 @@ const Reply = ({
           </Button>
           <div>
             {emojiOpen ? (
-              <BsEmojiSmileUpsideDown
-                onClick={() =>
-                  setEmojiOpen((val?: any, ..._args: any[]) => !val)
-                }
+              <Smile
+                onClick={function () {
+                  setEmojiOpen(function (val?: any, ..._args: any[]) {
+                    return !val;
+                  });
+                }}
                 className={`flex cursor-pointer items-center text-3xl ${
                   emojiOpen ? "text-blue-700" : "text-blue-400"
                 }`}
               />
             ) : (
-              <BsEmojiSmile
-                onClick={() =>
-                  setEmojiOpen((val?: any, ..._args: any[]) => !val)
-                }
+              <Smile
+                onClick={function () {
+                  setEmojiOpen(function (val?: any, ..._args: any[]) {
+                    return !val;
+                  });
+                }}
                 className={`flex cursor-pointer items-center text-3xl ${
                   emojiOpen ? "text-blue-700" : "text-blue-400"
                 }`}
@@ -388,8 +394,10 @@ const Reply = ({
           <Alert
             className="bg-red-400 mt-2"
             closable={{
-              closeIcon: <span className="text-white text-base">X</span>,
-              onClose: () => setShowWarn(false),
+              closeIcon: <X className="size-4 text-white" />,
+              onClose: function () {
+                setShowWarn(false);
+              },
             }}
             description={
               <span className="text-white font-medium">
@@ -403,8 +411,8 @@ const Reply = ({
       </div>
     </div>
   );
-};
-const CommentTemplate = ({
+}
+function CommentTemplate({
   postId,
   commentId,
   makeComment,
@@ -414,6 +422,7 @@ const CommentTemplate = ({
   setMakeComment,
   commentid,
   userid,
+  userType,
   order,
   numComments,
   content,
@@ -429,79 +438,82 @@ const CommentTemplate = ({
   lenViewedComments,
   isLoading,
   setLen,
-}: any) => (
-  <div
-    className={`rounded-lg
+}: any) {
+  return (
+    <div
+      className={`rounded-lg
     ${
       commentId === makeComment ? "relative" : ""
     } pl-5 sm:pl-10 bg-white pt-5 pb-2 ${!show && "border-b-2"}`}
-  >
-    <div
-      className={`p-1 flex gap-1 flex-wrap justify-between ${
-        isComment ? "mr-1 text-gray-700" : "text-white"
-      } rounded`}
     >
-      <Link
-        to={`/profile/${userid}`}
-        className={`flex hover:text-gray-100 justify-left  ${
-          isComment ? "text-gray-700" : "text-white"
-        }  items-center gap-2`}
+      <div
+        className={`p-1 flex gap-1 flex-wrap justify-between ${
+          isComment ? "mr-1 text-gray-700" : "text-white"
+        } rounded`}
       >
-        <Avatar src={imgUrl} />
-        {nickname || "Message 1"}
-      </Link>
-      <div className="flex justify-left items-center gap-2">
-        <span
-          className={`text-xs ${isComment ? "text-gray-700" : "text-gray-300"}`}
+        <Link
+          to={`/profile/${userid}`}
+          className={`flex hover:text-gray-100 justify-left  ${
+            isComment ? "text-gray-700" : "text-white"
+          }  items-center gap-2`}
         >
-          {new Date(issuedTime).toLocaleString()}
-        </span>
-        <ClockCircleFilled
-          className={`flex hover:shadow-lg cursor-pointer 
+          <UserAvatar src={imgUrl} userType={userType} />
+          {nickname || "Message 1"}
+        </Link>
+        <div className="flex justify-left items-center gap-2">
+          <span
+            className={`text-xs ${isComment ? "text-gray-700" : "text-gray-300"}`}
+          >
+            {new Date(issuedTime).toLocaleString()}
+          </span>
+          <Clock
+            className={`flex hover:shadow-lg cursor-pointer 
                    hover:bg-gray-900 items-center 
                   ${isComment ? "text-gray-700" : "text-gray-300"} text-sm`}
-        />
+          />
+        </div>
       </div>
-    </div>
-    <div className={`p-3 text-gray-600`}>{content || "Message 1"}</div>
+      <div className={`p-3 text-gray-600`}>{content || "Message 1"}</div>
 
-    {makeComment === commentId && (
-      <Reply
-        commentId={commentId}
-        postId={postId}
+      {makeComment === commentId && (
+        <ReplyBox
+          commentId={commentId}
+          postId={postId}
+          isComment={isComment}
+          makeComment={makeComment}
+          setReply={setMakeComment}
+          fetchCommentsData={fetchCommentsData}
+          userid={userid}
+          commentid={commentid}
+          socket={socket}
+          setLen={setLen}
+          lenViewedComments={lenViewedComments}
+        />
+      )}
+      <CommentActions
+        show={show}
         isComment={isComment}
-        makeComment={makeComment}
         setReply={setMakeComment}
+        setComments={setComments}
         fetchCommentsData={fetchCommentsData}
-        userid={userid}
-        commentid={commentid}
-        socket={socket}
-        setLen={setLen}
+        postId={postId}
+        numAngry={numAngry}
+        numDisLike={numDisLike}
+        numLike={numLike}
+        commentId={commentId}
+        order={order}
+        showMore={showMore}
+        numComments={numComments}
         lenViewedComments={lenViewedComments}
+        isLoading={isLoading}
+        socket={socket}
       />
-    )}
-    <CommentActions
-      show={show}
-      isComment={isComment}
-      setReply={setMakeComment}
-      setComments={setComments}
-      fetchCommentsData={fetchCommentsData}
-      postId={postId}
-      numAngry={numAngry}
-      numDisLike={numDisLike}
-      numLike={numLike}
-      commentId={commentId}
-      order={order}
-      showMore={showMore}
-      numComments={numComments}
-      lenViewedComments={lenViewedComments}
-      isLoading={isLoading}
-      socket={socket}
-    />
-  </div>
-);
-const PostTemplate = ({
+    </div>
+  );
+}
+function PostTemplate({
   userid,
+  userType,
   setPosts,
   postId,
   imgUrl,
@@ -528,13 +540,18 @@ const PostTemplate = ({
   setShowPost,
   showPost,
   setLen,
-}: any) => {
+}: any) {
   const [showPopUp, setShowPopUp] = useState(false);
-  useEffect(() => {
-    if (showPost == postId) {
-      setTimeout(() => setShowPopUp(postId), 400);
-    } else setShowPopUp(false);
-  }, [showPost]);
+  useEffect(
+    function () {
+      if (showPost == postId) {
+        setTimeout(function () {
+          setShowPopUp(postId);
+        }, 400);
+      } else setShowPopUp(false);
+    },
+    [showPost],
+  );
   return (
     <div
       className={`rounded-lg ${
@@ -551,14 +568,14 @@ const PostTemplate = ({
           className={`flex hover:text-gray-100 justify-left text-white
         items-center gap-2`}
         >
-          <Avatar src={imgUrl} />
+          <UserAvatar src={imgUrl} userType={userType} />
           {nickname || "Message 1"}
         </Link>
         <div className="flex justify-left items-center gap-2">
           <span className="text-xs text-gray-300">
             {new Date(issuedTime).toLocaleString()}
           </span>
-          <ClockCircleFilled
+          <Clock
             className={`flex hover:shadow-lg cursor-pointer 
                    hover:bg-gray-900 items-center 
                   ${isComment ? "text-gray-700" : "text-gray-300"} text-sm`}
@@ -566,11 +583,15 @@ const PostTemplate = ({
         </div>
         {!!comments?.length && (
           <div
-            onClick={() => setComments(() => [])}
+            onClick={function () {
+              setComments(function () {
+                return [];
+              });
+            }}
             className="cursor-pointer p-2 rounded-lg hover:bg-gray-600 
                   bg-gray-500 flex text-white justify-center items-center gap-1"
           >
-            <BsFillArrowUpCircleFill
+            <CircleArrowUp
               className="flex hover:shadow-lg cursor-pointer 
             rounded-full hover:bg-gray-900 items-center 
             text-gray-100 text-xl"
@@ -593,7 +614,7 @@ const PostTemplate = ({
               <>
                 ...{" "}
                 <div
-                  onClick={() => {
+                  onClick={function () {
                     setShowPost(postId);
                   }}
                   className="inline-block p-2 mt-2 bg-gray-800 hover:bg-gray-700 shadow cursor-pointer
@@ -609,13 +630,8 @@ const PostTemplate = ({
       {postImg && (
         <div className="text-center w-full">
           <Image
-            className=""
-            style={{
-              height: "150px",
-              borderRadius: "10%",
-              userSelect: "none",
-            }}
-            onClick={(e?: any, ..._args: any[]) => {
+            className="h-36 rounded-xl select-none"
+            onClick={function (e?: any, ..._args: any[]) {
               e.stopPropagation();
               e.preventDefault();
             }}
@@ -624,7 +640,7 @@ const PostTemplate = ({
         </div>
       )}
       {makeComment === postId && (
-        <Reply
+        <ReplyBox
           postId={postId}
           isComment={isComment}
           setReply={setMakeComment}
@@ -658,8 +674,8 @@ const PostTemplate = ({
       />
     </div>
   );
-};
-const Post = ({
+}
+function Post({
   postId,
   imgUrl,
   userType,
@@ -680,61 +696,71 @@ const Post = ({
   setMakeComment,
   makeComment,
   showPopUp,
-}: any) => {
+}: any) {
   const { isLoading, fetchCommentsData, commentsData, setCommentsData } =
     useCommentsContext();
-  useEffect(() => {
-    if (!showPost || showPost !== postId)
-      setTimeout(() => {
-        setCommentsData([]);
-        setMakeComment(null);
-      }, 400);
-  }, [showPost]);
-  useEffect(() => {
-    if (postId) {
-      const receive_comment = (data?: any, ..._args: any[]) => {
-        const isUpdate = data?.updateEmoji;
-        if (isUpdate) {
-          const { comment_id, like_emoji, dislike, angry } = data;
-          setCommentsData((comments?: any, ..._args: any[]) =>
-            comments?.map((c?: any, ..._args: any[]) =>
-              c?.comment_id == comment_id
-                ? {
-                    ...c,
-                    like_emoji: like_emoji || 0,
-                    dislike: dislike || 0,
-                    angry: angry || 0,
-                  }
-                : c,
-            ),
-          );
-        } else {
-          if (
-            !commentsData?.some(
-              ({ comment_id }: any) => comment_id == data?.comment_id,
-            )
-          ) {
-            const reply_on = data?.reply_on;
-            setCommentsData((c?: any, ..._args: any[]) =>
-              c?.length
-                ? [
-                    data,
-                    ...c.map((c1?: any, ..._args: any[]) =>
-                      c1.comment_id == reply_on
-                        ? { ...c1, num_replies: c1.num_replies + 1 }
-                        : c1,
-                    ),
-                  ]
-                : [data],
-            );
-            setLen((val?: any, ..._args: any[]) => val + 1);
+  useEffect(
+    function () {
+      if (!showPost || showPost !== postId)
+        setTimeout(function () {
+          setCommentsData([]);
+          setMakeComment(null);
+        }, 400);
+    },
+    [showPost],
+  );
+  useEffect(
+    function () {
+      if (postId) {
+        function receive_comment(data?: any, ..._args: any[]) {
+          const isUpdate = data?.updateEmoji;
+          if (isUpdate) {
+            const { comment_id, like_emoji, dislike, angry } = data;
+            setCommentsData(function (comments?: any, ..._args: any[]) {
+              return comments?.map(function (c?: any, ..._args: any[]) {
+                return c?.comment_id == comment_id
+                  ? {
+                      ...c,
+                      like_emoji: like_emoji || 0,
+                      dislike: dislike || 0,
+                      angry: angry || 0,
+                    }
+                  : c;
+              });
+            });
+          } else {
+            if (
+              !commentsData?.some(function ({ comment_id }: any) {
+                return comment_id == data?.comment_id;
+              })
+            ) {
+              const reply_on = data?.reply_on;
+              setCommentsData(function (c?: any, ..._args: any[]) {
+                return c?.length
+                  ? [
+                      data,
+                      ...c.map(function (c1?: any, ..._args: any[]) {
+                        return c1.comment_id == reply_on
+                          ? { ...c1, num_replies: c1.num_replies + 1 }
+                          : c1;
+                      }),
+                    ]
+                  : [data];
+              });
+              setLen(function (val?: any, ..._args: any[]) {
+                return val + 1;
+              });
+            }
           }
         }
-      };
-      socket.on(`receive_comment_${postId}`, receive_comment);
-      return () => socket.off(`receive_comment_${postId}`, receive_comment);
-    }
-  }, [commentsData]);
+        socket.on(`receive_comment_${postId}`, receive_comment);
+        return function () {
+          socket.off(`receive_comment_${postId}`, receive_comment);
+        };
+      }
+    },
+    [commentsData],
+  );
   return (
     <div className="p-2 grow w-full rounded-lg bg-gray-700">
       <div className="flex relative flex-col">
@@ -744,8 +770,9 @@ const Post = ({
           showPost={showPost}
           postImg={postImg}
           userid={userid}
+          userType={userType}
           postId={postId}
-          imgUrl={imgUrl || (userType == "doctor" ? doctorPhoto : userPhoto)}
+          imgUrl={imgUrl}
           nickname={nickname}
           numAngry={numAngry}
           setLen={setLen}
@@ -770,40 +797,36 @@ const Post = ({
         />
 
         <div
-          style={{
-            maxHeight: "500px",
-          }}
-          className={`flex flex-col rounded-lg p-1
+          className={`flex flex-col rounded-lg p-1 max-h-96
           sm:bg-gray-700  transition-all duration-500 ${
             commentsData?.length ? "" : "max-h-0 p-2"
           } overflow-auto gap-2 top-full w-full scroll--v scroll--v--comment`}
         >
-          {(showPopUp == postId ? commentsData : [])?.map(
-            (
-              {
-                comment_id: commentId,
-                user_id: userid,
-                user_type: userType,
-                img_url: imgUrl,
-                nick_name: nickname,
-                content,
-                issued_time: issuedTime,
-                num_replies: numReplies,
-                angry: numAngry,
-                dislike: numDisLike,
-                like_emoji: numLike,
-              }: any,
-              i?: any,
-            ) => (
+          {(showPopUp == postId ? commentsData : [])?.map(function (
+            {
+              comment_id: commentId,
+              user_id: userid,
+              user_type: userType,
+              img_url: imgUrl,
+              nick_name: nickname,
+              content,
+              issued_time: issuedTime,
+              num_replies: numReplies,
+              angry: numAngry,
+              dislike: numDisLike,
+              like_emoji: numLike,
+            }: any,
+            i?: any,
+          ) {
+            return (
               <CommentTemplate
                 key={commentId}
                 socket={socket}
                 setLen={setLen}
                 userid={userid}
+                userType={userType}
                 postId={postId}
-                imgUrl={
-                  imgUrl || (userType == "doctor" ? doctorPhoto : userPhoto)
-                }
+                imgUrl={imgUrl}
                 nickname={nickname}
                 numAngry={numAngry}
                 numLike={numLike}
@@ -823,12 +846,12 @@ const Post = ({
                 lenViewedComments={commentsData?.length}
                 isLoading={isLoading}
               />
-            ),
-          )}
+            );
+          })}
         </div>
       </div>
     </div>
   );
-};
+}
 
 export default Post;

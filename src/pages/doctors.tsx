@@ -1,6 +1,5 @@
-import { Carousel, Empty } from "antd";
+import { Carousel, Empty } from "@/components/ui/kit";
 import { forwardRef, useState } from "react";
-import doctorPhoto from "@/assets/images/doctor-photo.png";
 import DoctorCard from "@/components/doctor/doctor-card";
 import SearchFilter from "@/components/doctor/search-filter";
 import Loader from "@/components/ui/loader";
@@ -10,7 +9,7 @@ import { useDoctorsContext } from "@/contexts/doctors-context";
 import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
 
-const Doctors = forwardRef(({ home }: any, ref?: any, ..._args: any[]) => {
+function Doctors({ home }: any, ref?: any, ..._args: any[]) {
   const { socket, timeZone, isMobile } = useUtilsContext();
   const { userData: user } = useUserContext();
   const { doctorsData, isLoading, fetchDoctorsData, isError } =
@@ -30,36 +29,38 @@ const Doctors = forwardRef(({ home }: any, ref?: any, ..._args: any[]) => {
           <Carousel
             autoplay
             autoplaySpeed={30000}
-            dotPosition="bottom"
+            dotPlacement="bottom"
             className="bg-gray-200/40 rounded-md"
             dots={{
               className: "bg-gray-700 p-1 rounded-md",
             }}
           >
             {doctorsData?.length > 0 ? (
-              doctorsData?.map((record?: any, ..._args: any[]) => (
-                <div className="mb-16" key={record?.doctor_id}>
-                  <DoctorCard
-                    isMobile={isMobile}
-                    user={user}
-                    socket={socket}
-                    doctorId={record?.doctor_id}
-                    username={record?.user_name}
-                    profileImage={record?.img_url || doctorPhoto}
-                    rate={record?.rate}
-                    fees={record?.fees}
-                    isPayment={isPayment}
-                    setIsPayment={setIsPayment}
-                    street={record?.clinic_street}
-                    city={record?.clinic_city}
-                    phone={record?.clinic_pnumber}
-                    doctorName={record?.nick_name}
-                    about={record?.about}
-                    specialty={record?.specialty}
-                    timeZone={timeZone || ""}
-                  />
-                </div>
-              ))
+              doctorsData?.map(function (record?: any, ..._args: any[]) {
+                return (
+                  <div className="mb-16" key={record?.doctor_id}>
+                    <DoctorCard
+                      isMobile={isMobile}
+                      user={user}
+                      socket={socket}
+                      doctorId={record?.doctor_id}
+                      username={record?.user_name}
+                      profileImage={record?.img_url}
+                      rate={record?.rate}
+                      fees={record?.fees}
+                      isPayment={isPayment}
+                      setIsPayment={setIsPayment}
+                      street={record?.clinic_street}
+                      city={record?.clinic_city}
+                      phone={record?.clinic_pnumber}
+                      doctorName={record?.nick_name}
+                      about={record?.about}
+                      specialty={record?.specialty}
+                      timeZone={timeZone || ""}
+                    />
+                  </div>
+                );
+              })
             ) : isLoading ? (
               <Loader />
             ) : isError ? (
@@ -79,8 +80,12 @@ const Doctors = forwardRef(({ home }: any, ref?: any, ..._args: any[]) => {
               lastItem
               colKey="doctor"
               heightFull
-              items={doctorsData?.map(
-                (record?: any, i?: any, ..._args: any[]) => ({
+              items={doctorsData?.map(function (
+                record?: any,
+                i?: any,
+                ..._args: any[]
+              ) {
+                return {
                   key: record?.doctor_id,
                   element: (
                     <DoctorCard
@@ -92,7 +97,7 @@ const Doctors = forwardRef(({ home }: any, ref?: any, ..._args: any[]) => {
                       }
                       doctorId={record?.doctor_id}
                       username={record?.user_name}
-                      profileImage={record?.img_url || doctorPhoto}
+                      profileImage={record?.img_url}
                       rate={record?.rate}
                       fees={record?.fees}
                       isPayment={isPayment}
@@ -106,8 +111,8 @@ const Doctors = forwardRef(({ home }: any, ref?: any, ..._args: any[]) => {
                       timeZone={timeZone || ""}
                     />
                   ),
-                }),
-              )}
+                };
+              })}
             />
           ) : isLoading ? (
             <Loader />
@@ -133,5 +138,5 @@ const Doctors = forwardRef(({ home }: any, ref?: any, ..._args: any[]) => {
       )}
     </>
   );
-});
-export default Doctors;
+}
+export default forwardRef(Doctors);

@@ -3,25 +3,24 @@ import { createContext, useContext, useLayoutEffect, useState } from "react";
 import type { Post } from "@/types";
 import { apiUrl } from "@/utils/api";
 
-const handleQuery = (obj?: any, ..._args: any[]) =>
-  !obj
+function handleQuery(obj?: any, ..._args: any[]) {
+  return !obj
     ? ""
     : Object.entries(obj)
-        .filter(([_, val]: any) => val || val === 0)
-        .map(([name, val]: any, i?: any, ..._args: any[]) =>
-          i == 0 ? `?${name}=${val}` : `${name}=${val}`,
-        )
+        .filter(function ([_, val]: any) {
+          return val || val === 0;
+        })
+        .map(function ([name, val]: any, i?: any, ..._args: any[]) {
+          return i == 0 ? `?${name}=${val}` : `${name}=${val}`;
+        })
         .join("&");
+}
 const PostsData = createContext<any>(null);
-const PostsContextProvider = ({ children, noFirstRender, query }: any) => {
+function PostsContextProvider({ children, noFirstRender, query }: any) {
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [postsData, setPostsData] = useState<Post[] | null>(null);
-  const fetchPostsData = async (
-    query?: any,
-    noRender?: any,
-    ..._args: any[]
-  ) => {
+  async function fetchPostsData(query?: any, noRender?: any, ..._args: any[]) {
     if (!noRender) setIsLoading(true);
     try {
       const { data } = await axios.request({
@@ -30,7 +29,9 @@ const PostsContextProvider = ({ children, noFirstRender, query }: any) => {
           timeout: 10000,
         },
       });
-      setPostsData(() => data?.data);
+      setPostsData(function () {
+        return data?.data;
+      });
       setIsError(false);
       setIsLoading(false);
       return data;
@@ -39,8 +40,8 @@ const PostsContextProvider = ({ children, noFirstRender, query }: any) => {
       setIsLoading(false);
       throw err;
     }
-  };
-  useLayoutEffect(() => {
+  }
+  useLayoutEffect(function () {
     if (!noFirstRender) fetchPostsData(query);
   }, []);
   return (
@@ -50,8 +51,10 @@ const PostsContextProvider = ({ children, noFirstRender, query }: any) => {
       {children}
     </PostsData.Provider>
   );
-};
+}
 
 export default PostsContextProvider;
 
-export const usePostsContext = () => useContext(PostsData);
+export function usePostsContext() {
+  return useContext(PostsData);
+}

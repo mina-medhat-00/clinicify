@@ -3,20 +3,18 @@ import Cookies from "universal-cookie";
 import { apiUrl } from "@/utils/api";
 
 const cookies = new Cookies();
-const submitPersonal = async (
+async function submitPersonal(
   values?: any,
   messageApi?: any,
   fetchProfileData?: any,
   fetchUserData?: any,
   userName?: any,
   isEdit?: any,
-) => {
+) {
   const data = {
     values: {
       ...values,
-      birth: `${values?.birth?.year()}-${values?.birth?.month() + 1}-${
-        values?.birth?.date()
-      }`,
+      birth: `${values?.birth?.year()}-${values?.birth?.month() + 1}-${values?.birth?.date()}`,
     },
     isEdit,
   };
@@ -39,19 +37,18 @@ const submitPersonal = async (
         },
       },
     )
-    .then(() => {
+    .then(function () {
       messageApi.open({
         key: 1,
         content: "your information updated",
         type: "success",
         duration: 2,
       });
-      setTimeout(
-        () => fetchProfileData({ path: "profile", username: userName }, true),
-        2000,
-      );
+      setTimeout(function () {
+        fetchProfileData({ path: "profile", username: userName }, true);
+      }, 2000);
     })
-    .catch((err?: any, ..._args: any[]) => {
+    .catch(function (err?: any, ..._args: any[]) {
       if (err?.response?.status == 401) {
         fetchUserData(true, cookies.get("accessToken"));
       } else
@@ -62,6 +59,6 @@ const submitPersonal = async (
           duration: 2,
         });
     });
-};
+}
 
 export default submitPersonal;

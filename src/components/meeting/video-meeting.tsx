@@ -1,10 +1,6 @@
-import {
-  LoadingOutlined,
-  SettingFilled,
-  VideoCameraFilled,
-} from "@ant-design/icons";
-import { Button, Input } from "antd";
+import { Button, Input } from "@/components/ui/kit";
 import axios from "axios";
+import { Loader2, Settings, Video } from "lucide-react";
 import { OpenVidu } from "openvidu-browser";
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -17,7 +13,7 @@ import { apiOrigin } from "@/utils/api";
 
 const APPLICATION_SERVER_URL = apiOrigin;
 
-const VideoMeeting = ({ nickname, username, session, appointmentId }: any) => {
+function VideoMeeting({ nickname, username, session, appointmentId }: any) {
   const [sessionDetails, setSessionDetails] = useState<any>({
     myNickName: nickname,
     username: username,
@@ -35,42 +31,50 @@ const VideoMeeting = ({ nickname, username, session, appointmentId }: any) => {
   const { fetchUserData } = useUserContext();
   const navigate = useNavigate();
   const OVRef = useRef(null);
-  const leaveSession = () => {
+  function leaveSession() {
     const mySession = sessionDetails.session;
     if (mySession) {
       mySession.disconnect();
     }
 
     OVRef.current = null;
-    setSessionDetails((sD?: any, ..._args: any[]) => ({
-      ...sD,
-      session: undefined,
-      isLoading: false,
-      sessionException: sessionDetails.subscribers.length < 1 ? "End" : false,
-      isError: false,
-      subscribers: [],
-      mainStreamManager: undefined,
-      publisher: undefined,
-    }));
-  };
-  useEffect(() => {
-    return () => leaveSession();
-  }, []);
-  const handleChangeUserName = (e?: any, ..._args: any[]) => {
-    setSessionDetails((sD?: any, ..._args: any[]) => ({
-      ...sD,
-      myNickName: e.target.value,
-    }));
-  };
-  const handleMainVideoStream = (stream?: any, ..._args: any[]) => {
-    if (sessionDetails.mainStreamManager !== stream) {
-      setSessionDetails((sD?: any, ..._args: any[]) => ({
+    setSessionDetails(function (sD?: any, ..._args: any[]) {
+      return {
         ...sD,
-        mainStreamManager: stream,
-      }));
+        session: undefined,
+        isLoading: false,
+        sessionException: sessionDetails.subscribers.length < 1 ? "End" : false,
+        isError: false,
+        subscribers: [],
+        mainStreamManager: undefined,
+        publisher: undefined,
+      };
+    });
+  }
+  useEffect(function () {
+    return function () {
+      leaveSession();
+    };
+  }, []);
+  function handleChangeUserName(e?: any, ..._args: any[]) {
+    setSessionDetails(function (sD?: any, ..._args: any[]) {
+      return {
+        ...sD,
+        myNickName: e.target.value,
+      };
+    });
+  }
+  function handleMainVideoStream(stream?: any, ..._args: any[]) {
+    if (sessionDetails.mainStreamManager !== stream) {
+      setSessionDetails(function (sD?: any, ..._args: any[]) {
+        return {
+          ...sD,
+          mainStreamManager: stream,
+        };
+      });
     }
-  };
-  const deleteSubscriber = (streamManager?: any, ..._args: any[]) => {
+  }
+  function deleteSubscriber(streamManager?: any, ..._args: any[]) {
     let subscribers = new Array(sessionDetails?.subscribers);
     let index = subscribers.indexOf(streamManager, 0);
     subscribers.splice(index, 1);
@@ -79,64 +83,76 @@ const VideoMeeting = ({ nickname, username, session, appointmentId }: any) => {
         streamManager.stream.connection.connectionId ==
         sessionDetails.session.connection.connectionId
       )
-        setSessionDetails((sD?: any, ..._args: any[]) => ({
+        setSessionDetails(function (sD?: any, ..._args: any[]) {
+          return {
+            ...sD,
+            session: undefined,
+            sessionException: false,
+            subscribers: [],
+            mainStreamManager: undefined,
+            publisher: undefined,
+          };
+        });
+      setSessionDetails(function (sD?: any, ..._args: any[]) {
+        return {
           ...sD,
-          session: undefined,
-          sessionException: false,
-          subscribers: [],
-          mainStreamManager: undefined,
-          publisher: undefined,
-        }));
-      setSessionDetails((sD?: any, ..._args: any[]) => ({
-        ...sD,
-        subscribers: subscribers,
-      }));
+          subscribers: subscribers,
+        };
+      });
     }
-  };
-  const joinSession = () => {
+  }
+  function joinSession() {
     OVRef.current = new OpenVidu();
     if (!sessionDetails?.session)
-      setSessionDetails((sD?: any, ..._args: any[]) => ({
-        ...sD,
-        isLoading: true,
-      }));
+      setSessionDetails(function (sD?: any, ..._args: any[]) {
+        return {
+          ...sD,
+          isLoading: true,
+        };
+      });
     const session = OVRef.current.initSession();
-    setSessionDetails((sD?: any, ..._args: any[]) => ({
-      ...sD,
-      session: session,
-    }));
+    setSessionDetails(function (sD?: any, ..._args: any[]) {
+      return {
+        ...sD,
+        session: session,
+      };
+    });
     var mySession = session;
-    mySession.on("streamCreated", (event?: any, ..._args: any[]) => {
+    mySession.on("streamCreated", function (event?: any, ..._args: any[]) {
       var subscriber = mySession.subscribe(event.stream, undefined);
       var subscribers = new Array(...sessionDetails.subscribers);
       subscribers.push(subscriber);
-      setSessionDetails((sD?: any, ..._args: any[]) => ({
-        ...sD,
-        subscribers: subscribers,
-      }));
+      setSessionDetails(function (sD?: any, ..._args: any[]) {
+        return {
+          ...sD,
+          subscribers: subscribers,
+        };
+      });
     });
-    mySession.on("streamDestroyed", (event?: any, ..._args: any[]) => {
+    mySession.on("streamDestroyed", function (event?: any, ..._args: any[]) {
       deleteSubscriber(event.stream.streamManager);
     });
-    mySession.on("sessionDisconnected", () => {
-      setSessionDetails((sD?: any, ..._args: any[]) => ({
-        ...sD,
-        session: undefined,
-        isLoading: false,
-        sessionException: "Closed",
-        subscribers: [],
-        mainStreamManager: undefined,
-        publisher: undefined,
-      }));
+    mySession.on("sessionDisconnected", function () {
+      setSessionDetails(function (sD?: any, ..._args: any[]) {
+        return {
+          ...sD,
+          session: undefined,
+          isLoading: false,
+          sessionException: "Closed",
+          subscribers: [],
+          mainStreamManager: undefined,
+          publisher: undefined,
+        };
+      });
     });
 
     getToken()
-      .then((token?: any, ..._args: any[]) => {
+      .then(function (token?: any, ..._args: any[]) {
         mySession
           .connect(token, {
             clientData: sessionDetails.myNickName,
           })
-          .then(async () => {
+          .then(async function () {
             let publisher = await OVRef.current.initPublisherAsync(undefined, {
               audioSource: undefined,
               videoSource: undefined,
@@ -151,92 +167,109 @@ const VideoMeeting = ({ nickname, username, session, appointmentId }: any) => {
             mySession.publish(publisher);
 
             var devices = await OVRef.current.getDevices();
-            var videoDevices = devices.filter(
-              (device?: any, ..._args: any[]) => device.kind === "videoinput",
-            );
+            var videoDevices = devices.filter(function (
+              device?: any,
+              ..._args: any[]
+            ) {
+              return device.kind === "videoinput";
+            });
             var currentVideoDeviceId = publisher.stream
               .getMediaStream()
               .getVideoTracks()[0]
               .getSettings().deviceId;
-            var currentVideoDevice = videoDevices.find(
-              (device?: any, ..._args: any[]) =>
-                device.deviceId === currentVideoDeviceId,
-            );
-            setSessionDetails((sD?: any, ..._args: any[]) => ({
-              ...sD,
-              isLoading: false,
-              currentVideoDevice: currentVideoDevice,
-              mainStreamManager: publisher,
-              publisher: publisher,
-            }));
+            var currentVideoDevice = videoDevices.find(function (
+              device?: any,
+              ..._args: any[]
+            ) {
+              return device.deviceId === currentVideoDeviceId;
+            });
+            setSessionDetails(function (sD?: any, ..._args: any[]) {
+              return {
+                ...sD,
+                isLoading: false,
+                currentVideoDevice: currentVideoDevice,
+                mainStreamManager: publisher,
+                publisher: publisher,
+              };
+            });
           })
-          .catch((err?: any, ..._args: any[]) => {
+          .catch(function (err?: any, ..._args: any[]) {
             if (err?.response?.status == 401) {
               if (err?.response?.data?.data?.noSchedule) {
-                setSessionDetails((sD?: any, ..._args: any[]) => ({
-                  ...sD,
-                  session: undefined,
-                  sessionException: "noSchedule",
-                  isLoading: false,
-                  isError: false,
-                  subscribers: [],
-                  mainStreamManager: undefined,
-                  publisher: undefined,
-                }));
+                setSessionDetails(function (sD?: any, ..._args: any[]) {
+                  return {
+                    ...sD,
+                    session: undefined,
+                    sessionException: "noSchedule",
+                    isLoading: false,
+                    isError: false,
+                    subscribers: [],
+                    mainStreamManager: undefined,
+                    publisher: undefined,
+                  };
+                });
                 return;
               }
               fetchUserData(true, new Cookies().get("accessToken"));
             }
-            setSessionDetails((sD?: any, ..._args: any[]) => ({
-              ...sD,
-              session: undefined,
-              isLoading: false,
-              sessionException: "Expired",
-              subscribers: [],
-              mainStreamManager: undefined,
-              publisher: undefined,
-            }));
+            setSessionDetails(function (sD?: any, ..._args: any[]) {
+              return {
+                ...sD,
+                session: undefined,
+                isLoading: false,
+                sessionException: "Expired",
+                subscribers: [],
+                mainStreamManager: undefined,
+                publisher: undefined,
+              };
+            });
           });
       })
-      .catch((err?: any, ..._args: any[]) => {
+      .catch(function (err?: any, ..._args: any[]) {
         if (err?.response?.status == 401) {
           if (err?.response?.data?.data?.noSchedule) {
-            setSessionDetails((sD?: any, ..._args: any[]) => ({
-              ...sD,
-              session: undefined,
-              sessionException: "noSchedule",
-              isLoading: false,
-              isError: false,
-              subscribers: [],
-              mainStreamManager: undefined,
-              publisher: undefined,
-            }));
+            setSessionDetails(function (sD?: any, ..._args: any[]) {
+              return {
+                ...sD,
+                session: undefined,
+                sessionException: "noSchedule",
+                isLoading: false,
+                isError: false,
+                subscribers: [],
+                mainStreamManager: undefined,
+                publisher: undefined,
+              };
+            });
             return;
           }
           fetchUserData(true, new Cookies().get("accessToken"));
         }
-        setSessionDetails((sD?: any, ..._args: any[]) => ({
-          ...sD,
-          session: undefined,
-          isLoading: false,
-          sessionException: "Expired",
-          subscribers: [],
-          mainStreamManager: undefined,
-          publisher: undefined,
-        }));
+        setSessionDetails(function (sD?: any, ..._args: any[]) {
+          return {
+            ...sD,
+            session: undefined,
+            isLoading: false,
+            sessionException: "Expired",
+            subscribers: [],
+            mainStreamManager: undefined,
+            publisher: undefined,
+          };
+        });
       });
-  };
-  const switchCamera = async () => {
+  }
+  async function switchCamera() {
     const devices = await OVRef.current.getDevices();
-    var videoDevices = devices.filter(
-      (device?: any, ..._args: any[]) => device.kind === "videoinput",
-    );
+    var videoDevices = devices.filter(function (device?: any, ..._args: any[]) {
+      return device.kind === "videoinput";
+    });
 
     if (videoDevices && videoDevices.length > 1) {
-      var newVideoDevice = videoDevices.filter(
-        (device?: any, ..._args: any[]) =>
-          device.deviceId !== sessionDetails.currentVideoDevice.deviceId,
-      );
+      var newVideoDevice = videoDevices.filter(function (
+        device?: any,
+        ..._args: any[]
+      ) {
+        return device.deviceId !== sessionDetails.currentVideoDevice.deviceId;
+      });
 
       if (newVideoDevice.length > 0) {
         var newPublisher = OVRef.current.initPublisher(undefined, {
@@ -251,23 +284,27 @@ const VideoMeeting = ({ nickname, username, session, appointmentId }: any) => {
         );
 
         await sessionDetails.session.publish(newPublisher);
-        setSessionDetails((sD?: any, ..._args: any[]) => ({
-          ...sD,
-          currentVideoDevice: newVideoDevice[0],
-          mainStreamManager: newPublisher,
-          publisher: newPublisher,
-        }));
+        setSessionDetails(function (sD?: any, ..._args: any[]) {
+          return {
+            ...sD,
+            currentVideoDevice: newVideoDevice[0],
+            mainStreamManager: newPublisher,
+            publisher: newPublisher,
+          };
+        });
       }
     }
-  };
-  const getToken = async () => {
+  }
+  async function getToken() {
     return await createToken(sessionDetails.mySession);
-  };
-  const createSession = async () => {
-    setSessionDetails((sD?: any, ..._args: any[]) => ({
-      ...sD,
-      isLoading: true,
-    }));
+  }
+  async function createSession() {
+    setSessionDetails(function (sD?: any, ..._args: any[]) {
+      return {
+        ...sD,
+        isLoading: true,
+      };
+    });
     await axios
       .post(
         `${APPLICATION_SERVER_URL}/join/meeting`,
@@ -279,21 +316,23 @@ const VideoMeeting = ({ nickname, username, session, appointmentId }: any) => {
           },
         },
       )
-      .then((res?: any, ..._args: any[]) => {
-        setSessionDetails((sD?: any, ..._args: any[]) => ({
-          ...sD,
-          session: undefined,
-          sessionException: false,
-          mySession: res.data,
-          isLoading: false,
-          isError: false,
-          subscribers: [],
-          mainStreamManager: undefined,
-          publisher: undefined,
-        }));
+      .then(function (res?: any, ..._args: any[]) {
+        setSessionDetails(function (sD?: any, ..._args: any[]) {
+          return {
+            ...sD,
+            session: undefined,
+            sessionException: false,
+            mySession: res.data,
+            isLoading: false,
+            isError: false,
+            subscribers: [],
+            mainStreamManager: undefined,
+            publisher: undefined,
+          };
+        });
         navigate(`/join/meeting/${res.data}?appointment_id=${appointmentId}`);
       })
-      .catch((err?: any, ..._args: any[]) => {
+      .catch(function (err?: any, ..._args: any[]) {
         if (err?.response?.status == 400) {
           messageApi.open({
             key: 1,
@@ -305,30 +344,34 @@ const VideoMeeting = ({ nickname, username, session, appointmentId }: any) => {
         }
         if (err?.response?.status == 401) {
           if (err?.response?.data?.data?.noSchedule) {
-            setSessionDetails((sD?: any, ..._args: any[]) => ({
-              ...sD,
-              session: undefined,
-              sessionException: "noSchedule",
-              isLoading: false,
-              isError: false,
-              subscribers: [],
-              mainStreamManager: undefined,
-              publisher: undefined,
-            }));
+            setSessionDetails(function (sD?: any, ..._args: any[]) {
+              return {
+                ...sD,
+                session: undefined,
+                sessionException: "noSchedule",
+                isLoading: false,
+                isError: false,
+                subscribers: [],
+                mainStreamManager: undefined,
+                publisher: undefined,
+              };
+            });
             return;
           }
           fetchUserData(true, new Cookies().get("accessToken"));
         }
-        setSessionDetails((cD?: any, ..._args: any[]) => ({
-          ...cD,
-          isError: true,
-          session: undefined,
-          isLoading: false,
-          subscribers: [],
-        }));
+        setSessionDetails(function (cD?: any, ..._args: any[]) {
+          return {
+            ...cD,
+            isError: true,
+            session: undefined,
+            isLoading: false,
+            subscribers: [],
+          };
+        });
       });
-  };
-  const createToken = async (sessionId?: any, ..._args: any[]) => {
+  }
+  async function createToken(sessionId?: any, ..._args: any[]) {
     const response = await axios.post(
       `${APPLICATION_SERVER_URL}/join/meeting/?session=${sessionId}`,
       {
@@ -345,13 +388,13 @@ const VideoMeeting = ({ nickname, username, session, appointmentId }: any) => {
       },
     );
     return response.data;
-  };
+  }
   return (
     <>
       {sessionDetails.session === undefined || sessionDetails.isLoading ? (
         <>
           <TitleHeader
-            icon={<SettingFilled className="text-white text-2xl" />}
+            icon={<Settings className="text-white text-2xl" />}
             title={"Preparing Your Video Call"}
             wrapperBg={"w-full"}
           />
@@ -371,7 +414,7 @@ const VideoMeeting = ({ nickname, username, session, appointmentId }: any) => {
                 />
               </>
             ) : null}
-            <VideoCameraFilled className="text-5xl sm:text-6xl my-12 lg:text-7xl text-blue-700" />
+            <Video className="text-5xl sm:text-6xl my-12 lg:text-7xl text-blue-700" />
             {sessionDetails.isError ? (
               <div className="flex bg-red-500/70 my-8 rounded p-4 items-center justify-center gap-2">
                 <span className="rounded p-2 font-medium text-white">
@@ -396,7 +439,7 @@ const VideoMeeting = ({ nickname, username, session, appointmentId }: any) => {
                 <Button
                   className="rounded-lg p-4 m-0 flex items-center text-white font-medium bg-blue-500/80"
                   disabled={sessionDetails?.isLoading}
-                  onClick={() => {
+                  onClick={function () {
                     if (
                       !sessionDetails?.appointmentId ||
                       !sessionDetails?.username ||
@@ -413,7 +456,7 @@ const VideoMeeting = ({ nickname, username, session, appointmentId }: any) => {
                 >
                   Join New Call
                   {sessionDetails?.isLoading ? (
-                    <LoadingOutlined className="ml-2" />
+                    <Loader2 className="ml-2 animate-spin" />
                   ) : null}
                 </Button>
                 {sessionDetails?.sessionException != "noSchedule" ? (
@@ -421,7 +464,7 @@ const VideoMeeting = ({ nickname, username, session, appointmentId }: any) => {
                     className="rounded-lg m-0 p-1 text-center border flex items-center text-white font-medium bg-blue-400/80"
                     {...({ disabled: sessionDetails?.isLoading } as any)}
                     to={"/doctors"}
-                    onClick={() => {
+                    onClick={function () {
                       if (
                         !sessionDetails?.appointmentId ||
                         !sessionDetails?.username ||
@@ -446,7 +489,7 @@ const VideoMeeting = ({ nickname, username, session, appointmentId }: any) => {
                 disabled={sessionDetails?.isLoading}
                 className="rounded-lg px-8 p-4 text-white flex justify-center font-medium m-0 
               items-center bg-blue-500 hover:bg-blue-800"
-                onClick={() => {
+                onClick={function () {
                   if (
                     !sessionDetails?.appointmentId ||
                     !sessionDetails?.username ||
@@ -463,23 +506,18 @@ const VideoMeeting = ({ nickname, username, session, appointmentId }: any) => {
               >
                 Join Now
                 {sessionDetails?.isLoading ? (
-                  <LoadingOutlined className="ml-2" />
+                  <Loader2 className="ml-2 animate-spin" />
                 ) : null}
               </Button>
             ) : null}
           </div>
         </>
       ) : null}
-      <div
-        className="flex min-h-screen flex-col items-center justify-center"
-        style={{
-          minHeight: "100vh",
-        }}
-      >
+      <div className="flex min-h-screen flex-col items-center justify-center">
         {sessionDetails.session !== undefined && !sessionDetails.isLoading ? (
           <div
             id="session"
-            className="flex w-6/7 grow flex-col gap-1 xl:w-3/4 2xl:w-4/5 [&_img]:inline-block [&_img]:h-auto [&_img]:w-full [&_img]:object-contain [&_img]:align-baseline"
+            className="flex w-5/6 grow flex-col gap-1 xl:w-3/4 2xl:w-4/5 [&_img]:inline-block [&_img]:h-auto [&_img]:w-full [&_img]:object-contain [&_img]:align-baseline"
           >
             <div id="session-header flex gap-2">
               <Button
@@ -498,7 +536,7 @@ const VideoMeeting = ({ nickname, username, session, appointmentId }: any) => {
             {sessionDetails.mainStreamManager !== undefined ? (
               <div
                 id="main-video"
-                className="my-2 w-full [&_p]:absolute [&_p]:left-0 [&_p]:inline-block [&_p]:rounded-br [&_p]:bg-[#f8f8f8] [&_p]:px-1.25 [&_p]:text-[22px] [&_p]:font-bold [&_p]:text-[#777] [&_video]:h-[65vh] [&_video]:cursor-auto"
+                className="my-2 w-full [&_p]:absolute [&_p]:left-0 [&_p]:inline-block [&_p]:rounded-br [&_p]:bg-neutral-50 [&_p]:px-1 [&_p]:text-xl [&_p]:font-bold [&_p]:text-neutral-500 [&_video]:h-screen [&_video]:cursor-auto"
               >
                 <UserVideoComponent
                   streamManager={sessionDetails.mainStreamManager}
@@ -507,24 +545,31 @@ const VideoMeeting = ({ nickname, username, session, appointmentId }: any) => {
             ) : null}
             <div
               id="video-container"
-              className="scroll--h flex gap-2 overflow-auto [&_img]:relative [&_img]:float-left [&_img]:h-45 [&_img]:w-1/2 [&_img]:cursor-pointer [&_img]:object-cover [&_p]:inline-block [&_p]:rounded-br [&_p]:bg-[#f8f8f8] [&_p]:px-1.25 [&_p]:font-bold [&_p]:text-[#777] [&_video]:relative [&_video]:cursor-pointer"
+              className="scroll--h flex gap-2 overflow-auto [&_img]:relative [&_img]:float-left [&_img]:h-44 [&_img]:w-1/2 [&_img]:cursor-pointer [&_img]:object-cover [&_p]:inline-block [&_p]:rounded-br [&_p]:bg-neutral-50 [&_p]:px-1 [&_p]:font-bold [&_p]:text-neutral-500 [&_video]:relative [&_video]:cursor-pointer"
             >
-              {sessionDetails.subscribers.map((sub?: any, ..._args: any[]) => (
-                <div
-                  key={sub.id}
-                  className="stream-container w-1/5 sm:w-1/4 lg:w-1/4 xl:w-1/5"
-                  onClick={() => handleMainVideoStream(sub)}
-                >
-                  <span>{sub.id}</span>
-                  <UserVideoComponent streamManager={sub} />
-                </div>
-              ))}
+              {sessionDetails.subscribers.map(function (
+                sub?: any,
+                ..._args: any[]
+              ) {
+                return (
+                  <div
+                    key={sub.id}
+                    className="stream-container w-1/5 sm:w-1/4 lg:w-1/4 xl:w-1/5"
+                    onClick={function () {
+                      handleMainVideoStream(sub);
+                    }}
+                  >
+                    <span>{sub.id}</span>
+                    <UserVideoComponent streamManager={sub} />
+                  </div>
+                );
+              })}
             </div>
           </div>
         ) : null}
       </div>
     </>
   );
-};
+}
 
 export default VideoMeeting;

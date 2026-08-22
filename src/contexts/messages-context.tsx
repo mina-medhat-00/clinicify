@@ -4,27 +4,30 @@ import Cookies from "universal-cookie";
 import type { ChatMessage } from "@/types";
 import { apiUrl } from "@/utils/api";
 
-const handleQuery = (obj?: any, ..._args: any[]) =>
-  !obj
+function handleQuery(obj?: any, ..._args: any[]) {
+  return !obj
     ? ""
     : Object.entries(obj)
-        .filter(([_, val]: any) => val || val === 0)
-        .map(([name, val]: any, i?: any, ..._args: any[]) =>
-          i == 0 ? `?${name}=${val}` : `${name}=${val}`,
-        )
+        .filter(function ([_, val]: any) {
+          return val || val === 0;
+        })
+        .map(function ([name, val]: any, i?: any, ..._args: any[]) {
+          return i == 0 ? `?${name}=${val}` : `${name}=${val}`;
+        })
         .join("&");
+}
 const cookies = new Cookies();
 const MessagesData = createContext<any>(null);
-const MessagesContextProvider = ({ children, fetchUserData }: any) => {
+function MessagesContextProvider({ children, fetchUserData }: any) {
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [messagesData, setMessagesData] = useState<ChatMessage[] | null>(null);
-  const fetchMessagesData = async (
+  async function fetchMessagesData(
     token?: any,
     query?: any,
     noRender?: any,
     ..._args: any[]
-  ) => {
+  ) {
     if (!noRender) setIsLoading(true);
     try {
       const { data } = await axios.request({
@@ -37,7 +40,9 @@ const MessagesContextProvider = ({ children, fetchUserData }: any) => {
           },
         },
       });
-      setMessagesData(() => data?.data);
+      setMessagesData(function () {
+        return data?.data;
+      });
       setIsError(false);
       setIsLoading(false);
       return data;
@@ -73,7 +78,7 @@ const MessagesContextProvider = ({ children, fetchUserData }: any) => {
       setIsLoading(false);
       throw err;
     }
-  };
+  }
 
   return (
     <MessagesData.Provider
@@ -82,8 +87,10 @@ const MessagesContextProvider = ({ children, fetchUserData }: any) => {
       {children}
     </MessagesData.Provider>
   );
-};
+}
 
 export default MessagesContextProvider;
 
-export const useMessagesContext = () => useContext(MessagesData);
+export function useMessagesContext() {
+  return useContext(MessagesData);
+}

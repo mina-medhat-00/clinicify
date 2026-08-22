@@ -1,22 +1,17 @@
-import { StopOutlined } from "@ant-design/icons";
 import {
   Alert,
   Button,
   Drawer,
   Empty,
   Form,
-  Image,
   Input,
   Rate,
   Typography,
-} from "antd";
+} from "@/components/ui/kit";
 import dayjs from "dayjs";
+import { Ban, MessageCircle, Pencil } from "lucide-react";
 import { useEffect, useState } from "react";
-import { AiOutlineMessage } from "react-icons/ai";
-import { BiEdit } from "react-icons/bi";
 import { Link, useParams } from "react-router-dom";
-import doctorPhoto from "@/assets/images/doctor-photo.png";
-import userPhoto from "@/assets/images/user-photo.png";
 import ClinicDetails from "@/components/profile/clinic-details";
 import ClinicForm from "@/components/profile/clinic-form";
 import ClinicRegister from "@/components/profile/clinic-register";
@@ -27,6 +22,7 @@ import ProfileDetails from "@/components/profile/profile-details";
 import AccountVerify from "@/components/schedule/account-verify";
 import Loader from "@/components/ui/loader";
 import ServerError from "@/components/ui/server-error";
+import UserAvatar from "@/components/ui/user-avatar";
 import { SlotsContextProvider } from "@/contexts";
 import { useProfileContext } from "@/contexts/profile-context";
 import { useUserContext } from "@/contexts/user-context";
@@ -34,21 +30,26 @@ import { useUtilsContext } from "@/contexts/utils-context";
 import BookAppointment from "@/pages/book-appointment";
 import submitFeedback from "@/services/submit-feedback";
 
-const editingObject = (
+function editingObject(
   value?: any,
   setValue?: any,
   name?: any,
   ..._args: any[]
-) => ({
-  onChange: (newValue?: any, ..._args: any[]) =>
-    setValue((val?: any, ..._args: any[]) => ({ ...val, [name]: newValue })),
-  icon: <BiEdit color="white" className="text-white" />,
-  tooltip: false,
-  text: value,
-  enterIcon: null,
-});
+) {
+  return {
+    onChange: function (newValue?: any, ..._args: any[]) {
+      setValue(function (val?: any, ..._args: any[]) {
+        return { ...val, [name]: newValue };
+      });
+    },
+    icon: <Pencil className="text-white size-4" />,
+    tooltip: false,
+    text: value,
+    enterIcon: null,
+  };
+}
 
-const UserProfile = (_props?: any) => {
+function UserProfile(_props?: any) {
   const { username } = useParams();
   const { socket, timeZone, messageApi } = useUtilsContext();
   const {
@@ -62,7 +63,7 @@ const UserProfile = (_props?: any) => {
   const { isLoading, profileData, fetchProfileData, isError } =
     useProfileContext();
   const userid = user?.user_id;
-  useEffect(() => {
+  useEffect(function () {
     fetchProfileData({ path: "profile", username: username || userid });
   }, []);
   const [handleDrawer, setHandleDrawer] = useState({
@@ -83,29 +84,32 @@ const UserProfile = (_props?: any) => {
     street: null,
     images: [],
   });
-  useEffect(() => {
-    if (profileData?.["user"]) {
-      const bdate = profileData?.["user"]?.bdate;
-      setUserValues({
-        nickname: profileData?.["user"]?.nick_name,
-        about: profileData?.["doctor"]?.about,
-        specialty: profileData?.["doctor"]?.specialty || <StopOutlined />,
-        age: profileData?.["user"]?.age ? (
-          profileData?.["user"]?.age + " years"
-        ) : (
-          <StopOutlined />
-        ),
-        bdate: bdate || <StopOutlined />,
-        pnumber: profileData?.["user"]?.prefix
-          ? `${profileData?.["user"]?.prefix} ${profileData?.["user"]?.pnumber}`
-          : profileData?.["user"]?.pnumber,
-        email: profileData?.["user"]?.email || <StopOutlined />,
-        city: profileData?.["user"]?.city,
-        street: profileData?.["user"]?.street || <StopOutlined />,
-        images: profileData?.["user"]?.img_urls || [],
-      });
-    }
-  }, [profileData]);
+  useEffect(
+    function () {
+      if (profileData?.["user"]) {
+        const bdate = profileData?.["user"]?.bdate;
+        setUserValues({
+          nickname: profileData?.["user"]?.nick_name,
+          about: profileData?.["doctor"]?.about,
+          specialty: profileData?.["doctor"]?.specialty || <Ban />,
+          age: profileData?.["user"]?.age ? (
+            profileData?.["user"]?.age + " years"
+          ) : (
+            <Ban />
+          ),
+          bdate: bdate || <Ban />,
+          pnumber: profileData?.["user"]?.prefix
+            ? `${profileData?.["user"]?.prefix} ${profileData?.["user"]?.pnumber}`
+            : profileData?.["user"]?.pnumber,
+          email: profileData?.["user"]?.email || <Ban />,
+          city: profileData?.["user"]?.city,
+          street: profileData?.["user"]?.street || <Ban />,
+          images: profileData?.["user"]?.img_urls || [],
+        });
+      }
+    },
+    [profileData],
+  );
   const { Title } = Typography;
   if (isLoading || isUserLoading) return <Loader />;
   else if (isError) return <ServerError />;
@@ -117,14 +121,16 @@ const UserProfile = (_props?: any) => {
   const isAuth = userid && profileId == userid ? true : false;
   const isProfile = profileData?.["user"];
   const isVerified = profileData?.["doctor"]?.is_verified;
-  const showDrawer = (
+  function showDrawer(
     type?: any,
     name?: any,
     className?: any,
     ..._args: any[]
-  ) => {
-    setHandleDrawer(() => ({ isOpen: true, type, name, className }));
-  };
+  ) {
+    setHandleDrawer(function () {
+      return { isOpen: true, type, name, className };
+    });
+  }
   return (
     <div className="profile--wrapper">
       {isProfile ? (
@@ -147,23 +153,15 @@ const UserProfile = (_props?: any) => {
             className="profile--intro--wrapper mt-2
       2xl:w-1/2 lg:w-2/3 w-full"
           >
-            <div
-              className="flex flex-wrap sm:flex-nowrap p-4"
-              style={{
-                backgroundColor: "rgb(32 58 89 / 90%)",
-                borderRadius: "0px 20px 20px 0px",
-              }}
-            >
+            <div className="flex flex-wrap sm:flex-nowrap p-4 bg-slate-800/90 rounded-r-2xl">
               <div className="text-center w-full sm:w-1/4">
-                <Image
+                <UserAvatar
                   src={
                     userValues?.images?.[0]?.img_url ||
-                    userValues?.images?.img_url ||
-                    (isUser ? userPhoto : doctorPhoto)
+                    userValues?.images?.img_url
                   }
-                  width={130}
-                  height={130}
-                  style={{ borderRadius: "100px" }}
+                  userType={isUser ? "user" : "doctor"}
+                  size={130}
                 />
               </div>
               <div className="profile--intro ml-5 grow">
@@ -181,11 +179,7 @@ const UserProfile = (_props?: any) => {
                           )
                         : false
                     }
-                    className="whitespace-nowrap p-2 text-lg lg:text-xl 2xl:text-2xl m-0"
-                    style={{
-                      color: "white",
-                      fontFamily: "sans-serif",
-                    }}
+                    className="whitespace-nowrap p-2 text-lg lg:text-xl 2xl:text-2xl m-0 text-white"
                   >
                     {!isUser ? "Dr. " : ""}
                     {userValues?.nickname}
@@ -194,22 +188,19 @@ const UserProfile = (_props?: any) => {
                     <div>
                       <Link
                         to="/chat"
-                        onClick={() =>
-                          window?.localStorage?.setItem("chatTo", profileId)
-                        }
+                        onClick={function () {
+                          window?.localStorage?.setItem("chatTo", profileId);
+                        }}
                       >
                         <Button
-                          style={{
-                            color: "white",
-                            fontFamily: "sans-serif",
-                            fontSize: "28px",
-                          }}
                           icon={
-                            <AiOutlineMessage
-                              color={isVisitor ? "gray" : "yellow"}
+                            <MessageCircle
+                              className={`size-7 ${
+                                isVisitor ? "text-gray-500" : "text-yellow-400"
+                              }`}
                             />
                           }
-                          className={`w-full rounded-lg text-xs lg:text-sm
+                          className={`w-full rounded-lg text-xs lg:text-sm text-white
             mt-2 p-4 flex items-center ${
               isVisitor
                 ? "bg-gray-300 text-gray-500 border border-gray-700"
@@ -225,13 +216,18 @@ const UserProfile = (_props?: any) => {
                   ) : (
                     <div>
                       <Button
-                        onClick={() => {
-                          setHandleDrawer((draw?: any, ..._args: any[]) => ({
-                            ...draw,
-                            isOpen: true,
-                            type: "personal",
-                            name: "My Personal Information",
-                          }));
+                        onClick={function () {
+                          setHandleDrawer(function (
+                            draw?: any,
+                            ..._args: any[]
+                          ) {
+                            return {
+                              ...draw,
+                              isOpen: true,
+                              type: "personal",
+                              name: "My Personal Information",
+                            };
+                          });
                         }}
                         className={`w-full rounded-lg text-white font-medium text-xs lg:text-sm
                         mt-2 p-4 flex items-center hover:bg-gray-800 bg-gray-700
@@ -248,7 +244,7 @@ const UserProfile = (_props?: any) => {
                       ? userValues?.about ||
                         (!isAuth ? (
                           <>
-                            <StopOutlined /> there's no introduction yet
+                            <Ban /> there's no introduction yet
                           </>
                         ) : (
                           <span className="text-gray-200">about me...</span>
@@ -256,7 +252,7 @@ const UserProfile = (_props?: any) => {
                       : profileData?.["patientRecords"]?.current_issue ||
                         (!isAuth ? (
                           <>
-                            <StopOutlined /> there's no issues described
+                            <Ban /> there's no issues described
                           </>
                         ) : (
                           <span className="text-gray-200">
@@ -285,21 +281,16 @@ const UserProfile = (_props?: any) => {
                     {!isUser && !isAuth ? (
                       <>
                         <Button
-                          style={{
-                            color: "white",
-                            fontFamily: "sans-serif",
-                            fontSize: "28px",
-                          }}
-                          className={`rounded-lg text-xs lg:text-sm
+                          className={`rounded-lg text-xs lg:text-sm text-white
                       bg-orange-800 p-4 flex items-center ${
                         isVisitor
                           ? "border border-gray-500 bg-gray-400 text-gray-600"
                           : "hover:bg-orange-600"
                       }
             `}
-                          onClick={() =>
-                            showDrawer("rate", "Your Feedback", "")
-                          }
+                          onClick={function () {
+                            showDrawer("rate", "Your Feedback", "");
+                          }}
                           disabled={isVisitor ? true : false}
                         >
                           Place Your Feedback
@@ -316,23 +307,23 @@ const UserProfile = (_props?: any) => {
                   }
                   className={handleDrawer?.className}
                   placement="right"
-                  styles={{
-                    wrapper: {
-                      width:
-                        handleDrawer.type == "medical" ||
-                        handleDrawer.type == "personal" ||
-                        handleDrawer.type == "clinic"
-                          ? "100%"
-                          : "",
-                    },
+                  classNames={{
+                    wrapper:
+                      handleDrawer.type == "medical" ||
+                      handleDrawer.type == "personal" ||
+                      handleDrawer.type == "clinic"
+                        ? "w-full"
+                        : "",
                   }}
                   open={handleDrawer?.isOpen}
-                  onClose={() =>
-                    setHandleDrawer((val?: any, ..._args: any[]) => ({
-                      ...val,
-                      isOpen: false,
-                    }))
-                  }
+                  onClose={function () {
+                    setHandleDrawer(function (val?: any, ..._args: any[]) {
+                      return {
+                        ...val,
+                        isOpen: false,
+                      };
+                    });
+                  }}
                 >
                   {handleDrawer.type == "rate" ? (
                     <>
@@ -349,7 +340,7 @@ const UserProfile = (_props?: any) => {
                         {userValues?.nickname}
                       </Title>
                       <Form
-                        onFinish={(values?: any, ..._args: any[]) => {
+                        onFinish={function (values?: any, ..._args: any[]) {
                           submitFeedback(
                             rateValue,
                             values?.feedback,
@@ -377,12 +368,7 @@ const UserProfile = (_props?: any) => {
                         </Form.Item>
                         <Form.Item className="flex justify-center">
                           <Button
-                            style={{
-                              color: "white",
-                              fontFamily: "sans-serif",
-                              fontSize: "28px",
-                            }}
-                            className="rounded-lg text-xs lg:text-sm
+                            className="rounded-lg text-xs lg:text-sm text-white
                     bg-gray-700 p-4 m-4 flex items-center hover:bg-gray-600
              "
                             htmlType="submit"
@@ -526,6 +512,6 @@ const UserProfile = (_props?: any) => {
       )}
     </div>
   );
-};
+}
 
 export default UserProfile;

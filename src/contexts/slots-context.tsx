@@ -4,7 +4,7 @@ import type { SlotsData } from "@/types";
 import { apiUrl } from "@/utils/api";
 
 const SlotsData = createContext<any>(null);
-const SlotsContextProvider = ({ children }: any) => {
+function SlotsContextProvider({ children }: any) {
   const [isLoading, setIsLoading] = useState(true);
   const [tokenExpired] = useState(false);
   const [slotsData, setSlotsData] = useState<SlotsData>({
@@ -12,11 +12,11 @@ const SlotsContextProvider = ({ children }: any) => {
     totalSlots: null,
     freeSlots: null,
   });
-  const fetchSlotsData = async (
+  async function fetchSlotsData(
     postData?: any,
     noLoading?: any,
     ..._args: any[]
-  ) => {
+  ) {
     if (!noLoading) setIsLoading(true);
     try {
       const { data } = await axios.post(
@@ -28,14 +28,16 @@ const SlotsContextProvider = ({ children }: any) => {
           timeout: 10000,
         },
       );
-      setSlotsData(() => data?.data);
+      setSlotsData(function () {
+        return data?.data;
+      });
       setIsLoading(false);
       return data;
     } catch (err) {
       setIsLoading(false);
       throw err;
     }
-  };
+  }
 
   return (
     <SlotsData.Provider
@@ -44,8 +46,10 @@ const SlotsContextProvider = ({ children }: any) => {
       {children}
     </SlotsData.Provider>
   );
-};
+}
 
 export default SlotsContextProvider;
 
-export const useSlotsContext = () => useContext(SlotsData);
+export function useSlotsContext() {
+  return useContext(SlotsData);
+}

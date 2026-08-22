@@ -10,7 +10,7 @@ import { useSlotsContext } from "@/contexts/slots-context";
 import { useUserContext } from "@/contexts/user-context";
 import bookAppointment from "@/services/book-appointment";
 
-const CheckoutForm = ({
+function CheckoutForm({
   bookedAppointment,
   doctorId,
   socket,
@@ -18,7 +18,7 @@ const CheckoutForm = ({
   messageApi,
   setBookedAppointment,
   setIsPayment,
-}: any) => {
+}: any) {
   const stripe = useStripe();
   const { fetchSlotsData } = useSlotsContext();
   const { fetchUserData } = useUserContext();
@@ -28,21 +28,22 @@ const CheckoutForm = ({
   const [message, setMessage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  useEffect(() => {
-    if (!stripe) {
-      return;
-    }
+  useEffect(
+    function () {
+      if (!stripe) {
+        return;
+      }
 
-    const clientSecret = new URLSearchParams(window.location.search).get(
-      "payment_intent_client_secret",
-    );
+      const clientSecret = new URLSearchParams(window.location.search).get(
+        "payment_intent_client_secret",
+      );
 
-    if (!clientSecret) {
-      return;
-    }
-    stripe
-      .retrievePaymentIntent(clientSecret)
-      .then(({ paymentIntent }: any) => {
+      if (!clientSecret) {
+        return;
+      }
+      stripe.retrievePaymentIntent(clientSecret).then(function ({
+        paymentIntent,
+      }: any) {
         switch (paymentIntent.status) {
           case "processing":
             setMessage("Your payment is processing.");
@@ -55,19 +56,19 @@ const CheckoutForm = ({
             break;
         }
       });
-  }, [stripe]);
+    },
+    [stripe],
+  );
 
-  const handleSubmit = async (e?: any, ..._args: any[]) => {
+  async function handleSubmit(e?: any, ..._args: any[]) {
     e.preventDefault();
     if (!stripe || !elements) {
-      // Stripe.js has not yet loaded.
-      // Make sure to disable form submission until Stripe.js has loaded.
       return;
     }
 
     setIsLoading(true);
-    const result = await new Promise((resolve?: any, ..._args: any[]) =>
-      bookAppointment(
+    const result = await new Promise(function (resolve?: any, ..._args: any[]) {
+      return bookAppointment(
         selectedDate,
         bookedAppointment?.slotTime,
         bookedAppointment?.appointmentId,
@@ -80,15 +81,15 @@ const CheckoutForm = ({
         true,
         setIsPayment,
         resolve,
-      ),
-    );
+      );
+    });
     if (result === "err") return;
     stripe
       .confirmPayment({
         elements,
         redirect: "if_required",
       })
-      .then((paymentIntent?: any, ..._args: any[]) => {
+      .then(function (paymentIntent?: any, ..._args: any[]) {
         const pi = paymentIntent?.paymentIntent;
         if (pi) {
           bookAppointment(
@@ -113,7 +114,7 @@ const CheckoutForm = ({
           setIsLoading(false);
         }
       });
-  };
+  }
   const paymentElementOptions = {
     layout: "tabs",
   };
@@ -133,12 +134,12 @@ const CheckoutForm = ({
         </div>
       )}
       <form
-        className="w-4/5 grow self-center rounded-1.75 p-10 shadow-[0_0_0_0.5px_rgba(50,50,93,0.1),0_2px_5px_rgba(50,50,93,0.1),0_1px_1.5px_rgba(0,0,0,0.07)]"
+        className="w-4/5 grow self-center rounded-md p-10 shadow-md"
         id="payment-form"
       >
         <LinkAuthenticationElement
           id="link-authentication-element"
-          onChange={(e?: any, ..._args: any[]) => {
+          onChange={function (e?: any, ..._args: any[]) {
             setEmail(e.value.email);
           }}
         />
@@ -148,7 +149,7 @@ const CheckoutForm = ({
           options={paymentElementOptions as any}
         />
         <button
-          className={`block w-full rounded border-0 bg-[#5469d4] px-4 py-3 font-sans text-base font-semibold text-white shadow-[0_4px_5.5px_rgba(0,0,0,0.07)] transition-all duration-200 hover:contrast-115 disabled:cursor-default disabled:opacity-50 ${
+          className={`block w-full rounded border-0 bg-indigo-500 px-4 py-3 font-sans text-base font-semibold text-white shadow-sm transition-all duration-200 hover:contrast-125 disabled:cursor-default disabled:opacity-50 ${
             isLoading || !stripe || !elements
               ? "cursor-not-allowed"
               : "cursor-pointer"
@@ -176,7 +177,7 @@ const CheckoutForm = ({
         {message && (
           <div
             id="payment--message"
-            className="pt-3 text-center text-base leading-5 text-[#697386]"
+            className="pt-3 text-center text-base leading-5 text-slate-500"
           >
             {message}
           </div>
@@ -184,6 +185,6 @@ const CheckoutForm = ({
       </form>
     </div>
   );
-};
+}
 
 export default CheckoutForm;

@@ -1,11 +1,13 @@
-import { GridLoader } from "react-spinners";
+import { Loader2 } from "lucide-react";
 
-const Loader = ({ gray }: any) => {
+function Loader({ gray }: any) {
   return (
     <div className="my-4 flex w-full items-center justify-center">
-      <GridLoader color={gray ? "#4a5568" : "#2b6cb0"} />
+      <Loader2
+        className={`size-10 animate-spin ${gray ? "text-gray-600" : "text-blue-700"}`}
+      />
     </div>
   );
-};
+}
 
 export default Loader;

@@ -6,23 +6,25 @@ import type { Report } from "@/types";
 import { apiUrl } from "@/utils/api";
 
 const ReportData = createContext<any>(null);
-const ReportContextProvider = ({ children, reportFrom }: any) => {
+function ReportContextProvider({ children, reportFrom }: any) {
   const [isLoading, setIsLoading] = useState(true);
   const [reportData, setReportData] = useState<Report[] | null>(null);
   const [isError, setIsError] = useState(false);
   const { fetchUserData } = useUserContext();
-  const fetchReportData = async (
+  async function fetchReportData(
     directToken?: any,
     notWaiting?: any,
     ..._args: any[]
-  ) => {
+  ) {
     if (!notWaiting) setIsLoading(true);
     setIsError(false);
     try {
       const { data } = await axios.request({
-        url: apiUrl(`/get/${
-          reportFrom ? `details/report?reportFrom=${reportFrom}` : "reports"
-        }`),
+        url: apiUrl(
+          `/get/${
+            reportFrom ? `details/report?reportFrom=${reportFrom}` : "reports"
+          }`,
+        ),
         ...{
           headers: {
             Authorization: `Bearer ${directToken}`,
@@ -65,8 +67,8 @@ const ReportContextProvider = ({ children, reportFrom }: any) => {
       setIsLoading(false);
       throw err;
     }
-  };
-  useLayoutEffect(() => {
+  }
+  useLayoutEffect(function () {
     fetchReportData(new Cookies().get("accessToken"));
   }, []);
   return (
@@ -76,8 +78,10 @@ const ReportContextProvider = ({ children, reportFrom }: any) => {
       {children}
     </ReportData.Provider>
   );
-};
+}
 
 export default ReportContextProvider;
 
-export const useReportContext = () => useContext(ReportData);
+export function useReportContext() {
+  return useContext(ReportData);
+}

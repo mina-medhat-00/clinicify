@@ -1,8 +1,8 @@
-import { Empty } from "antd";
+import { Empty } from "@/components/ui/kit";
 import ProfileTable from "@/components/profile/profile-table";
 import { useReportContext } from "@/contexts/report-context";
 
-const ReportDetails = (_props?: any) => {
+function ReportDetails(_props?: any) {
   const { reportData: reportDetailsData, isLoading } = useReportContext();
   return (
     <div>
@@ -12,8 +12,12 @@ const ReportDetails = (_props?: any) => {
             active: isLoading,
           }}
           headers={["Report Cause", "Issue"]}
-          data={reportDetailsData?.map(
-            ({ report_type, issue, issued_time }: any) => ({
+          data={reportDetailsData?.map(function ({
+            report_type,
+            issue,
+            issued_time,
+          }: any) {
+            return {
               name: report_type,
               value: (
                 <div className="w-full flex justify-between gap-2">
@@ -28,8 +32,8 @@ const ReportDetails = (_props?: any) => {
                   </div>
                 </div>
               ),
-            }),
-          )}
+            };
+          })}
         />
       ) : (
         <Empty
@@ -42,6 +46,6 @@ const ReportDetails = (_props?: any) => {
       )}
     </div>
   );
-};
+}
 
 export default ReportDetails;

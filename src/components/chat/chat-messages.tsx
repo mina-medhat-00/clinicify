@@ -1,9 +1,8 @@
-import { LoadingOutlined, SendOutlined } from "@ant-design/icons";
-import { Input, Skeleton } from "antd";
+import { Input, Skeleton } from "@/components/ui/kit";
 import dayjs from "dayjs";
 import EmojiPicker from "emoji-picker-react";
+import { Loader2, Send, Smile } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
-import { BsEmojiSmileFill } from "react-icons/bs";
 import Cookies from "universal-cookie";
 import ChatAvailability from "@/components/chat/chat-availability";
 import Message from "@/components/chat/chat-message";
@@ -12,16 +11,17 @@ import { useChatContext } from "@/contexts/chat-context";
 import { useMessagesContext } from "@/contexts/messages-context";
 import submitMessage from "@/services/submit-message";
 
-const getDate = (
+function getDate(
   issued_date?: any,
   issued_time?: any,
   timeZone?: any,
   ..._args: any[]
-) =>
-  issued_date
+) {
+  return issued_date
     ? dayjs(`${issued_date} ${issued_time} ${timeZone}`).format("YYYY-DD-MM")
     : null;
-const Messages = ({
+}
+function Messages({
   isMobile,
   fetchUserData,
   withUser,
@@ -33,7 +33,7 @@ const Messages = ({
   withUserType,
   withNickName,
   timeZone,
-}: any) => {
+}: any) {
   const {
     fetchMessagesData,
     messagesData,
@@ -47,38 +47,44 @@ const Messages = ({
   const [emojiOpen, setEmojiOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const isError = isChatError || isMessageError;
-  useEffect(() => {
+  useEffect(function () {
     if (withUser)
       fetchMessagesData(new Cookies().get("accessToken"), {
         message_to: withUser,
       });
-    const addMessage = (m1?: any, ..._args: any[]) => {
-      setMessages((m?: any, ..._args: any[]) => {
+    function addMessage(m1?: any, ..._args: any[]) {
+      setMessages(function (m?: any, ..._args: any[]) {
         const m2 = new Array(...(m ? m : []));
-        return m2
-          ?.splice(m2?.length - 2)
-          ?.some(({ message_id }: any) => m1?.message_id == message_id)
+        return m2?.splice(m2?.length - 2)?.some(function ({ message_id }: any) {
+          return m1?.message_id == message_id;
+        })
           ? m
           : [...m, m1];
       });
-    };
+    }
     socket?.on("receive_message", addMessage);
-    return () => {
+    return function () {
       socket.off("receive_message", addMessage);
     };
   }, []);
-  useEffect(() => {
-    if (withUser && user_id)
-      socket?.emit(
-        "join_chat",
-        `${withUser > user_id ? withUser : user_id},${
-          user_id > withUser ? withUser : user_id
-        }`,
-      );
-  }, [withUser, user_id]);
-  useEffect(() => {
-    setMessages(messagesData || []);
-  }, [messagesData]);
+  useEffect(
+    function () {
+      if (withUser && user_id)
+        socket?.emit(
+          "join_chat",
+          `${withUser > user_id ? withUser : user_id},${
+            user_id > withUser ? withUser : user_id
+          }`,
+        );
+    },
+    [withUser, user_id],
+  );
+  useEffect(
+    function () {
+      setMessages(messagesData || []);
+    },
+    [messagesData],
+  );
 
   return (
     <>
@@ -92,12 +98,12 @@ const Messages = ({
           } grow flex flex-col gap-3`}
         >
           {!isMessageLoading
-            ? messages?.map(
-                (
-                  { content, message_from, issued_date, issued_time }: any,
-                  i?: any,
-                  arr?: any,
-                ) => (
+            ? messages?.map(function (
+                { content, message_from, issued_date, issued_time }: any,
+                i?: any,
+                arr?: any,
+              ) {
+                return (
                   <React.Fragment key={i + 1}>
                     {getDate(arr[i - 1]?.issued_date, issued_time, timeZone) !==
                       getDate(issued_date, issued_time, timeZone) && (
@@ -123,10 +129,14 @@ const Messages = ({
                       })}
                     />
                   </React.Fragment>
-                ),
-              )
-            : Array.from({ length: 10 }).map(
-                (_?: any, i?: any, ..._args: any[]) => (
+                );
+              })
+            : Array.from({ length: 10 }).map(function (
+                _?: any,
+                i?: any,
+                ..._args: any[]
+              ) {
+                return (
                   <Skeleton.Button
                     key={i + 1}
                     size={65 as any}
@@ -135,33 +145,37 @@ const Messages = ({
                     }`}
                     active
                   />
-                ),
-              )}
+                );
+              })}
         </div>
       </div>
       {isOpen && !isError && !isMessageLoading ? (
         <div className="bg-gray-100 mt-2 rounded-lg">
           <div className="flex gap-2 items-center p-2">
             <Input
-              onChange={(e?: any, ..._args: any[]) =>
-                setMessage(e?.target?.value)
-              }
+              onChange={function (e?: any, ..._args: any[]) {
+                setMessage(e?.target?.value);
+              }}
               className="rounded-lg"
               value={message}
             />
-            <BsEmojiSmileFill
-              onClick={() => setEmojiOpen((val?: any, ..._args: any[]) => !val)}
+            <Smile
+              onClick={function () {
+                setEmojiOpen(function (val?: any, ..._args: any[]) {
+                  return !val;
+                });
+              }}
               className={`flex cursor-pointer items-center text-3xl ${
                 emojiOpen ? "text-green-700" : "text-green-400"
               }`}
             />
             {message &&
               (isLoading ? (
-                <LoadingOutlined className="flex hover:text-blue-600 cursor-pointer items-center text-3xl text-blue-700" />
+                <Loader2 className="flex hover:text-blue-600 cursor-pointer items-center text-3xl text-blue-700 animate-spin" />
               ) : (
-                <SendOutlined
+                <Send
                   className="flex hover:text-blue-600 cursor-pointer items-center text-3xl text-blue-700"
-                  onClick={() =>
+                  onClick={function () {
                     submitMessage(
                       fetchUserData,
                       fetchMessagesData,
@@ -174,8 +188,8 @@ const Messages = ({
                       user_id,
                       setIsLoading,
                       fetchChatData,
-                    )
-                  }
+                    );
+                  }}
                 />
               ))}
           </div>
@@ -187,11 +201,11 @@ const Messages = ({
               }}
               width={"100%"}
               height={"190px"}
-              onEmojiClick={(data?: any, ..._args: any[]) =>
-                setMessage(
-                  (m?: any, ..._args: any[]) => (m || "") + data?.emoji,
-                )
-              }
+              onEmojiClick={function (data?: any, ..._args: any[]) {
+                setMessage(function (m?: any, ..._args: any[]) {
+                  return (m || "") + data?.emoji;
+                });
+              }}
             />
           )}
         </div>
@@ -216,6 +230,6 @@ const Messages = ({
       ) : null}
     </>
   );
-};
+}
 
 export default Messages;

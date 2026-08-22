@@ -1,13 +1,13 @@
-import { Calendar, Checkbox, DatePicker } from "antd";
+import { Calendar, Checkbox, DatePicker } from "@/components/ui/kit";
 import { useState } from "react";
 import { useMediaQuery } from "react-responsive";
 
-const CalendarView = ({
+function CalendarView({
   offsetWidth,
   selectedDate,
   handleDate,
   colorView,
-}: any) => {
+}: any) {
   const [calendarView, setCalendarView] = useState(false);
   const isMobile = useMediaQuery({
     query: `(max-width:${300 + (offsetWidth || 0)}px)`,
@@ -15,7 +15,11 @@ const CalendarView = ({
   return !isMobile ? (
     <>
       <Checkbox
-        onChange={() => setCalendarView((val?: any, ..._args: any[]) => !val)}
+        onChange={function () {
+          setCalendarView(function (val?: any, ..._args: any[]) {
+            return !val;
+          });
+        }}
       >
         <span className={`text-${colorView || "black"} font-bold`}>
           Large View
@@ -24,16 +28,20 @@ const CalendarView = ({
       <Calendar
         fullscreen={calendarView}
         value={selectedDate}
-        onSelect={(val?: any, ..._args: any[]) => handleDate(val)}
+        onSelect={function (val?: any, ..._args: any[]) {
+          handleDate(val);
+        }}
       />
     </>
   ) : (
     <DatePicker
       className="w-full mb-2"
       value={selectedDate}
-      onChange={(val?: any, ..._args: any[]) => handleDate(val)}
+      onChange={function (val?: any, ..._args: any[]) {
+        handleDate(val);
+      }}
     />
   );
-};
+}
 
 export default CalendarView;

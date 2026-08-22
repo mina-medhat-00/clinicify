@@ -1,17 +1,17 @@
-import { Button, Form, Input, Select, Space } from "antd";
+import { Button, Form, Input, Select, Space } from "@/components/ui/kit";
 import ProfileTable from "@/components/profile/profile-table";
 import submitClinic from "@/services/submit-clinic";
 import { cityOptions } from "@/utils/sign-data";
 import { prefixSelector } from "@/utils/signup-utils";
 
 const { Item } = Form;
-const ClinicForm = ({
+function ClinicForm({
   messageApi,
   fetchProfileData,
   fetchUserData,
   userName,
   initialValues,
-}: any) => {
+}: any) {
   const editData = [
     {
       headers: ["Contact"],
@@ -59,20 +59,20 @@ const ClinicForm = ({
     <div className="bg-gray-200 p-2 w-full rounded-lg">
       <Form
         initialValues={{ ...initialValues }}
-        onFinish={(values?: any, ..._args: any[]) =>
-          submitClinic(
+        onFinish={function (values?: any, ..._args: any[]) {
+          return submitClinic(
             values,
             messageApi,
             fetchProfileData,
             fetchUserData,
             userName,
             true,
-          )
-        }
+          );
+        }}
       >
         <div>
           <Item className="w-full">
-            <Input.Group className="w-full">
+            <div className="w-full">
               <ProfileTable
                 data={[
                   {
@@ -120,23 +120,22 @@ const ClinicForm = ({
                 ]}
                 headers={["Clinic Location"]}
               />
-            </Input.Group>
+            </div>
           </Item>
         </div>
-        {editData?.map(({ data, headers }: any, i?: any, ..._args: any[]) => (
-          <ProfileTable key={i + 1} data={data} headers={headers} />
-        ))}
+        {editData?.map(function (
+          { data, headers }: any,
+          i?: any,
+          ..._args: any[]
+        ) {
+          return <ProfileTable key={i + 1} data={data} headers={headers} />;
+        })}
         <div className="flex mt-2 justify-end">
           <Button
             type="primary"
             htmlType="submit"
-            style={{
-              color: "white",
-              fontFamily: "sans-serif",
-              fontSize: "28px",
-            }}
             className={`rounded-lg text-xs lg:text-sm
-              bg-gray-600 py-4 font-medium 
+              bg-gray-600 py-4 font-medium text-white
               border-gray-700 px-8 flex items-center hover:bg-gray-700`}
           >
             Edit Now
@@ -145,6 +144,6 @@ const ClinicForm = ({
       </Form>
     </div>
   );
-};
+}
 
 export default ClinicForm;

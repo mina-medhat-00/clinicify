@@ -32,14 +32,14 @@ import Signup from "@/pages/signup";
 import UserProfile from "@/pages/user-profile";
 
 const cookies = new Cookies();
-const handleRoute = (
+function handleRoute(
   element?: any,
   permission?: any,
   isLoading?: any,
   isError?: any,
   ..._args: any[]
-) =>
-  permission ? (
+) {
+  return permission ? (
     element
   ) : isLoading ? (
     <Loader />
@@ -48,7 +48,8 @@ const handleRoute = (
   ) : (
     <Navigate to="/forbidden" replace />
   );
-const App = () => {
+}
+function App() {
   const [navActive, setNavActive] = useState(true);
   const DoctorRef = useRef<any>(null);
   const location = useLocation();
@@ -57,14 +58,9 @@ const App = () => {
 
   return (
     <div className={`overflow-x-hidden app flex flex-col min-h-screen`}>
-      <div className="relative flex grow flex-row flex-nowrap justify-between max-[678px]:min-h-full max-[678px]:flex-col max-[678px]:justify-start">
+      <div className="relative flex grow flex-row flex-nowrap justify-between max-md:min-h-full max-md:flex-col max-md:justify-start">
         {navActive && <Navbar DoctorRef={DoctorRef} />}
-        <div
-          className="flex w-4/5 grow flex-col bg-[#bbc8d4] max-[678px]:w-full"
-          style={{
-            backgroundColor: "#f5f5f5",
-          }}
-        >
+        <div className="flex w-4/5 grow flex-col bg-neutral-100 max-md:w-full">
           <Routes>
             <Route
               path="/"
@@ -186,6 +182,6 @@ const App = () => {
       )}
     </div>
   );
-};
+}
 
 export default App;

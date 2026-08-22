@@ -1,31 +1,34 @@
-import { Popover } from "antd";
+import { Popover } from "@/components/ui/kit";
+import {
+  Calendar,
+  ChartColumn,
+  MessageCircleQuestion,
+  User,
+} from "lucide-react";
 import { useState } from "react";
-import { AiOutlineSchedule } from "react-icons/ai";
-import { ImProfile, ImStatsDots } from "react-icons/im";
-import { RiQuestionAnswerLine } from "react-icons/ri";
 import { useMediaQuery } from "react-responsive";
 
-const DashNav = ({ setDashType, dashType }: any) => {
+function DashNav({ setDashType, dashType }: any) {
   const items = [
     {
       name: "profile",
-      icon: <ImProfile className="w-full text-lg sm:text-2xl" />,
+      icon: <User className="w-full text-lg sm:text-2xl" />,
     },
     {
       name: "schedule",
-      icon: <AiOutlineSchedule className="w-full text-lg sm:text-2xl" />,
+      icon: <Calendar className="w-full text-lg sm:text-2xl" />,
     },
     {
       name: "appointments",
-      icon: <ImProfile className="w-full text-lg sm:text-2xl" />,
+      icon: <User className="w-full text-lg sm:text-2xl" />,
     },
     {
       name: "chat",
-      icon: <RiQuestionAnswerLine className="w-full text-lg sm:text-2xl" />,
+      icon: <MessageCircleQuestion className="w-full text-lg sm:text-2xl" />,
     },
     {
       name: "statistics",
-      icon: <ImStatsDots className="w-full text-lg sm:text-2xl" />,
+      icon: <ChartColumn className="w-full text-lg sm:text-2xl" />,
     },
   ];
   const isMobile = useMediaQuery({
@@ -43,50 +46,51 @@ const DashNav = ({ setDashType, dashType }: any) => {
           isMobile ? "flex-col justify-start" : "w-full"
         }`}
       >
-        {items?.map(({ icon, name }: any, i?: any, ..._args: any[]) => (
-          <Popover
-            placement={isMobile ? "rightBottom" : undefined}
-            key={i}
-            arrow={!isMobile}
-            content={<span className="text-white">{name}</span>}
-            color="blue-inverse"
-            styles={{
-              container: {
-                backgroundColor: "#4a5568",
-                fontWeight: "500",
-              },
-            }}
-          >
-            <div
-              onClick={() => {
-                window.localStorage.setItem("dashType", name);
-                setDashType(name);
+        {items?.map(function ({ icon, name }: any, i?: any, ..._args: any[]) {
+          return (
+            <Popover
+              placement={isMobile ? "rightBottom" : undefined}
+              key={i}
+              arrow={!isMobile}
+              content={<span className="text-white">{name}</span>}
+              color="blue-inverse"
+              classNames={{
+                container: "bg-gray-600 font-medium",
               }}
-              onMouseEnter={() => setHoverIdx(i)}
-              onMouseLeave={() => setHoverIdx(null)}
-              className={`box-border flex flex-wrap hover:underline sm:hover:no-underline hover:shadow-md ${
-                dashType == name ? "bg-yellow-600" : "hover:bg-gray-400"
-              } ${
-                isMobile
-                  ? "w-full px-3 py-6 text-xs font-medium"
-                  : "w-1/5 grow p-3"
-              } text-white sm:text-sm sm:font-medium lg:text-lg`}
             >
-              <button
-                className={`w-full h-full  ${
-                  dashType == name ? "" : "hover:text-gray-700"
-                }`}
+              <div
+                onClick={function () {
+                  window.localStorage.setItem("dashType", name);
+                  setDashType(name);
+                }}
+                onMouseEnter={function () {
+                  setHoverIdx(i);
+                }}
+                onMouseLeave={function () {
+                  setHoverIdx(null);
+                }}
+                className={`box-border flex flex-wrap hover:underline sm:hover:no-underline hover:shadow-md ${
+                  dashType == name ? "bg-yellow-600" : "hover:bg-gray-400"
+                } ${
+                  isMobile
+                    ? "w-full px-3 py-6 text-xs font-medium"
+                    : "w-1/5 grow p-3"
+                } text-white sm:text-sm sm:font-medium lg:text-lg`}
               >
-                {icon}
-              </button>
-            </div>
-          </Popover>
-        ))}
+                <button
+                  className={`w-full h-full  ${
+                    dashType == name ? "" : "hover:text-gray-700"
+                  }`}
+                >
+                  {icon}
+                </button>
+              </div>
+            </Popover>
+          );
+        })}
         <div
-          className={`absolute bg-gray-600 opacity-0 transition-[opacity,left,top] duration-500 ${
-            isMobile
-              ? "top-0 left-full h-1/5 w-0.75"
-              : "top-full left-0 h-0.75 w-1/5"
+          className={`absolute bg-gray-600 opacity-0 transition-all duration-500 ${
+            isMobile ? "top-0 left-full h-1/5 w-1" : "top-full left-0 h-1 w-1/5"
           }`}
           style={
             hoverIdx == null
@@ -99,6 +103,6 @@ const DashNav = ({ setDashType, dashType }: any) => {
       </div>
     </div>
   );
-};
+}
 
 export default DashNav;

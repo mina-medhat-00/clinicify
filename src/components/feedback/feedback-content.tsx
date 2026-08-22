@@ -1,13 +1,11 @@
-import { Avatar, Col, Empty, Rate, Row } from "antd";
+import { Col, Empty, Rate, Row } from "@/components/ui/kit";
+import UserAvatar from "@/components/ui/user-avatar";
 
-const FeedbackContent = ({
+function FeedbackContent({
   order,
-  font,
-  doctorPhoto,
   uimgUrl,
   dimgUrl,
   doctorName,
-  userPhoto,
   username,
   feedback,
   rate,
@@ -16,7 +14,7 @@ const FeedbackContent = ({
   setShowFeedback,
   showFeedback,
   mobile,
-}: any) => {
+}: any) {
   return (
     <div
       key={order}
@@ -26,40 +24,33 @@ const FeedbackContent = ({
         <Row
           justify="space-between"
           align="middle"
-          className="cursor-pointer rounded-2xl border-2 border-white bg-blue-400/90 hover:bg-blue-500/90"
-          onClick={() => {
+          className={`cursor-pointer rounded-2xl border-2 border-white bg-blue-400/90 hover:bg-blue-500/90 ${
+            isMobile ? "text-xs" : ""
+          }`}
+          onClick={function () {
             if (showFeedback || mobile) {
               bodyHandler(order);
             }
             if (mobile) setShowFeedback(order + 1);
           }}
-          style={{ fontSize: `${isMobile ? "12px" : "inherit"}` }}
         >
           <div className="p-2 flex items-center justify-between grow gap-2 bg-blue-600/80 shadow-md rounded-lg">
-            <Col
-              style={{ fontFamily: font }}
-              className="flex gap-1 flex-wrap items-center justify-between"
-            >
-              <Avatar src={dimgUrl || doctorPhoto} size="large" />
+            <Col className="flex gap-1 flex-wrap items-center justify-between">
+              <UserAvatar src={dimgUrl} userType="doctor" size="large" />
               <span className="text-white font-medium text-lg sm:text-xl lg:text-xl">
                 Dr. {doctorName?.slice(0, 12)}
               </span>
             </Col>
-            <Col style={{ fontFamily: font }}>
-              {<Rate disabled value={rate} />}
-            </Col>
+            <Col>{<Rate disabled value={rate} />}</Col>
           </div>
           <div className="p-2 flex grow gap-2 bg-blue-200/30 rounded-lg">
-            <Col
-              className="flex flex-wrap items-center"
-              style={{ fontFamily: font }}
-            >
+            <Col className="flex flex-wrap items-center">
               <span className="text-gray-100 bg-blue-600/70 shadow-md rounded p-0.5 font-medium text-lg sm:text-xl lg:text-xl">
                 by
               </span>
             </Col>
             <Col className="flex flex-wrap gap-1 items-center">
-              <Avatar src={uimgUrl || userPhoto} size="large" />
+              <UserAvatar src={uimgUrl} userType="user" size="large" />
               <span className="text-white font-medium text-lg sm:text-xl lg:text-xl">
                 {username?.slice(0, 12)}
               </span>
@@ -67,11 +58,8 @@ const FeedbackContent = ({
           </div>
         </Row>
         <Col
-          style={{
-            fontFamily: font,
-          }}
-          className="box-content h-0 min-h-0 overflow-hidden rounded-lg bg-blue-500/80 p-0 transition-[height,padding] duration-400 ease-in-out"
           id={`feedback--body--${order + 1}`}
+          className="box-content h-0 min-h-0 overflow-hidden rounded-lg bg-blue-500/80 p-0 transition-all duration-500 ease-in-out"
         >
           <div id={`feedback--paragraph--${order + 1}`}>
             <span className="text-white break-all font-medium">
@@ -91,6 +79,6 @@ const FeedbackContent = ({
       </div>
     </div>
   );
-};
+}
 
 export default FeedbackContent;

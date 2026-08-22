@@ -3,7 +3,7 @@ import Cookies from "universal-cookie";
 import { apiUrl } from "@/utils/api";
 
 const cookies = new Cookies();
-const submitLike = async (
+async function submitLike(
   user?: any,
   fetchUserData?: any,
   fetchCommentsData?: any,
@@ -18,7 +18,7 @@ const submitLike = async (
   socket?: any,
   setPosts?: any,
   setComments?: any,
-) => {
+) {
   const data = { postId, commentId: commentId || null, likeType, isPost };
   axios
     .post(
@@ -33,7 +33,7 @@ const submitLike = async (
         },
       },
     )
-    .then((res?: any, ..._args: any[]) => {
+    .then(function (res?: any, ..._args: any[]) {
       setLikeData(res?.data?.data);
       const { like_emoji, dislike, angry } = res?.data?.data ?? {};
       if (!isPost) {
@@ -45,18 +45,18 @@ const submitLike = async (
           angry,
           updateEmoji: true,
         });
-        setComments((comments?: any, ..._args: any[]) =>
-          comments?.map((c?: any, ..._args: any[]) =>
-            c?.comment_id == commentId
+        setComments(function (comments?: any, ..._args: any[]) {
+          return comments?.map(function (c?: any, ..._args: any[]) {
+            return c?.comment_id == commentId
               ? {
                   ...c,
                   like_emoji: like_emoji || 0,
                   dislike: dislike || 0,
                   angry: angry || 0,
                 }
-              : c,
-          ),
-        );
+              : c;
+          });
+        });
       } else {
         socket?.emit("send_post", {
           post_id: postId,
@@ -65,21 +65,21 @@ const submitLike = async (
           angry,
           updateEmoji: true,
         });
-        setPosts((posts?: any, ..._args: any[]) =>
-          posts?.map((post?: any, ..._args: any[]) =>
-            post?.post_id == postId
+        setPosts(function (posts?: any, ..._args: any[]) {
+          return posts?.map(function (post?: any, ..._args: any[]) {
+            return post?.post_id == postId
               ? {
                   ...post,
                   like_emoji: like_emoji || 0,
                   dislike: dislike || 0,
                   angry: angry || 0,
                 }
-              : post,
-          ),
-        );
+              : post;
+          });
+        });
       }
     })
-    .catch((err?: any, ..._args: any[]) => {
+    .catch(function (err?: any, ..._args: any[]) {
       if (err?.response?.status == 401) {
         fetchUserData(true, cookies.get("accessToken"));
       } else
@@ -90,6 +90,6 @@ const submitLike = async (
           duration: 2,
         });
     });
-};
+}
 
 export default submitLike;

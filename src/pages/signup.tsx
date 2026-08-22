@@ -1,10 +1,4 @@
 import {
-  InboxOutlined,
-  LockOutlined,
-  MailOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
-import {
   Button,
   DatePicker,
   Form,
@@ -14,8 +8,9 @@ import {
   Select,
   Space,
   Upload,
-} from "antd";
+} from "@/components/ui/kit";
 import axios from "axios";
+import { ImagePlus, Lock, Mail, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import { useNavigate } from "react-router-dom";
@@ -27,23 +22,23 @@ import { cityOptions } from "@/utils/sign-data";
 import { prefixSelector } from "@/utils/signup-utils";
 import { apiUrl } from "@/utils/api";
 
-const { Option } = Select;
-
-const getMessage = (
+function getMessage(
   key?: any,
   type?: any,
   content?: any,
   duration?: any,
   ..._args: any[]
-) => ({
-  key,
-  type,
-  content,
-  duration,
-});
+) {
+  return {
+    key,
+    type,
+    content,
+    duration,
+  };
+}
 
-const beforeUpload = (file?: any): any => {
-  return new Promise((resolve?: any) => {
+function beforeUpload(file?: any): any {
+  return new Promise(function (resolve?: any) {
     const isImg =
       file.type === "image/jpeg" ||
       file.type === "image/jpg" ||
@@ -57,33 +52,35 @@ const beforeUpload = (file?: any): any => {
       message.error("Image must smaller than 5MB!", 4);
     } else resolve(false);
   });
-};
-const normFile = (e?: any, setImageUrls?: any, ..._args: any[]) => {
+}
+function normFile(e?: any, setImageUrls?: any, ..._args: any[]) {
   if (Array.isArray(e)) {
     return e;
   }
   const imageUrls = [];
-  e?.fileList.map((file?: any, i?: any, ..._args: any[]) => {
+  e?.fileList.map(function (file?: any, i?: any, ..._args: any[]) {
     const reader = new FileReader();
-    reader.addEventListener("load", () => (imageUrls[i] = reader.result));
+    reader.addEventListener("load", function () {
+      imageUrls[i] = reader.result;
+    });
     reader.readAsDataURL(file.originFileObj);
   });
   setImageUrls(imageUrls);
   return e?.fileList;
-};
+}
 
-const checkUserName = (uname?: any, setValidState?: any, ..._args: any[]) => {
+function checkUserName(uname?: any, setValidState?: any, ..._args: any[]) {
   axios
     .get(apiUrl(`/chkuname/${uname}`))
-    .then(() => {
+    .then(function () {
       if (uname) setValidState("success");
       else setValidState("");
     })
-    .catch((err?: any, ..._args: any[]) => {
+    .catch(function (err?: any, ..._args: any[]) {
       if (err?.response?.status === 400) setValidState("error");
       else setValidState("error1");
     });
-};
+}
 
 function Signup() {
   const { messageApi } = useUtilsContext();
@@ -99,20 +96,20 @@ function Signup() {
   const [imageUrls, setImageUrls] = useState([]);
   const navigate = useNavigate();
 
-  useEffect(() => {
+  useEffect(function () {
     if (user?.user_id) {
       navigate("/");
       return;
     }
   }, []);
 
-  const addUser = (values?: any, ..._args: any[]) => {
+  function addUser(values?: any, ..._args: any[]) {
     if (validState === "success" || validState === "") {
       messageApi.open(getMessage(1, "loading", "signing up...", 8));
       values.birth = values?.birth?.format("YYYY-MM-DD");
       values.images = imageUrls?.[0];
       values.moreInf = formValues.moreInf;
-          axios
+      axios
         .post(
           apiUrl("/adduser"),
           {
@@ -122,7 +119,7 @@ function Signup() {
             headers: { "Content-Type": "application/json" },
           },
         )
-        .then(() => {
+        .then(function () {
           messageApi.open(
             getMessage(
               1,
@@ -131,9 +128,11 @@ function Signup() {
               2,
             ),
           );
-          setTimeout(() => navigate(`/login`), 2000);
+          setTimeout(function () {
+            navigate(`/login`);
+          }, 2000);
         })
-        .catch((err?: any, ..._args: any[]) => {
+        .catch(function (err?: any, ..._args: any[]) {
           if (err?.response?.data?.data?.err?.code == "ER_DUP_ENTRY") {
             setValidState("error");
             messageApi.open(
@@ -157,25 +156,19 @@ function Signup() {
           }
         });
     }
-  };
+  }
 
-  const setValues = (changedVal?: any, values?: any, ..._args: any[]) => {
+  function setValues(changedVal?: any, values?: any, ..._args: any[]) {
     const chk = /^([A-Z]|[a-z])+.{0,22}$/.test(changedVal?.username);
     if (changedVal?.username && chk) {
       setValidState("validating");
       checkUserName(changedVal.username, setValidState);
     } else if (changedVal?.username === "" || !chk) setValidState("");
     setFormValues({ ...formValues, ...values });
-  };
+  }
 
   return (
-    <div
-      className="flex grow justify-center bg-[linear-gradient(45deg,gray,rgb(85,114,115))] p-2 sm:p-10"
-      style={{
-        background:
-          "linear-gradient(to right top,rgb(93 98 128 / 85%) , rgb(108 146 192 / 90%))",
-      }}
-    >
+    <div className="flex grow justify-center bg-linear-to-tr from-slate-500/85 to-blue-400/90 p-2 sm:p-10">
       <Form
         name="register"
         autoComplete="on"
@@ -192,8 +185,7 @@ function Signup() {
           center
           invisible
           size="no"
-          classText="text-4xl sm:text-5xl xl:text-6xl"
-          style={{ color: "white", marginBottom: "65px" }}
+          classText="text-4xl sm:text-5xl xl:text-6xl text-white mb-16"
         />
         <HeaderLine value={"Required Information"} />
         <div className="flex flex-wrap gap-1">
@@ -247,7 +239,10 @@ function Signup() {
                 },
               ]}
             >
-              <Input prefix={<UserOutlined />} placeholder={"username"} />
+              <Input
+                prefix={<User className="size-4" />}
+                placeholder={"username"}
+              />
             </Item>
           </div>
         </div>
@@ -270,7 +265,7 @@ function Signup() {
               ]}
             >
               <Input.Password
-                prefix={<LockOutlined />}
+                prefix={<Lock className="size-4" />}
                 placeholder={"Password"}
               />
             </Item>
@@ -284,18 +279,20 @@ function Signup() {
                   required: true,
                   message: "Please confirm your password!",
                 },
-                ({ getFieldValue }: any) => ({
-                  validator(_, value) {
-                    if (!value || getFieldValue("password") === value) {
-                      return Promise.resolve();
-                    }
-                    return Promise.reject(
-                      new Error(
-                        "The two passwords that you entered do not match!",
-                      ),
-                    );
-                  },
-                }),
+                function ({ getFieldValue }: any) {
+                  return {
+                    validator(_, value) {
+                      if (!value || getFieldValue("password") === value) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(
+                        new Error(
+                          "The two passwords that you entered do not match!",
+                        ),
+                      );
+                    },
+                  };
+                },
               ]}
             >
               <Input.Password placeholder={"Confirm Password"} />
@@ -316,10 +313,13 @@ function Signup() {
               name="gender"
               rules={[{ required: true, message: "Please select gender!" }]}
             >
-              <Select placeholder={"Select your gender"}>
-                <Option value="male">Male</Option>
-                <Option value="female">Female</Option>
-              </Select>
+              <Select
+                placeholder={"Select your gender"}
+                options={[
+                  { value: "male", label: "Male" },
+                  { value: "female", label: "Female" },
+                ]}
+              />
             </Item>
           </div>
           <div className="grow">
@@ -340,7 +340,7 @@ function Signup() {
                 },
               ]}
             >
-              <DatePicker style={{ width: "100%" }} placeholder={"birthdate"} />
+              <DatePicker className="w-full" placeholder={"birthdate"} />
             </Item>
           </div>
         </div>
@@ -353,46 +353,42 @@ function Signup() {
             classLine={"w-1/2 border mb-2"}
           />
           <Item className="w-full">
-            <Input.Group className="w-full">
-              <div className="flex flex-wrap sm:flex-nowrap items-center">
-                <div className="w-full sm:w-2/5 [&>div]:block">
-                  <Item
-                    name={["address", "city"]}
-                    noStyle
-                    rules={[
-                      {
-                        required: true,
-                        message: "city is required",
-                      },
-                    ]}
-                  >
-                    <Select
-                      placeholder="Select city"
-                      showSearch
-                      optionFilterProp="label"
-                      options={cityOptions}
-                    />
-                  </Item>
-                </div>
-                <Item
-                  name={["address", "street"]}
-                  noStyle
-                  rules={[
-                    {
-                      required: true,
-                      message: "Street is required",
-                    },
-                  ]}
-                  className="grow"
-                >
-                  <Input placeholder={"Your street"} />
-                </Item>
-              </div>
-            </Input.Group>
+            <Space.Compact className="w-full" block>
+              <Item
+                name={["address", "city"]}
+                noStyle
+                rules={[
+                  {
+                    required: true,
+                    message: "city is required",
+                  },
+                ]}
+              >
+                <Select
+                  placeholder="Select city"
+                  showSearch
+                  optionFilterProp="label"
+                  options={cityOptions}
+                  className="w-full sm:w-2/5"
+                />
+              </Item>
+              <Item
+                name={["address", "street"]}
+                noStyle
+                rules={[
+                  {
+                    required: true,
+                    message: "Street is required",
+                  },
+                ]}
+              >
+                <Input placeholder={"Your street"} />
+              </Item>
+            </Space.Compact>
           </Item>
         </div>
         <div className={`flex ${isMobile ? "flex-wrap" : ""} gap-1`}>
-          <div className={`grow ${!isMobile && "max-w-[65%]"}`}>
+          <div className={`grow ${!isMobile && "max-w-2xl"}`}>
             <Item
               name="phone"
               rules={[
@@ -413,7 +409,7 @@ function Signup() {
               </Space.Compact>
             </Item>
           </div>
-          <div className={`grow ${!isMobile && "max-w-[65%]"}`}>
+          <div className={`grow ${!isMobile && "max-w-2xl"}`}>
             <Item
               name="email"
               rules={[
@@ -427,7 +423,10 @@ function Signup() {
                 },
               ]}
             >
-              <Input prefix={<MailOutlined />} placeholder={"Your email"} />
+              <Input
+                prefix={<Mail className="size-4" />}
+                placeholder={"Your email"}
+              />
             </Item>
           </div>
         </div>
@@ -435,9 +434,9 @@ function Signup() {
           <Item
             name="images"
             valuePropName="fileList"
-            getValueFromEvent={(e?: any, ..._args: any[]) =>
-              normFile(e, setImageUrls)
-            }
+            getValueFromEvent={function (e?: any, ..._args: any[]) {
+              return normFile(e, setImageUrls);
+            }}
             noStyle
           >
             <Upload.Dragger
@@ -449,7 +448,7 @@ function Signup() {
               maxCount={5}
             >
               <p className="ant-upload-drag-icon">
-                <InboxOutlined />
+                <ImagePlus className="size-12 m-auto" />
               </p>
               <p className="font-bold">
                 Click or drag your image to this area to upload

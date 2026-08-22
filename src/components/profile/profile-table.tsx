@@ -1,13 +1,13 @@
-import { Skeleton } from "antd";
+import { Skeleton } from "@/components/ui/kit";
 
-const ProfileTable = ({
+function ProfileTable({
   data,
   headers,
   headerColor,
   propColor,
   icon,
   loadingProps = {},
-}: any) => {
+}: any) {
   return (
     <div className="w-full overflow-auto scroll--h">
       <table className="w-full text-left bg-white rounded-lg">
@@ -23,28 +23,32 @@ const ProfileTable = ({
               {loadingProps?.active
                 ? Array.from({
                     length: loadingProps?.numCol || 3,
-                  }).map((_?: any, i?: any, ..._args: any[]) => (
-                    <th
-                      key={i + 1}
-                      scope="col"
-                      className="px-1 py-4 text-gray-100"
-                    >
-                      <Skeleton.Button className="w-full rounded-lg" active />
-                    </th>
-                  ))
-                : headers?.map((val?: any, i?: any, ..._args: any[]) => (
-                    <th
-                      key={i + 1}
-                      scope="col"
-                      colSpan={
-                        (data ? Object.entries(data?.[0])?.[0]?.length : 0) /
-                        (headers?.length || 1)
-                      }
-                      className="px-6 py-3 text-gray-100"
-                    >
-                      {val}
-                    </th>
-                  ))}
+                  }).map(function (_?: any, i?: any, ..._args: any[]) {
+                    return (
+                      <th
+                        key={i + 1}
+                        scope="col"
+                        className="px-1 py-4 text-gray-100"
+                      >
+                        <Skeleton.Button className="w-full rounded-lg" active />
+                      </th>
+                    );
+                  })
+                : headers?.map(function (val?: any, i?: any, ..._args: any[]) {
+                    return (
+                      <th
+                        key={i + 1}
+                        scope="col"
+                        colSpan={
+                          (data ? Object.entries(data?.[0])?.[0]?.length : 0) /
+                          (headers?.length || 1)
+                        }
+                        className="px-6 py-3 text-gray-100"
+                      >
+                        {val}
+                      </th>
+                    );
+                  })}
             </tr>
           </thead>
         )}
@@ -52,24 +56,28 @@ const ProfileTable = ({
           {loadingProps?.active
             ? Array.from({
                 length: loadingProps?.numRow || 4,
-              }).map((_?: any, i?: any, ..._args: any[]) => (
-                <tr key={i + 1}>
-                  {Array.from({
-                    length: loadingProps?.numCol || 3,
-                  }).map((_?: any, i?: any, ..._args: any[]) => (
-                    <th key={i + 1} scope="row" className={`p-3`}>
-                      <Skeleton.Button className="w-full" active />
-                    </th>
-                  ))}
-                </tr>
-              ))
-            : data?.map(
-                (
-                  { name, value, preValue }: any,
-                  i?: any,
-                  arr?: any,
-                  ..._args: any[]
-                ) => (
+              }).map(function (_?: any, i?: any, ..._args: any[]) {
+                return (
+                  <tr key={i + 1}>
+                    {Array.from({
+                      length: loadingProps?.numCol || 3,
+                    }).map(function (_?: any, i?: any, ..._args: any[]) {
+                      return (
+                        <th key={i + 1} scope="row" className={`p-3`}>
+                          <Skeleton.Button className="w-full" active />
+                        </th>
+                      );
+                    })}
+                  </tr>
+                );
+              })
+            : data?.map(function (
+                { name, value, preValue }: any,
+                i?: any,
+                arr?: any,
+                ..._args: any[]
+              ) {
+                return (
                   <tr key={i + 1}>
                     <th
                       scope="row"
@@ -94,12 +102,12 @@ const ProfileTable = ({
                       )}
                     </td>
                   </tr>
-                ),
-              )}
+                );
+              })}
         </tbody>
       </table>
     </div>
   );
-};
+}
 
 export default ProfileTable;

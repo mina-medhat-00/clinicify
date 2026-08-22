@@ -4,32 +4,36 @@ import type { User } from "@/types";
 import { apiUrl } from "@/utils/api";
 
 const DoctorsData = createContext<any>(null);
-const DoctorsContextProvider = ({ children, query, noFirstRender }: any) => {
+function DoctorsContextProvider({ children, query, noFirstRender }: any) {
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [doctorsData, setDoctorsData] = useState<User[] | null>(null);
-  const fetchDoctorsData = async (
+  async function fetchDoctorsData(
     setQuery?: any,
     noWaiting?: any,
     ..._args: any[]
-  ) => {
+  ) {
     const activeQuery = setQuery ? setQuery : query;
     if (!noWaiting) setIsLoading(true);
     try {
       const { data } = await axios.request({
-        url: apiUrl(`/doctors${
-          activeQuery
-            ? `?${activeQuery.total ? `total=${activeQuery.total}&` : ""}${
-                activeQuery.limit ? `limit=${activeQuery.limit}&` : ""
-              }${
-                activeQuery.specialty
-                  ? `specialty=${activeQuery.specialty}&`
-                  : ""
-              }${activeQuery.dname ? `dname=${activeQuery.dname}&` : ""}${
-                activeQuery.location ? `location=${activeQuery.location}&` : ""
-              }`
-            : ""
-        }`),
+        url: apiUrl(
+          `/doctors${
+            activeQuery
+              ? `?${activeQuery.total ? `total=${activeQuery.total}&` : ""}${
+                  activeQuery.limit ? `limit=${activeQuery.limit}&` : ""
+                }${
+                  activeQuery.specialty
+                    ? `specialty=${activeQuery.specialty}&`
+                    : ""
+                }${activeQuery.dname ? `dname=${activeQuery.dname}&` : ""}${
+                  activeQuery.location
+                    ? `location=${activeQuery.location}&`
+                    : ""
+                }`
+              : ""
+          }`,
+        ),
         ...{ timeout: 10000 },
       });
       setDoctorsData(data?.data);
@@ -41,8 +45,8 @@ const DoctorsContextProvider = ({ children, query, noFirstRender }: any) => {
       setIsError(true);
       setIsLoading(false);
     }
-  };
-  useLayoutEffect(() => {
+  }
+  useLayoutEffect(function () {
     if (!noFirstRender) fetchDoctorsData(query);
   }, []);
   return (
@@ -52,8 +56,10 @@ const DoctorsContextProvider = ({ children, query, noFirstRender }: any) => {
       {children}
     </DoctorsData.Provider>
   );
-};
+}
 
 export default DoctorsContextProvider;
 
-export const useDoctorsContext = () => useContext(DoctorsData);
+export function useDoctorsContext() {
+  return useContext(DoctorsData);
+}

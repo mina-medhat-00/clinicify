@@ -1,7 +1,14 @@
-import { Alert, Button, Empty, Image, Input, message, Upload } from "antd";
+import {
+  Alert,
+  Button,
+  Empty,
+  Image,
+  Input,
+  message,
+  Upload,
+} from "@/components/ui/kit";
+import { ImagePlus, MessageCircleQuestion, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { BiImageAdd } from "react-icons/bi";
-import { RiQuestionAnswerFill } from "react-icons/ri";
 import PostWrapper from "@/components/post/post-wrapper";
 import Loader from "@/components/ui/loader";
 import ServerError from "@/components/ui/server-error";
@@ -14,12 +21,14 @@ import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
 import submitPost from "@/services/submit-post";
 
-const getBase64 = (img?: any, setPostImg?: any, ..._args: any[]) => {
+function getBase64(img?: any, setPostImg?: any, ..._args: any[]) {
   const reader = new FileReader();
-  reader.addEventListener("load", () => setPostImg(reader?.result));
+  reader.addEventListener("load", function () {
+    setPostImg(reader?.result);
+  });
   reader.readAsDataURL(img);
-};
-const beforeUpload = (file?: any, ..._args: any[]) => {
+}
+function beforeUpload(file?: any, ..._args: any[]) {
   const isImg =
     file.type === "image/jpeg" ||
     file.type === "image/jpg" ||
@@ -34,8 +43,8 @@ const beforeUpload = (file?: any, ..._args: any[]) => {
     message.error("Image must smaller than 2MB!");
   }
   return isImg && isLt2M;
-};
-const Posts = ({ home }: any) => {
+}
+function Posts({ home }: any) {
   const { socket, isMobile } = useUtilsContext();
   const {
     fetchUserData,
@@ -49,57 +58,62 @@ const Posts = ({ home }: any) => {
   const [postImg, setPostImg] = useState(null);
   const [showWarn, setShowWarn] = useState(false);
   const [showPost, setShowPost] = useState(false);
-  useEffect(() => {
-    setPosts(postsData || []);
-  }, [postsData]);
-  useEffect(() => {
-    const addPost = (data?: any, ..._args: any[]) => {
+  useEffect(
+    function () {
+      setPosts(postsData || []);
+    },
+    [postsData],
+  );
+  useEffect(function () {
+    function addPost(data?: any, ..._args: any[]) {
       const isUpdate = data?.updateEmoji;
       if (isUpdate) {
         const { post_id, like_emoji, dislike, angry } = data;
-        setPosts((posts?: any, ..._args: any[]) =>
-          posts?.map((post?: any, ..._args: any[]) =>
-            post?.post_id == post_id
+        setPosts(function (posts?: any, ..._args: any[]) {
+          return posts?.map(function (post?: any, ..._args: any[]) {
+            return post?.post_id == post_id
               ? {
                   ...post,
                   like_emoji: like_emoji || 0,
                   dislike: dislike || 0,
                   angry: angry || 0,
                 }
-              : post,
-          ),
-        );
+              : post;
+          });
+        });
       } else
-        setPosts((p?: any, ..._args: any[]) =>
-          p?.some(({ post_id }: any) => post_id == data?.post_id)
+        setPosts(function (p?: any, ..._args: any[]) {
+          return p?.some(function ({ post_id }: any) {
+            return post_id == data?.post_id;
+          })
             ? p
-            : [data, ...p],
-        );
-    };
+            : [data, ...p];
+        });
+    }
     socket?.on(`receive_post`, addPost);
-    return () => {
+    return function () {
       socket?.off("receive_post", addPost);
     };
   }, []);
 
-  const allPosts = posts?.map(
-    (
-      {
-        user_id: userid,
-        user_type: userType,
-        post_img: postImg,
-        img_url: imgUrl,
-        nick_name: nickname,
-        content,
-        issued_time: issuedTime,
-        num_comments: numComments,
-        angry: numAngry,
-        dislike: numDisLike,
-        like_emoji: numLike,
-        post_id: postId,
-      }: any,
-      i?: any,
-    ) => ({
+  const allPosts = posts?.map(function (
+    {
+      user_id: userid,
+      user_type: userType,
+      post_img: postImg,
+      img_url: imgUrl,
+      nick_name: nickname,
+      content,
+      issued_time: issuedTime,
+      num_comments: numComments,
+      angry: numAngry,
+      dislike: numDisLike,
+      like_emoji: numLike,
+      post_id: postId,
+    }: any,
+    i?: any,
+  ) {
+    return {
       is_img: !postImg,
       key: postId,
       element: (
@@ -127,33 +141,34 @@ const Posts = ({ home }: any) => {
           </CommentsContextProvider>
         </div>
       ),
-    }),
-  );
+    };
+  });
   const userid = userAuth?.user_id;
   return (
     <div className="mt-1 rounded-tr-lg rounded-tl-lg text-white font-medium">
       <div className="p-4">
         <div className="flex p-1 justify-center">
-          <div className="border border-gray-150 shadow-md w-full p-4 bg-gray-300/30 rounded-lg sm:w-3/4 xl:w-1/2">
+          <div className="border border-gray-200 shadow-md w-full p-4 bg-gray-300/30 rounded-lg sm:w-3/4 xl:w-1/2">
             <Input.TextArea
               placeholder={
                 "Ask for any question, state your condition or medical issue"
               }
-              className="rounded-lg border scroll--v border-gray-400"
+              className="rounded-lg border scroll--v border-gray-400 resize-none"
               value={content}
               rows={6}
-              style={{ resize: "none" }}
-              onChange={(e?: any, ..._args: any[]) =>
-                setContent(e?.target?.value)
-              }
+              onChange={function (e?: any, ..._args: any[]) {
+                setContent(e?.target?.value);
+              }}
             />
             <div className="flex relative flex-wrap justify-between gap-2 items-center p-2">
               <Upload
                 name="avatar"
-                customRequest={() => true}
+                customRequest={function () {
+                  return true;
+                }}
                 beforeUpload={beforeUpload}
                 showUploadList={false}
-                onChange={(inf?: any, ..._args: any[]) => {
+                onChange={function (inf?: any, ..._args: any[]) {
                   if (inf?.file?.status)
                     getBase64(inf?.file?.originFileObj, setPostImg);
                 }}
@@ -161,38 +176,31 @@ const Posts = ({ home }: any) => {
                 {postImg ? (
                   <div className="relative">
                     <Image
-                      className=""
-                      style={{
-                        height: "100px",
-                        width: "100%",
-                        borderRadius: "10%",
-                        userSelect: "none",
-                      }}
-                      onClick={(e?: any, ..._args: any[]) => {
+                      className="h-24 w-full rounded-xl select-none"
+                      onClick={function (e?: any, ..._args: any[]) {
                         e.stopPropagation();
                         e.preventDefault();
                       }}
                       src={postImg}
                     />
                     <div
-                      onClick={(e?: any, ..._args: any[]) => {
+                      onClick={function (e?: any, ..._args: any[]) {
                         setPostImg(null);
                         e.stopPropagation();
                       }}
-                      style={{ top: 0, left: "calc(100% - 20px)" }}
-                      className="text-2xl text-red-400/50 hover:text-red-400 absolute"
+                      className="text-2xl text-red-400/50 hover:text-red-400 absolute top-0 right-5"
                     >
-                      X
+                      <X className="size-6" />
                     </div>
                   </div>
                 ) : (
-                  <div className="">
-                    <BiImageAdd className="text-gray-700 text-3xl" />
+                  <div>
+                    <ImagePlus className="text-gray-700 size-8" />
                   </div>
                 )}
               </Upload>
               <Button
-                onClick={() => {
+                onClick={function () {
                   if (userid && content)
                     submitPost(
                       userData,
@@ -216,8 +224,10 @@ const Posts = ({ home }: any) => {
                 <Alert
                   className="bg-red-500 rounded-md top-full absolute w-full"
                   closable={{
-                    closeIcon: <span className="text-white text-base">X</span>,
-                    onClose: () => setShowWarn(false),
+                    closeIcon: <X className="size-4 text-white" />,
+                    onClose: function () {
+                      setShowWarn(false);
+                    },
                   }}
                   description={
                     <span className="text-white font-medium">
@@ -236,7 +246,7 @@ const Posts = ({ home }: any) => {
         to={home ? "posts" : ""}
         wrapperBg={"no"}
         icon={
-          <RiQuestionAnswerFill className="text-3xl sm:text-5xl xl:text-6xl m-auto text-white" />
+          <MessageCircleQuestion className="text-3xl sm:text-5xl xl:text-6xl m-auto text-white" />
         }
         title={home ? "Latest Questions" : "All Questions"}
       />
@@ -246,21 +256,21 @@ const Posts = ({ home }: any) => {
             id="posts"
             speed="extraspeed"
             direction="bottomleft"
-            customStyle={{
-              maxHeight: home ? "548px" : "",
-              marginInline: !isMobile ? "30px" : "",
-            }}
             parentClassName={`flex flex-wrap gap-2 ${
               home
-                ? "overflow-auto trans--post scroll--v scroll--v--chat scroll--h"
+                ? "max-h-96 overflow-auto trans--post scroll--v scroll--v--chat scroll--h"
                 : ""
-            } items-start py-2 px-1`}
+            } ${!isMobile ? "mx-8" : ""} items-start py-2 px-1`}
           >
             <TableGrid
               noMargin
               noGap
               colKey="post"
-              isFull={allPosts?.filter(({ is_img }: any) => is_img) || []}
+              isFull={
+                allPosts?.filter(function ({ is_img }: any) {
+                  return is_img;
+                }) || []
+              }
               customGrid={`${home ? "bg-white" : "bg-gray-100"}`}
               items={allPosts}
             />
@@ -288,6 +298,6 @@ const Posts = ({ home }: any) => {
       </div>
     </div>
   );
-};
+}
 
 export default Posts;

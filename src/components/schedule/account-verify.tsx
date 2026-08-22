@@ -1,7 +1,7 @@
-import { CloseCircleOutlined, LoadingOutlined } from "@ant-design/icons";
-import { Tag } from "antd";
+import { Tag } from "@/components/ui/kit";
+import { CircleX, Loader2 } from "lucide-react";
 
-const AccountVerify = ({ isVerified }: any) => {
+function AccountVerify({ isVerified }: any) {
   return isVerified == null ? (
     <div className="flex p-2  text-center bg-yellow-600/60 rounded-lg flex-wrap gap-2 items-center justify-center">
       <div className="text-2xl text-yellow-100 font-medium">
@@ -11,7 +11,7 @@ const AccountVerify = ({ isVerified }: any) => {
         color="gold"
         className="flex gap-2 items-center p-4 text-4xl font-medium"
       >
-        pending <LoadingOutlined />
+        pending <Loader2 className="animate-spin" />
       </Tag>
     </div>
   ) : isVerified == 0 ? (
@@ -23,10 +23,10 @@ const AccountVerify = ({ isVerified }: any) => {
         color="red"
         className="flex gap-2 items-center p-4 text-4xl font-medium"
       >
-        Rejected <CloseCircleOutlined />
+        Rejected <CircleX />
       </Tag>
     </div>
   ) : null;
-};
+}
 
 export default AccountVerify;

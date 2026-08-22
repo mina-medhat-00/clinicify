@@ -3,7 +3,7 @@ import Cookies from "universal-cookie";
 import { apiUrl } from "@/utils/api";
 
 const cookies = new Cookies();
-const cancelAppointment = (
+function cancelAppointment(
   selectedDate?: any,
   bookedSlot?: any,
   appointmentId?: any,
@@ -16,7 +16,7 @@ const cancelAppointment = (
   date?: any,
   setShowPop?: any,
   socket?: any,
-) => {
+) {
   const data = {
     data: {
       date: selectedDate?.format("YYYY-MM-DD"),
@@ -39,7 +39,7 @@ const cancelAppointment = (
         Authorization: `Bearer ${cookies.get("accessToken")}`,
       },
     })
-    .then(() => {
+    .then(function () {
       messageApi.open({
         key: 1,
         type: "success",
@@ -65,7 +65,7 @@ const cancelAppointment = (
         });
       }
     })
-    .catch((err?: any, ..._args: any[]) => {
+    .catch(function (err?: any, ..._args: any[]) {
       if (err?.response?.status == 401) {
         fetchUserData(true, cookies.get("accessToken"));
       } else if (err?.response?.status == 400) {
@@ -84,6 +84,6 @@ const cancelAppointment = (
         });
       }
     });
-};
+}
 
 export default cancelAppointment;

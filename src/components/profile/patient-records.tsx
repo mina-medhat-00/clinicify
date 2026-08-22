@@ -1,12 +1,16 @@
-import { StopOutlined } from "@ant-design/icons";
-import { FaFileMedicalAlt, FaNotesMedical } from "react-icons/fa";
+import { Ban, ClipboardPlus, FileHeart } from "lucide-react";
 import ProfileTable from "@/components/profile/profile-table";
 
-const PatientRecords = ({ records, setHandleDrawer, profileData, isAuth }: any) => {
+function PatientRecords({
+  records,
+  setHandleDrawer,
+  profileData,
+  isAuth,
+}: any) {
   return (
     <>
       <div className="flex justify-center gap-2 items-center mt-4 mb-4 text-lg sm:text-xl text-white font-medium p-4 bg-gray-600">
-        <FaFileMedicalAlt className="text-xl" />
+        <ClipboardPlus className="text-xl" />
         Medical History
       </div>
       <div className="px-2">
@@ -14,43 +18,51 @@ const PatientRecords = ({ records, setHandleDrawer, profileData, isAuth }: any) 
           headers={["Medical Problems", "Description"]}
           icon={
             isAuth ? (
-              <FaNotesMedical
-                onClick={() =>
-                  setHandleDrawer((draw?: any, ..._args: any[]) => ({
-                    ...draw,
-                    isOpen: true,
-                    type: "medical",
-                    name: "My Medical History",
-                  }))
-                }
+              <FileHeart
+                onClick={function () {
+                  setHandleDrawer(function (draw?: any, ..._args: any[]) {
+                    return {
+                      ...draw,
+                      isOpen: true,
+                      type: "medical",
+                      name: "My Medical History",
+                    };
+                  });
+                }}
                 className="text-2xl hover:text-gray-500 cursor-pointer"
               />
             ) : (
-              <StopOutlined className="text-2xl" />
+              <Ban className="text-2xl" />
             )
           }
-          data={Object.entries(records).map(([name, value]: any) => ({
-            name: name?.replace(/[A-Z]/, (val?: any, ..._args: any[]) => ` ${val}`),
-            value,
-          }))}
+          data={Object.entries(records).map(function ([name, value]: any) {
+            return {
+              name: name?.replace(
+                /[A-Z]/,
+                function (val?: any, ..._args: any[]) {
+                  return ` ${val}`;
+                },
+              ),
+              value,
+            };
+          })}
         />
         {isAuth && (
           <div
-            onClick={() =>
-              setHandleDrawer((draw?: any, ..._args: any[]) => ({
-                ...draw,
-                isOpen: true,
-                type: "medical",
-                name: "My Medical History",
-              }))
-            }
-            className="bg-gray-300/50 gap-2 hover:bg-gray-300/80 flex justify-center items-center h-24 text-center cursor-pointer text-gray-500
-           text-lg sm:text-xl xl:text-2xl font-medium rounded-lg hover:shadow-sm p-3 hover:text-gray-700"
-            style={{
-              flexGrow: 2,
+            onClick={function () {
+              setHandleDrawer(function (draw?: any, ..._args: any[]) {
+                return {
+                  ...draw,
+                  isOpen: true,
+                  type: "medical",
+                  name: "My Medical History",
+                };
+              });
             }}
+            className="bg-gray-300/50 gap-2 hover:bg-gray-300/80 flex justify-center items-center h-24 text-center cursor-pointer text-gray-500
+           text-lg sm:text-xl xl:text-2xl font-medium rounded-lg hover:shadow-sm p-3 hover:text-gray-700 grow"
           >
-            <FaNotesMedical className="w-7 h-7" />
+            <FileHeart className="w-7 h-7" />
             {profileData?.["patientRecords"]?.currentIssue
               ? "Add"
               : "Edit"}{" "}
@@ -60,6 +72,6 @@ const PatientRecords = ({ records, setHandleDrawer, profileData, isAuth }: any) 
       </div>
     </>
   );
-};
+}
 
 export default PatientRecords;

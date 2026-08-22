@@ -1,60 +1,65 @@
-import { PoundOutlined } from "@ant-design/icons";
-import { Button, Input, Popover, Select } from "antd";
+import { Button, Input, Popover, Select } from "@/components/ui/kit";
+import { Clock, Plus, PoundSterling, Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { BiAddToQueue } from "react-icons/bi";
-import { FaUserClock } from "react-icons/fa";
-import { MdDeleteForever } from "react-icons/md";
 import CountdownTimer from "@/components/schedule/schedule-countdown-timer";
 import scheduleAppointments from "@/services/schedule-appointments";
 
-const adjustHMin = (val?: any, ..._args: any[]) => (val > 9 ? val : "0" + val);
-const chkTimeSlot = (data?: any, ..._args: any[]) =>
-  data?.every(
-    (
-      { slotTime: t1, appointmentDuration: duration1 }: any,
-      i1?: any,
+function adjustHMin(val?: any, ..._args: any[]) {
+  return val > 9 ? val : "0" + val;
+}
+function chkTimeSlot(data?: any, ..._args: any[]) {
+  return data?.every(function (
+    { slotTime: t1, appointmentDuration: duration1 }: any,
+    i1?: any,
+    ..._args: any[]
+  ) {
+    return data?.every(function (
+      { slotTime: t2, appointmentDuration: duration2 }: any,
+      i2?: any,
       ..._args: any[]
-    ) =>
-      data?.every(
-        (
-          { slotTime: t2, appointmentDuration: duration2 }: any,
-          i2?: any,
-          ..._args: any[]
-        ) => {
-          return i1 == i2
-            ? true
-            : new Date(`1970 ${t1}`).getTime() >=
-                new Date(`1970 ${t2}`).getTime() + duration2 ||
-                new Date(`1970 ${t1}`).getTime() + duration1 <=
-                  new Date(`1970 ${t2}`).getTime();
-        },
-      ),
-  );
-const chkUpToDate = (data?: any, date?: any, timeZone?: any, ..._args: any[]) =>
-  data?.every(
-    ({ slotTime: t }: any) =>
+    ) {
+      return i1 == i2
+        ? true
+        : new Date(`1970 ${t1}`).getTime() >=
+            new Date(`1970 ${t2}`).getTime() + duration2 ||
+            new Date(`1970 ${t1}`).getTime() + duration1 <=
+              new Date(`1970 ${t2}`).getTime();
+    });
+  });
+}
+function chkUpToDate(data?: any, date?: any, timeZone?: any, ..._args: any[]) {
+  return data?.every(function ({ slotTime: t }: any) {
+    return (
       new Date(
         date?.format("YYYY-MM-DD") + " " + t + (timeZone || ""),
       ).getTime() > new Date().getTime() &&
       date?.date() ==
         new Date(
           date?.format("YYYY-MM-DD") + " " + t + (timeZone || ""),
-        ).getDate(),
-  );
-const chkFillingData = (data?: any, ..._args: any[]) =>
-  !data?.some(
-    ({ appointmentDuration, appointmentType, appointmentFees }: any) =>
-      !appointmentDuration || !appointmentType || !appointmentFees,
-  );
-const handleDetails = (editAppointment?: any, ..._args: any[]) => ({
-  ...editAppointment,
-  slotTime: {
-    h: parseInt(editAppointment?.slotTime),
-    m: parseInt(editAppointment?.slotTime?.split(":")?.[1]),
-    timeMode: editAppointment?.slotTime?.split(" ")?.[1],
-  },
-});
-const AppointmentDetails = ({
+        ).getDate()
+    );
+  });
+}
+function chkFillingData(data?: any, ..._args: any[]) {
+  return !data?.some(function ({
+    appointmentDuration,
+    appointmentType,
+    appointmentFees,
+  }: any) {
+    return !appointmentDuration || !appointmentType || !appointmentFees;
+  });
+}
+function handleDetails(editAppointment?: any, ..._args: any[]) {
+  return {
+    ...editAppointment,
+    slotTime: {
+      h: parseInt(editAppointment?.slotTime),
+      m: parseInt(editAppointment?.slotTime?.split(":")?.[1]),
+      timeMode: editAppointment?.slotTime?.split(" ")?.[1],
+    },
+  };
+}
+function AppointmentDetails({
   doctorData,
   order,
   setAppointmentElements,
@@ -64,7 +69,7 @@ const AppointmentDetails = ({
   isEdit,
   schedule_date,
   timeZone,
-}: any) => {
+}: any) {
   const [appointmentDetails, setAppointmentDetails] = useState(
     isEdit
       ? handleDetails(editAppointment)
@@ -79,8 +84,8 @@ const AppointmentDetails = ({
         },
   );
   useEffect(
-    () =>
-      setAppointDetails((val?: any, ..._args: any[]) => {
+    function () {
+      return setAppointDetails(function (val?: any, ..._args: any[]) {
         val[order - 1] = {
           ...appointmentDetails,
           slotTime: `${adjustHMin(appointmentDetails.slotTime.h)}:${adjustHMin(
@@ -88,7 +93,8 @@ const AppointmentDetails = ({
           )} ${appointmentDetails.slotTime.timeMode}`,
         };
         return new Array(...val);
-      }),
+      });
+    },
     [appointmentDetails],
   );
   return (
@@ -99,18 +105,18 @@ const AppointmentDetails = ({
         </span>
         {appointmentElements.length > 1 && (
           <div
-            onClick={() => {
-              setAppointDetails((val?: any, ..._args: any[]) => {
+            onClick={function () {
+              setAppointDetails(function (val?: any, ..._args: any[]) {
                 val.splice(order - 1, 1);
                 return new Array(...val);
               });
-              setAppointmentElements((ele?: any, ..._args: any[]) => {
+              setAppointmentElements(function (ele?: any, ..._args: any[]) {
                 ele.splice(order - 1, 1);
                 return new Array(...ele);
               });
             }}
           >
-            <MdDeleteForever className="w-10 h-10 hover:text-red-500 hover:bg-white text-red-400 border border-white shadow-lg rounded-lg p-2 cursor-pointer" />
+            <Trash2 className="w-10 h-10 hover:text-red-500 hover:bg-white text-red-400 border border-white shadow-lg rounded-lg p-2 cursor-pointer" />
           </div>
         )}
       </div>
@@ -144,16 +150,21 @@ const AppointmentDetails = ({
               <hr className="border-gray-500 w-fill border-2" />
             </div>
             <div className="flex gap-2 items-center justify-center">
-              <FaUserClock className="w-5 h-5 sm:w-8 sm:h-8 text-gray-400" />
+              <Clock className="w-5 h-5 sm:w-8 sm:h-8 text-gray-400" />
               <Select
                 placeholder="Appointment Duration"
                 className="my-2 w-full text-center"
-                onChange={(value?: any, ..._args: any[]) =>
-                  setAppointmentDetails((appDet?: any, ..._args: any[]) => ({
-                    ...appDet,
-                    appointmentDuration: value,
-                  }))
-                }
+                onChange={function (value?: any, ..._args: any[]) {
+                  setAppointmentDetails(function (
+                    appDet?: any,
+                    ..._args: any[]
+                  ) {
+                    return {
+                      ...appDet,
+                      appointmentDuration: value,
+                    };
+                  });
+                }}
                 value={appointmentDetails?.appointmentDuration}
                 options={[
                   {
@@ -204,7 +215,7 @@ const AppointmentDetails = ({
               <hr className="border-gray-500 w-fill border-2" />
             </div>
             <div className="flex gap-2">
-              <PoundOutlined className="flex justify-center items-center text-xl sm:text-2xl text-gray-400" />
+              <PoundSterling className="flex justify-center items-center text-xl sm:text-2xl text-gray-400" />
               <Input
                 type="number"
                 min={20}
@@ -212,12 +223,17 @@ const AppointmentDetails = ({
                 name={`appointmentFees--${order}`}
                 placeholder="Appointment Fees"
                 className="w-full rounded-sm my-2 text-center"
-                onChange={(e?: any, ..._args: any[]) =>
-                  setAppointmentDetails((appDet?: any, ..._args: any[]) => ({
-                    ...appDet,
-                    appointmentFees: e?.target?.value,
-                  }))
-                }
+                onChange={function (e?: any, ..._args: any[]) {
+                  setAppointmentDetails(function (
+                    appDet?: any,
+                    ..._args: any[]
+                  ) {
+                    return {
+                      ...appDet,
+                      appointmentFees: e?.target?.value,
+                    };
+                  });
+                }}
                 value={appointmentDetails?.appointmentFees}
               />
             </div>
@@ -233,21 +249,25 @@ const AppointmentDetails = ({
         </div>
         <div className="my-4 flex justify-center sm:flex-nowrap gap-4 sm:gap-6 border border-white bg-gray-200 p-2 rounded-lg shadow-md">
           <div
-            onClick={() =>
-              setAppointmentDetails((val?: any, ..._args: any[]) => ({
-                ...val,
-                appointmentType: "chat",
-              }))
-            }
+            onClick={function () {
+              setAppointmentDetails(function (val?: any, ..._args: any[]) {
+                return {
+                  ...val,
+                  appointmentType: "chat",
+                };
+              });
+            }}
             className="flex cursor-pointer justify-center items-center gap-2"
           >
             <input
-              onChange={(e?: any, ..._args: any[]) =>
-                setAppointmentDetails((appDet?: any, ..._args: any[]) => ({
-                  ...appDet,
-                  appointmentType: e.target.value,
-                }))
-              }
+              onChange={function (e?: any, ..._args: any[]) {
+                setAppointmentDetails(function (appDet?: any, ..._args: any[]) {
+                  return {
+                    ...appDet,
+                    appointmentType: e.target.value,
+                  };
+                });
+              }}
               name={`appointment_type_${order}`}
               type="radio"
               value={appointmentDetails.appointmentType}
@@ -261,12 +281,14 @@ const AppointmentDetails = ({
             </label>
           </div>
           <div
-            onClick={() =>
-              setAppointmentDetails((val?: any, ..._args: any[]) => ({
-                ...val,
-                appointmentType: "inClinic",
-              }))
-            }
+            onClick={function () {
+              setAppointmentDetails(function (val?: any, ..._args: any[]) {
+                return {
+                  ...val,
+                  appointmentType: "inClinic",
+                };
+              });
+            }}
             className="flex cursor-pointer justify-center items-center gap-2"
           >
             <input
@@ -276,12 +298,14 @@ const AppointmentDetails = ({
               checked={
                 appointmentDetails.appointmentType == "inClinic" ? true : false
               }
-              onChange={(e?: any, ..._args: any[]) =>
-                setAppointmentDetails((appDet?: any, ..._args: any[]) => ({
-                  ...appDet,
-                  appointmentType: e.target.value,
-                }))
-              }
+              onChange={function (e?: any, ..._args: any[]) {
+                setAppointmentDetails(function (appDet?: any, ..._args: any[]) {
+                  return {
+                    ...appDet,
+                    appointmentType: e.target.value,
+                  };
+                });
+              }}
               className="h-4 w-4 cursor-pointer bg-gray-500"
             />
             <label className="text-gray-700 cursor-pointer font-medium">
@@ -289,12 +313,14 @@ const AppointmentDetails = ({
             </label>
           </div>
           <div
-            onClick={() =>
-              setAppointmentDetails((val?: any, ..._args: any[]) => ({
-                ...val,
-                appointmentType: "videoCall",
-              }))
-            }
+            onClick={function () {
+              setAppointmentDetails(function (val?: any, ..._args: any[]) {
+                return {
+                  ...val,
+                  appointmentType: "videoCall",
+                };
+              });
+            }}
             className="flex cursor-pointer justify-center items-center gap-2"
           >
             <input
@@ -304,12 +330,14 @@ const AppointmentDetails = ({
               checked={
                 appointmentDetails.appointmentType == "videoCall" ? true : false
               }
-              onChange={(e?: any, ..._args: any[]) =>
-                setAppointmentDetails((appDet?: any, ..._args: any[]) => ({
-                  ...appDet,
-                  appointmentType: e.target.value,
-                }))
-              }
+              onChange={function (e?: any, ..._args: any[]) {
+                setAppointmentDetails(function (appDet?: any, ..._args: any[]) {
+                  return {
+                    ...appDet,
+                    appointmentType: e.target.value,
+                  };
+                });
+              }}
               className="h-4 w-4 cursor-pointer bg-gray-500"
             />
             <label className="text-gray-700 cursor-pointer font-medium">
@@ -320,8 +348,8 @@ const AppointmentDetails = ({
       </div>
     </div>
   );
-};
-const AppointmentForm = ({
+}
+function AppointmentForm({
   doctorData,
   selectedDate,
   messageApi,
@@ -333,7 +361,7 @@ const AppointmentForm = ({
   editAppointment,
   socket,
   timeZone,
-}: any) => {
+}: any) {
   const [appointmentDetails, setAppointmentDetails] = useState([]);
   const [isDone, setIsDone] = useState(false);
   const [appointmentElements, setAppointmentElements] = useState([
@@ -343,43 +371,45 @@ const AppointmentForm = ({
   const isAdjusted = chkTimeSlot([
     ...appointmentDetails,
     ...(isEdit
-      ? (tAppointments?.filter(
-          ({ appointmentId }: any) =>
-            appointmentId !== editAppointment?.appointmentId,
-        ) ?? [])
+      ? (tAppointments?.filter(function ({ appointmentId }: any) {
+          return appointmentId !== editAppointment?.appointmentId;
+        }) ?? [])
       : (tAppointments ?? [])),
   ]);
   const isUpToDate = chkUpToDate(appointmentDetails, selectedDate, timeZone);
   const isNotMatched = isEdit
-    ? appointmentDetails.some(
-        ({
-          slotTime,
-          appointmentDuration,
-          appointmentFees,
-          appointmentType,
-        }: any) =>
-          !(
-            editAppointment?.appointmentFees == appointmentFees &&
-            editAppointment?.appointmentType == appointmentType &&
-            editAppointment?.appointmentDuration == appointmentDuration &&
-            editAppointment?.slotTime == slotTime
-          ),
-      )
+    ? appointmentDetails.some(function ({
+        slotTime,
+        appointmentDuration,
+        appointmentFees,
+        appointmentType,
+      }: any) {
+        return !(
+          editAppointment?.appointmentFees == appointmentFees &&
+          editAppointment?.appointmentType == appointmentType &&
+          editAppointment?.appointmentDuration == appointmentDuration &&
+          editAppointment?.slotTime == slotTime
+        );
+      })
     : true;
-  useEffect(() => {
-    setIsDone(() => isFilled && isAdjusted && isUpToDate && isNotMatched);
-  }, [isFilled, isAdjusted, isUpToDate, isNotMatched]);
+  useEffect(
+    function () {
+      setIsDone(function () {
+        return isFilled && isAdjusted && isUpToDate && isNotMatched;
+      });
+    },
+    [isFilled, isAdjusted, isUpToDate, isNotMatched],
+  );
   return (
     <div className="p-2 sm:p-4">
-      <div
-        className="scroll--h scroll--v overflow-auto"
-        style={{
-          maxHeight: "560px",
-        }}
-      >
+      <div className="scroll--h scroll--v overflow-auto max-h-96">
         <div className="flex flex-wrap gap-2">
-          {appointmentElements.map((ele?: any, i?: any, ..._args: any[]) =>
-            React.cloneElement(ele, {
+          {appointmentElements.map(function (
+            ele?: any,
+            i?: any,
+            ..._args: any[]
+          ) {
+            return React.cloneElement(ele, {
               order: i + 1,
               key: i + 1,
               isEdit,
@@ -389,24 +419,26 @@ const AppointmentForm = ({
               setAppointDetails: setAppointmentDetails,
               schedule_date: selectedDate?.format("YYYY-MM-YY"),
               timeZone,
-            }),
-          )}
+            });
+          })}
         </div>
       </div>
       <div className="flex flex-wrap gap-2">
         {!isEdit && (
           <div className="text-left">
             <div
-              onClick={() =>
-                setAppointmentElements((val?: any, ..._args: any[]) => [
-                  ...val,
-                  <AppointmentDetails doctorData={doctorData} />,
-                ])
-              }
+              onClick={function () {
+                setAppointmentElements(function (val?: any, ..._args: any[]) {
+                  return [
+                    ...val,
+                    <AppointmentDetails doctorData={doctorData} />,
+                  ];
+                });
+              }}
               className="inline-block sm:w-fit text-center cursor-pointer hover:bg-gray-600 p-2 text-white font-medium bg-gray-500 rounded-lg"
             >
               <div className="flex gap-2">
-                <BiAddToQueue className="text-2xl" />
+                <Plus className="text-2xl" />
                 <span>other appointment</span>
               </div>
             </div>
@@ -443,7 +475,7 @@ const AppointmentForm = ({
           }
         >
           <Button
-            onClick={() => {
+            onClick={function () {
               if (isDone) {
                 scheduleAppointments(
                   selectedDate,
@@ -474,6 +506,6 @@ const AppointmentForm = ({
       </div>
     </div>
   );
-};
+}
 
 export default AppointmentForm;

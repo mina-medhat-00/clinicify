@@ -1,25 +1,24 @@
-import { Loading3QuartersOutlined } from "@ant-design/icons";
-import { BiMessageAltDetail } from "react-icons/bi";
-import { FaClinicMedical } from "react-icons/fa";
+import { Hospital, Loader2, MessageSquareText } from "lucide-react";
 
-const adjustTime = (date?: any, time?: any, timeZone?: any, ..._args: any[]) =>
-  new Date(`${date} ${time} ${timeZone}`).toLocaleTimeString("en", {
+function adjustTime(date?: any, time?: any, timeZone?: any, ..._args: any[]) {
+  return new Date(`${date} ${time} ${timeZone}`).toLocaleTimeString("en", {
     hour: "numeric",
     minute: "numeric",
   });
-const BookButton = ({
+}
+function BookButton({
   appointmentType,
   appointmentFees,
   appointmentState,
   slotTime,
   schedule_date,
   timeZone,
-}: any) => {
+}: any) {
   return (
     <div>
       <div className="flex flex-wrap justify-between gap-2">
         <div className={`flex gap-2 bg-gray-400/40 p-2 rounded-lg`}>
-          <Loading3QuartersOutlined className="flex items-center text-yellow-200 text-2xl" />
+          <Loader2 className="flex items-center text-yellow-200 text-2xl animate-spin" />
           ,
           <span className="text-white font-medium">
             {appointmentState?.toUpperCase()}
@@ -27,9 +26,9 @@ const BookButton = ({
         </div>
         <div className={`flex gap-2 bg-gray-600/40 p-2 rounded-lg`}>
           {appointmentType == "inClinic" ? (
-            <FaClinicMedical className="flex items-center text-gray-200 text-xl" />
+            <Hospital className="flex items-center text-gray-200 text-xl" />
           ) : appointmentType == "chat" ? (
-            <BiMessageAltDetail className="flex items-center text-gray-200 text-xl" />
+            <MessageSquareText className="flex items-center text-gray-200 text-xl" />
           ) : null}
           <span className="text-white font-medium">
             {appointmentType?.toUpperCase()}
@@ -47,6 +46,6 @@ const BookButton = ({
       </div>
     </div>
   );
-};
+}
 
 export default BookButton;

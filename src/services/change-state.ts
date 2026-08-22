@@ -3,7 +3,7 @@ import Cookies from "universal-cookie";
 import { apiUrl } from "@/utils/api";
 
 const cookies = new Cookies();
-const changeState = async (
+async function changeState(
   fetchUserData?: any,
   fetchDoctorsData?: any,
   messageApi?: any,
@@ -11,7 +11,7 @@ const changeState = async (
   type?: any,
   doctorId?: any,
   isUser?: any,
-) => {
+) {
   messageApi.open({
     key: 1,
     content: `${
@@ -49,7 +49,7 @@ const changeState = async (
         },
       },
     )
-    .then(() => {
+    .then(function () {
       messageApi.open({
         key: 1,
         content: `${isUser ? "user" : "doctor"} account ${
@@ -76,7 +76,7 @@ const changeState = async (
       );
       setIsLoading(false);
     })
-    .catch((err?: any, ..._args: any[]) => {
+    .catch(function (err?: any, ..._args: any[]) {
       setIsLoading(false);
       if (err?.response?.status == 401) {
         fetchUserData(true, cookies.get("accessToken"));
@@ -88,6 +88,6 @@ const changeState = async (
           duration: 3,
         });
     });
-};
+}
 
 export default changeState;

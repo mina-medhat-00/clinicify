@@ -4,15 +4,15 @@ import type { ProfileData } from "@/types";
 import { apiUrl } from "@/utils/api";
 
 const ProfileData = createContext<any>(null);
-const ProfileContextProvider = ({ children }: any) => {
+function ProfileContextProvider({ children }: any) {
   const [isLoading, setIsLoading] = useState(true);
   const [profileData, setProfileData] = useState<ProfileData>({});
   const [isError, setIsError] = useState(false);
-  const fetchProfileData = async (
+  async function fetchProfileData(
     { path, username }: any,
     notWaiting?: any,
     ..._args: any[]
-  ) => {
+  ) {
     if (!notWaiting) setIsLoading(true);
     setIsError(false);
     try {
@@ -27,7 +27,7 @@ const ProfileContextProvider = ({ children }: any) => {
       setIsLoading(false);
       if (err?.response?.status !== 400) setIsError(true);
     }
-  };
+  }
   return (
     <ProfileData.Provider
       value={{ isLoading, profileData, isError, fetchProfileData }}
@@ -35,8 +35,10 @@ const ProfileContextProvider = ({ children }: any) => {
       {children}
     </ProfileData.Provider>
   );
-};
+}
 
 export default ProfileContextProvider;
 
-export const useProfileContext = () => useContext(ProfileData);
+export function useProfileContext() {
+  return useContext(ProfileData);
+}

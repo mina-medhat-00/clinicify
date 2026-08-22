@@ -1,43 +1,42 @@
-import {
-  CheckCircleOutlined,
-  ClockCircleOutlined,
-  CloseCircleOutlined,
-  VideoCameraOutlined,
-} from "@ant-design/icons";
-import { Avatar, Empty, Rate } from "antd";
+import { Empty, Rate } from "@/components/ui/kit";
 import dayjs from "dayjs";
+import {
+  CheckCircle,
+  CircleX,
+  Clock,
+  Hospital,
+  Loader2,
+  MessageCircle,
+  Radio,
+  Video,
+} from "lucide-react";
 import { useEffect, useState } from "react";
-import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import { BiMessageAltDetail } from "react-icons/bi";
-import { FaClinicMedical } from "react-icons/fa";
-import { HiStatusOnline } from "react-icons/hi";
-import { ImCancelCircle } from "react-icons/im";
 import { Link } from "react-router-dom";
 import Cookies from "universal-cookie";
-import doctorPhoto from "@/assets/images/doctor-photo.png";
-import userPhoto from "@/assets/images/user-photo.png";
 import AppointmentStart from "@/components/appointment/appointment-start";
 import AppointmentTime from "@/components/appointment/appointment-time";
 import DoctorDetails from "@/components/appointment/doctor-details";
 import DatePicker from "@/components/doctor/date-picker";
 import Loader from "@/components/ui/loader";
 import PopUp from "@/components/ui/pop-up";
+import UserAvatar from "@/components/ui/user-avatar";
 import { useAppointmentContext } from "@/contexts/appointment-context";
 import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
 import cancelAppointment from "@/services/cancel-appointment";
 
-const chkEmpty = (
+function chkEmpty(
   appointmentState?: any,
   appointmentData?: any,
   ..._args: any[]
-) =>
-  appointmentState == "total"
+) {
+  return appointmentState == "total"
     ? false
-    : !appointmentData?.some(
-        ({ appointment_state }: any) => appointmentState == appointment_state,
-      );
-const getAppointmentVal = (
+    : !appointmentData?.some(function ({ appointment_state }: any) {
+        return appointmentState == appointment_state;
+      });
+}
+function getAppointmentVal(
   appointment_state?: any,
   valDone?: any,
   valBooked?: any,
@@ -45,8 +44,8 @@ const getAppointmentVal = (
   valFree?: any,
   valRunning?: any,
   valDefault?: any,
-) =>
-  appointment_state == "done"
+) {
+  return appointment_state == "done"
     ? valDone
     : appointment_state == "booked"
       ? valBooked
@@ -57,23 +56,29 @@ const getAppointmentVal = (
           : appointment_state == "running"
             ? valRunning
             : valDefault;
-const Appointments = ({ fromDash }: any) => {
+}
+function Appointments({ fromDash }: any) {
   const { messageApi, timeZone, socket } = useUtilsContext();
   const { userData: user, fetchUserData } = useUserContext();
-  const [selectedDate, setSelectedDate] = useState(() => ({
-    count: 0,
-    date: dayjs().format("YYYY-MM-DD"),
-  }));
+  const [selectedDate, setSelectedDate] = useState(function () {
+    return {
+      count: 0,
+      date: dayjs().format("YYYY-MM-DD"),
+    };
+  });
   const [appointmentState, setAppointmentState] = useState("total");
   const [showPop, setShowPop] = useState({ show: false, data: null });
   const [cancelAppoint, setCancelAppoint] = useState<any>(null);
   const { appointmentData, isLoading, fetchAppointmentData } =
     useAppointmentContext();
-  useEffect(() => {
-    fetchAppointmentData(true, new Cookies().get("accessToken"), null, null, {
-      date: selectedDate.date,
-    });
-  }, [selectedDate.date]);
+  useEffect(
+    function () {
+      fetchAppointmentData(true, new Cookies().get("accessToken"), null, null, {
+        date: selectedDate.date,
+      });
+    },
+    [selectedDate.date],
+  );
   const nickname = user?.nick_name;
   const uimg = user?.img_url;
   if (isLoading) return <Loader />;
@@ -95,12 +100,10 @@ const Appointments = ({ fromDash }: any) => {
             appointmentState == "total"
               ? "bg-yellow-500"
               : "hover:bg-gray-600 bg-gray-800"
-          } p-2 ${fromDash ? "lg:ml-2" : "sm:ml-2"}`}
-          style={{
-            borderRadius: "20px 20px 0px 0px",
-            border: "2px 2px 0px 2px solid white",
+          } p-2 ${fromDash ? "lg:ml-2" : "sm:ml-2"} rounded-t-2xl border-2 border-b-0 border-white`}
+          onClick={function () {
+            setAppointmentState("total");
           }}
-          onClick={() => setAppointmentState("total")}
         >
           Total Appointments
         </div>
@@ -109,12 +112,10 @@ const Appointments = ({ fromDash }: any) => {
             appointmentState == "booked"
               ? "bg-yellow-500"
               : "hover:bg-gray-600 bg-gray-800"
-          } p-2`}
-          style={{
-            borderRadius: "20px 20px 0px 0px",
-            border: "2px 2px 0px 2px solid white",
+          } p-2 rounded-t-2xl border-2 border-b-0 border-white`}
+          onClick={function () {
+            setAppointmentState("booked");
           }}
-          onClick={() => setAppointmentState("booked")}
         >
           Booked Appointments
         </div>
@@ -123,12 +124,10 @@ const Appointments = ({ fromDash }: any) => {
             appointmentState == "running"
               ? "bg-yellow-500"
               : "hover:bg-gray-600 bg-gray-800"
-          } p-2`}
-          style={{
-            borderRadius: "20px 20px 0px 0px",
-            border: "2px 2px 0px 2px solid white",
+          } p-2 rounded-t-2xl border-2 border-b-0 border-white`}
+          onClick={function () {
+            setAppointmentState("running");
           }}
-          onClick={() => setAppointmentState("running")}
         >
           Running Appointment
         </div>
@@ -138,31 +137,22 @@ const Appointments = ({ fromDash }: any) => {
               appointmentState == "free"
                 ? "bg-yellow-500"
                 : "hover:bg-gray-600 bg-gray-800"
-            } p-2`}
-            style={{
-              borderRadius: "20px 20px 0px 0px",
-              border: "2px 2px 0px 2px solid white",
+            } p-2 rounded-t-2xl border-2 border-b-0 border-white`}
+            onClick={function () {
+              setAppointmentState("free");
             }}
-            onClick={() => setAppointmentState("free")}
           >
             Free Appointments
           </div>
         )}
         <div
-          style={{
-            borderRadius: "20px 20px 0px 0px",
-            border: "2px 2px 0px 2px solid white",
-          }}
           className={`ml-4 mr-4 w-full ${
             fromDash
               ? "lg:ml-auto lg:mr-2 lg:w-fit"
               : "sm:ml-auto sm:mr-2 sm:w-fit"
-          } flex items-center justify-center bg-gray-600`}
+          } flex items-center justify-center bg-gray-600 rounded-t-2xl border-2 border-b-0 border-white`}
         >
-          <Avatar
-            src={uimg || user?.user_type == "doctor" ? doctorPhoto : userPhoto}
-            size="large"
-          />
+          <UserAvatar src={uimg} userType={user?.user_type} />
           <div className="text-white p-2 font-medium text-xl lg:text-2xl 2xl:text-4xl">
             {nickname}
           </div>
@@ -171,29 +161,29 @@ const Appointments = ({ fromDash }: any) => {
       {appointmentData ? (
         appointmentData?.length != 0 && !isEmpty ? (
           <div className="flex flex-wrap gap-2">
-            {appointmentData?.map(
-              (
-                {
-                  patientId,
-                  doctorId,
-                  appointment_state,
-                  appointment_id,
-                  appointment_type,
-                  appointment_duration,
-                  slot_time,
-                  doctorName,
-                  rate,
-                  username,
-                  dimgUrl,
-                  uimgUrl,
-                  schedule_date,
-                  fees,
-                  specialty,
-                  clinic_city,
-                  clinic_street,
-                }: any,
-                i?: any,
-              ) =>
+            {appointmentData?.map(function (
+              {
+                patientId,
+                doctorId,
+                appointment_state,
+                appointment_id,
+                appointment_type,
+                appointment_duration,
+                slot_time,
+                doctorName,
+                rate,
+                username,
+                dimgUrl,
+                uimgUrl,
+                schedule_date,
+                fees,
+                specialty,
+                clinic_city,
+                clinic_street,
+              }: any,
+              i?: any,
+            ) {
+              return (
                 (appointment_state == appointmentState ||
                   appointmentState == "total") && (
                   <div
@@ -204,10 +194,7 @@ const Appointments = ({ fromDash }: any) => {
                       className={`flex flex-wrap  gap-1.5 p-2 bg-gray-300 rounded-lg border border-white shadow-md`}
                     >
                       <div
-                        style={{
-                          flexGrow: 1,
-                        }}
-                        className={`appointment--details sm:grow-0 p-2 flex justify-between items-start
+                        className={`appointment--details grow p-2 flex justify-between items-start
                       border-2 border-white rounded-xl ${getAppointmentVal(
                         appointment_state,
                         "bg-green-700/50",
@@ -222,11 +209,11 @@ const Appointments = ({ fromDash }: any) => {
                             <div className="text-white bg-gray-700/50 rounded-lg w-fit p-1 font-medium flex gap-2 mb-2">
                               {getAppointmentVal(
                                 appointment_state,
-                                <CheckCircleOutlined className="flex items-center text-yellow-200 text-2xl" />,
-                                <ClockCircleOutlined className="flex items-center text-yellow-200 text-2xl" />,
-                                <CloseCircleOutlined className="flex items-center text-yellow-200 text-2xl" />,
-                                <AiOutlineLoading3Quarters className="flex items-center text-yellow-200 text-2xl" />,
-                                <HiStatusOnline className="flex items-center text-2xl" />,
+                                <CheckCircle className="flex items-center text-yellow-200 size-6" />,
+                                <Clock className="flex items-center text-yellow-200 size-6" />,
+                                <CircleX className="flex items-center text-yellow-200 size-6" />,
+                                <Loader2 className="flex items-center text-yellow-200 size-6 animate-spin" />,
+                                <Radio className="flex items-center size-6" />,
                               )}
                               <span className="text-yellow-300 font-semibold">
                                 Status:
@@ -237,11 +224,11 @@ const Appointments = ({ fromDash }: any) => {
                             </div>
                             <div className="text-white bg-gray-700/50 rounded-lg w-fit p-1 font-medium flex gap-2 mb-2">
                               {appointment_type == "inClinic" ? (
-                                <FaClinicMedical className="flex items-center text-gray-200 text-xl" />
+                                <Hospital className="flex items-center text-gray-200 size-5" />
                               ) : appointment_type == "chat" ? (
-                                <BiMessageAltDetail className="flex items-center text-gray-200 text-xl" />
+                                <MessageCircle className="flex items-center text-gray-200 size-5" />
                               ) : appointment_type == "videoCall" ? (
-                                <VideoCameraOutlined className="flex items-center text-gray-200 text-xl" />
+                                <Video className="flex items-center text-gray-200 size-5" />
                               ) : null}
                               <span className="font-medium">
                                 {appointment_type?.toUpperCase()}
@@ -249,22 +236,24 @@ const Appointments = ({ fromDash }: any) => {
                             </div>
                             {appointment_state == "booked" && !fromDash ? (
                               <div
-                                onClick={() => {
+                                onClick={function () {
                                   setCancelAppoint({
                                     selectedDate: dayjs(schedule_date),
                                     bookedSlot: slot_time,
                                     doctorId,
                                     appointmentId: appointment_id,
                                   });
-                                  setShowPop(() => ({
-                                    show: true,
-                                    data: {
-                                      selectedDate: dayjs(schedule_date),
-                                      bookedSlot: slot_time,
-                                      doctorId,
-                                      appointmentId: appointment_id,
-                                    },
-                                  }));
+                                  setShowPop(function () {
+                                    return {
+                                      show: true,
+                                      data: {
+                                        selectedDate: dayjs(schedule_date),
+                                        bookedSlot: slot_time,
+                                        doctorId,
+                                        appointmentId: appointment_id,
+                                      },
+                                    };
+                                  });
                                 }}
                                 className="cursor-pointer hover:bg-red-400/80 bg-red-400/50 rounded shadow-lg p-2"
                               >
@@ -272,7 +261,7 @@ const Appointments = ({ fromDash }: any) => {
                                   <span className="text-white font-medium">
                                     Cancel
                                   </span>
-                                  <ImCancelCircle className="text-white w-4 h-4" />
+                                  <CircleX className="text-white size-4" />
                                 </div>
                               </div>
                             ) : null}
@@ -319,23 +308,16 @@ const Appointments = ({ fromDash }: any) => {
                             />
                           )}
                           <Link
-                            style={{
-                              flexGrow: 4,
-                            }}
                             to={`/profile/${fromDash ? patientId : doctorId}`}
                             className="personal--details hover:shadow-md hover:bg-gray-300 p-2 
-                        border-2 border-white rounded-xl bg-gray-200"
+                        border-2 border-white rounded-xl bg-gray-200 grow"
                           >
                             <div className="flex gap-3 flex-wrap justify-between md:justify-evenly items-center">
                               <div className="doctor--details">
                                 <div className="personal--image flex gap-1">
-                                  <Avatar
-                                    src={
-                                      fromDash
-                                        ? uimgUrl || userPhoto
-                                        : dimgUrl || doctorPhoto
-                                    }
-                                    size="large"
+                                  <UserAvatar
+                                    src={fromDash ? uimgUrl : dimgUrl}
+                                    userType={fromDash ? "user" : "doctor"}
                                   />
                                   <span className="text-gray-700 font-medium  sm:text-lg xl:text-xl">
                                     {fromDash
@@ -380,8 +362,9 @@ const Appointments = ({ fromDash }: any) => {
                       )}
                     </div>
                   </div>
-                ),
-            )}
+                )
+              );
+            })}
           </div>
         ) : (
           <Empty
@@ -411,12 +394,15 @@ const Appointments = ({ fromDash }: any) => {
       {
         <PopUp
           show={showPop?.show}
-          handleClose={() => {
-            setShowPop((val) => ({ data: val?.data, show: false }));
-            setTimeout(
-              () => setShowPop(() => ({ show: false, data: null })),
-              400,
-            );
+          handleClose={function () {
+            setShowPop(function (val) {
+              return { data: val?.data, show: false };
+            });
+            setTimeout(function () {
+              setShowPop(function () {
+                return { show: false, data: null };
+              });
+            }, 400);
           }}
           closeColor={"text-red-800/80 hover:text-red-800"}
         >
@@ -426,7 +412,7 @@ const Appointments = ({ fromDash }: any) => {
           </div>
           <div className="flex justify-center gap-2 p-2 mt-4">
             <div
-              onClick={() => {
+              onClick={function () {
                 cancelAppointment(
                   cancelAppoint?.selectedDate,
                   cancelAppoint?.bookedSlot,
@@ -447,12 +433,15 @@ const Appointments = ({ fromDash }: any) => {
               Apply
             </div>
             <div
-              onClick={() => {
-                setShowPop((val) => ({ ...val, show: false }));
-                setTimeout(
-                  () => setShowPop((val) => ({ ...val, data: null })),
-                  400,
-                );
+              onClick={function () {
+                setShowPop(function (val) {
+                  return { ...val, show: false };
+                });
+                setTimeout(function () {
+                  setShowPop(function (val) {
+                    return { ...val, data: null };
+                  });
+                }, 400);
               }}
               className="cursor-pointer text-center bg-blue-400 p-2 text-white font-medium rounded-lg shadow-sm"
             >
@@ -463,6 +452,6 @@ const Appointments = ({ fromDash }: any) => {
       }
     </div>
   );
-};
+}
 
 export default Appointments;

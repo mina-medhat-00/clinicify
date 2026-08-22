@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Post from "@/components/post/post";
 import PopUp from "@/components/ui/pop-up";
 
-const PostWrapper = ({
+function PostWrapper({
   setPosts,
   showPost,
   setShowPost,
@@ -20,23 +20,34 @@ const PostWrapper = ({
   issuedTime,
   postId,
   imgUrl,
-}: any) => {
+}: any) {
   const [showPopUp, setShowPopUp] = useState(false);
   const [len, setLen] = useState(numComments || 0);
   const [makeComment, setMakeComment] = useState(null);
-  useEffect(() => {
-    if (!showPost) setTimeout(() => setShowPopUp(false), 400);
-    else setShowPopUp(showPost);
-  }, [showPost]);
-  useEffect(() => {
-    setLen(numComments);
-  }, [numComments]);
+  useEffect(
+    function () {
+      if (!showPost)
+        setTimeout(function () {
+          setShowPopUp(false);
+        }, 400);
+      else setShowPopUp(showPost);
+    },
+    [showPost],
+  );
+  useEffect(
+    function () {
+      setLen(numComments);
+    },
+    [numComments],
+  );
   return showPopUp == postId ? (
     <PopUp
       customWidth={"w-full bottom-2 md:w-3/4"}
       mt={"10px"}
       show={showPost}
-      handleClose={() => setShowPost(null)}
+      handleClose={function () {
+        setShowPost(null);
+      }}
     >
       {
         <Post
@@ -89,6 +100,6 @@ const PostWrapper = ({
       imgUrl={imgUrl}
     />
   );
-};
+}
 
 export default PostWrapper;

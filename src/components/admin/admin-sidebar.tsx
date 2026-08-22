@@ -1,14 +1,15 @@
-import { DashboardOutlined, HomeOutlined } from "@ant-design/icons";
-import { FaUserLock } from "react-icons/fa";
-import { FiUserCheck } from "react-icons/fi";
-import { GiDoctorFace } from "react-icons/gi";
 import {
-  MdMessage,
-  MdOutlineCancel,
-  MdOutlineManageAccounts,
-  MdPostAdd,
-  MdReportProblem,
-} from "react-icons/md";
+  Flag,
+  Home,
+  LayoutDashboard,
+  Mail,
+  MessageCircleQuestion,
+  Shield,
+  Stethoscope,
+  UserCheck,
+  UserCog,
+  X,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 
 const links = [
@@ -19,31 +20,31 @@ const links = [
         link: "profile",
         key: "profile",
         value: "My Profile",
-        icon: <FaUserLock />,
+        icon: <Shield />,
       },
       {
         link: "users",
         key: "user",
         value: "Users Management",
-        icon: <FiUserCheck />,
+        icon: <UserCheck />,
       },
       {
         link: "doctors",
         key: "doctor",
         value: "Doctors Management",
-        icon: <MdOutlineManageAccounts />,
+        icon: <UserCog />,
       },
       {
         link: "chat",
         key: "chat",
         value: "Chatting",
-        icon: <MdMessage />,
+        icon: <Mail />,
       },
       {
         link: "reports",
         key: "reports",
         value: "Reports",
-        icon: <MdReportProblem />,
+        icon: <Flag />,
       },
     ],
   },
@@ -54,36 +55,36 @@ const links = [
         link: "",
         key: "home",
         value: "Home",
-        icon: <HomeOutlined />,
+        icon: <Home />,
       },
       {
         link: "doctors",
         key: "doctors",
         value: "Doctors",
-        icon: <GiDoctorFace />,
+        icon: <Stethoscope />,
       },
       {
         link: "posts",
         key: "posts",
         value: "Questions",
-        icon: <MdPostAdd />,
+        icon: <MessageCircleQuestion />,
       },
     ],
   },
 ];
-const Sidebar = ({
+function Sidebar({
   activeMenu,
   setActiveMenu,
   isMobile,
   setDashType,
   dashType,
-}: any) => {
-  const handleCloseSideBar = (value?: any, ..._args: any[]) => {
+}: any) {
+  function handleCloseSideBar(value?: any, ..._args: any[]) {
     if (value) setDashType(value);
     if (activeMenu !== undefined && isMobile) {
       setActiveMenu(false);
     }
-  };
+  }
 
   const activeLink =
     "flex items-center gap-5 px-4 pt-3 pb-2.5 rounded-lg  text-white bg-blue-700  text-md m-2";
@@ -96,59 +97,73 @@ const Sidebar = ({
         <>
           <div className="flex justify-between items-center">
             <div
-              onClick={() => handleCloseSideBar("profile")}
+              onClick={function () {
+                handleCloseSideBar("profile");
+              }}
               className="transition-all duration-500 cursor-pointer hover:text-blue-500 items-center gap-3 ml-3 mt-4 flex text-xl font-extrabold tracking-tight dark:text-white text-slate-900"
             >
-              <DashboardOutlined />
+              <LayoutDashboard />
               <span>Admin</span>
             </div>
             <button
               type="button"
-              onClick={() => setActiveMenu(!activeMenu)}
-              className="text-xl text-gray-700 rounded-full p-3 hover:bg-light-gray mt-4 block md:hidden"
+              onClick={function () {
+                setActiveMenu(!activeMenu);
+              }}
+              className="text-xl text-gray-700 rounded-full p-3 hover:bg-gray-200 mt-4 block md:hidden"
             >
-              <MdOutlineCancel />
+              <X />
             </button>
           </div>
           <div className="mt-10 ">
-            {links.map((item?: any, ..._args: any[]) => (
-              <div key={item.title}>
-                <p className="text-gray-400 dark:text-gray-400 m-3 mt-4 uppercase">
-                  {item.title}
-                </p>
-                {item.title == "Dashboard"
-                  ? item.links.map((link?: any, ..._args: any[]) => (
-                      <button
-                        key={link.key}
-                        onClick={() => handleCloseSideBar(link.key)}
-                        className={
-                          link.key == dashType ? activeLink : normalLink
-                        }
-                      >
-                        {link.icon}
-                        <span className="capitalize">{link.value}</span>
-                      </button>
-                    ))
-                  : item.links.map((link?: any, ..._args: any[]) => (
-                      <Link
-                        to={`/${link.link}`}
-                        key={link.key}
-                        onClick={() => handleCloseSideBar()}
-                        className={
-                          link.key == dashType ? activeLink : normalLink
-                        }
-                      >
-                        {link.icon}
-                        <span className="capitalize ">{link.value}</span>
-                      </Link>
-                    ))}
-              </div>
-            ))}
+            {links.map(function (item?: any, ..._args: any[]) {
+              return (
+                <div key={item.title}>
+                  <p className="text-gray-400 dark:text-gray-400 m-3 mt-4 uppercase">
+                    {item.title}
+                  </p>
+                  {item.title == "Dashboard"
+                    ? item.links.map(function (link?: any, ..._args: any[]) {
+                        return (
+                          <button
+                            key={link.key}
+                            onClick={function () {
+                              handleCloseSideBar(link.key);
+                            }}
+                            className={
+                              link.key == dashType ? activeLink : normalLink
+                            }
+                          >
+                            {link.icon}
+                            <span className="capitalize">{link.value}</span>
+                          </button>
+                        );
+                      })
+                    : item.links.map(function (link?: any, ..._args: any[]) {
+                        return (
+                          <Link
+                            to={`/${link.link}`}
+                            key={link.key}
+                            onClick={function () {
+                              handleCloseSideBar();
+                            }}
+                            className={
+                              link.key == dashType ? activeLink : normalLink
+                            }
+                          >
+                            {link.icon}
+                            <span className="capitalize ">{link.value}</span>
+                          </Link>
+                        );
+                      })}
+                </div>
+              );
+            })}
           </div>
         </>
       )}
     </div>
   );
-};
+}
 
 export default Sidebar;

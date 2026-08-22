@@ -2,12 +2,13 @@ import { useEffect } from "react";
 import Cookies from "universal-cookie";
 import CountdownTimer from "@/components/appointment/appointment-countdown-timer";
 
-const adjustTime = (date?: any, time?: any, timeZone?: any, ..._args: any[]) =>
-  new Date(`${date} ${time} ${timeZone}`).toLocaleTimeString("en", {
+function adjustTime(date?: any, time?: any, timeZone?: any, ..._args: any[]) {
+  return new Date(`${date} ${time} ${timeZone}`).toLocaleTimeString("en", {
     hour: "numeric",
     minute: "numeric",
   });
-const AppointmentTime = ({
+}
+function AppointmentTime({
   appointmentId,
   appointment_state,
   schedule_date,
@@ -20,69 +21,76 @@ const AppointmentTime = ({
   appointment_duration,
   timeZone,
   socket,
-}: any) => {
-  useEffect(() => {
-    const timeStamp =
-      new Date(schedule_date + " " + slot_time + timeZone).getTime() -
-      new Date().getTime();
-    if (appointment_state == "booked" && !isNaN(timeStamp)) {
-      const timeId = setTimeout(
-        () => {
-          fetchAppointmentData(
-            true,
-            new Cookies().get("accessToken"),
-            true,
-            {
-              doctorId,
-              patientId,
-              appointmentId,
-            },
-            {
-              date,
-            },
-            true,
-          );
-        },
-        timeStamp < 0 ? 0 : timeStamp,
-      );
-      return () => clearTimeout(timeId);
-    } else if (appointment_state == "running") {
-      const time_stamp = timeStamp + appointment_duration;
-      if (!isNaN(timeStamp)) {
-        socket?.emit("update_appointments", {
-          date: schedule_date,
-          doctorId,
-          appointmentId,
-        });
+}: any) {
+  useEffect(
+    function () {
+      const timeStamp =
+        new Date(schedule_date + " " + slot_time + timeZone).getTime() -
+        new Date().getTime();
+      if (appointment_state == "booked" && !isNaN(timeStamp)) {
         const timeId = setTimeout(
-          () => {
-            if (
-              new Date(schedule_date + " " + slot_time + timeZone).getTime() +
-                appointment_duration <=
-              new Date().getTime()
-            ) {
-              fetchAppointmentData(
-                true,
-                new Cookies().get("accessToken"),
-                true,
-                {
-                  doctorId,
-                  patientId,
-                  appointmentId,
-                },
-                {
-                  date,
-                },
-                true,
-              );
-            }
-            return () => clearTimeout(timeId);
+          function () {
+            fetchAppointmentData(
+              true,
+              new Cookies().get("accessToken"),
+              true,
+              {
+                doctorId,
+                patientId,
+                appointmentId,
+              },
+              {
+                date,
+              },
+              true,
+            );
           },
-          time_stamp < 0 ? 0 : time_stamp,
+          timeStamp < 0 ? 0 : timeStamp,
         );
+        return function () {
+          clearTimeout(timeId);
+        };
+      } else if (appointment_state == "running") {
+        const time_stamp = timeStamp + appointment_duration;
+        if (!isNaN(timeStamp)) {
+          socket?.emit("update_appointments", {
+            date: schedule_date,
+            doctorId,
+            appointmentId,
+          });
+          const timeId = setTimeout(
+            function () {
+              if (
+                new Date(schedule_date + " " + slot_time + timeZone).getTime() +
+                  appointment_duration <=
+                new Date().getTime()
+              ) {
+                fetchAppointmentData(
+                  true,
+                  new Cookies().get("accessToken"),
+                  true,
+                  {
+                    doctorId,
+                    patientId,
+                    appointmentId,
+                  },
+                  {
+                    date,
+                  },
+                  true,
+                );
+              }
+              return function () {
+                clearTimeout(timeId);
+              };
+            },
+            time_stamp < 0 ? 0 : time_stamp,
+          );
+        }
       }
-    }
-  }, [schedule_date, slot_time, appointment_state]);
+    },
+    [schedule_date, slot_time, appointment_state],
+  );
   return (
     <div className="flex gap-4 items-center">
       <div className="flex flex-wrap grow gap-2 justify-center items-center">
@@ -140,6 +148,6 @@ const AppointmentTime = ({
       </div>
     </div>
   );
-};
+}
 
 export default AppointmentTime;

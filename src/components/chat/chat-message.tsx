@@ -1,17 +1,14 @@
-const Message = ({ isMobile, me, content, issued_time }: any) => {
+function Message({ isMobile, me, content, issued_time }: any) {
   return (
     <div className={me ? "pl-2" : "pr-2"}>
       <div
-        style={{
-          maxWidth: "65%",
-          minWidth: isMobile ? "50%" : "30%",
-        }}
-        className={`flex relative gap-3 flex-col w-fit rounded-bl-lg rounded-tr-lg mt-2 font-medium
-         ${
-           me
-             ? "rounded-tl-lg ml-auto rounded-lg text-white bg-blue-500"
-             : "rounded-br-lg bg-white"
-         } p-2`}
+        className={`flex relative gap-3 flex-col w-fit rounded-bl-lg rounded-tr-lg mt-2 font-medium max-w-xl ${
+          isMobile ? "min-w-48" : "min-w-32"
+        } ${
+          me
+            ? "rounded-tl-lg ml-auto rounded-lg text-white bg-blue-500"
+            : "rounded-br-lg bg-white"
+        } p-2`}
       >
         <span className={`${me ? "block" : ""}`}>{content}</span>
         <span
@@ -22,19 +19,13 @@ const Message = ({ isMobile, me, content, issued_time }: any) => {
           {issued_time}
         </span>
         <div
-          className={me ? "border-t-white" : "border-t-blue-500"}
-          style={{
-            position: "absolute",
-            top: me ? 0 : 0,
-            left: me ? "-13px" : "calc(100% - 13px)",
-            borderTop: me ? "13px solid" : "13px solid",
-            borderLeft: "13px solid transparent",
-            borderRight: "13px solid transparent",
-          }}
+          className={`absolute top-0 border-8 border-x-transparent border-t-8 ${
+            me ? "-left-3 border-t-white" : "-right-3 border-t-blue-500"
+          }`}
         ></div>
       </div>
     </div>
   );
-};
+}
 
 export default Message;

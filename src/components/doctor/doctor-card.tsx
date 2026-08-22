@@ -1,11 +1,12 @@
-import { MessageOutlined, StopOutlined } from "@ant-design/icons";
-import { Card, Image, Popover, Rate } from "antd";
+import { Card, Popover, Rate } from "@/components/ui/kit";
+import { Ban, MessageCircle } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import BookCard from "@/components/doctor/book-card";
+import UserAvatar from "@/components/ui/user-avatar";
 import { SlotsContextProvider } from "@/contexts";
 
-const DoctorCard = ({
+function DoctorCard({
   profileImage,
   rate,
   specialty,
@@ -21,7 +22,7 @@ const DoctorCard = ({
   street,
   phone,
   isLast,
-}: any) => {
+}: any) {
   const navigate = useNavigate();
   const [isPayment, setIsPayment] = useState<any>(null);
   const cardDetails = [
@@ -64,7 +65,7 @@ const DoctorCard = ({
   ];
   return (
     <div
-      className={`${isLast ? "" : "grow xl:w-1/3"} !cursor-default my-2 sm:m-2`}
+      className={`${isLast ? "" : "grow xl:w-1/3"} cursor-default my-2 sm:m-2`}
     >
       <Card
         className="flex flex-col rounded p-2 h-full"
@@ -77,26 +78,20 @@ const DoctorCard = ({
                 : `/profile/${username}`
             }
             className="w-full  text-gray-700"
-            onClick={() => window.localStorage.setItem("dashType", "profile")}
+            onClick={function () {
+              window.localStorage.setItem("dashType", "profile");
+            }}
           >
             <div className="flex gap-3 items-center">
-              <div
-                style={{
-                  fontSize: "20px",
-                }}
-                className="font-serif grow text-center whitespace-nowrap"
-              >
+              <div className="grow text-center whitespace-nowrap text-xl">
                 {"Dr. "}
                 {doctorName || "Doctor"}
               </div>
             </div>
           </Link>
         }
-        styles={{
-          body: {
-            padding: "5px",
-            flexGrow: 1,
-          },
+        classNames={{
+          body: "p-1 grow",
         }}
         actions={[]}
       >
@@ -112,18 +107,15 @@ const DoctorCard = ({
           </SlotsContextProvider>
           <div className="doctor--details mt-2 flex flex-col justify-between gap-2 grow">
             <div className="doctor--image text-center">
-              <Image
-                style={{
-                  width: "200px",
-                  height: "200px",
-                  borderRadius: "50%",
-                  userSelect: "none",
-                }}
-                onClick={(e?: any, ..._args: any[]) => {
+              <UserAvatar
+                className="select-none"
+                size={200}
+                src={profileImage || undefined}
+                userType="doctor"
+                onClick={function (e?: any, ..._args: any[]) {
                   e.stopPropagation();
                   e.preventDefault();
                 }}
-                src={profileImage}
               />
               <div className="text-center">
                 <Rate value={rate} disabled />
@@ -131,25 +123,33 @@ const DoctorCard = ({
               </div>
             </div>
             <div className="grow flex flex-col justify-center">
-              {cardDetails?.map(({ data }: any, i?: any, ..._args: any[]) => (
-                <div key={i + 1}>
-                  {i !== 0 ? (
-                    <hr className="border m-2 border-gray-300 shadow-lg" />
-                  ) : null}
-                  <div className="flex flex-wrap justify-between gap-2 font-bold font-mono">
-                    {data?.map(({ label, value }: any) => (
-                      <div key={label}>
-                        <span>{label}: </span>
-                        {value ? (
-                          <span className="text-blue-800">{value}</span>
-                        ) : (
-                          <StopOutlined />
-                        )}
-                      </div>
-                    ))}
+              {cardDetails?.map(function (
+                { data }: any,
+                i?: any,
+                ..._args: any[]
+              ) {
+                return (
+                  <div key={i + 1}>
+                    {i !== 0 ? (
+                      <hr className="border m-2 border-gray-300 shadow-lg" />
+                    ) : null}
+                    <div className="flex flex-wrap justify-between gap-2 font-bold">
+                      {data?.map(function ({ label, value }: any) {
+                        return (
+                          <div key={label}>
+                            <span>{label}: </span>
+                            {value ? (
+                              <span className="text-blue-800">{value}</span>
+                            ) : (
+                              <Ban />
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
             <Popover
               trigger="click"
@@ -164,11 +164,8 @@ const DoctorCard = ({
               <div
                 className="flex justify-center items-center hover:bg-yellow-700 bg-yellow-500 
               hover:text-black gap-2
-              rounded  w-full text-gray-700"
-                style={{
-                  height: "35px",
-                }}
-                onClick={(e?: any, ..._args: any[]) => {
+              rounded w-full text-gray-700 h-9"
+                onClick={function (e?: any, ..._args: any[]) {
                   e.stopPropagation();
                   e.preventDefault();
                   if (doctorId & user?.user_id) {
@@ -177,7 +174,7 @@ const DoctorCard = ({
                   }
                 }}
               >
-                <MessageOutlined
+                <MessageCircle
                   className="hover:text-black
             rounded py-2 text-gray-700"
                 />
@@ -189,6 +186,6 @@ const DoctorCard = ({
       </Card>
     </div>
   );
-};
+}
 
 export default DoctorCard;

@@ -1,38 +1,33 @@
-import {
-  Avatar,
-  Empty,
-  Switch,
-  Tag,
-} from "antd";
+import { Empty, Switch, Tag } from "@/components/ui/kit";
 import { useEffect, useState } from "react";
 import Cookies from "universal-cookie";
-import doctorPhoto from "@/assets/images/doctor-photo.png";
-import userPhoto from "@/assets/images/user-photo.png";
 import Loader from "@/components/ui/loader";
+import UserAvatar from "@/components/ui/user-avatar";
 import { useChatContext } from "@/contexts/chat-context";
 import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
 import changeState from "@/services/change-state";
 
-const ChatRestrict = ({ userid }: any) => {
+function ChatRestrict({ userid }: any) {
   const { fetchChatData, chatData, isLoading } = useChatContext();
   const [, setIsLoading] = useState<any>(null);
   const { messageApi } = useUtilsContext();
   const { fetchUserData } = useUserContext();
-  useEffect(() => {
+  useEffect(function () {
     fetchChatData(true, new Cookies().get("accessToken"), { userid });
   }, []);
   return isLoading ? (
     <Loader />
   ) : chatData?.length ? (
-    <div
-      className="overflow-auto mt-2 p-2 flex flex-col gap-2 text-white scroll--v scroll--h"
-      style={{
-        maxHeight: "55vh",
-      }}
-    >
-      {chatData?.map(
-        ({ user_id, img_url, nick_name, user_type, is_open }: any) => (
+    <div className="overflow-auto mt-2 p-2 flex flex-col gap-2 text-white scroll--v scroll--h max-h-96">
+      {chatData?.map(function ({
+        user_id,
+        img_url,
+        nick_name,
+        user_type,
+        is_open,
+      }: any) {
+        return (
           <div
             key={user_id}
             className={`${
@@ -46,11 +41,10 @@ const ChatRestrict = ({ userid }: any) => {
                 } border-r-2 border-gray-100 
             rounded-bl-md rounded-tl-md shadow-md py-1 pr-3 items-center`}
               >
-                <Avatar
+                <UserAvatar
                   className="ml-2"
-                  src={
-                    img_url || (user_type == "doctor" ? doctorPhoto : userPhoto)
-                  }
+                  src={img_url}
+                  userType={user_type}
                 />
                 <div className="font-medium">{nick_name}</div>
               </div>
@@ -63,13 +57,8 @@ const ChatRestrict = ({ userid }: any) => {
                 checked={is_open}
                 className={`${
                   !is_open ? "bg-blue-400" : "bg-red-400"
-                } shadow-lg`}
-                style={{
-                  boxSizing: "content-box",
-                  background: "white",
-                  border: "solid 0.25px white",
-                }}
-                onChange={(is_open?: any, ..._args: any[]) => {
+                } shadow-lg box-content !bg-white border-[0.25px] border-solid border-white`}
+                onChange={function (is_open?: any, ..._args: any[]) {
                   changeState(
                     fetchUserData,
                     fetchChatData,
@@ -93,8 +82,8 @@ const ChatRestrict = ({ userid }: any) => {
               />
             </div>
           </div>
-        ),
-      )}
+        );
+      })}
     </div>
   ) : (
     <Empty
@@ -104,6 +93,6 @@ const ChatRestrict = ({ userid }: any) => {
       }
     />
   );
-};
+}
 
 export default ChatRestrict;

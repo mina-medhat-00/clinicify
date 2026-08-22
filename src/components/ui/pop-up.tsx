@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { RiDeleteBack2Line } from "react-icons/ri";
+import { X } from "lucide-react";
 
-const PopUp = ({
+function PopUp({
   children,
   show,
   mt,
@@ -9,32 +9,36 @@ const PopUp = ({
   customWidth,
   closeColor,
   customStyle = {},
-}: any) => {
+}: any) {
   const [showPop, setShowPop] = useState(false);
-  useEffect(() => {
-    let timeId;
-    if (!show) {
-      timeId = setTimeout(() => setShowPop(show), 500);
-    } else setShowPop(show);
-    return () => clearTimeout(timeId);
-  }, [show]);
-  useEffect(() => {
-    if (!showPop) document.body.style.overflow = "";
-    else document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [showPop]);
+  useEffect(
+    function () {
+      let timeId;
+      if (!show) {
+        timeId = setTimeout(function () {
+          setShowPop(show);
+        }, 500);
+      } else setShowPop(show);
+      return function () {
+        clearTimeout(timeId);
+      };
+    },
+    [show],
+  );
+  useEffect(
+    function () {
+      if (!showPop) document.body.style.overflow = "";
+      else document.body.style.overflow = "hidden";
+      return function () {
+        document.body.style.overflow = "";
+      };
+    },
+    [showPop],
+  );
   return (
     <>
       {(showPop ? showPop : show) && (
-        <div
-          style={{
-            backdropFilter: "blur(20px)",
-            zIndex: 80,
-          }}
-          className={`mask--booked transition-all duration-500 fixed flex items-start justify-center top-0 left-0 h-full w-full`}
-        >
+        <div className="mask--booked z-50 backdrop-blur-xl transition-all duration-500 fixed flex items-start justify-center top-0 left-0 h-full w-full">
           <div
             style={{
               marginTop: mt ? mt : "30vh",
@@ -47,11 +51,11 @@ const PopUp = ({
               showPop ? (!show ? "-left-full" : "left-0") : "-left-full"
             } p-4 rounded-lg shadow-lg`}
           >
-            <RiDeleteBack2Line
+            <X
               onClick={handleClose}
               className={`flex shrink-0 cursor-pointer ${
                 closeColor ? closeColor : "text-gray-700 hover:text-gray-800"
-              } justify-center ml-auto my-2 items-center text-4xl`}
+              } justify-center ml-auto my-2 items-center size-9`}
             />
             {children}
           </div>
@@ -59,6 +63,6 @@ const PopUp = ({
       )}
     </>
   );
-};
+}
 
 export default PopUp;

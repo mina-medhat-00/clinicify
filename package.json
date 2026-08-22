@@ -11,11 +11,8 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@ant-design/cssinjs": "^2.1.2",
-    "@ant-design/icons": "^6.3.2",
     "@stripe/react-stripe-js": "^6.8.1",
     "@stripe/stripe-js": "^9.13.0",
-    "antd": "^6.6.0",
     "axios": "^1.19.0",
     "country-state-city": "^3.2.1",
     "currency-codes": "^2.2.0",
@@ -23,15 +20,14 @@
     "dayjs": "^1.11.21",
     "emoji-picker-react": "^4.19.1",
     "jwt-decode": "^4.0.0",
+    "lucide-react": "^1.33.0",
     "openvidu-browser": "^2.32.2",
     "react": "^19.2.8",
     "react-countup": "^6.5.3",
     "react-dom": "^19.2.8",
-    "react-icons": "^5.7.0",
     "react-loading-skeleton": "^3.5.0",
     "react-responsive": "^10.0.1",
     "react-router-dom": "^7.18.2",
-    "react-spinners": "^0.17.0",
     "socket.io-client": "^4.8.3",
     "universal-cookie": "^8.1.2"
   },
@@ -59,11 +55,7 @@
     "vite": "^8.2.0"
   },
   "lint-staged": {
-    "*.{ts,tsx}": [
-      "prettier --write",
-      "eslint --fix"
-    ],
-    "*.{css,json,md,html}": [
+    "*.{ts,tsx,css,json}": [
       "prettier --write"
     ]
   }

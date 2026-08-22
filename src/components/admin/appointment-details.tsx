@@ -1,7 +1,7 @@
-import { Empty } from "antd";
+import { Empty } from "@/components/ui/kit";
 import dayjs from "dayjs";
+import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { BiLoader } from "react-icons/bi";
 import DatePicker from "@/components/doctor/date-picker";
 import AppointmentCard from "@/components/schedule/appointment-card";
 import PopUp from "@/components/ui/pop-up";
@@ -11,7 +11,7 @@ import { useUtilsContext } from "@/contexts/utils-context";
 import cancelAppointment from "@/services/cancel-appointment";
 import scheduleAppointments from "@/services/schedule-appointments";
 
-const AppointmentDetails = ({ doctorId }: any) => {
+function AppointmentDetails({ doctorId }: any) {
   const { timeZone, messageApi, socket } = useUtilsContext();
   const { fetchUserData } = useUserContext();
   const [selectedDate, setSelectedDate] = useState({
@@ -21,31 +21,34 @@ const AppointmentDetails = ({ doctorId }: any) => {
   const { slotsData, isLoading, fetchSlotsData } = useSlotsContext();
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [showPop, setShowPop] = useState<any>(null);
-  useEffect(() => {
+  useEffect(function () {
     socket.emit("join_doctor", doctorId);
   }, []);
-  useEffect(() => {
-    const getSlots = (data?: any, ..._args: any[]) => {
-      if (selectedDate?.date == data?.date)
-        fetchSlotsData(
-          {
-            doctorId,
-            date: selectedDate?.date,
-          },
-          true,
-        );
-    };
-    if (selectedDate?.date) {
-      socket.on("update_slots", getSlots);
-      fetchSlotsData({
-        doctorId,
-        date: selectedDate?.date,
-      });
-    }
-    return () => {
-      socket?.off("all_slots", getSlots);
-    };
-  }, [selectedDate]);
+  useEffect(
+    function () {
+      function getSlots(data?: any, ..._args: any[]) {
+        if (selectedDate?.date == data?.date)
+          fetchSlotsData(
+            {
+              doctorId,
+              date: selectedDate?.date,
+            },
+            true,
+          );
+      }
+      if (selectedDate?.date) {
+        socket.on("update_slots", getSlots);
+        fetchSlotsData({
+          doctorId,
+          date: selectedDate?.date,
+        });
+      }
+      return function () {
+        socket?.off("all_slots", getSlots);
+      };
+    },
+    [selectedDate],
+  );
   return (
     <>
       <DatePicker
@@ -57,7 +60,7 @@ const AppointmentDetails = ({ doctorId }: any) => {
         <div className="flex gap-2 justify-evenly flex-wrap">
           <PopUp
             show={showPop}
-            handleClose={() => {
+            handleClose={function () {
               setShowPop(null);
               setSelectedAppointment(null);
             }}
@@ -68,7 +71,7 @@ const AppointmentDetails = ({ doctorId }: any) => {
             </div>
             <div className="flex justify-center gap-2 p-2 mt-4">
               <div
-                onClick={() => {
+                onClick={function () {
                   cancelAppointment(
                     dayjs(selectedDate?.date),
                     selectedAppointment?.slotTime,
@@ -89,7 +92,9 @@ const AppointmentDetails = ({ doctorId }: any) => {
                 Apply
               </div>
               <div
-                onClick={() => setShowPop(null)}
+                onClick={function () {
+                  setShowPop(null);
+                }}
                 className="cursor-pointer text-center bg-blue-400 p-2 text-white font-medium rounded-lg shadow-sm"
               >
                 Cancel
@@ -97,7 +102,7 @@ const AppointmentDetails = ({ doctorId }: any) => {
             </div>
           </PopUp>
           {isLoading ? (
-            <BiLoader />
+            <Loader2 className="animate-spin" />
           ) : !slotsData?.totalSlots?.length ? (
             <Empty
               className="flex flex-col"
@@ -108,14 +113,14 @@ const AppointmentDetails = ({ doctorId }: any) => {
               }
             />
           ) : (
-            slotsData?.totalSlots?.map(
-              ({
-                appointmentType,
-                appointmentState,
-                appointmentFees,
-                appointmentId,
-                slotTime,
-              }: any) => (
+            slotsData?.totalSlots?.map(function ({
+              appointmentType,
+              appointmentState,
+              appointmentFees,
+              appointmentId,
+              slotTime,
+            }: any) {
+              return (
                 <div key={appointmentId} className="grow">
                   <AppointmentCard
                     timeZone={timeZone}
@@ -137,13 +142,13 @@ const AppointmentDetails = ({ doctorId }: any) => {
                     scheduleAppointments={scheduleAppointments}
                   />
                 </div>
-              ),
-            )
+              );
+            })
           )}
         </div>
       </div>
     </>
   );
-};
+}
 
 export default AppointmentDetails;

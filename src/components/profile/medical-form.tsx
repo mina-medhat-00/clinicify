@@ -1,29 +1,29 @@
-import { Button, Form, Input } from "antd";
+import { Button, Form, Input } from "@/components/ui/kit";
 import ProfileTable from "@/components/profile/profile-table";
 import submitMedical from "@/services/submit-medical";
 
 const { Item } = Form;
-const MedicalForm = ({
+function MedicalForm({
   userName,
   messageApi,
   fetchProfileData,
   fetchUserData,
   initialValues,
   isEdit,
-}: any) => {
+}: any) {
   return (
     <Form
       initialValues={initialValues}
-      onFinish={(values?: any, ..._args: any[]) =>
-        submitMedical(
+      onFinish={function (values?: any, ..._args: any[]) {
+        return submitMedical(
           values,
           messageApi,
           fetchProfileData,
           fetchUserData,
           userName,
           isEdit,
-        )
-      }
+        );
+      }}
     >
       <div className="bg-gray-200 shadow-sm rounded-lg p-2">
         <ProfileTable
@@ -44,8 +44,7 @@ const MedicalForm = ({
                   <Input.TextArea
                     maxLength={250}
                     className="scroll--v text-md font-medium 
-rounded-lg"
-                    style={{ resize: "none" }}
+rounded-lg resize-none"
                     placeholder="State your current issue"
                   />
                 </Item>
@@ -58,8 +57,7 @@ rounded-lg"
                   <Input.TextArea
                     maxLength={250}
                     className="scroll--v text-md font-medium 
-            rounded-lg"
-                    style={{ resize: "none" }}
+            rounded-lg resize-none"
                     placeholder="Your diseases, illness history or other issues"
                   />
                 </Item>
@@ -72,8 +70,7 @@ rounded-lg"
                   <Input.TextArea
                     maxLength={250}
                     className="scroll--v text-md font-medium 
-rounded-lg"
-                    style={{ resize: "none" }}
+rounded-lg resize-none"
                     placeholder="Allergies"
                   />
                 </Item>
@@ -86,8 +83,7 @@ rounded-lg"
                   <Input.TextArea
                     maxLength={250}
                     className="scroll--v text-md font-medium 
-            rounded-lg"
-                    style={{ resize: "none" }}
+            rounded-lg resize-none"
                     placeholder="Immunzations"
                   />
                 </Item>
@@ -100,8 +96,7 @@ rounded-lg"
                   <Input.TextArea
                     maxLength={250}
                     className="scroll--v text-md font-medium 
-            rounded-lg"
-                    style={{ resize: "none" }}
+            rounded-lg resize-none"
                     placeholder="Surgeries"
                   />
                 </Item>
@@ -113,13 +108,8 @@ rounded-lg"
           <Button
             type="primary"
             htmlType="submit"
-            style={{
-              color: "white",
-              fontFamily: "sans-serif",
-              fontSize: "28px",
-            }}
             className={`rounded-lg text-xs lg:text-sm
-          bg-gray-600 py-6 font-medium 
+          bg-gray-600 py-6 font-medium text-white
           border-gray-700 px-8 flex items-center hover:bg-gray-700`}
           >
             {isEdit ? "Edit Now" : "Add Now"}
@@ -128,6 +118,6 @@ rounded-lg"
       </div>
     </Form>
   );
-};
+}
 
 export default MedicalForm;

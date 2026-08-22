@@ -4,28 +4,31 @@ import { useUserContext } from "@/contexts/user-context";
 import type { ChatThread } from "@/types";
 import { apiUrl } from "@/utils/api";
 
-const handleQuery = (obj?: any, ..._args: any[]) =>
-  !obj
+function handleQuery(obj?: any, ..._args: any[]) {
+  return !obj
     ? ""
     : Object.entries(obj)
-        .filter(([_, val]: any) => val || val === 0)
-        .map(([name, val]: any, i?: any, ..._args: any[]) =>
-          i == 0 ? `?${name}=${val}` : `${name}=${val}`,
-        )
+        .filter(function ([_, val]: any) {
+          return val || val === 0;
+        })
+        .map(function ([name, val]: any, i?: any, ..._args: any[]) {
+          return i == 0 ? `?${name}=${val}` : `${name}=${val}`;
+        })
         .join("&");
+}
 const ChatData = createContext<any>(null);
-const ChatContextProvider = ({ children, token }: any) => {
+function ChatContextProvider({ children, token }: any) {
   const { fetchUserData } = useUserContext();
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [chatData, setChatData] = useState<ChatThread[] | null>(null);
-  const fetchChatData = async (
+  async function fetchChatData(
     active?: any,
     directToken?: any,
     query?: any,
     noWaiting?: any,
     ..._args: any[]
-  ) => {
+  ) {
     if (!noWaiting) setIsLoading(true);
     if (!token && !active) {
       setChatData(null);
@@ -77,7 +80,7 @@ const ChatContextProvider = ({ children, token }: any) => {
       setIsLoading(false);
       throw err;
     }
-  };
+  }
 
   return (
     <ChatData.Provider
@@ -92,8 +95,10 @@ const ChatContextProvider = ({ children, token }: any) => {
       {children}
     </ChatData.Provider>
   );
-};
+}
 
 export default ChatContextProvider;
 
-export const useChatContext = () => useContext(ChatData);
+export function useChatContext() {
+  return useContext(ChatData);
+}

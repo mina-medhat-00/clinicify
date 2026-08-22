@@ -3,7 +3,7 @@ import Cookies from "universal-cookie";
 import { apiUrl } from "@/utils/api";
 
 const cookies = new Cookies();
-const scheduleAppointments = (
+function scheduleAppointments(
   activeDate?: any,
   addedAppointments?: any,
   tAppointments?: any,
@@ -17,7 +17,7 @@ const scheduleAppointments = (
   editSlot?: any,
   socket?: any,
   doctorId?: any,
-) => {
+) {
   messageApi.open({
     key: 1,
     type: "loading",
@@ -41,9 +41,7 @@ const scheduleAppointments = (
   if (!deletedAppointments) setIsDone(false);
   axios
     .post(
-      apiUrl(`/${
-        isEdit ? "edit/appointment" : "schedule/appointments"
-      }`),
+      apiUrl(`/${isEdit ? "edit/appointment" : "schedule/appointments"}`),
       data,
       {
         headers: {
@@ -52,7 +50,7 @@ const scheduleAppointments = (
         },
       },
     )
-    .then(() => {
+    .then(function () {
       messageApi.open({
         key: 1,
         type: "success",
@@ -76,7 +74,7 @@ const scheduleAppointments = (
         true,
       );
     })
-    .catch((err?: any, ..._args: any[]) => {
+    .catch(function (err?: any, ..._args: any[]) {
       if (err?.response?.status == 400) {
         const timeSlots = err?.response?.data?.data?.timeSlots;
         if (timeSlots) {
@@ -105,6 +103,6 @@ const scheduleAppointments = (
         if (!deletedAppointments) setIsDone(true);
       }
     });
-};
+}
 
 export default scheduleAppointments;

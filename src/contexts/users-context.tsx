@@ -4,11 +4,11 @@ import type { User } from "@/types";
 import { apiUrl } from "@/utils/api";
 
 const UsersData = createContext<any>(null);
-const UsersContextProvider = ({ children }: any) => {
+function UsersContextProvider({ children }: any) {
   const [isLoading, setIsLoading] = useState(true);
   const [usersData, setUsersData] = useState<User[] | null>(null);
   const [isError, setIsError] = useState(false);
-  const fetchUsersData = async (notWaiting?: any, ..._args: any[]) => {
+  async function fetchUsersData(notWaiting?: any, ..._args: any[]) {
     if (!notWaiting) setIsLoading(true);
     setIsError(false);
     try {
@@ -25,8 +25,8 @@ const UsersContextProvider = ({ children }: any) => {
       setIsLoading(false);
       setIsError(true);
     }
-  };
-  useLayoutEffect(() => {
+  }
+  useLayoutEffect(function () {
     fetchUsersData();
   }, []);
   return (
@@ -36,8 +36,10 @@ const UsersContextProvider = ({ children }: any) => {
       {children}
     </UsersData.Provider>
   );
-};
+}
 
 export default UsersContextProvider;
 
-export const useUsersContext = () => useContext(UsersData);
+export function useUsersContext() {
+  return useContext(UsersData);
+}

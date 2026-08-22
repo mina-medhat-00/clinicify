@@ -1,17 +1,18 @@
-import { Avatar } from "antd";
 import { useState } from "react";
 import ChatRestrict from "@/components/admin/chat-restrict";
+import UserAvatar from "@/components/ui/user-avatar";
 import { ChatContextProvider } from "@/contexts";
 
-const Restrictions = ({ selectedUser }: any) => {
+function Restrictions({ selectedUser }: any) {
   const [restrictType] = useState("chat");
   return (
     <div className="">
       <div className="mb-2 flex flex-wrap justify-evenly sm:justify-between items-center gap-2">
         <div className="flex items-center gap-2">
-          <Avatar
+          <UserAvatar
             className={`w-12 h-12 p-1 bg-gray-600`}
             src={selectedUser?.img_url}
+            userType={selectedUser?.user_type}
           />
           <span className="text-xl text-gray-400">
             {selectedUser?.nick_name}
@@ -29,6 +30,6 @@ const Restrictions = ({ selectedUser }: any) => {
       ) : null}
     </div>
   );
-};
+}
 
 export default Restrictions;

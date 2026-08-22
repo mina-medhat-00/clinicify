@@ -5,20 +5,20 @@ import type { Appointment } from "@/types";
 import { apiUrl } from "@/utils/api";
 
 const AppointmentData = createContext<any>(null);
-const AppointmentContextProvider = ({ children, token, isDoctor }: any) => {
+function AppointmentContextProvider({ children, token, isDoctor }: any) {
   const { fetchUserData } = useUserContext();
   const [isLoading, setIsLoading] = useState(true);
   const [appointmentData, setAppointmentData] = useState<Appointment[] | null>(
     null,
   );
-  const fetchAppointmentData = async (
+  async function fetchAppointmentData(
     active?: any,
     directToken?: any,
     done?: any,
     postData?: any,
     query?: any,
     noWaiting?: any,
-  ) => {
+  ) {
     if (!noWaiting) setIsLoading(true);
     if (!token && !active) {
       setAppointmentData(null);
@@ -27,11 +27,13 @@ const AppointmentContextProvider = ({ children, token, isDoctor }: any) => {
     try {
       if (done) {
         const { data } = await axios.post(
-          apiUrl(`/update/appointment${
-            isDoctor || query?.doctor
-              ? `?doctor=true${query.date && `&date=${query.date}`}`
-              : `?date=${query?.date}`
-          }`),
+          apiUrl(
+            `/update/appointment${
+              isDoctor || query?.doctor
+                ? `?doctor=true${query.date && `&date=${query.date}`}`
+                : `?date=${query?.date}`
+            }`,
+          ),
           { data: postData },
           {
             headers: {
@@ -45,11 +47,13 @@ const AppointmentContextProvider = ({ children, token, isDoctor }: any) => {
         return data;
       } else {
         const { data } = await axios.request({
-          url: apiUrl(`/get/appointments?${
-            query?.date ? `&date=${query?.date}` : ""
-          }${query?.doctorId ? `&doctor_id=${query?.doctorId}` : ""}${
-            isDoctor || query?.doctor ? `&doctor=true` : ""
-          }`),
+          url: apiUrl(
+            `/get/appointments?${
+              query?.date ? `&date=${query?.date}` : ""
+            }${query?.doctorId ? `&doctor_id=${query?.doctorId}` : ""}${
+              isDoctor || query?.doctor ? `&doctor=true` : ""
+            }`,
+          ),
           ...{
             headers: {
               Authorization: `Bearer ${active ? directToken : token}`,
@@ -93,7 +97,7 @@ const AppointmentContextProvider = ({ children, token, isDoctor }: any) => {
       setIsLoading(false);
       throw err;
     }
-  };
+  }
 
   return (
     <AppointmentData.Provider
@@ -107,8 +111,10 @@ const AppointmentContextProvider = ({ children, token, isDoctor }: any) => {
       {children}
     </AppointmentData.Provider>
   );
-};
+}
 
 export default AppointmentContextProvider;
 
-export const useAppointmentContext = () => useContext(AppointmentData);
+export function useAppointmentContext() {
+  return useContext(AppointmentData);
+}

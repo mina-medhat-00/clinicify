@@ -1,17 +1,24 @@
-import type { SelectProps } from "antd";
+import type { SelectProps } from "@/components/ui/kit";
 import { City, Country } from "country-state-city";
 import { data as isoCurrencies } from "currency-codes";
 import getSymbolFromCurrency from "currency-symbol-map";
 
 type SelectOptions = NonNullable<SelectProps["options"]>;
 
-const toOptions = (values: readonly string[]): SelectOptions =>
-  [...new Set(values.filter(Boolean))]
-    .sort((a, b) => a.localeCompare(b))
-    .map((value) => ({ value, label: value }));
+function toOptions(values: readonly string[]): SelectOptions {
+  return [...new Set(values.filter(Boolean))]
+    .sort(function (a, b) {
+      return a.localeCompare(b);
+    })
+    .map(function (value) {
+      return { value, label: value };
+    });
+}
 
 export const cityOptions = toOptions(
-  City.getCitiesOfCountry("EG")?.map((city) => city.name) ?? [],
+  City.getCitiesOfCountry("EG")?.map(function (city) {
+    return city.name;
+  }) ?? [],
 );
 
 export const doctorSpecialties = [
@@ -70,10 +77,10 @@ export const doctorSpecialties = [
 
 export const doctorSpecialtyOptions = toOptions(doctorSpecialties);
 
-export const phonePrefixOptions: SelectOptions = (() => {
+function getPhonePrefixOptions(): SelectOptions {
   const seen = new Set<string>();
   return Country.getAllCountries()
-    .flatMap((country) => {
+    .flatMap(function (country) {
       const callingCode = country.phonecode?.replace(/\D/g, "");
       if (!callingCode || seen.has(callingCode)) return [];
       seen.add(callingCode);
@@ -84,15 +91,21 @@ export const phonePrefixOptions: SelectOptions = (() => {
         },
       ];
     })
-    .sort((a, b) => a.label.localeCompare(b.label));
-})();
+    .sort(function (a, b) {
+      return a.label.localeCompare(b.label);
+    });
+}
+
+export const phonePrefixOptions: SelectOptions = getPhonePrefixOptions();
 
 export const currencyOptions: SelectOptions = isoCurrencies
-  .map((currency) => {
+  .map(function (currency) {
     const symbol = getSymbolFromCurrency(currency.code);
     return {
       value: currency.code,
       label: symbol ? `${currency.currency} - ${symbol}` : currency.currency,
     };
   })
-  .sort((a, b) => String(a.label).localeCompare(String(b.label)));
+  .sort(function (a, b) {
+    return String(a.label).localeCompare(String(b.label));
+  });

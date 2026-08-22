@@ -1,7 +1,7 @@
-import { Result } from "antd";
+import { Result } from "@/components/ui/kit";
 import { Link } from "react-router-dom";
 
-const ServerError = ({ extra, status, statusTitle }: any) => {
+function ServerError({ extra, status, statusTitle }: any) {
   return (
     <Result
       className="m-auto"
@@ -15,6 +15,6 @@ const ServerError = ({ extra, status, statusTitle }: any) => {
       extra={extra ? <Link to="/">Back Home</Link> : null}
     />
   );
-};
+}
 
 export default ServerError;

@@ -1,7 +1,7 @@
-import { Drawer, Empty, message } from "antd";
+import { Drawer, Empty, message } from "@/components/ui/kit";
 import dayjs from "dayjs";
+import { LayoutGrid } from "lucide-react";
 import { useEffect, useState } from "react";
-import { AiOutlineAppstoreAdd } from "react-icons/ai";
 import CalendarView from "@/components/profile/calendar-view";
 import AccountVerify from "@/components/schedule/account-verify";
 import AppointmentCard from "@/components/schedule/appointment-card";
@@ -12,7 +12,7 @@ import { useSlotsContext } from "@/contexts/slots-context";
 import cancelAppointment from "@/services/cancel-appointment";
 import scheduleAppointments from "@/services/schedule-appointments";
 
-const ScheduleAppointments = ({
+function ScheduleAppointments({
   doctorData,
   userid,
   isDoctorLoading,
@@ -21,7 +21,7 @@ const ScheduleAppointments = ({
   setDashType,
   socket,
   timeZone,
-}: any) => {
+}: any) {
   const [handleDrawer, setHandleDrawer] = useState(false);
   const { slotsData, isLoading, fetchSlotsData } = useSlotsContext();
   const [messageApi, contextHolder] = message.useMessage();
@@ -29,49 +29,52 @@ const ScheduleAppointments = ({
   const [showPop, setShowPop] = useState({ show: false, data: null });
   const [isAction, setIsAction] = useState<any>(false);
   const sDate = window?.localStorage?.getItem("schedule_date");
-  const [selectedDate, setSelectedDate] = useState(() =>
-    sDate
+  const [selectedDate, setSelectedDate] = useState(function () {
+    return sDate
       ? dayjs(sDate) > dayjs() &&
         dayjs(sDate).month() == dayjs().month() &&
         dayjs(sDate).year() == dayjs().year()
         ? dayjs(sDate)
         : dayjs()
-      : dayjs(),
-  );
+      : dayjs();
+  });
   const isVerified = doctorData?.is_verified;
-  useEffect(() => {
+  useEffect(function () {
     if (userid) socket.emit("join_doctor", userid);
   }, []);
-  useEffect(() => {
-    const getSlots = (data?: any, ..._args: any[]) => {
-      if (selectedDate.format("YYYY-MM-DD") == data?.date)
-        fetchSlotsData(
-          {
-            date: selectedDate.format("YYYY-MM-DD"),
-            doctorId: userid,
-          },
-          true,
-        );
-    };
-    if (
-      userid &&
-      selectedDate.format("YYYY-MM-DD") &&
-      !(!isDoctorLoading && !isVerified)
-    ) {
-      socket.on("update_slots", getSlots);
-      fetchSlotsData({
-        date: selectedDate.format("YYYY-MM-DD"),
-        doctorId: userid,
-      });
-    }
-    return () => {
-      socket?.off("all_slots", getSlots);
-    };
-  }, [selectedDate, userid]);
-  const handleDate = (val?: any, ..._args: any[]) => {
+  useEffect(
+    function () {
+      function getSlots(data?: any, ..._args: any[]) {
+        if (selectedDate.format("YYYY-MM-DD") == data?.date)
+          fetchSlotsData(
+            {
+              date: selectedDate.format("YYYY-MM-DD"),
+              doctorId: userid,
+            },
+            true,
+          );
+      }
+      if (
+        userid &&
+        selectedDate.format("YYYY-MM-DD") &&
+        !(!isDoctorLoading && !isVerified)
+      ) {
+        socket.on("update_slots", getSlots);
+        fetchSlotsData({
+          date: selectedDate.format("YYYY-MM-DD"),
+          doctorId: userid,
+        });
+      }
+      return function () {
+        socket?.off("all_slots", getSlots);
+      };
+    },
+    [selectedDate, userid],
+  );
+  function handleDate(val?: any, ..._args: any[]) {
     setSelectedDate(val);
     window?.localStorage?.setItem("schedule_date", val?.format("YYYY-MM-DD"));
-  };
+  }
   const isUpToDate =
     selectedDate?.toDate()?.setHours(0, 0, 0, 0) >=
     new Date().setHours(0, 0, 0, 0);
@@ -83,7 +86,9 @@ const ScheduleAppointments = ({
     >
       <div className="text-right my-1">
         <span
-          onClick={() => setDashType("appointments")}
+          onClick={function () {
+            setDashType("appointments");
+          }}
           className="cursor-pointer hover:bg-orange-800 font-medium text-white bg-orange-700 w-fit p-2 rounded-lg"
         >
           My Appointments
@@ -102,17 +107,17 @@ const ScheduleAppointments = ({
       {isUpToDate && !isLoading && !isDoctorLoading && isVerified ? (
         <>
           <div className="flex gap-2 flex-wrap">
-            {tAppointments?.map(
-              (
-                {
-                  slotTime,
-                  appointmentState,
-                  appointmentType,
-                  appointmentFees,
-                  appointmentId,
-                }: any,
-                i?: any,
-              ) => (
+            {tAppointments?.map(function (
+              {
+                slotTime,
+                appointmentState,
+                appointmentType,
+                appointmentFees,
+                appointmentId,
+              }: any,
+              i?: any,
+            ) {
+              return (
                 <AppointmentCard
                   key={i + 1}
                   fetchSlotsData={fetchSlotsData}
@@ -135,36 +140,31 @@ const ScheduleAppointments = ({
                   timeZone={timeZone}
                   socket={socket}
                 />
-              ),
-            )}
+              );
+            })}
             <div
-              onClick={() => setHandleDrawer(true)}
-              className="bg-gray-300/50 gap-2 hover:bg-gray-300/80 flex justify-center items-center h-24 text-center cursor-pointer text-gray-500
-           text-lg sm:text-xl xl:text-2xl font-medium rounded-lg hover:shadow-sm p-3 hover:text-gray-700"
-              style={{
-                flexGrow: 2,
+              onClick={function () {
+                setHandleDrawer(true);
               }}
+              className="bg-gray-300/50 gap-2 hover:bg-gray-300/80 flex justify-center items-center h-24 text-center cursor-pointer text-gray-500
+           text-lg sm:text-xl xl:text-2xl font-medium rounded-lg hover:shadow-sm p-3 hover:text-gray-700 grow"
             >
-              <AiOutlineAppstoreAdd className="w-7 h-7" />
+              <LayoutGrid className="w-7 h-7" />
               New Appointments
             </div>
           </div>
           <Drawer
             open={handleDrawer}
-            onClose={() => {
+            onClose={function () {
               setHandleDrawer(false);
-              setTimeout(() => {
+              setTimeout(function () {
                 setIsAction(false);
               }, 500);
             }}
             closable
-            styles={{
-              body: {
-                padding: "0px",
-              },
-              wrapper: {
-                width: "100%",
-              },
+            classNames={{
+              body: "p-0",
+              wrapper: "w-full",
             }}
             title={
               isAction ? `Edit Appointment ${isAction}` : "New Appointment"
@@ -204,19 +204,21 @@ const ScheduleAppointments = ({
       {
         <PopUp
           show={showPop?.show}
-          handleClose={() => {
-            setShowPop((val?: any, ..._args: any[]) => ({
-              ...val,
-              show: false,
-            }));
-            setTimeout(
-              () =>
-                setShowPop((val?: any, ..._args: any[]) => ({
+          handleClose={function () {
+            setShowPop(function (val?: any, ..._args: any[]) {
+              return {
+                ...val,
+                show: false,
+              };
+            });
+            setTimeout(function () {
+              setShowPop(function (val?: any, ..._args: any[]) {
+                return {
                   ...val,
                   data: null,
-                })),
-              400,
-            );
+                };
+              });
+            }, 400);
           }}
           closeColor={"text-red-800/80 hover:text-red-800"}
         >
@@ -226,7 +228,7 @@ const ScheduleAppointments = ({
           </div>
           <div className="flex justify-center gap-2 p-2 mt-4">
             <div
-              onClick={() => {
+              onClick={function () {
                 cancelAppointment(
                   selectedDate,
                   bookedAppointment?.slotTime,
@@ -247,19 +249,21 @@ const ScheduleAppointments = ({
               Apply
             </div>
             <div
-              onClick={() => {
-                setShowPop((val?: any, ..._args: any[]) => ({
-                  ...val,
-                  show: false,
-                }));
-                setTimeout(
-                  () =>
-                    setShowPop((val?: any, ..._args: any[]) => ({
+              onClick={function () {
+                setShowPop(function (val?: any, ..._args: any[]) {
+                  return {
+                    ...val,
+                    show: false,
+                  };
+                });
+                setTimeout(function () {
+                  setShowPop(function (val?: any, ..._args: any[]) {
+                    return {
                       ...val,
                       data: null,
-                    })),
-                  400,
-                );
+                    };
+                  });
+                }, 400);
               }}
               className="cursor-pointer text-center bg-blue-400 p-2 text-white font-medium rounded-lg shadow-sm"
             >
@@ -270,6 +274,6 @@ const ScheduleAppointments = ({
       }
     </div>
   );
-};
+}
 
 export default ScheduleAppointments;

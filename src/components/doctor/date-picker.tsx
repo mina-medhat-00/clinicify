@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
-import { AiOutlineDoubleLeft, AiOutlineDoubleRight } from "react-icons/ai";
+import { ChevronsLeft, ChevronsRight } from "lucide-react";
 
-const DatePicker = ({ setSelectedDate, selectedDate, fromAppointment }: any) => {
+function DatePicker({ setSelectedDate, selectedDate, fromAppointment }: any) {
   new Date(selectedDate.date).toLocaleString("en-us", {
     weekday: "long",
     year: "numeric",
@@ -17,10 +17,10 @@ const DatePicker = ({ setSelectedDate, selectedDate, fromAppointment }: any) => 
         fromAppointment ? "bg-gray-200/80" : "bg-gray-500"
       } flex items-center`}
     >
-      <AiOutlineDoubleLeft
-        onClick={() =>
-          setSelectedDate((val?: any, ..._args: any[]) =>
-            val.count
+      <ChevronsLeft
+        onClick={function () {
+          setSelectedDate(function (val?: any, ..._args: any[]) {
+            return val.count
               ? {
                   count: val.count - 1,
                   date: dayjs(
@@ -29,9 +29,9 @@ const DatePicker = ({ setSelectedDate, selectedDate, fromAppointment }: any) => 
                     ),
                   ).format("YYYY-MM-DD"),
                 }
-              : val,
-          )
-        }
+              : val;
+          });
+        }}
         className={`${
           selectedDate.count
             ? "bg-white hover:bg-gray-200"
@@ -54,21 +54,23 @@ const DatePicker = ({ setSelectedDate, selectedDate, fromAppointment }: any) => 
           {selectedDate.date}
         </div>
       </div>
-      <AiOutlineDoubleRight
-        onClick={() =>
-          setSelectedDate((val?: any, ..._args: any[]) => ({
-            count: val.count + 1,
-            date: dayjs(
-              new Date(
-                new Date().setDate(new Date().getDate() + val.count + 1),
-              ),
-            ).format("YYYY-MM-DD"),
-          }))
-        }
+      <ChevronsRight
+        onClick={function () {
+          setSelectedDate(function (val?: any, ..._args: any[]) {
+            return {
+              count: val.count + 1,
+              date: dayjs(
+                new Date(
+                  new Date().setDate(new Date().getDate() + val.count + 1),
+                ),
+              ).format("YYYY-MM-DD"),
+            };
+          });
+        }}
         className={`bg-white rounded-xl hover:bg-gray-200 h-10 w-10 shadow-lg mr-1`}
       />
     </div>
   );
-};
+}
 
 export default DatePicker;

@@ -1,32 +1,32 @@
 import { useEffect } from "react";
-import {
-  BsClockFill,
-  BsFillArrowDownSquareFill,
-  BsFillArrowUpSquareFill,
-} from "react-icons/bs";
+import { Clock, SquareArrowDown, SquareArrowUp } from "lucide-react";
 
-const handleHours = (
+function handleHours(
   value?: any,
   type?: any,
   setAppointmentDetails?: any,
   ..._args: any[]
-) => {
+) {
   if (value + 1 == 12 && type == "inc")
-    setAppointmentDetails((appDet?: any, ..._args: any[]) => ({
-      ...appDet,
-      slotTime: {
-        ...appDet.slotTime,
-        timeMode: appDet.slotTime.timeMode == "AM" ? "PM" : "AM",
-      },
-    }));
+    setAppointmentDetails(function (appDet?: any, ..._args: any[]) {
+      return {
+        ...appDet,
+        slotTime: {
+          ...appDet.slotTime,
+          timeMode: appDet.slotTime.timeMode == "AM" ? "PM" : "AM",
+        },
+      };
+    });
   else if (value - 1 == 11 && type == "dec")
-    setAppointmentDetails((appDet?: any, ..._args: any[]) => ({
-      ...appDet,
-      slotTime: {
-        ...appDet.slotTime,
-        timeMode: appDet.slotTime.timeMode == "AM" ? "PM" : "AM",
-      },
-    }));
+    setAppointmentDetails(function (appDet?: any, ..._args: any[]) {
+      return {
+        ...appDet,
+        slotTime: {
+          ...appDet.slotTime,
+          timeMode: appDet.slotTime.timeMode == "AM" ? "PM" : "AM",
+        },
+      };
+    });
   return type == "inc"
     ? (value + 1) % 13 == 0
       ? 1
@@ -36,15 +36,16 @@ const handleHours = (
         ? 12
         : value - 1
       : 1;
-};
-const handleMinutes = (value?: any, type?: any, ..._args: any[]) =>
-  type == "inc"
+}
+function handleMinutes(value?: any, type?: any, ..._args: any[]) {
+  return type == "inc"
     ? (value + 1) % 60
     : type == "dec"
       ? !value
         ? 59
         : value - 1
       : 0;
+}
 function getTimeSegmentElements(segmentElement?: any, ..._args: any[]) {
   const segmentDisplay = segmentElement.querySelector(`.segment-display`);
   const segmentDisplayTop = segmentDisplay.querySelector(
@@ -137,31 +138,34 @@ function updateAllSegments(
   updateTimeSection(`minutes--${order}`, minutes);
   updateTimeSection(`hours--${order}`, directHour || hours);
 }
-const CountdownTimer = ({
+function CountdownTimer({
   order,
   appointmentDetails,
   setAppointmentDetails,
   directMode,
   directHour,
-}: any) => {
-  useEffect(() => {
-    updateAllSegments(
-      appointmentDetails.slotTime.h,
-      appointmentDetails.slotTime.m,
-      order,
-      directHour,
-    );
-  }, [directHour]);
+}: any) {
+  useEffect(
+    function () {
+      updateAllSegments(
+        appointmentDetails.slotTime.h,
+        appointmentDetails.slotTime.m,
+        order,
+        directHour,
+      );
+    },
+    [directHour],
+  );
   appointmentDetails?.slotTime?.h;
   appointmentDetails?.slotTime?.m;
 
   return (
     <div className="countdown w-full flex justify-center flex-wrap sm:flex-nowrap gap-4 pt-1">
-      <BsClockFill className="flex justify-center items-center w-0 sm:w-8 sm:h-8 text-gray-400" />
+      <Clock className="flex justify-center items-center w-0 sm:w-8 sm:h-8 text-gray-400" />
       <div className="flex gap-2 mb-4 sm:mb-0 justify-center">
         <div className="flex flex-col gap-1">
-          <BsFillArrowUpSquareFill
-            onClick={() => {
+          <SquareArrowUp
+            onClick={function () {
               const h = handleHours(
                 appointmentDetails.slotTime.h,
                 "inc",
@@ -173,18 +177,20 @@ const CountdownTimer = ({
                 order,
                 directHour,
               );
-              setAppointmentDetails((appDet?: any, ..._args: any[]) => ({
-                ...appDet,
-                slotTime: {
-                  ...appDet.slotTime,
-                  h,
-                },
-              }));
+              setAppointmentDetails(function (appDet?: any, ..._args: any[]) {
+                return {
+                  ...appDet,
+                  slotTime: {
+                    ...appDet.slotTime,
+                    h,
+                  },
+                };
+              });
             }}
             className="cursor-pointer sm:h-6 sm:w-6 h-5 w-5 rounded-lg text-gray-500"
           />
-          <BsFillArrowDownSquareFill
-            onClick={() => {
+          <SquareArrowDown
+            onClick={function () {
               const h = handleHours(
                 appointmentDetails.slotTime.h,
                 "dec",
@@ -196,13 +202,15 @@ const CountdownTimer = ({
                 order,
                 directHour,
               );
-              setAppointmentDetails((appDet?: any, ..._args: any[]) => ({
-                ...appDet,
-                slotTime: {
-                  ...appDet.slotTime,
-                  h,
-                },
-              }));
+              setAppointmentDetails(function (appDet?: any, ..._args: any[]) {
+                return {
+                  ...appDet,
+                  slotTime: {
+                    ...appDet.slotTime,
+                    h,
+                  },
+                };
+              });
             }}
             className="cursor-pointer sm:h-6 sm:w-6 h-5 w-5 rounded-lg text-gray-500"
           />
@@ -211,18 +219,18 @@ const CountdownTimer = ({
           className="time-section text-center text-gray-700 font-medium text-xs sm:text-sm"
           id={`hours--${order}`}
         >
-          <div className="time-group flex gap-1.25">
+          <div className="time-group flex gap-1">
             <div
               className={`time-segment block font-black w-6 sm:w-8 text-2xl sm:text-3xl`}
             >
               <div className={`segment-display relative h-full`}>
-                <div className="segment-display__top relative h-1/2 w-full overflow-hidden text-center leading-normal text-[#eee] bg-blue-800"></div>
-                <div className="segment-display__bottom relative h-1/2 w-full overflow-hidden text-center leading-0 text-white bg-blue-500"></div>
+                <div className="segment-display__top relative h-1/2 w-full overflow-hidden text-center leading-normal text-neutral-200 bg-blue-800"></div>
+                <div className="segment-display__bottom relative h-1/2 w-full overflow-hidden text-center leading-none text-white bg-blue-500"></div>
                 <div
-                  className={`segment-overlay segment-overlay-slot absolute top-0 h-full perspective-[400px] w-6 sm:w-8`}
+                  className={`segment-overlay segment-overlay-slot absolute top-0 h-full perspective-normal w-6 sm:w-8`}
                 >
                   <div className="segment-overlay__top absolute top-0 h-1/2 w-full origin-bottom overflow-hidden text-center leading-normal text-white bg-blue-800"></div>
-                  <div className="segment-overlay__bottom absolute bottom-0 h-1/2 w-full origin-top overflow-hidden text-center leading-0 text-[#eee] bg-blue-500">
+                  <div className="segment-overlay__bottom absolute bottom-0 h-1/2 w-full origin-top overflow-hidden text-center leading-none text-neutral-200 bg-blue-500">
                     {" "}
                   </div>
                 </div>
@@ -232,13 +240,13 @@ const CountdownTimer = ({
               className={`time-segment block font-black w-6 sm:w-8 text-2xl sm:text-3xl`}
             >
               <div className={`segment-display relative h-full`}>
-                <div className="segment-display__top relative h-1/2 w-full overflow-hidden text-center leading-normal text-[#eee] bg-blue-800"></div>
-                <div className="segment-display__bottom relative h-1/2 w-full overflow-hidden text-center leading-0 text-white bg-blue-500"></div>
+                <div className="segment-display__top relative h-1/2 w-full overflow-hidden text-center leading-normal text-neutral-200 bg-blue-800"></div>
+                <div className="segment-display__bottom relative h-1/2 w-full overflow-hidden text-center leading-none text-white bg-blue-500"></div>
                 <div
-                  className={`segment-overlay segment-overlay-slot absolute top-0 h-full perspective-[400px] w-6 sm:w-8`}
+                  className={`segment-overlay segment-overlay-slot absolute top-0 h-full perspective-normal w-6 sm:w-8`}
                 >
                   <div className="segment-overlay__top absolute top-0 h-1/2 w-full origin-bottom overflow-hidden text-center leading-normal text-white bg-blue-800"></div>
-                  <div className="segment-overlay__bottom absolute bottom-0 h-1/2 w-full origin-top overflow-hidden text-center leading-0 text-[#eee] bg-blue-500"></div>
+                  <div className="segment-overlay__bottom absolute bottom-0 h-1/2 w-full origin-top overflow-hidden text-center leading-none text-neutral-200 bg-blue-500"></div>
                 </div>
               </div>
             </div>
@@ -248,8 +256,8 @@ const CountdownTimer = ({
       </div>
       <div className="flex gap-2 justify-center">
         <div className="flex flex-col gap-1">
-          <BsFillArrowUpSquareFill
-            onClick={() => {
+          <SquareArrowUp
+            onClick={function () {
               const m = handleMinutes(appointmentDetails.slotTime.m, "inc");
               updateAllSegments(
                 appointmentDetails.slotTime.h,
@@ -257,18 +265,20 @@ const CountdownTimer = ({
                 order,
                 directHour,
               );
-              setAppointmentDetails((appDet?: any, ..._args: any[]) => ({
-                ...appDet,
-                slotTime: {
-                  ...appDet.slotTime,
-                  m,
-                },
-              }));
+              setAppointmentDetails(function (appDet?: any, ..._args: any[]) {
+                return {
+                  ...appDet,
+                  slotTime: {
+                    ...appDet.slotTime,
+                    m,
+                  },
+                };
+              });
             }}
             className="cursor-pointer sm:h-6 sm:w-6 h-5 w-5 rounded-lg text-gray-500"
           />
-          <BsFillArrowDownSquareFill
-            onClick={() => {
+          <SquareArrowDown
+            onClick={function () {
               const m = handleMinutes(appointmentDetails.slotTime.m, "dec");
               updateAllSegments(
                 appointmentDetails.slotTime.h,
@@ -276,13 +286,15 @@ const CountdownTimer = ({
                 order,
                 directHour,
               );
-              setAppointmentDetails((appDet?: any, ..._args: any[]) => ({
-                ...appDet,
-                slotTime: {
-                  ...appDet.slotTime,
-                  m,
-                },
-              }));
+              setAppointmentDetails(function (appDet?: any, ..._args: any[]) {
+                return {
+                  ...appDet,
+                  slotTime: {
+                    ...appDet.slotTime,
+                    m,
+                  },
+                };
+              });
             }}
             className="cursor-pointer sm:h-6 sm:w-6 h-5 w-5 rounded-lg text-gray-500"
           />
@@ -291,18 +303,18 @@ const CountdownTimer = ({
           className="time-section text-center text-gray-700 font-medium text-xs sm:text-sm"
           id={`minutes--${order}`}
         >
-          <div className="time-group flex gap-1.25">
+          <div className="time-group flex gap-1">
             <div
               className={`time-segment block font-black w-6 sm:w-8 text-2xl sm:text-3xl`}
             >
               <div className={`segment-display relative h-full`}>
-                <div className="segment-display__top relative h-1/2 w-full overflow-hidden text-center leading-normal text-[#eee] bg-blue-800"></div>
-                <div className="segment-display__bottom relative h-1/2 w-full overflow-hidden text-center leading-0 text-white bg-blue-500"></div>
+                <div className="segment-display__top relative h-1/2 w-full overflow-hidden text-center leading-normal text-neutral-200 bg-blue-800"></div>
+                <div className="segment-display__bottom relative h-1/2 w-full overflow-hidden text-center leading-none text-white bg-blue-500"></div>
                 <div
-                  className={`segment-overlay segment-overlay-slot absolute top-0 h-full perspective-[400px] w-6 sm:w-8`}
+                  className={`segment-overlay segment-overlay-slot absolute top-0 h-full perspective-normal w-6 sm:w-8`}
                 >
                   <div className="segment-overlay__top absolute top-0 h-1/2 w-full origin-bottom overflow-hidden text-center leading-normal text-white bg-blue-800"></div>
-                  <div className="segment-overlay__bottom absolute bottom-0 h-1/2 w-full origin-top overflow-hidden text-center leading-0 text-[#eee] bg-blue-500"></div>
+                  <div className="segment-overlay__bottom absolute bottom-0 h-1/2 w-full origin-top overflow-hidden text-center leading-none text-neutral-200 bg-blue-500"></div>
                 </div>
               </div>
             </div>
@@ -310,13 +322,13 @@ const CountdownTimer = ({
               className={`time-segment block font-black w-6 sm:w-8 text-2xl sm:text-3xl`}
             >
               <div className={`segment-display relative h-full`}>
-                <div className="segment-display__top relative h-1/2 w-full overflow-hidden text-center leading-normal text-[#eee] bg-blue-800"></div>
-                <div className="segment-display__bottom relative h-1/2 w-full overflow-hidden text-center leading-0 text-white bg-blue-500"></div>
+                <div className="segment-display__top relative h-1/2 w-full overflow-hidden text-center leading-normal text-neutral-200 bg-blue-800"></div>
+                <div className="segment-display__bottom relative h-1/2 w-full overflow-hidden text-center leading-none text-white bg-blue-500"></div>
                 <div
-                  className={`segment-overlay segment-overlay-slot absolute top-0 h-full perspective-[400px] w-6 sm:w-8`}
+                  className={`segment-overlay segment-overlay-slot absolute top-0 h-full perspective-normal w-6 sm:w-8`}
                 >
                   <div className="segment-overlay__top absolute top-0 h-1/2 w-full origin-bottom overflow-hidden text-center leading-normal text-white bg-blue-800"></div>
-                  <div className="segment-overlay__bottom absolute bottom-0 h-1/2 w-full origin-top overflow-hidden text-center leading-0 text-[#eee] bg-blue-500"></div>
+                  <div className="segment-overlay__bottom absolute bottom-0 h-1/2 w-full origin-top overflow-hidden text-center leading-none text-neutral-200 bg-blue-500"></div>
                 </div>
               </div>
             </div>
@@ -326,28 +338,32 @@ const CountdownTimer = ({
       </div>
       <div className="flex gap-2 select-none">
         <div className="flex flex-col gap-1">
-          <BsFillArrowUpSquareFill
-            onClick={() =>
-              setAppointmentDetails((appDet?: any, ..._args: any[]) => ({
-                ...appDet,
-                slotTime: {
-                  ...appDet.slotTime,
-                  timeMode: appDet.slotTime.timeMode == "AM" ? "PM" : "AM",
-                },
-              }))
-            }
+          <SquareArrowUp
+            onClick={function () {
+              setAppointmentDetails(function (appDet?: any, ..._args: any[]) {
+                return {
+                  ...appDet,
+                  slotTime: {
+                    ...appDet.slotTime,
+                    timeMode: appDet.slotTime.timeMode == "AM" ? "PM" : "AM",
+                  },
+                };
+              });
+            }}
             className="cursor-pointer h-5 w-5 rounded-lg text-gray-500"
           />
-          <BsFillArrowDownSquareFill
-            onClick={() =>
-              setAppointmentDetails((appDet?: any, ..._args: any[]) => ({
-                ...appDet,
-                slotTime: {
-                  ...appDet.slotTime,
-                  timeMode: appDet.slotTime.timeMode == "AM" ? "PM" : "AM",
-                },
-              }))
-            }
+          <SquareArrowDown
+            onClick={function () {
+              setAppointmentDetails(function (appDet?: any, ..._args: any[]) {
+                return {
+                  ...appDet,
+                  slotTime: {
+                    ...appDet.slotTime,
+                    timeMode: appDet.slotTime.timeMode == "AM" ? "PM" : "AM",
+                  },
+                };
+              });
+            }}
             className="cursor-pointer h-5 w-5 rounded-lg text-gray-500"
           />
         </div>
@@ -357,6 +373,6 @@ const CountdownTimer = ({
       </div>
     </div>
   );
-};
+}
 
 export default CountdownTimer;
