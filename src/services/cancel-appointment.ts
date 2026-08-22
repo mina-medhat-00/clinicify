@@ -65,7 +65,7 @@ export default function cancelAppointment(
         });
       }
     })
-    .catch(function (err?: any, ..._args: any[]) {
+    .catch(function (err?: any) {
       if (err?.response?.status == 401) {
         fetchUserData(true, cookies.get("accessToken"));
       } else if (err?.response?.status == 400) {

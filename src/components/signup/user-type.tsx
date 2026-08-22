@@ -12,13 +12,13 @@ export default function UserType({ userType, setFormValues }: any) {
         <>
           <Switch
             onChange={function () {
-              setFormValues(function (val?: any, ..._args: any[]) {
+              setFormValues(function (val?: any) {
                 return {
                   ...val,
                   moreInf: moreInf,
                 };
               });
-              setMoreInf(function (moreInf?: any, ..._args: any[]) {
+              setMoreInf(function (moreInf?: any) {
                 return moreInf;
               });
             }}

@@ -33,7 +33,7 @@ export default async function submitLike(
         },
       },
     )
-    .then(function (res?: any, ..._args: any[]) {
+    .then(function (res?: any) {
       setLikeData(res?.data?.data);
       const { like_emoji, dislike, angry } = res?.data?.data ?? {};
       if (!isPost) {
@@ -45,8 +45,8 @@ export default async function submitLike(
           angry,
           updateEmoji: true,
         });
-        setComments(function (comments?: any, ..._args: any[]) {
-          return comments?.map(function (c?: any, ..._args: any[]) {
+        setComments(function (comments?: any) {
+          return comments?.map(function (c?: any) {
             return c?.comment_id == commentId
               ? {
                   ...c,
@@ -65,8 +65,8 @@ export default async function submitLike(
           angry,
           updateEmoji: true,
         });
-        setPosts(function (posts?: any, ..._args: any[]) {
-          return posts?.map(function (post?: any, ..._args: any[]) {
+        setPosts(function (posts?: any) {
+          return posts?.map(function (post?: any) {
             return post?.post_id == postId
               ? {
                   ...post,
@@ -79,7 +79,7 @@ export default async function submitLike(
         });
       }
     })
-    .catch(function (err?: any, ..._args: any[]) {
+    .catch(function (err?: any) {
       if (err?.response?.status == 401) {
         fetchUserData(true, cookies.get("accessToken"));
       } else

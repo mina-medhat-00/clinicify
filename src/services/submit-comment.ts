@@ -36,7 +36,7 @@ export default async function submitComment(
         },
       },
     )
-    .then(function (res?: any, ..._args: any[]) {
+    .then(function (res?: any) {
       messageApi.open({
         key: 1,
         content: "thank you for your comment",
@@ -50,7 +50,7 @@ export default async function submitComment(
         },
         true,
       );
-      setLen(function (val?: any, ..._args: any[]) {
+      setLen(function (val?: any) {
         return val + 1;
       });
       socket.emit("send_comment", {
@@ -74,7 +74,7 @@ export default async function submitComment(
         return false;
       });
     })
-    .catch(function (err?: any, ..._args: any[]) {
+    .catch(function (err?: any) {
       if (err?.response?.status == 401) {
         fetchUserData(true, cookies.get("accessToken"));
       } else

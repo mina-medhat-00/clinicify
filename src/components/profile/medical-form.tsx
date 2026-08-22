@@ -14,7 +14,7 @@ export default function MedicalForm({
   return (
     <Form
       initialValues={initialValues}
-      onFinish={function (values?: any, ..._args: any[]) {
+      onFinish={function (values?: any) {
         return submitMedical(
           values,
           messageApi,

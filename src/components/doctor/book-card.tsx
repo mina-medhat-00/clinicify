@@ -18,13 +18,17 @@ export default function BookCard({ doctorId, socket, timeZone }: any) {
     };
   });
   const [bookedAppointment, setBookedAppointment] = useState<any>(null);
+  const [now] = useState(Date.now);
   const navigate = useNavigate();
-  useEffect(function () {
-    socket?.emit("join_doctor", doctorId);
-  }, []);
   useEffect(
     function () {
-      function fetchSlots(data?: any, ..._args: any[]) {
+      socket?.emit("join_doctor", doctorId);
+    },
+    [doctorId, socket],
+  );
+  useEffect(
+    function () {
+      function fetchSlots(data?: any) {
         if (selectedDate.date == data?.date)
           fetchSlotsData(
             {
@@ -45,17 +49,15 @@ export default function BookCard({ doctorId, socket, timeZone }: any) {
         socket?.off("update_slots", fetchSlots);
       };
     },
-    [selectedDate.date],
+    [selectedDate.date, doctorId, fetchSlotsData, socket],
   );
-  function isToday(val?: any, ..._args: any[]) {
-    return (
-      new Date(selectedDate.date + " " + val).getTime() > Date.now() + 1000 * 60
-    );
+  function isToday(val?: any) {
+    return new Date(selectedDate.date + " " + val).getTime() > now + 1000 * 60;
   }
   return (
     <>
       <div
-        onClick={function (e?: any, ..._args: any[]) {
+        onClick={function (e?: any) {
           e.stopPropagation();
           e.preventDefault();
         }}
@@ -89,10 +91,7 @@ export default function BookCard({ doctorId, socket, timeZone }: any) {
       bookedAppointment?.slotTime == value ? "bg-gray-700" : "bg-blue-800/80"
     } p-2`}
                         onClick={function () {
-                          setBookedAppointment(function (
-                            val?: any,
-                            ..._args: any[]
-                          ) {
+                          setBookedAppointment(function (val?: any) {
                             return val?.slotTime == value
                               ? null
                               : slotsData?.freeSlots?.[i];

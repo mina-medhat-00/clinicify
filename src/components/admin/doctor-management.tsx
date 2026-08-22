@@ -13,13 +13,13 @@ import changeState from "@/services/change-state";
 
 export default function DoctorManagement(_props?: any) {
   const searchInput = useRef(null);
-  function handleSearch(confirm?: any, ..._args: any[]) {
+  function handleSearch(confirm?: any) {
     confirm();
   }
-  function handleReset(clearFilters?: any, ..._args: any[]) {
+  function handleReset(clearFilters?: any) {
     clearFilters();
   }
-  function getColumnSearchProps(dataIndex?: any, ..._args: any[]) {
+  function getColumnSearchProps(dataIndex?: any) {
     return {
       filterDropdown: function ({
         setSelectedKeys,
@@ -31,7 +31,7 @@ export default function DoctorManagement(_props?: any) {
         return (
           <div
             className="p-2"
-            onKeyDown={function (e?: any, ..._args: any[]) {
+            onKeyDown={function (e?: any) {
               e.stopPropagation();
             }}
           >
@@ -39,11 +39,11 @@ export default function DoctorManagement(_props?: any) {
               ref={searchInput}
               placeholder={`Search ${dataIndex}`}
               value={selectedKeys[0]}
-              onChange={function (e?: any, ..._args: any[]) {
+              onChange={function (e?: any) {
                 setSelectedKeys(e.target.value ? [e.target.value] : []);
               }}
               onPressEnter={function () {
-                handleSearch(confirm, dataIndex);
+                handleSearch(confirm);
               }}
               className="mb-2 block"
             />
@@ -52,7 +52,7 @@ export default function DoctorManagement(_props?: any) {
                 type="primary"
                 className="flex items-center justify-center w-24"
                 onClick={function () {
-                  handleSearch(confirm, dataIndex);
+                  handleSearch(confirm);
                 }}
                 icon={<Search className="size-4" />}
                 size="small"
@@ -61,7 +61,7 @@ export default function DoctorManagement(_props?: any) {
               </Button>
               <Button
                 onClick={function () {
-                  clearFilters && handleReset(clearFilters);
+                  if (clearFilters) handleReset(clearFilters);
                 }}
                 size="small"
                 className="w-24"
@@ -81,17 +81,17 @@ export default function DoctorManagement(_props?: any) {
           </div>
         );
       },
-      filterIcon: function (filtered?: any, ..._args: any[]) {
+      filterIcon: function (filtered?: any) {
         return <Search className={filtered ? "text-blue-500" : undefined} />;
       },
-      onFilter: function (value?: any, record?: any, ..._args: any[]) {
+      onFilter: function (value?: any, record?: any) {
         return record[dataIndex].nick_name
           .toString()
           .toLowerCase()
           .includes(value.toLowerCase());
       },
       filterDropdownProps: {
-        onOpenChange: function (visible?: any, ..._args: any[]) {
+        onOpenChange: function (visible?: any) {
           if (visible) {
             setTimeout(function () {
               searchInput.current?.select();
@@ -108,7 +108,7 @@ export default function DoctorManagement(_props?: any) {
       dataIndex: "name",
       key: "name",
       ...getColumnSearchProps("name"),
-      render: function (rec?: any, record?: any, ..._args: any[]) {
+      render: function (rec?: any, record?: any) {
         return (
           <Link
             to={`/profile/${record?.key}`}
@@ -129,7 +129,7 @@ export default function DoctorManagement(_props?: any) {
       title: "State",
       key: "state",
       dataIndex: "verified",
-      render: function (value?: any, ..._args: any[]) {
+      render: function (value?: any) {
         return (
           <Tag color={value ? "blue" : value == 0 ? "red" : "gold"}>
             {value ? "VERIFIED" : value == 0 ? "REJECTED" : "PENDING"}
@@ -239,7 +239,7 @@ export default function DoctorManagement(_props?: any) {
         <div className="grow">
           <Table
             expandable={{
-              expandedRowRender: function (record?: any, ..._args: any[]) {
+              expandedRowRender: function (record?: any) {
                 return (
                   <SlotsContextProvider>
                     <AppointmentDetails doctorId={record?.key} />
@@ -247,7 +247,7 @@ export default function DoctorManagement(_props?: any) {
                 );
               },
               expandedRowKeys: [openKey],
-              onExpand: function (exp?: any, record?: any, ..._args: any[]) {
+              onExpand: function (exp?: any, record?: any) {
                 setOpenKey(function () {
                   return !exp ? null : record?.key;
                 });

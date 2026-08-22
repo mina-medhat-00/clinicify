@@ -25,11 +25,7 @@ import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
 import cancelAppointment from "@/services/cancel-appointment";
 
-function chkEmpty(
-  appointmentState?: any,
-  appointmentData?: any,
-  ..._args: any[]
-) {
+function chkEmpty(appointmentState?: any, appointmentData?: any) {
   return appointmentState == "total"
     ? false
     : !appointmentData?.some(function ({ appointment_state }: any) {
@@ -77,7 +73,7 @@ export default function Appointments({ fromDash }: any) {
         date: selectedDate.date,
       });
     },
-    [selectedDate.date],
+    [selectedDate.date, fetchAppointmentData],
   );
   const nickname = user?.nick_name;
   const uimg = user?.img_url;

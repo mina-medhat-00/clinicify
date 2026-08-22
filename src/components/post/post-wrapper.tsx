@@ -23,22 +23,24 @@ export default function PostWrapper({
 }: any) {
   const [showPopUp, setShowPopUp] = useState(false);
   const [len, setLen] = useState(numComments || 0);
+  const [prevNumComments, setPrevNumComments] = useState(numComments);
+  if (numComments !== prevNumComments) {
+    setPrevNumComments(numComments);
+    setLen(numComments);
+  }
   const [makeComment, setMakeComment] = useState(null);
+  if (showPost && showPopUp !== showPost) setShowPopUp(showPost);
   useEffect(
     function () {
-      if (!showPost)
-        setTimeout(function () {
-          setShowPopUp(false);
-        }, 400);
-      else setShowPopUp(showPost);
+      if (showPost) return;
+      const timeId = setTimeout(function () {
+        setShowPopUp(false);
+      }, 400);
+      return function () {
+        clearTimeout(timeId);
+      };
     },
     [showPost],
-  );
-  useEffect(
-    function () {
-      setLen(numComments);
-    },
-    [numComments],
   );
   return showPopUp == postId ? (
     <PopUp

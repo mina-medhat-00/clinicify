@@ -7,7 +7,6 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from "react";
 import { Check, CircleAlert, Loader2 } from "lucide-react";
@@ -155,9 +154,8 @@ function createFormStore(initial = {}) {
 }
 
 function useForm() {
-  const storeRef = useRef<any>(null);
-  if (!storeRef.current) storeRef.current = createFormStore();
-  return [storeRef.current];
+  const [store] = useState(createFormStore);
+  return [store];
 }
 
 const FormContext = createContext<any>(null);
@@ -369,11 +367,10 @@ function Form({
 }: any) {
   const [inner] = useForm();
   const store = form || inner;
-  const didInit = useRef(false);
-  if (!didInit.current) {
+  useState(function () {
     store.setInitial(initialValues);
-    didInit.current = true;
-  }
+    return true;
+  });
 
   const ctx = useMemo(
     function () {

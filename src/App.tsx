@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { useRef, useState } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import Cookies from "universal-cookie";
@@ -34,11 +35,10 @@ import UserProfile from "@/pages/user-profile";
 const cookies = new Cookies();
 
 function handleRoute(
-  element?: any,
-  permission?: any,
-  isLoading?: any,
-  isError?: any,
-  ..._args: any[]
+  element: ReactNode,
+  permission: any,
+  isLoading: boolean,
+  isError: boolean,
 ) {
   return permission ? (
     element

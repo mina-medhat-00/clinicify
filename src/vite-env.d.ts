@@ -12,6 +12,8 @@ interface ImportMeta {
 }
 
 declare module "react" {
+  // Type parameter must stay `T` so this merges with React's HTMLAttributes.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface HTMLAttributes<T> {
     specialty?: string;
   }

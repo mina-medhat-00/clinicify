@@ -30,15 +30,10 @@ import { useUtilsContext } from "@/contexts/utils-context";
 import BookAppointment from "@/pages/book-appointment";
 import submitFeedback from "@/services/submit-feedback";
 
-function editingObject(
-  value?: any,
-  setValue?: any,
-  name?: any,
-  ..._args: any[]
-) {
+function editingObject(value?: any, setValue?: any, name?: any) {
   return {
-    onChange: function (newValue?: any, ..._args: any[]) {
-      setValue(function (val?: any, ..._args: any[]) {
+    onChange: function (newValue?: any) {
+      setValue(function (val?: any) {
         return { ...val, [name]: newValue };
       });
     },
@@ -63,9 +58,12 @@ export default function UserProfile(_props?: any) {
   const { isLoading, profileData, fetchProfileData, isError } =
     useProfileContext();
   const userid = user?.user_id;
-  useEffect(function () {
-    fetchProfileData({ path: "profile", username: username || userid });
-  }, []);
+  useEffect(
+    function () {
+      fetchProfileData({ path: "profile", username: username || userid });
+    },
+    [fetchProfileData, username, userid],
+  );
   const [handleDrawer, setHandleDrawer] = useState({
     isOpen: false,
     type: "",
@@ -84,32 +82,31 @@ export default function UserProfile(_props?: any) {
     street: null,
     images: [],
   });
-  useEffect(
-    function () {
-      if (profileData?.["user"]) {
-        const bdate = profileData?.["user"]?.bdate;
-        setUserValues({
-          nickname: profileData?.["user"]?.nick_name,
-          about: profileData?.["doctor"]?.about,
-          specialty: profileData?.["doctor"]?.specialty || <Ban />,
-          age: profileData?.["user"]?.age ? (
-            profileData?.["user"]?.age + " years"
-          ) : (
-            <Ban />
-          ),
-          bdate: bdate || <Ban />,
-          pnumber: profileData?.["user"]?.prefix
-            ? `${profileData?.["user"]?.prefix} ${profileData?.["user"]?.pnumber}`
-            : profileData?.["user"]?.pnumber,
-          email: profileData?.["user"]?.email || <Ban />,
-          city: profileData?.["user"]?.city,
-          street: profileData?.["user"]?.street || <Ban />,
-          images: profileData?.["user"]?.img_urls || [],
-        });
-      }
-    },
-    [profileData],
-  );
+  const [prevProfileData, setPrevProfileData] = useState(profileData);
+  if (profileData !== prevProfileData) {
+    setPrevProfileData(profileData);
+    if (profileData?.["user"]) {
+      const bdate = profileData?.["user"]?.bdate;
+      setUserValues({
+        nickname: profileData?.["user"]?.nick_name,
+        about: profileData?.["doctor"]?.about,
+        specialty: profileData?.["doctor"]?.specialty || <Ban />,
+        age: profileData?.["user"]?.age ? (
+          profileData?.["user"]?.age + " years"
+        ) : (
+          <Ban />
+        ),
+        bdate: bdate || <Ban />,
+        pnumber: profileData?.["user"]?.prefix
+          ? `${profileData?.["user"]?.prefix} ${profileData?.["user"]?.pnumber}`
+          : profileData?.["user"]?.pnumber,
+        email: profileData?.["user"]?.email || <Ban />,
+        city: profileData?.["user"]?.city,
+        street: profileData?.["user"]?.street || <Ban />,
+        images: profileData?.["user"]?.img_urls || [],
+      });
+    }
+  }
   const { Title } = Typography;
   if (isLoading || isUserLoading) return <Loader />;
   else if (isError) return <ServerError />;
@@ -121,12 +118,7 @@ export default function UserProfile(_props?: any) {
   const isAuth = userid && profileId == userid ? true : false;
   const isProfile = profileData?.["user"];
   const isVerified = profileData?.["doctor"]?.is_verified;
-  function showDrawer(
-    type?: any,
-    name?: any,
-    className?: any,
-    ..._args: any[]
-  ) {
+  function showDrawer(type?: any, name?: any, className?: any) {
     setHandleDrawer(function () {
       return { isOpen: true, type, name, className };
     });
@@ -217,10 +209,7 @@ export default function UserProfile(_props?: any) {
                     <div>
                       <Button
                         onClick={function () {
-                          setHandleDrawer(function (
-                            draw?: any,
-                            ..._args: any[]
-                          ) {
+                          setHandleDrawer(function (draw?: any) {
                             return {
                               ...draw,
                               isOpen: true,
@@ -317,7 +306,7 @@ export default function UserProfile(_props?: any) {
                   }}
                   open={handleDrawer?.isOpen}
                   onClose={function () {
-                    setHandleDrawer(function (val?: any, ..._args: any[]) {
+                    setHandleDrawer(function (val?: any) {
                       return {
                         ...val,
                         isOpen: false,
@@ -340,7 +329,7 @@ export default function UserProfile(_props?: any) {
                         {userValues?.nickname}
                       </Title>
                       <Form
-                        onFinish={function (values?: any, ..._args: any[]) {
+                        onFinish={function (values?: any) {
                           submitFeedback(
                             rateValue,
                             values?.feedback,
@@ -348,7 +337,6 @@ export default function UserProfile(_props?: any) {
                             messageApi,
                             setFetchFeedback,
                             fetchUserData,
-                            username,
                           );
                         }}
                       >

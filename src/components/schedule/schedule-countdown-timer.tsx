@@ -1,14 +1,9 @@
 import { useEffect } from "react";
 import { Clock, SquareArrowDown, SquareArrowUp } from "lucide-react";
 
-function handleHours(
-  value?: any,
-  type?: any,
-  setAppointmentDetails?: any,
-  ..._args: any[]
-) {
+function handleHours(value?: any, type?: any, setAppointmentDetails?: any) {
   if (value + 1 == 12 && type == "inc")
-    setAppointmentDetails(function (appDet?: any, ..._args: any[]) {
+    setAppointmentDetails(function (appDet?: any) {
       return {
         ...appDet,
         slotTime: {
@@ -18,7 +13,7 @@ function handleHours(
       };
     });
   else if (value - 1 == 11 && type == "dec")
-    setAppointmentDetails(function (appDet?: any, ..._args: any[]) {
+    setAppointmentDetails(function (appDet?: any) {
       return {
         ...appDet,
         slotTime: {
@@ -37,7 +32,7 @@ function handleHours(
         : value - 1
       : 1;
 }
-function handleMinutes(value?: any, type?: any, ..._args: any[]) {
+function handleMinutes(value?: any, type?: any) {
   return type == "inc"
     ? (value + 1) % 60
     : type == "dec"
@@ -46,7 +41,7 @@ function handleMinutes(value?: any, type?: any, ..._args: any[]) {
         : value - 1
       : 0;
 }
-function getTimeSegmentElements(segmentElement?: any, ..._args: any[]) {
+function getTimeSegmentElements(segmentElement?: any) {
   const segmentDisplay = segmentElement.querySelector(`.segment-display`);
   const segmentDisplayTop = segmentDisplay.querySelector(
     `.segment-display__top`,
@@ -76,17 +71,12 @@ function updateSegmentValues(
   displayElement?: any,
   overlayElement?: any,
   value?: any,
-  ..._args: any[]
 ) {
   displayElement.textContent = value;
   overlayElement.textContent = value;
 }
 
-function updateTimeSegment(
-  segmentElement?: any,
-  timeValue?: any,
-  ..._args: any[]
-) {
+function updateTimeSegment(segmentElement?: any, timeValue?: any) {
   const segmentElements = getTimeSegmentElements(segmentElement);
   if (
     parseInt(segmentElements.segmentDisplayTop.textContent, 10) === timeValue
@@ -119,7 +109,7 @@ function updateTimeSegment(
   );
 }
 
-function updateTimeSection(sectionID?: any, timeValue?: any, ..._args: any[]) {
+function updateTimeSection(sectionID?: any, timeValue?: any) {
   const firstNumber = Math.floor(timeValue / 10) || 0;
   const secondNumber = timeValue % 10 || 0;
   const sectionElement = document.getElementById(sectionID);
@@ -133,7 +123,6 @@ function updateAllSegments(
   minutes?: any,
   order?: any,
   directHour?: any,
-  ..._args: any[]
 ) {
   updateTimeSection(`minutes--${order}`, minutes);
   updateTimeSection(`hours--${order}`, directHour || hours);
@@ -154,10 +143,13 @@ export default function CountdownTimer({
         directHour,
       );
     },
-    [directHour],
+    [
+      directHour,
+      appointmentDetails.slotTime.h,
+      appointmentDetails.slotTime.m,
+      order,
+    ],
   );
-  appointmentDetails?.slotTime?.h;
-  appointmentDetails?.slotTime?.m;
 
   return (
     <div className="countdown w-full flex justify-center flex-wrap sm:flex-nowrap gap-4 pt-1">
@@ -177,7 +169,7 @@ export default function CountdownTimer({
                 order,
                 directHour,
               );
-              setAppointmentDetails(function (appDet?: any, ..._args: any[]) {
+              setAppointmentDetails(function (appDet?: any) {
                 return {
                   ...appDet,
                   slotTime: {
@@ -202,7 +194,7 @@ export default function CountdownTimer({
                 order,
                 directHour,
               );
-              setAppointmentDetails(function (appDet?: any, ..._args: any[]) {
+              setAppointmentDetails(function (appDet?: any) {
                 return {
                   ...appDet,
                   slotTime: {
@@ -265,7 +257,7 @@ export default function CountdownTimer({
                 order,
                 directHour,
               );
-              setAppointmentDetails(function (appDet?: any, ..._args: any[]) {
+              setAppointmentDetails(function (appDet?: any) {
                 return {
                   ...appDet,
                   slotTime: {
@@ -286,7 +278,7 @@ export default function CountdownTimer({
                 order,
                 directHour,
               );
-              setAppointmentDetails(function (appDet?: any, ..._args: any[]) {
+              setAppointmentDetails(function (appDet?: any) {
                 return {
                   ...appDet,
                   slotTime: {
@@ -340,7 +332,7 @@ export default function CountdownTimer({
         <div className="flex flex-col gap-1">
           <SquareArrowUp
             onClick={function () {
-              setAppointmentDetails(function (appDet?: any, ..._args: any[]) {
+              setAppointmentDetails(function (appDet?: any) {
                 return {
                   ...appDet,
                   slotTime: {
@@ -354,7 +346,7 @@ export default function CountdownTimer({
           />
           <SquareArrowDown
             onClick={function () {
-              setAppointmentDetails(function (appDet?: any, ..._args: any[]) {
+              setAppointmentDetails(function (appDet?: any) {
                 return {
                   ...appDet,
                   slotTime: {

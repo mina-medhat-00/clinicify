@@ -20,14 +20,14 @@ import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
 import submitPost from "@/services/submit-post";
 
-function getBase64(img?: any, setPostImg?: any, ..._args: any[]) {
+function getBase64(img?: any, setPostImg?: any) {
   const reader = new FileReader();
   reader.addEventListener("load", function () {
     setPostImg(reader?.result);
   });
   reader.readAsDataURL(img);
 }
-function beforeUpload(file?: any, ..._args: any[]) {
+function beforeUpload(file?: any) {
   const isImg =
     file.type === "image/jpeg" ||
     file.type === "image/jpg" ||
@@ -44,7 +44,7 @@ function beforeUpload(file?: any, ..._args: any[]) {
   return isImg && isLt2M;
 }
 export default function Posts({ home }: any) {
-  const { socket, isMobile } = useUtilsContext();
+  const { socket } = useUtilsContext();
   const {
     fetchUserData,
     userData,
@@ -53,47 +53,49 @@ export default function Posts({ home }: any) {
   } = useUserContext();
   const { postsData, isLoading, isError, fetchPostsData } = usePostsContext();
   const [posts, setPosts] = useState([]);
+  const [prevPostsData, setPrevPostsData] = useState(postsData);
+  if (postsData !== prevPostsData) {
+    setPrevPostsData(postsData);
+    setPosts(postsData || []);
+  }
   const [content, setContent] = useState(null);
   const [postImg, setPostImg] = useState(null);
   const [showWarn, setShowWarn] = useState(false);
   const [showPost, setShowPost] = useState(false);
   useEffect(
     function () {
-      setPosts(postsData || []);
-    },
-    [postsData],
-  );
-  useEffect(function () {
-    function addPost(data?: any, ..._args: any[]) {
-      const isUpdate = data?.updateEmoji;
-      if (isUpdate) {
-        const { post_id, like_emoji, dislike, angry } = data;
-        setPosts(function (posts?: any, ..._args: any[]) {
-          return posts?.map(function (post?: any, ..._args: any[]) {
-            return post?.post_id == post_id
-              ? {
-                  ...post,
-                  like_emoji: like_emoji || 0,
-                  dislike: dislike || 0,
-                  angry: angry || 0,
-                }
-              : post;
+      function addPost(data?: any) {
+        const isUpdate = data?.updateEmoji;
+        if (isUpdate) {
+          const { post_id, like_emoji, dislike, angry } = data;
+          setPosts(function (posts?: any) {
+            return posts?.map(function (post?: any) {
+              return post?.post_id == post_id
+                ? {
+                    ...post,
+                    like_emoji: like_emoji || 0,
+                    dislike: dislike || 0,
+                    angry: angry || 0,
+                  }
+                : post;
+            });
           });
-        });
-      } else
-        setPosts(function (p?: any, ..._args: any[]) {
-          return p?.some(function ({ post_id }: any) {
-            return post_id == data?.post_id;
-          })
-            ? p
-            : [data, ...p];
-        });
-    }
-    socket?.on(`receive_post`, addPost);
-    return function () {
-      socket?.off("receive_post", addPost);
-    };
-  }, []);
+        } else
+          setPosts(function (p?: any) {
+            return p?.some(function ({ post_id }: any) {
+              return post_id == data?.post_id;
+            })
+              ? p
+              : [data, ...p];
+          });
+      }
+      socket?.on(`receive_post`, addPost);
+      return function () {
+        socket?.off("receive_post", addPost);
+      };
+    },
+    [socket],
+  );
 
   const allPosts = posts?.map(function (
     {
@@ -155,7 +157,7 @@ export default function Posts({ home }: any) {
               className="rounded-lg border scroll--v border-gray-400 resize-none"
               value={content}
               rows={6}
-              onChange={function (e?: any, ..._args: any[]) {
+              onChange={function (e?: any) {
                 setContent(e?.target?.value);
               }}
             />
@@ -167,7 +169,7 @@ export default function Posts({ home }: any) {
                 }}
                 beforeUpload={beforeUpload}
                 showUploadList={false}
-                onChange={function (inf?: any, ..._args: any[]) {
+                onChange={function (inf?: any) {
                   if (inf?.file?.status)
                     getBase64(inf?.file?.originFileObj, setPostImg);
                 }}
@@ -176,14 +178,14 @@ export default function Posts({ home }: any) {
                   <div className="relative">
                     <Image
                       className="h-24 w-full rounded-xl select-none"
-                      onClick={function (e?: any, ..._args: any[]) {
+                      onClick={function (e?: any) {
                         e.stopPropagation();
                         e.preventDefault();
                       }}
                       src={postImg}
                     />
                     <div
-                      onClick={function (e?: any, ..._args: any[]) {
+                      onClick={function (e?: any) {
                         setPostImg(null);
                         e.stopPropagation();
                       }}

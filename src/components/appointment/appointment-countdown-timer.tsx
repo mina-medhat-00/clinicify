@@ -3,7 +3,7 @@ import { useEffect } from "react";
 export default function CountdownTimer({ targetDate, order }: any) {
   useEffect(
     function () {
-      function getTimeSegmentElements(segmentElement?: any, ..._args: any[]) {
+      function getTimeSegmentElements(segmentElement?: any) {
         const segmentDisplay = segmentElement.querySelector(
           `.segment-display--${order}`,
         );
@@ -37,17 +37,12 @@ export default function CountdownTimer({ targetDate, order }: any) {
         displayElement?: any,
         overlayElement?: any,
         value?: any,
-        ..._args: any[]
       ) {
         displayElement.textContent = value;
         overlayElement.textContent = value;
       }
 
-      function updateTimeSegment(
-        segmentElement?: any,
-        timeValue?: any,
-        ..._args: any[]
-      ) {
+      function updateTimeSegment(segmentElement?: any, timeValue?: any) {
         const segmentElements = getTimeSegmentElements(segmentElement);
         if (
           parseInt(segmentElements.segmentDisplayTop.textContent, 10) ===
@@ -81,11 +76,7 @@ export default function CountdownTimer({ targetDate, order }: any) {
         );
       }
 
-      function updateTimeSection(
-        sectionID?: any,
-        timeValue?: any,
-        ..._args: any[]
-      ) {
+      function updateTimeSection(sectionID?: any, timeValue?: any) {
         const firstNumber = Math.floor(timeValue / 10) || 0;
         const secondNumber = timeValue % 10 || 0;
         const sectionElement = document.getElementById(sectionID);
@@ -96,7 +87,7 @@ export default function CountdownTimer({ targetDate, order }: any) {
         updateTimeSegment(timeSegments[1], secondNumber);
       }
 
-      function getTimeRemaining(targetDateTime?: any, ..._args: any[]) {
+      function getTimeRemaining(targetDateTime?: any) {
         const nowTime = Date.now();
         const complete = nowTime >= targetDateTime;
 

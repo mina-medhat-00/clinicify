@@ -12,7 +12,7 @@ function Table({
   rowClassName,
   showHeader = true,
   className,
-  size,
+  size: _size,
   expandable,
 }: any) {
   const [page, setPage] = useState(1);

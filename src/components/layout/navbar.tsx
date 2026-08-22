@@ -1,5 +1,5 @@
 import { Menu, EllipsisVertical, Hospital } from "lucide-react";
-import { Avatar, Button, Menu as AntMenu, Typography } from "@/components/ui";
+import { Button, Menu as AntMenu, Typography } from "@/components/ui";
 import { useEffect, useRef, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -16,18 +16,32 @@ export default function Navbar({ DoctorRef }: any) {
     query: "(max-width:678px)",
   });
   const [showMenu, setShowMenu] = useState(false);
+  const [prevIsMobile, setPrevIsMobile] = useState(isMobile);
+  if (isMobile !== prevIsMobile) {
+    setPrevIsMobile(isMobile);
+    setShowMenu(false);
+  }
   const navElement = useRef(null);
   const [navWidth, setNavWidth] = useState(290);
   const menuElement = useRef(null);
   const location = useLocation();
+  const menuItems = items(
+    navigate,
+    location,
+    DoctorRef,
+    user,
+    messageApi,
+    setUserData,
+    isMobile,
+    isLoading,
+  );
   function toggle() {
-    setShowMenu(function (state?: any, ..._args: any[]) {
+    setShowMenu(function (state?: any) {
       return !state;
     });
   }
   useEffect(
     function () {
-      setShowMenu(false);
       setTimeout(function () {
         if (menuElement?.current?.menu?.list?.style && navElement.current) {
           menuElement.current.menu.list.style.transition = "none !important";
@@ -45,7 +59,7 @@ export default function Navbar({ DoctorRef }: any) {
     [isMobile],
   );
   const mobileMenuHeight = showMenu
-    ? `${menuElement?.current?.menu?.list?.children?.length * 48}px`
+    ? `${menuItems.filter(Boolean).length * 48}px`
     : "0px";
   return (
     !(
@@ -59,6 +73,9 @@ export default function Navbar({ DoctorRef }: any) {
             ? "relative"
             : "fixed flex h-full w-1/5 min-w-72 max-w-72 flex-col"
         }`}
+        style={{
+          marginLeft: `${!isMobile ? -navWidth : 0}px`,
+        }}
       >
         {!isMobile ? (
           <>
@@ -66,7 +83,7 @@ export default function Navbar({ DoctorRef }: any) {
               className="show--navbar items-center justify-end flex
           -z-10 absolute cursor-pointer bg-blue-950 size-11 top-8 left-full -ml-4 rounded-r-full"
               onClick={function () {
-                setNavWidth(function (width?: any, ..._args: any[]) {
+                setNavWidth(function (width?: any) {
                   return width == 0 ? navElement?.current?.offsetWidth : 0;
                 });
               }}
@@ -116,16 +133,10 @@ export default function Navbar({ DoctorRef }: any) {
               ? "sm absolute top-full"
               : "overflow-x-hidden overflow-y-auto"
           }`}
-          items={items(
-            navigate,
-            location,
-            DoctorRef,
-            user,
-            messageApi,
-            setUserData,
-            isMobile,
-            isLoading,
-          )}
+          style={{
+            height: !isMobile ? undefined : mobileMenuHeight,
+          }}
+          items={menuItems}
           onClick={toggle}
         ></AntMenu>
       </div>

@@ -39,12 +39,15 @@ export default function ScheduleAppointments({
       : dayjs();
   });
   const isVerified = doctorData?.is_verified;
-  useEffect(function () {
-    if (userid) socket.emit("join_doctor", userid);
-  }, []);
   useEffect(
     function () {
-      function getSlots(data?: any, ..._args: any[]) {
+      if (userid) socket.emit("join_doctor", userid);
+    },
+    [socket, userid],
+  );
+  useEffect(
+    function () {
+      function getSlots(data?: any) {
         if (selectedDate.format("YYYY-MM-DD") == data?.date)
           fetchSlotsData(
             {
@@ -69,9 +72,9 @@ export default function ScheduleAppointments({
         socket?.off("all_slots", getSlots);
       };
     },
-    [selectedDate, userid],
+    [selectedDate, userid, fetchSlotsData, isDoctorLoading, isVerified, socket],
   );
-  function handleDate(val?: any, ..._args: any[]) {
+  function handleDate(val?: any) {
     setSelectedDate(val);
     window?.localStorage?.setItem("schedule_date", val?.format("YYYY-MM-DD"));
   }
@@ -205,14 +208,14 @@ export default function ScheduleAppointments({
         <PopUp
           show={showPop?.show}
           handleClose={function () {
-            setShowPop(function (val?: any, ..._args: any[]) {
+            setShowPop(function (val?: any) {
               return {
                 ...val,
                 show: false,
               };
             });
             setTimeout(function () {
-              setShowPop(function (val?: any, ..._args: any[]) {
+              setShowPop(function (val?: any) {
                 return {
                   ...val,
                   data: null,
@@ -250,14 +253,14 @@ export default function ScheduleAppointments({
             </div>
             <div
               onClick={function () {
-                setShowPop(function (val?: any, ..._args: any[]) {
+                setShowPop(function (val?: any) {
                   return {
                     ...val,
                     show: false,
                   };
                 });
                 setTimeout(function () {
-                  setShowPop(function (val?: any, ..._args: any[]) {
+                  setShowPop(function (val?: any) {
                     return {
                       ...val,
                       data: null,

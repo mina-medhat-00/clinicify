@@ -26,13 +26,13 @@ export default function AppointmentStart({ appointmentDetails }: any) {
           },
         },
       )
-      .then(function (res?: any, ..._args: any[]) {
+      .then(function (res?: any) {
         navigate(
           `/join/meeting/${res.data}?appointment_id=${appointmentDetails?.appointment_id}`,
         );
         setIsLoading(false);
       })
-      .catch(function (err?: any, ..._args: any[]) {
+      .catch(function (err?: any) {
         setIsLoading(false);
         if (err?.response?.status == 400) {
           messageApi.open({

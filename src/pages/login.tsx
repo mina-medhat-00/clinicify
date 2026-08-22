@@ -11,13 +11,7 @@ import { apiUrl } from "@/utils/api";
 
 const { Title } = Typography;
 
-function getMessage(
-  key?: any,
-  type?: any,
-  content?: any,
-  duration?: any,
-  ..._args: any[]
-) {
+function getMessage(key?: any, type?: any, content?: any, duration?: any) {
   return {
     key,
     type,
@@ -60,11 +54,11 @@ function signing(
         fetchUserData(true, cookies.get("accessToken"));
       }, 2000);
     })
-    .catch(function (err?: any, ..._args: any[]) {
+    .catch(function (err?: any) {
       const { isExist, isVerified } = err?.response?.data?.data || {};
       if (isExist == 0) {
         messageApi.open(getMessage(1, "error", "invalid username", 2));
-        setValidState(function (state?: any, ..._args: any[]) {
+        setValidState(function (state?: any) {
           return {
             ...state,
             invalidUser: 1,
@@ -72,7 +66,7 @@ function signing(
         });
       } else if (isVerified == 0) {
         messageApi.open(getMessage(1, "error", "incorrect password", 2));
-        setValidState(function (state?: any, ..._args: any[]) {
+        setValidState(function (state?: any) {
           return {
             ...state,
             invalidPass: 1,
@@ -107,7 +101,7 @@ export default function Login() {
         return;
       }
     },
-    [user],
+    [user, navigate],
   );
   const [, setFormValues] = useState(null);
   return (
@@ -135,7 +129,7 @@ export default function Login() {
           className="w-full sm:w-3/4 lg:w-1/2 2xl:w-1/3 bg-transparent"
           initialValues={{ remember: false }}
           autoComplete="on"
-          onFinish={function (val?: any, ..._args: any[]) {
+          onFinish={function (val?: any) {
             signing(
               val,
               messageApi,
@@ -145,7 +139,7 @@ export default function Login() {
               location,
             );
           }}
-          onValuesChange={function (c?: any, values?: any, ..._args: any[]) {
+          onValuesChange={function (c?: any, values?: any) {
             setFormValues(values);
             setValidState({ invalidUser: 0, invalidPass: 0 });
           }}

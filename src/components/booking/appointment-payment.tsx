@@ -43,7 +43,7 @@ export default function AppointmentPayment({
           .then(function ({ data }: any) {
             setClientSecret(data.clientSecret);
           })
-          .catch(function (err?: any, ..._args: any[]) {
+          .catch(function (err?: any) {
             setIsPayment(null);
             if (err?.response?.status == 401) {
               fetchUserData(true, new Cookies().get("accessToken"));
@@ -57,7 +57,14 @@ export default function AppointmentPayment({
           });
       }
     },
-    [bookedAppointment?.appointmentId, doctorId],
+    [
+      bookedAppointment,
+      bookedAppointment?.appointmentId,
+      doctorId,
+      fetchUserData,
+      messageApi,
+      setIsPayment,
+    ],
   );
 
   const appearance = {

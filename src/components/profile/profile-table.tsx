@@ -23,7 +23,7 @@ export default function ProfileTable({
               {loadingProps?.active
                 ? Array.from({
                     length: loadingProps?.numCol || 3,
-                  }).map(function (_?: any, i?: any, ..._args: any[]) {
+                  }).map(function (_?: any, i?: any) {
                     return (
                       <th
                         key={i + 1}
@@ -34,7 +34,7 @@ export default function ProfileTable({
                       </th>
                     );
                   })
-                : headers?.map(function (val?: any, i?: any, ..._args: any[]) {
+                : headers?.map(function (val?: any, i?: any) {
                     return (
                       <th
                         key={i + 1}
@@ -56,12 +56,12 @@ export default function ProfileTable({
           {loadingProps?.active
             ? Array.from({
                 length: loadingProps?.numRow || 4,
-              }).map(function (_?: any, i?: any, ..._args: any[]) {
+              }).map(function (_?: any, i?: any) {
                 return (
                   <tr key={i + 1}>
                     {Array.from({
                       length: loadingProps?.numCol || 3,
-                    }).map(function (_?: any, i?: any, ..._args: any[]) {
+                    }).map(function (_?: any, i?: any) {
                       return (
                         <th key={i + 1} scope="row" className={`p-3`}>
                           <Skeleton.Button className="w-full" active />
@@ -75,7 +75,6 @@ export default function ProfileTable({
                 { name, value, preValue }: any,
                 i?: any,
                 arr?: any,
-                ..._args: any[]
               ) {
                 return (
                   <tr key={i + 1}>

@@ -10,7 +10,6 @@ export default async function submitFeedback(
   messageApi?: any,
   setFetchFeedback?: any,
   fetchUserData?: any,
-  ..._args: any[]
 ) {
   const data = {
     rate: rateValue || 0,
@@ -36,7 +35,7 @@ export default async function submitFeedback(
         },
       },
     )
-    .then(function (res?: any, ..._args: any[]) {
+    .then(function (res?: any) {
       if (!res?.data?.data?.update)
         messageApi.open({
           key: 1,
@@ -51,11 +50,11 @@ export default async function submitFeedback(
           type: "success",
           duration: 2,
         });
-      setFetchFeedback(function (val?: any, ..._args: any[]) {
+      setFetchFeedback(function (val?: any) {
         return !val;
       });
     })
-    .catch(function (err?: any, ..._args: any[]) {
+    .catch(function (err?: any) {
       if (err?.response?.status == 401) {
         fetchUserData(true, cookies.get("accessToken"));
       } else

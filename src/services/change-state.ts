@@ -76,7 +76,7 @@ export default async function changeState(
       );
       setIsLoading(false);
     })
-    .catch(function (err?: any, ..._args: any[]) {
+    .catch(function (err?: any) {
       setIsLoading(false);
       if (err?.response?.status == 401) {
         fetchUserData(true, cookies.get("accessToken"));

@@ -9,7 +9,6 @@ export default function submitReport(
   messageApi?: any,
   fetchUserData?: any,
   form?: any,
-  ..._args: any[]
 ) {
   const data = {
     data: {
@@ -39,7 +38,7 @@ export default function submitReport(
       });
       form?.resetFields();
     })
-    .catch(function (err?: any, ..._args: any[]) {
+    .catch(function (err?: any) {
       if (err?.response?.status == 401) {
         fetchUserData(true, cookies.get("accessToken"));
       } else

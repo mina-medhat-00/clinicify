@@ -80,7 +80,7 @@ export default function Sidebar({
   setDashType,
   dashType,
 }: any) {
-  function handleCloseSideBar(value?: any, ..._args: any[]) {
+  function handleCloseSideBar(value?: any) {
     if (value) setDashType(value);
     if (activeMenu !== undefined && isMobile) {
       setActiveMenu(false);
@@ -117,14 +117,14 @@ export default function Sidebar({
             </button>
           </div>
           <div className="mt-10 ">
-            {links.map(function (item?: any, ..._args: any[]) {
+            {links.map(function (item?: any) {
               return (
                 <div key={item.title}>
                   <p className="text-gray-400 dark:text-gray-400 m-3 mt-4 uppercase">
                     {item.title}
                   </p>
                   {item.title == "Dashboard"
-                    ? item.links.map(function (link?: any, ..._args: any[]) {
+                    ? item.links.map(function (link?: any) {
                         return (
                           <button
                             key={link.key}
@@ -140,7 +140,7 @@ export default function Sidebar({
                           </button>
                         );
                       })
-                    : item.links.map(function (link?: any, ..._args: any[]) {
+                    : item.links.map(function (link?: any) {
                         return (
                           <Link
                             to={`/${link.link}`}

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { createContext, useContext, useState } from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 import type { ProfileData } from "@/types";
 import { apiUrl } from "@/utils/api";
 
@@ -8,11 +8,11 @@ export default function ProfileContextProvider({ children }: any) {
   const [isLoading, setIsLoading] = useState(true);
   const [profileData, setProfileData] = useState<ProfileData>({});
   const [isError, setIsError] = useState(false);
-  async function fetchProfileData(
+  const fetchProfileData = useCallback(async function (
     { path, username }: any,
     notWaiting?: any,
-    ..._args: any[]
   ) {
+    await Promise.resolve();
     if (!notWaiting) setIsLoading(true);
     setIsError(false);
     try {
@@ -27,7 +27,7 @@ export default function ProfileContextProvider({ children }: any) {
       setIsLoading(false);
       if (err?.response?.status !== 400) setIsError(true);
     }
-  }
+  }, []);
   return (
     <ProfileData.Provider
       value={{ isLoading, profileData, isError, fetchProfileData }}

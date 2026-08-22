@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import Cookies from "universal-cookie";
 import CountdownTimer from "@/components/appointment/appointment-countdown-timer";
 
-function adjustTime(date?: any, time?: any, timeZone?: any, ..._args: any[]) {
+function adjustTime(date?: any, time?: any, timeZone?: any) {
   return new Date(`${date} ${time} ${timeZone}`).toLocaleTimeString("en", {
     hour: "numeric",
     minute: "numeric",
@@ -89,7 +89,19 @@ export default function AppointmentTime({
         }
       }
     },
-    [schedule_date, slot_time, appointment_state],
+    [
+      schedule_date,
+      slot_time,
+      appointment_state,
+      appointmentId,
+      appointment_duration,
+      date,
+      doctorId,
+      fetchAppointmentData,
+      patientId,
+      socket,
+      timeZone,
+    ],
   );
   return (
     <div className="flex gap-4 items-center">

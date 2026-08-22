@@ -31,6 +31,7 @@ function Avatar({
         shape === "square" ? "rounded-md" : "rounded-full",
         className,
       )}
+      style={{ width: px, height: px, fontSize: px * 0.45 }}
       {...props}
     >
       {showImg ? (
@@ -243,6 +244,13 @@ function Row({ children, className, justify, align, gutter, ...props }: any) {
   return (
     <div
       className={cx("flex flex-wrap", justifyClass, alignClass, className)}
+      style={
+        typeof gutter === "number"
+          ? { gap: gutter }
+          : Array.isArray(gutter)
+            ? { columnGap: gutter[0], rowGap: gutter[1] }
+            : undefined
+      }
       {...props}
     >
       {children}
@@ -252,7 +260,11 @@ function Row({ children, className, justify, align, gutter, ...props }: any) {
 
 function Col({ children, className, span, ...props }: any) {
   return (
-    <div className={className} {...props}>
+    <div
+      className={className}
+      style={span ? { width: `${(span / 24) * 100}%` } : undefined}
+      {...props}
+    >
       {children}
     </div>
   );

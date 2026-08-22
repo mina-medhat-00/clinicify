@@ -22,13 +22,7 @@ import { cityOptions } from "@/utils/sign-data";
 import { prefixSelector } from "@/utils/signup-utils";
 import { apiUrl } from "@/utils/api";
 
-function getMessage(
-  key?: any,
-  type?: any,
-  content?: any,
-  duration?: any,
-  ..._args: any[]
-) {
+function getMessage(key?: any, type?: any, content?: any, duration?: any) {
   return {
     key,
     type,
@@ -53,12 +47,12 @@ function beforeUpload(file?: any): any {
     } else resolve(false);
   });
 }
-function normFile(e?: any, setImageUrls?: any, ..._args: any[]) {
+function normFile(e?: any, setImageUrls?: any) {
   if (Array.isArray(e)) {
     return e;
   }
   const imageUrls = [];
-  e?.fileList.map(function (file?: any, i?: any, ..._args: any[]) {
+  e?.fileList.map(function (file?: any, i?: any) {
     const reader = new FileReader();
     reader.addEventListener("load", function () {
       imageUrls[i] = reader.result;
@@ -69,14 +63,14 @@ function normFile(e?: any, setImageUrls?: any, ..._args: any[]) {
   return e?.fileList;
 }
 
-function checkUserName(uname?: any, setValidState?: any, ..._args: any[]) {
+function checkUserName(uname?: any, setValidState?: any) {
   axios
     .get(apiUrl(`/chkuname/${uname}`))
     .then(function () {
       if (uname) setValidState("success");
       else setValidState("");
     })
-    .catch(function (err?: any, ..._args: any[]) {
+    .catch(function (err?: any) {
       if (err?.response?.status === 400) setValidState("error");
       else setValidState("error1");
     });
@@ -96,14 +90,17 @@ export default function Signup() {
   const [imageUrls, setImageUrls] = useState([]);
   const navigate = useNavigate();
 
-  useEffect(function () {
-    if (user?.user_id) {
-      navigate("/");
-      return;
-    }
-  }, []);
+  useEffect(
+    function () {
+      if (user?.user_id) {
+        navigate("/");
+        return;
+      }
+    },
+    [user, navigate],
+  );
 
-  function addUser(values?: any, ..._args: any[]) {
+  function addUser(values?: any) {
     if (validState === "success" || validState === "") {
       messageApi.open(getMessage(1, "loading", "signing up...", 8));
       values.birth = values?.birth?.format("YYYY-MM-DD");
@@ -132,7 +129,7 @@ export default function Signup() {
             navigate(`/login`);
           }, 2000);
         })
-        .catch(function (err?: any, ..._args: any[]) {
+        .catch(function (err?: any) {
           if (err?.response?.data?.data?.err?.code == "ER_DUP_ENTRY") {
             setValidState("error");
             messageApi.open(
@@ -158,7 +155,7 @@ export default function Signup() {
     }
   }
 
-  function setValues(changedVal?: any, values?: any, ..._args: any[]) {
+  function setValues(changedVal?: any, values?: any) {
     const chk = /^([A-Z]|[a-z])+.{0,22}$/.test(changedVal?.username);
     if (changedVal?.username && chk) {
       setValidState("validating");
@@ -434,7 +431,7 @@ export default function Signup() {
           <Item
             name="images"
             valuePropName="fileList"
-            getValueFromEvent={function (e?: any, ..._args: any[]) {
+            getValueFromEvent={function (e?: any) {
               return normFile(e, setImageUrls);
             }}
             noStyle

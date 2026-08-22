@@ -45,7 +45,7 @@ export default async function submitMedical(
         fetchProfileData({ path: "profile", username: userName }, true);
       }, 2000);
     })
-    .catch(function (err?: any, ..._args: any[]) {
+    .catch(function (err?: any) {
       if (err?.response?.status == 401) {
         fetchUserData(true, cookies.get("accessToken"));
       } else

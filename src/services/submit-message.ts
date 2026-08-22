@@ -31,7 +31,7 @@ export default async function submitMessage(
         },
       },
     )
-    .then(function (res?: any, ..._args: any[]) {
+    .then(function (res?: any) {
       setContent("");
       if (isFirst) {
         socket.emit("add_chat", message_to);
@@ -56,7 +56,7 @@ export default async function submitMessage(
       );
       setIsLoading(false);
     })
-    .catch(function (err?: any, ..._args: any[]) {
+    .catch(function (err?: any) {
       setIsLoading(false);
       if (err?.response?.status == 401) {
         fetchUserData(true, cookies.get("accessToken"));

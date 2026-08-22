@@ -1,5 +1,11 @@
 import axios from "axios";
-import { createContext, useContext, useLayoutEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useLayoutEffect,
+  useState,
+} from "react";
 import type { User } from "@/types";
 import { apiUrl } from "@/utils/api";
 
@@ -8,7 +14,8 @@ export default function UsersContextProvider({ children }: any) {
   const [isLoading, setIsLoading] = useState(true);
   const [usersData, setUsersData] = useState<User[] | null>(null);
   const [isError, setIsError] = useState(false);
-  async function fetchUsersData(notWaiting?: any, ..._args: any[]) {
+  const fetchUsersData = useCallback(async function (notWaiting?: any) {
+    await Promise.resolve();
     if (!notWaiting) setIsLoading(true);
     setIsError(false);
     try {
@@ -21,14 +28,22 @@ export default function UsersContextProvider({ children }: any) {
       setUsersData(data?.data);
       setIsLoading(false);
       return data;
-    } catch (err) {
+    } catch {
       setIsLoading(false);
       setIsError(true);
     }
-  }
-  useLayoutEffect(function () {
-    fetchUsersData();
   }, []);
+  useLayoutEffect(
+    function () {
+      const timeId = setTimeout(function () {
+        fetchUsersData(true);
+      });
+      return function () {
+        clearTimeout(timeId);
+      };
+    },
+    [fetchUsersData],
+  );
   return (
     <UsersData.Provider
       value={{ isLoading, usersData, isError, fetchUsersData }}

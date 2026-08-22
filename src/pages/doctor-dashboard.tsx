@@ -24,13 +24,15 @@ export default function DoctorDashboard({ setNavActive }: any) {
     fetchUserData,
   } = useUserContext();
   const userid = user?.user_id;
-  user?.user_name;
   const { dashboardData, isLoading, fetchDashboardData } =
     useDashboardContext();
-  useEffect(function () {
-    const token = new Cookies().get("accessToken");
-    fetchDashboardData(true, token);
-  }, []);
+  useEffect(
+    function () {
+      const token = new Cookies().get("accessToken");
+      fetchDashboardData(true, token);
+    },
+    [fetchDashboardData],
+  );
   const isMobile = useMediaQuery({
     query: "(max-width:678px)",
   });
@@ -43,13 +45,16 @@ export default function DoctorDashboard({ setNavActive }: any) {
       if (dashType == "chat") setNavActive(false);
       else setNavActive(true);
     },
-    [dashType],
+    [dashType, setNavActive],
   );
-  useEffect(function () {
-    return function () {
-      setNavActive(true);
-    };
-  }, []);
+  useEffect(
+    function () {
+      return function () {
+        setNavActive(true);
+      };
+    },
+    [setNavActive],
+  );
   const isVerified = dashboardData?.is_verified;
   return (
     <div className={`${isMobile ? "flex" : ""} grow overflow-hidden  w-full`}>

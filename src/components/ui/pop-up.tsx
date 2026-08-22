@@ -11,14 +11,13 @@ export default function PopUp({
   customStyle = {},
 }: any) {
   const [showPop, setShowPop] = useState(false);
+  if (show && !showPop) setShowPop(true);
   useEffect(
     function () {
-      let timeId;
-      if (!show) {
-        timeId = setTimeout(function () {
-          setShowPop(show);
-        }, 500);
-      } else setShowPop(show);
+      if (show) return;
+      const timeId = setTimeout(function () {
+        setShowPop(false);
+      }, 500);
       return function () {
         clearTimeout(timeId);
       };

@@ -1,16 +1,22 @@
 import axios from "axios";
-import { createContext, useContext, useLayoutEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useLayoutEffect,
+  useState,
+} from "react";
 import type { Post } from "@/types";
 import { apiUrl } from "@/utils/api";
 
-function handleQuery(obj?: any, ..._args: any[]) {
+function handleQuery(obj?: any) {
   return !obj
     ? ""
     : Object.entries(obj)
         .filter(function ([_, val]: any) {
           return val || val === 0;
         })
-        .map(function ([name, val]: any, i?: any, ..._args: any[]) {
+        .map(function ([name, val]: any, i?: any) {
           return i == 0 ? `?${name}=${val}` : `${name}=${val}`;
         })
         .join("&");
@@ -24,7 +30,12 @@ export default function PostsContextProvider({
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [postsData, setPostsData] = useState<Post[] | null>(null);
-  async function fetchPostsData(query?: any, noRender?: any, ..._args: any[]) {
+  const queryKey = JSON.stringify(query ?? null);
+  const fetchPostsData = useCallback(async function (
+    query?: any,
+    noRender?: any,
+  ) {
+    await Promise.resolve();
     if (!noRender) setIsLoading(true);
     try {
       const { data } = await axios.request({
@@ -44,10 +55,22 @@ export default function PostsContextProvider({
       setIsLoading(false);
       throw err;
     }
-  }
-  useLayoutEffect(function () {
-    if (!noFirstRender) fetchPostsData(query);
   }, []);
+  useLayoutEffect(
+    function () {
+      if (noFirstRender) return;
+      const timeId = setTimeout(function () {
+        fetchPostsData(
+          queryKey === "null" ? undefined : JSON.parse(queryKey),
+          true,
+        );
+      });
+      return function () {
+        clearTimeout(timeId);
+      };
+    },
+    [fetchPostsData, noFirstRender, queryKey],
+  );
   return (
     <PostsData.Provider
       value={{ isLoading, isError, postsData, fetchPostsData }}

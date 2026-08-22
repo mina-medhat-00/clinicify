@@ -110,7 +110,6 @@ my-5 rounded-xl"
         {profileDetails?.map(function (
           { data, headers, headerColor, propColor }: any,
           i?: any,
-          ..._args: any[]
         ) {
           return (
             <UserDetails
@@ -143,7 +142,7 @@ my-5 rounded-xl"
         {isAuth && (
           <div
             onClick={function () {
-              setHandleDrawer(function (draw?: any, ..._args: any[]) {
+              setHandleDrawer(function (draw?: any) {
                 return {
                   ...draw,
                   isOpen: true,

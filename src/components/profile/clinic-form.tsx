@@ -59,7 +59,7 @@ export default function ClinicForm({
     <div className="bg-gray-200 p-2 w-full rounded-lg">
       <Form
         initialValues={{ ...initialValues }}
-        onFinish={function (values?: any, ..._args: any[]) {
+        onFinish={function (values?: any) {
           return submitClinic(
             values,
             messageApi,
@@ -123,11 +123,7 @@ export default function ClinicForm({
             </div>
           </Item>
         </div>
-        {editData?.map(function (
-          { data, headers }: any,
-          i?: any,
-          ..._args: any[]
-        ) {
+        {editData?.map(function ({ data, headers }: any, i?: any) {
           return <ProfileTable key={i + 1} data={data} headers={headers} />;
         })}
         <div className="flex mt-2 justify-end">

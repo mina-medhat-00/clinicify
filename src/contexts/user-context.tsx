@@ -2,7 +2,15 @@ import { message } from "@/components/ui";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import type { AuthTokenPayload, User } from "@/types";
-import { createContext, useContext, useLayoutEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
 import { apiUrl } from "@/utils/api";
@@ -16,74 +24,95 @@ export default function UserContextProvider({ children, token }: any) {
   const [messageApi, contextHolder] = message.useMessage();
   const [userData, setUserData] = useState<User | null>(null);
   const [isError, setIsError] = useState(false);
-  async function fetchUserData(
-    active?: any,
-    directToken?: any,
-    directError?: any,
-    noRender?: any,
-    ..._args: any[]
-  ) {
-    if (!noRender) setIsLoading(true);
-    if (!token && !directToken) {
-      setUserData(null);
-      return setIsLoading(false);
-    }
-    try {
-      if (directError) throw directError;
-      const { data } = await axios.request({
-        url: apiUrl("/user"),
-        ...{
-          headers: { Authorization: `Bearer ${active ? directToken : token}` },
-          timeout: 10000,
-        },
-      });
-      setUserData(data?.data);
-      setIsLoading(false);
-      setIsError(false);
-      return data;
-    } catch (err) {
-      const msg = err?.response?.data?.data?.name;
-      switch (msg) {
-        case "TokenExpiredError": {
-          let userData;
-          setUserData(function (dat?: any, ..._args: any[]) {
-            userData = dat;
-            return dat;
-          });
-          if (userData && !location?.pathname.includes("login")) {
-            setTokenExpired(true);
-            messageApi.open({
-              key: 1,
-              type: "error",
-              content: "your time has expired, redirecting to login page ...",
-              duration: 3,
-            });
-            setTimeout(function () {
-              setUserData(null);
-              navigate(`/login?redirect=${location?.pathname}`);
-            }, 3000);
-          }
-          const cookie = new Cookies();
-          cookie.remove("accessToken");
-          break;
-        }
-        case "JsonWebTokenError":
-          setUserData(null);
-          break;
-        default:
-          setIsError(true);
-          setUserData(null);
-          break;
+  const pathname = location?.pathname;
+  const pathnameRef = useRef(pathname);
+  useEffect(
+    function () {
+      pathnameRef.current = pathname;
+    },
+    [pathname],
+  );
+  const fetchUserData = useCallback(
+    async function (
+      active?: any,
+      directToken?: any,
+      directError?: any,
+      noRender?: any,
+    ) {
+      await Promise.resolve();
+      if (!noRender) setIsLoading(true);
+      if (!token && !directToken) {
+        setUserData(null);
+        return setIsLoading(false);
       }
-      setIsLoading(false);
-    }
-  }
-  useLayoutEffect(function () {
-    fetchUserData(true, new Cookies().get("accessToken"));
-  }, []);
+      try {
+        if (directError) throw directError;
+        const { data } = await axios.request({
+          url: apiUrl("/user"),
+          ...{
+            headers: {
+              Authorization: `Bearer ${active ? directToken : token}`,
+            },
+            timeout: 10000,
+          },
+        });
+        setUserData(data?.data);
+        setIsLoading(false);
+        setIsError(false);
+        return data;
+      } catch (err) {
+        const msg = err?.response?.data?.data?.name;
+        switch (msg) {
+          case "TokenExpiredError": {
+            let userData;
+            setUserData(function (dat?: any) {
+              userData = dat;
+              return dat;
+            });
+            if (userData && !pathnameRef.current.includes("login")) {
+              setTokenExpired(true);
+              messageApi.open({
+                key: 1,
+                type: "error",
+                content: "your time has expired, redirecting to login page ...",
+                duration: 3,
+              });
+              setTimeout(function () {
+                setUserData(null);
+                navigate(`/login?redirect=${pathnameRef.current}`);
+              }, 3000);
+            }
+            const cookie = new Cookies();
+            cookie.remove("accessToken");
+            break;
+          }
+          case "JsonWebTokenError":
+            setUserData(null);
+            break;
+          default:
+            setIsError(true);
+            setUserData(null);
+            break;
+        }
+        setIsLoading(false);
+      }
+    },
+    [token, navigate, messageApi],
+  );
   useLayoutEffect(
     function () {
-      const accessToken = new Cookies().get("accessToken");
+      const timeId = setTimeout(function () {
+        fetchUserData(true, new Cookies().get("accessToken"), null, true);
+      });
+      return function () {
+        clearTimeout(timeId);
+      };
+    },
+    [fetchUserData],
+  );
+  useLayoutEffect(
+    function () {
+      const accessToken = token || new Cookies().get("accessToken");
       if (!accessToken) return;
       let timeId;
       async function handleExpired() {
@@ -104,7 +133,7 @@ export default function UserContextProvider({ children, token }: any) {
         clearTimeout(timeId);
       };
     },
-    [new Cookies().get("accessToken")],
+    [token, fetchUserData],
   );
   return (
     <UserData.Provider

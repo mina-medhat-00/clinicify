@@ -1,6 +1,6 @@
 import { Popover } from "@/components/ui";
 import { Bell, ChevronDown, Menu, MessageSquare } from "lucide-react";
-import { useEffect } from "react";
+import { useState } from "react";
 
 function NavButton({ name, title, customFunc, icon, dotColor, dashType }: any) {
   return (
@@ -18,7 +18,10 @@ function NavButton({ name, title, customFunc, icon, dotColor, dashType }: any) {
           dashType == name ? "bg-gray-700 text-gray-100" : "hover:bg-gray-200"
         }`}
       >
-        <span className="absolute inline-flex rounded-full h-2 w-2 right-2 top-2" />
+        <span
+          className="absolute inline-flex rounded-full h-2 w-2 right-2 top-2"
+          style={dotColor ? { background: dotColor } : undefined}
+        />
         {icon}
       </button>
     </Popover>
@@ -33,16 +36,11 @@ export default function Navbar({
   setDashType,
   user,
 }: any) {
-  useEffect(
-    function () {
-      if (isMobile) {
-        setActiveMenu(false);
-      } else {
-        setActiveMenu(true);
-      }
-    },
-    [isMobile],
-  );
+  const [prevIsMobile, setPrevIsMobile] = useState<boolean | null>(null);
+  if (prevIsMobile !== isMobile) {
+    setPrevIsMobile(isMobile);
+    setActiveMenu(!isMobile);
+  }
 
   function handleActiveMenu() {
     setActiveMenu(!activeMenu);

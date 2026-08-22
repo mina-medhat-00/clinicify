@@ -46,7 +46,7 @@ export default function DashNav({ setDashType, dashType }: any) {
           isMobile ? "flex-col justify-start" : "w-full"
         }`}
       >
-        {items?.map(function ({ icon, name }: any, i?: any, ..._args: any[]) {
+        {items?.map(function ({ icon, name }: any, i?: any) {
           return (
             <Popover
               placement={isMobile ? "rightBottom" : undefined}
@@ -89,9 +89,15 @@ export default function DashNav({ setDashType, dashType }: any) {
           );
         })}
         <div
-          className={`absolute bg-gray-600 opacity-0 transition-all duration-500 ${
-            isMobile ? "top-0 left-full h-1/5 w-1" : "top-full left-0 h-1 w-1/5"
+          className={`absolute bg-gray-600 transition-all duration-500 ${
+            isMobile ? "left-full h-1/5 w-1" : "top-full h-1 w-1/5"
           }`}
+          style={{
+            opacity: hoverIdx == null ? 0 : 1,
+            ...(isMobile
+              ? { top: `${(hoverIdx || 0) * 20}%` }
+              : { left: `${(hoverIdx || 0) * 20}%` }),
+          }}
         ></div>
       </div>
     </div>

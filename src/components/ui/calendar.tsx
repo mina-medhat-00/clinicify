@@ -1,6 +1,6 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import dayjs from "dayjs";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { cx, hasWidthClass } from "@/components/ui/cx";
 
 function DatePicker({
@@ -34,12 +34,11 @@ function Calendar({ value, onSelect, fullscreen }: any) {
   const [cursor, setCursor] = useState(function () {
     return selected.startOf("month");
   });
-  useEffect(
-    function () {
-      if (value) setCursor(dayjs(value).startOf("month"));
-    },
-    [value],
-  );
+  const [prevValue, setPrevValue] = useState(value);
+  if (value !== prevValue) {
+    setPrevValue(value);
+    if (value) setCursor(dayjs(value).startOf("month"));
+  }
   const weeks = useMemo(
     function () {
       const start = cursor.startOf("month").startOf("week");

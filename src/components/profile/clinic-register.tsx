@@ -20,7 +20,7 @@ export default function ClinicRegister() {
         initialValues={{
           prefix: "20",
         }}
-        onFinish={function (values?: any, ..._args: any[]) {
+        onFinish={function (values?: any) {
           submitClinic(
             values,
             messageApi,

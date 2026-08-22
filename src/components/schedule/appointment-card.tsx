@@ -12,7 +12,7 @@ import {
   Video,
 } from "lucide-react";
 
-function adjustTime(date?: any, time?: any, timeZone?: any, ..._args: any[]) {
+function adjustTime(date?: any, time?: any, timeZone?: any) {
   return new Date(`${date} ${time} ${timeZone}`).toLocaleTimeString("en", {
     hour: "numeric",
     minute: "numeric",

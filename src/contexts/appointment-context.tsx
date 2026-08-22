@@ -1,5 +1,5 @@
 import axios from "axios";
-import { createContext, useContext, useState } from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 import { useUserContext } from "@/contexts/user-context";
 import type { Appointment } from "@/types";
 import { apiUrl } from "@/utils/api";
@@ -15,93 +15,97 @@ export default function AppointmentContextProvider({
   const [appointmentData, setAppointmentData] = useState<Appointment[] | null>(
     null,
   );
-  async function fetchAppointmentData(
-    active?: any,
-    directToken?: any,
-    done?: any,
-    postData?: any,
-    query?: any,
-    noWaiting?: any,
-  ) {
-    if (!noWaiting) setIsLoading(true);
-    if (!token && !active) {
-      setAppointmentData(null);
-      return setIsLoading(false);
-    }
-    try {
-      if (done) {
-        const { data } = await axios.post(
-          apiUrl(
-            `/update/appointment${
-              isDoctor || query?.doctor
-                ? `?doctor=true${query.date && `&date=${query.date}`}`
-                : `?date=${query?.date}`
-            }`,
-          ),
-          { data: postData },
-          {
-            headers: {
-              Authorization: `Bearer ${active ? directToken : token}`,
-            },
-            timeout: 10000,
-          },
-        );
-        setAppointmentData(data?.data);
-        setIsLoading(false);
-        return data;
-      } else {
-        const { data } = await axios.request({
-          url: apiUrl(
-            `/get/appointments?${
-              query?.date ? `&date=${query?.date}` : ""
-            }${query?.doctorId ? `&doctor_id=${query?.doctorId}` : ""}${
-              isDoctor || query?.doctor ? `&doctor=true` : ""
-            }`,
-          ),
-          ...{
-            headers: {
-              Authorization: `Bearer ${active ? directToken : token}`,
-            },
-            timeout: 10000,
-          },
-        });
-        setAppointmentData(data?.data);
-        setIsLoading(false);
+  const fetchAppointmentData = useCallback(
+    async function (
+      active?: any,
+      directToken?: any,
+      done?: any,
+      postData?: any,
+      query?: any,
+      noWaiting?: any,
+    ) {
+      await Promise.resolve();
+      if (!noWaiting) setIsLoading(true);
+      if (!token && !active) {
+        setAppointmentData(null);
+        return setIsLoading(false);
       }
-    } catch (err) {
-      const msg = err?.response?.data?.data?.name;
-      switch (msg) {
-        case "TokenExpiredError":
-          fetchUserData(true, null, {
-            response: {
-              data: {
-                data: {
-                  name: "TokenExpiredError",
-                },
+      try {
+        if (done) {
+          const { data } = await axios.post(
+            apiUrl(
+              `/update/appointment${
+                isDoctor || query?.doctor
+                  ? `?doctor=true${query.date && `&date=${query.date}`}`
+                  : `?date=${query?.date}`
+              }`,
+            ),
+            { data: postData },
+            {
+              headers: {
+                Authorization: `Bearer ${active ? directToken : token}`,
               },
+              timeout: 10000,
+            },
+          );
+          setAppointmentData(data?.data);
+          setIsLoading(false);
+          return data;
+        } else {
+          const { data } = await axios.request({
+            url: apiUrl(
+              `/get/appointments?${
+                query?.date ? `&date=${query?.date}` : ""
+              }${query?.doctorId ? `&doctor_id=${query?.doctorId}` : ""}${
+                isDoctor || query?.doctor ? `&doctor=true` : ""
+              }`,
+            ),
+            ...{
+              headers: {
+                Authorization: `Bearer ${active ? directToken : token}`,
+              },
+              timeout: 10000,
             },
           });
-          break;
-        case "JsonWebTokenError":
-          setAppointmentData(null);
-          fetchUserData(true, null, {
-            response: {
-              data: {
+          setAppointmentData(data?.data);
+          setIsLoading(false);
+        }
+      } catch (err) {
+        const msg = err?.response?.data?.data?.name;
+        switch (msg) {
+          case "TokenExpiredError":
+            fetchUserData(true, null, {
+              response: {
                 data: {
-                  name: "JsonWebTokenError",
+                  data: {
+                    name: "TokenExpiredError",
+                  },
                 },
               },
-            },
-          });
-          break;
-        default:
-          setAppointmentData(null);
-          break;
+            });
+            break;
+          case "JsonWebTokenError":
+            setAppointmentData(null);
+            fetchUserData(true, null, {
+              response: {
+                data: {
+                  data: {
+                    name: "JsonWebTokenError",
+                  },
+                },
+              },
+            });
+            break;
+          default:
+            setAppointmentData(null);
+            break;
+        }
+        setIsLoading(false);
+        throw err;
       }
-      setIsLoading(false);
-      throw err;
-    }
-  }
+    },
+    [token, isDoctor, fetchUserData],
+  );
 
   return (
     <AppointmentData.Provider

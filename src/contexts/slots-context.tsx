@@ -1,5 +1,5 @@
 import axios from "axios";
-import { createContext, useContext, useState } from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 import type { SlotsData } from "@/types";
 import { apiUrl } from "@/utils/api";
 
@@ -12,11 +12,11 @@ export default function SlotsContextProvider({ children }: any) {
     totalSlots: null,
     freeSlots: null,
   });
-  async function fetchSlotsData(
+  const fetchSlotsData = useCallback(async function (
     postData?: any,
     noLoading?: any,
-    ..._args: any[]
   ) {
+    await Promise.resolve();
     if (!noLoading) setIsLoading(true);
     try {
       const { data } = await axios.post(
@@ -37,7 +37,7 @@ export default function SlotsContextProvider({ children }: any) {
       setIsLoading(false);
       throw err;
     }
-  }
+  }, []);
 
   return (
     <SlotsData.Provider

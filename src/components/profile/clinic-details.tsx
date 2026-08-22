@@ -89,7 +89,6 @@ my-5 rounded-xl"
       {clinicDetails?.map(function (
         { data, headers, headerColor, propColor, icon }: any,
         i?: any,
-        ..._args: any[]
       ) {
         return (
           <ClinicTable
@@ -107,7 +106,7 @@ my-5 rounded-xl"
       {!admin && (
         <div
           onClick={function () {
-            setHandleDrawer(function (draw?: any, ..._args: any[]) {
+            setHandleDrawer(function (draw?: any) {
               return {
                 ...draw,
                 isOpen: true,

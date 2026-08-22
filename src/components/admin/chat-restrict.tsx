@@ -13,9 +13,12 @@ export default function ChatRestrict({ userid }: any) {
   const [, setIsLoading] = useState<any>(null);
   const { messageApi } = useUtilsContext();
   const { fetchUserData } = useUserContext();
-  useEffect(function () {
-    fetchChatData(true, new Cookies().get("accessToken"), { userid });
-  }, []);
+  useEffect(
+    function () {
+      fetchChatData(true, new Cookies().get("accessToken"), { userid });
+    },
+    [fetchChatData, userid],
+  );
   return isLoading ? (
     <Loader />
   ) : chatData?.length ? (
@@ -58,7 +61,7 @@ export default function ChatRestrict({ userid }: any) {
                 className={`${
                   !is_open ? "bg-blue-400" : "bg-red-400"
                 } shadow-lg box-content bg-white border-[0.25px] border-solid border-white`}
-                onChange={function (is_open?: any, ..._args: any[]) {
+                onChange={function (is_open?: any) {
                   changeState(
                     fetchUserData,
                     fetchChatData,

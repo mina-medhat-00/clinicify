@@ -1,22 +1,20 @@
 import { Button, Input, Popover, Select } from "@/components/ui";
 import { Clock, Plus, PoundSterling, Trash2 } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import CountdownTimer from "@/components/schedule/schedule-countdown-timer";
 import scheduleAppointments from "@/services/schedule-appointments";
 
-function adjustHMin(val?: any, ..._args: any[]) {
+function adjustHMin(val?: any) {
   return val > 9 ? val : "0" + val;
 }
-function chkTimeSlot(data?: any, ..._args: any[]) {
+function chkTimeSlot(data?: any) {
   return data?.every(function (
     { slotTime: t1, appointmentDuration: duration1 }: any,
     i1?: any,
-    ..._args: any[]
   ) {
     return data?.every(function (
       { slotTime: t2, appointmentDuration: duration2 }: any,
       i2?: any,
-      ..._args: any[]
     ) {
       return i1 == i2
         ? true
@@ -27,7 +25,7 @@ function chkTimeSlot(data?: any, ..._args: any[]) {
     });
   });
 }
-function chkUpToDate(data?: any, date?: any, timeZone?: any, ..._args: any[]) {
+function chkUpToDate(data?: any, date?: any, timeZone?: any) {
   return data?.every(function ({ slotTime: t }: any) {
     return (
       new Date(
@@ -40,7 +38,7 @@ function chkUpToDate(data?: any, date?: any, timeZone?: any, ..._args: any[]) {
     );
   });
 }
-function chkFillingData(data?: any, ..._args: any[]) {
+function chkFillingData(data?: any) {
   return !data?.some(function ({
     appointmentDuration,
     appointmentType,
@@ -49,7 +47,7 @@ function chkFillingData(data?: any, ..._args: any[]) {
     return !appointmentDuration || !appointmentType || !appointmentFees;
   });
 }
-function handleDetails(editAppointment?: any, ..._args: any[]) {
+function handleDetails(editAppointment?: any) {
   return {
     ...editAppointment,
     slotTime: {
@@ -83,9 +81,11 @@ function AppointmentDetails({
           appointmentFees: doctorData?.fees || 300,
         },
   );
-  useEffect(
-    function () {
-      return setAppointDetails(function (val?: any, ..._args: any[]) {
+  const [prevAppointmentDetails, setPrevAppointmentDetails] = useState(null);
+  if (appointmentDetails !== prevAppointmentDetails) {
+    setPrevAppointmentDetails(appointmentDetails);
+    if (typeof setAppointDetails === "function") {
+      setAppointDetails(function (val?: any) {
         val[order - 1] = {
           ...appointmentDetails,
           slotTime: `${adjustHMin(appointmentDetails.slotTime.h)}:${adjustHMin(
@@ -94,9 +94,8 @@ function AppointmentDetails({
         };
         return new Array(...val);
       });
-    },
-    [appointmentDetails],
-  );
+    }
+  }
   return (
     <div className="grow bg-gray-100 p-2 rounded-lg shadow-sm border-2 border-gray-300">
       <div className="border-b-2 flex items-center justify-between border-gray-200 mb-2">
@@ -106,11 +105,11 @@ function AppointmentDetails({
         {appointmentElements.length > 1 && (
           <div
             onClick={function () {
-              setAppointDetails(function (val?: any, ..._args: any[]) {
+              setAppointDetails(function (val?: any) {
                 val.splice(order - 1, 1);
                 return new Array(...val);
               });
-              setAppointmentElements(function (ele?: any, ..._args: any[]) {
+              setAppointmentElements(function (ele?: any) {
                 ele.splice(order - 1, 1);
                 return new Array(...ele);
               });
@@ -154,11 +153,8 @@ function AppointmentDetails({
               <Select
                 placeholder="Appointment Duration"
                 className="my-2 w-full text-center"
-                onChange={function (value?: any, ..._args: any[]) {
-                  setAppointmentDetails(function (
-                    appDet?: any,
-                    ..._args: any[]
-                  ) {
+                onChange={function (value?: any) {
+                  setAppointmentDetails(function (appDet?: any) {
                     return {
                       ...appDet,
                       appointmentDuration: value,
@@ -223,11 +219,8 @@ function AppointmentDetails({
                 name={`appointmentFees--${order}`}
                 placeholder="Appointment Fees"
                 className="w-full rounded-sm my-2 text-center"
-                onChange={function (e?: any, ..._args: any[]) {
-                  setAppointmentDetails(function (
-                    appDet?: any,
-                    ..._args: any[]
-                  ) {
+                onChange={function (e?: any) {
+                  setAppointmentDetails(function (appDet?: any) {
                     return {
                       ...appDet,
                       appointmentFees: e?.target?.value,
@@ -250,7 +243,7 @@ function AppointmentDetails({
         <div className="my-4 flex justify-center sm:flex-nowrap gap-4 sm:gap-6 border border-white bg-gray-200 p-2 rounded-lg shadow-md">
           <div
             onClick={function () {
-              setAppointmentDetails(function (val?: any, ..._args: any[]) {
+              setAppointmentDetails(function (val?: any) {
                 return {
                   ...val,
                   appointmentType: "chat",
@@ -260,8 +253,8 @@ function AppointmentDetails({
             className="flex cursor-pointer justify-center items-center gap-2"
           >
             <input
-              onChange={function (e?: any, ..._args: any[]) {
-                setAppointmentDetails(function (appDet?: any, ..._args: any[]) {
+              onChange={function (e?: any) {
+                setAppointmentDetails(function (appDet?: any) {
                   return {
                     ...appDet,
                     appointmentType: e.target.value,
@@ -282,7 +275,7 @@ function AppointmentDetails({
           </div>
           <div
             onClick={function () {
-              setAppointmentDetails(function (val?: any, ..._args: any[]) {
+              setAppointmentDetails(function (val?: any) {
                 return {
                   ...val,
                   appointmentType: "inClinic",
@@ -298,8 +291,8 @@ function AppointmentDetails({
               checked={
                 appointmentDetails.appointmentType == "inClinic" ? true : false
               }
-              onChange={function (e?: any, ..._args: any[]) {
-                setAppointmentDetails(function (appDet?: any, ..._args: any[]) {
+              onChange={function (e?: any) {
+                setAppointmentDetails(function (appDet?: any) {
                   return {
                     ...appDet,
                     appointmentType: e.target.value,
@@ -314,7 +307,7 @@ function AppointmentDetails({
           </div>
           <div
             onClick={function () {
-              setAppointmentDetails(function (val?: any, ..._args: any[]) {
+              setAppointmentDetails(function (val?: any) {
                 return {
                   ...val,
                   appointmentType: "videoCall",
@@ -330,8 +323,8 @@ function AppointmentDetails({
               checked={
                 appointmentDetails.appointmentType == "videoCall" ? true : false
               }
-              onChange={function (e?: any, ..._args: any[]) {
-                setAppointmentDetails(function (appDet?: any, ..._args: any[]) {
+              onChange={function (e?: any) {
+                setAppointmentDetails(function (appDet?: any) {
                   return {
                     ...appDet,
                     appointmentType: e.target.value,
@@ -363,7 +356,6 @@ export default function AppointmentForm({
   timeZone,
 }: any) {
   const [appointmentDetails, setAppointmentDetails] = useState([]);
-  const [isDone, setIsDone] = useState(false);
   const [appointmentElements, setAppointmentElements] = useState([
     <AppointmentDetails />,
   ]);
@@ -392,23 +384,12 @@ export default function AppointmentForm({
         );
       })
     : true;
-  useEffect(
-    function () {
-      setIsDone(function () {
-        return isFilled && isAdjusted && isUpToDate && isNotMatched;
-      });
-    },
-    [isFilled, isAdjusted, isUpToDate, isNotMatched],
-  );
+  const isDone = isFilled && isAdjusted && isUpToDate && isNotMatched;
   return (
     <div className="p-2 sm:p-4">
       <div className="scroll--h scroll--v overflow-auto max-h-96">
         <div className="flex flex-wrap gap-2">
-          {appointmentElements.map(function (
-            ele?: any,
-            i?: any,
-            ..._args: any[]
-          ) {
+          {appointmentElements.map(function (ele?: any, i?: any) {
             return React.cloneElement(ele, {
               order: i + 1,
               key: i + 1,
@@ -428,7 +409,7 @@ export default function AppointmentForm({
           <div className="text-left">
             <div
               onClick={function () {
-                setAppointmentElements(function (val?: any, ..._args: any[]) {
+                setAppointmentElements(function (val?: any) {
                   return [
                     ...val,
                     <AppointmentDetails doctorData={doctorData} />,
@@ -485,7 +466,7 @@ export default function AppointmentForm({
                   fetchSlotsData,
                   userid,
                   fetchUserData,
-                  setIsDone,
+                  function () {},
                   null,
                   isEdit,
                   [editAppointment?.appointmentId],

@@ -21,7 +21,6 @@ function getItem(
   icon?: any,
   children?: any,
   type?: any,
-  ..._args: any[]
 ) {
   return {
     key,
@@ -31,12 +30,7 @@ function getItem(
     type,
   };
 }
-function toDoctors(
-  val?: any,
-  navigate?: any,
-  DoctorRef?: any,
-  ..._args: any[]
-) {
+function toDoctors(val?: any, navigate?: any, DoctorRef?: any) {
   let specialty = val.domEvent.target.getAttribute("specialty");
   navigate("/doctors");
   const id = setInterval(function () {
@@ -139,7 +133,7 @@ export default function items(
             </div>,
             "sub30",
           ),
-          onClick: function (val?: any, ..._args: any[]) {
+          onClick: function (val?: any) {
             toDoctors(val, navigate, DoctorRef);
           },
         },
@@ -150,7 +144,7 @@ export default function items(
             null,
             subItems(),
           ),
-          onClick: function (val?: any, ..._args: any[]) {
+          onClick: function (val?: any) {
             toDoctors(val, navigate, DoctorRef);
           },
         },

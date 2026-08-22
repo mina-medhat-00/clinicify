@@ -33,7 +33,7 @@ export default async function submitPost(
         },
       },
     )
-    .then(function (res?: any, ..._args: any[]) {
+    .then(function (res?: any) {
       messageApi.open({
         key: 1,
         content: "thank you for your question",
@@ -59,7 +59,7 @@ export default async function submitPost(
       });
       fetchPostsData(null, true);
     })
-    .catch(function (err?: any, ..._args: any[]) {
+    .catch(function (err?: any) {
       if (err?.response?.status == 401) {
         fetchUserData(true, cookies.get("accessToken"));
       } else

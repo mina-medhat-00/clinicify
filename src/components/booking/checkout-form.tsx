@@ -60,14 +60,14 @@ export default function CheckoutForm({
     [stripe],
   );
 
-  async function handleSubmit(e?: any, ..._args: any[]) {
+  async function handleSubmit(e?: any) {
     e.preventDefault();
     if (!stripe || !elements) {
       return;
     }
 
     setIsLoading(true);
-    const result = await new Promise(function (resolve?: any, ..._args: any[]) {
+    const result = await new Promise(function (resolve?: any) {
       return bookAppointment(
         selectedDate,
         bookedAppointment?.slotTime,
@@ -89,7 +89,7 @@ export default function CheckoutForm({
         elements,
         redirect: "if_required",
       })
-      .then(function (paymentIntent?: any, ..._args: any[]) {
+      .then(function (paymentIntent?: any) {
         const pi = paymentIntent?.paymentIntent;
         if (pi) {
           bookAppointment(
@@ -139,7 +139,7 @@ export default function CheckoutForm({
       >
         <LinkAuthenticationElement
           id="link-authentication-element"
-          onChange={function (e?: any, ..._args: any[]) {
+          onChange={function (e?: any) {
             setEmail(e.value.email);
           }}
         />

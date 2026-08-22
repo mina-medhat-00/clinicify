@@ -11,12 +11,7 @@ import { useChatContext } from "@/contexts/chat-context";
 import { useMessagesContext } from "@/contexts/messages-context";
 import submitMessage from "@/services/submit-message";
 
-function getDate(
-  issued_date?: any,
-  issued_time?: any,
-  timeZone?: any,
-  ..._args: any[]
-) {
+function getDate(issued_date?: any, issued_time?: any, timeZone?: any) {
   return issued_date
     ? dayjs(`${issued_date} ${issued_time} ${timeZone}`).format("YYYY-DD-MM")
     : null;
@@ -42,31 +37,41 @@ export default function Messages({
   } = useMessagesContext();
   const { fetchChatData, isError: isChatError } = useChatContext();
   const [messages, setMessages] = useState([]);
+  const [prevMessagesData, setPrevMessagesData] = useState(messagesData);
+  if (messagesData !== prevMessagesData) {
+    setPrevMessagesData(messagesData);
+    setMessages(messagesData || []);
+  }
   const messageContainer = useRef(null);
   const [message, setMessage] = useState<any>(null);
   const [emojiOpen, setEmojiOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const isError = isChatError || isMessageError;
-  useEffect(function () {
-    if (withUser)
-      fetchMessagesData(new Cookies().get("accessToken"), {
-        message_to: withUser,
-      });
-    function addMessage(m1?: any, ..._args: any[]) {
-      setMessages(function (m?: any, ..._args: any[]) {
-        const m2 = new Array(...(m ? m : []));
-        return m2?.splice(m2?.length - 2)?.some(function ({ message_id }: any) {
-          return m1?.message_id == message_id;
-        })
-          ? m
-          : [...m, m1];
-      });
-    }
-    socket?.on("receive_message", addMessage);
-    return function () {
-      socket.off("receive_message", addMessage);
-    };
-  }, []);
+  useEffect(
+    function () {
+      if (withUser)
+        fetchMessagesData(new Cookies().get("accessToken"), {
+          message_to: withUser,
+        });
+      function addMessage(m1?: any) {
+        setMessages(function (m?: any) {
+          const m2 = new Array(...(m ? m : []));
+          return m2?.splice(m2?.length - 2)?.some(function ({
+            message_id,
+          }: any) {
+            return m1?.message_id == message_id;
+          })
+            ? m
+            : [...m, m1];
+        });
+      }
+      socket?.on("receive_message", addMessage);
+      return function () {
+        socket.off("receive_message", addMessage);
+      };
+    },
+    [fetchMessagesData, socket, withUser],
+  );
   useEffect(
     function () {
       if (withUser && user_id)
@@ -77,13 +82,7 @@ export default function Messages({
           }`,
         );
     },
-    [withUser, user_id],
-  );
-  useEffect(
-    function () {
-      setMessages(messagesData || []);
-    },
-    [messagesData],
+    [withUser, user_id, socket],
   );
 
   return (
@@ -131,11 +130,7 @@ export default function Messages({
                   </React.Fragment>
                 );
               })
-            : Array.from({ length: 10 }).map(function (
-                _?: any,
-                i?: any,
-                ..._args: any[]
-              ) {
+            : Array.from({ length: 10 }).map(function (_?: any, i?: any) {
                 return (
                   <Skeleton.Button
                     key={i + 1}
@@ -153,7 +148,7 @@ export default function Messages({
         <div className="bg-gray-100 mt-2 rounded-lg">
           <div className="flex gap-2 items-center p-2">
             <Input
-              onChange={function (e?: any, ..._args: any[]) {
+              onChange={function (e?: any) {
                 setMessage(e?.target?.value);
               }}
               className="rounded-lg"
@@ -161,7 +156,7 @@ export default function Messages({
             />
             <Smile
               onClick={function () {
-                setEmojiOpen(function (val?: any, ..._args: any[]) {
+                setEmojiOpen(function (val?: any) {
                   return !val;
                 });
               }}
@@ -201,8 +196,8 @@ export default function Messages({
               }}
               width={"100%"}
               height={"190px"}
-              onEmojiClick={function (data?: any, ..._args: any[]) {
-                setMessage(function (m?: any, ..._args: any[]) {
+              onEmojiClick={function (data?: any) {
+                setMessage(function (m?: any) {
                   return (m || "") + data?.emoji;
                 });
               }}

@@ -24,12 +24,7 @@ import submitComment from "@/services/submit-comment";
 import submitLike from "@/services/submit-like";
 import { apiUrl } from "@/utils/api";
 
-async function getLike(
-  setIsLike?: any,
-  postId?: any,
-  commentId?: any,
-  ..._args: any[]
-) {
+async function getLike(setIsLike?: any, postId?: any, commentId?: any) {
   const { data } = await axios(
     apiUrl(
       `/get/like?postId=${postId}${commentId ? `&commentId=${commentId}` : ""}`,
@@ -70,7 +65,7 @@ function CommentActions({
     function () {
       if (userData?.user_id) getLike(setLikeData, postId, commentId);
     },
-    [userData],
+    [userData, commentId, postId],
   );
   const emojiData = [
     {
@@ -255,12 +250,12 @@ function CommentActions({
                 setShowPost(postId);
                 if (showPost != postId)
                   setTimeout(function () {
-                    setReply(function (val?: any, ..._args: any[]) {
+                    setReply(function (val?: any) {
                       return val === postId ? false : postId;
                     });
                   }, 100);
                 else
-                  setReply(function (val?: any, ..._args: any[]) {
+                  setReply(function (val?: any) {
                     return val === postId ? false : postId;
                   });
               }}
@@ -271,7 +266,7 @@ function CommentActions({
           ) : (
             <Reply
               onClick={function () {
-                setReply(function (val?: any, ..._args: any[]) {
+                setReply(function (val?: any) {
                   return val === commentId ? false : commentId;
                 });
               }}
@@ -335,7 +330,7 @@ function ReplyBox({
         <Input.TextArea
           className="rounded-xl h-20 sm:w-1/2"
           value={content}
-          onChange={function (e?: any, ..._args: any[]) {
+          onChange={function (e?: any) {
             setContent(e?.target?.value);
           }}
         />
@@ -368,7 +363,7 @@ function ReplyBox({
             {emojiOpen ? (
               <Smile
                 onClick={function () {
-                  setEmojiOpen(function (val?: any, ..._args: any[]) {
+                  setEmojiOpen(function (val?: any) {
                     return !val;
                   });
                 }}
@@ -379,7 +374,7 @@ function ReplyBox({
             ) : (
               <Smile
                 onClick={function () {
-                  setEmojiOpen(function (val?: any, ..._args: any[]) {
+                  setEmojiOpen(function (val?: any) {
                     return !val;
                   });
                 }}
@@ -544,14 +539,17 @@ function PostTemplate({
   const [showPopUp, setShowPopUp] = useState(false);
   useEffect(
     function () {
-      if (showPost == postId) {
-        setTimeout(function () {
-          setShowPopUp(postId);
-        }, 400);
-      } else setShowPopUp(false);
+      if (showPost != postId) return;
+      const timeId = setTimeout(function () {
+        setShowPopUp(postId);
+      }, 400);
+      return function () {
+        clearTimeout(timeId);
+      };
     },
-    [showPost],
+    [showPost, postId],
   );
+  const visiblePop = showPost == postId ? showPopUp : false;
   return (
     <div
       className={`rounded-lg ${
@@ -605,7 +603,7 @@ function PostTemplate({
       >
         {!content ? (
           "Message"
-        ) : showPopUp == postId ? (
+        ) : visiblePop == postId ? (
           content
         ) : (
           <>
@@ -631,7 +629,7 @@ function PostTemplate({
         <div className="text-center w-full">
           <Image
             className="h-36 rounded-xl select-none"
-            onClick={function (e?: any, ..._args: any[]) {
+            onClick={function (e?: any) {
               e.stopPropagation();
               e.preventDefault();
             }}
@@ -707,17 +705,17 @@ export default function Post({
           setMakeComment(null);
         }, 400);
     },
-    [showPost],
+    [showPost, postId, setCommentsData, setMakeComment],
   );
   useEffect(
     function () {
       if (postId) {
-        function receive_comment(data?: any, ..._args: any[]) {
+        function receive_comment(data?: any) {
           const isUpdate = data?.updateEmoji;
           if (isUpdate) {
             const { comment_id, like_emoji, dislike, angry } = data;
-            setCommentsData(function (comments?: any, ..._args: any[]) {
-              return comments?.map(function (c?: any, ..._args: any[]) {
+            setCommentsData(function (comments?: any) {
+              return comments?.map(function (c?: any) {
                 return c?.comment_id == comment_id
                   ? {
                       ...c,
@@ -735,11 +733,11 @@ export default function Post({
               })
             ) {
               const reply_on = data?.reply_on;
-              setCommentsData(function (c?: any, ..._args: any[]) {
+              setCommentsData(function (c?: any) {
                 return c?.length
                   ? [
                       data,
-                      ...c.map(function (c1?: any, ..._args: any[]) {
+                      ...c.map(function (c1?: any) {
                         return c1.comment_id == reply_on
                           ? { ...c1, num_replies: c1.num_replies + 1 }
                           : c1;
@@ -747,7 +745,7 @@ export default function Post({
                     ]
                   : [data];
               });
-              setLen(function (val?: any, ..._args: any[]) {
+              setLen(function (val?: any) {
                 return val + 1;
               });
             }
@@ -759,7 +757,7 @@ export default function Post({
         };
       }
     },
-    [commentsData],
+    [commentsData, postId, setCommentsData, setLen, socket],
   );
   return (
     <div className="p-2 grow w-full rounded-lg bg-gray-700">

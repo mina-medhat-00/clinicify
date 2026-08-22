@@ -1,5 +1,5 @@
-import { Check, CircleAlert, Info, Loader2, X } from "lucide-react";
-import { useEffect, useState, type ReactElement } from "react";
+import { Check, CircleAlert, Info, Loader2 } from "lucide-react";
+import { useEffect, useMemo, useState, type ReactElement } from "react";
 import { createPortal } from "react-dom";
 import { cx } from "@/components/ui/cx";
 
@@ -135,7 +135,13 @@ function makeApi(store: ReturnType<typeof createStore>) {
 function useMessage(): [ReturnType<typeof makeApi>, ReactElement] {
   const [store] = useState(createStore);
   const toasts = useToasts(store);
-  return [makeApi(store), <ToastViewport key="holder" toasts={toasts} />];
+  const api = useMemo(
+    function () {
+      return makeApi(store);
+    },
+    [store],
+  );
+  return [api, <ToastViewport key="holder" toasts={toasts} />];
 }
 
 function MessageRoot() {

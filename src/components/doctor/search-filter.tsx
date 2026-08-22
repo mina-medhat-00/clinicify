@@ -11,13 +11,12 @@ import {
 import HeaderLine from "@/components/ui/header-line";
 import { doctorSpecialtyOptions } from "@/utils/sign-data";
 
-function opt(val?: any, ..._args: any[]) {
+function opt(val?: any) {
   return val == "null" || !val ? null : val;
 }
 export default forwardRef(function SearchFilter(
   { fetchDoctorsData }: any,
   ref?: any,
-  ..._args: any[]
 ) {
   const [searchFilter, setSearchFilter] = useState({
     specialty: opt(window.localStorage.getItem("specialty")) || "",
@@ -67,13 +66,16 @@ export default forwardRef(function SearchFilter(
         location: searchFilter.location,
       });
     },
-    [searchFilter],
+    [searchFilter, fetchDoctorsData],
   );
   return (
     <>
       <div
         ref={searchElement}
         className="relative p-2 shadow-lg rounded-bl-lg mx-2 bg-gray-600 transition-all duration-200"
+        style={{
+          marginTop: showSearch ? 0 : `${-(heightSearch || 0) - 1}px`,
+        }}
       >
         <HeaderLine value="Search for a doctor" center />
         <div className="flex flex-wrap gap-2">
@@ -85,8 +87,8 @@ export default forwardRef(function SearchFilter(
               font="medium"
             />
             <Select
-              onChange={function (val?: any, ..._args: any[]) {
-                setSearchFilter(function (searchFilter?: any, ..._args: any[]) {
+              onChange={function (val?: any) {
+                setSearchFilter(function (searchFilter?: any) {
                   return {
                     ...searchFilter,
                     specialty: val,
@@ -112,8 +114,8 @@ export default forwardRef(function SearchFilter(
               font="medium"
             />
             <Input
-              onChange={function (e?: any, ..._args: any[]) {
-                setSearchFilter(function (searchFilter?: any, ..._args: any[]) {
+              onChange={function (e?: any) {
+                setSearchFilter(function (searchFilter?: any) {
                   return {
                     ...searchFilter,
                     doctorName: e?.target?.value,
@@ -132,8 +134,8 @@ export default forwardRef(function SearchFilter(
               font="medium"
             />
             <Input
-              onChange={function (e?: any, ..._args: any[]) {
-                setSearchFilter(function (searchFilter?: any, ..._args: any[]) {
+              onChange={function (e?: any) {
+                setSearchFilter(function (searchFilter?: any) {
                   return {
                     ...searchFilter,
                     location: e?.target?.value,
@@ -165,7 +167,7 @@ export default forwardRef(function SearchFilter(
       </div>
       <div
         onClick={function () {
-          setShowSearch(function (val?: any, ..._args: any[]) {
+          setShowSearch(function (val?: any) {
             return !val;
           });
         }}

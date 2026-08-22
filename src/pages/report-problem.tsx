@@ -55,7 +55,7 @@ export default function ReportProblem() {
       >
         <Form
           form={form}
-          onFinish={function (values?: any, ..._args: any[]) {
+          onFinish={function (values?: any) {
             submitReport(
               values?.issue,
               values?.reportType,

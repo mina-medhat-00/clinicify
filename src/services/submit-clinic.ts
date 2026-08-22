@@ -42,7 +42,7 @@ export default async function submitClinic(
         fetchProfileData({ path: "profile", username }, true);
       }, 2000);
     })
-    .catch(function (err?: any, ..._args: any[]) {
+    .catch(function (err?: any) {
       if (err?.response?.status == 401) {
         fetchUserData(true, cookies.get("accessToken"));
       } else

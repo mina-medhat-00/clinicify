@@ -1,6 +1,6 @@
 import { Segmented, Skeleton } from "@/components/ui";
 import { Home } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import UserAvatar from "@/components/ui/user-avatar";
 
@@ -37,12 +37,6 @@ export default function Cards({
   isLoading,
 }: any) {
   const [element, setElement] = useState<any>(null);
-  useEffect(
-    function () {
-      setElement(document?.getElementsByClassName("user--item")?.[0]);
-    },
-    [isMobile, chatData],
-  );
   return isMobile ? (
     <div
       className={`wrapper shrink-0 flex gap-2 items-center bg-gray-600 p-2 h-20`}
@@ -61,11 +55,7 @@ export default function Cards({
       >
         {isLoading ? (
           <div className="flex gap-2">
-            {Array.from({ length: 10 }).map(function (
-              _?: any,
-              i?: any,
-              ..._args: any[]
-            ) {
+            {Array.from({ length: 10 }).map(function (_?: any, i?: any) {
               return (
                 <Skeleton.Button
                   size={60 as any}
@@ -100,7 +90,7 @@ export default function Cards({
                 value: user_id,
               };
             })}
-            onChange={function (val?: any, ..._args: any[]) {
+            onChange={function (val?: any) {
               setWithUser(val);
             }}
           />
@@ -115,17 +105,25 @@ export default function Cards({
     >
       <div className="bg-white">
         {withUser && !isLoading && (
-          <div className="absolute w-full p-1">
+          <div
+            className="absolute w-full p-1"
+            style={{
+              height: `${element?.clientHeight}px`,
+              top: `${
+                (element?.offsetHeight || 0) *
+                chatData?.findIndex(function ({ user_id }) {
+                  return user_id == withUser;
+                })
+              }px`,
+              transition: "top 0.2s cubic-bezier(0.645, 0.045, 0.355, 1)",
+            }}
+          >
             <div className="bg-gray-700 rounded-lg w-full h-full"></div>
           </div>
         )}
         {isLoading ? (
           <div className="flex flex-col w-60">
-            {Array.from({ length: 40 }).map(function (
-              _?: any,
-              i?: any,
-              ..._args: any[]
-            ) {
+            {Array.from({ length: 40 }).map(function (_?: any, i?: any) {
               return (
                 <Skeleton.Button
                   size="large"
@@ -140,7 +138,6 @@ export default function Cards({
           chatData?.map(function (
             { user_id, nick_name, img_url, user_type }: any,
             i?: any,
-            ..._args: any[]
           ) {
             return (
               <div
@@ -148,6 +145,7 @@ export default function Cards({
                   user_id !== withUser && "hover:bg-gray-100"
                 } select-none flex gap-2 relative user--item cursor-pointer border-b border-gray-400`}
                 key={user_id}
+                ref={i === 0 ? setElement : undefined}
                 onClick={function () {
                   setWithUser(user_id);
                 }}

@@ -9,11 +9,7 @@ import { useDoctorsContext } from "@/contexts/doctors-context";
 import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
 
-export default forwardRef(function Doctors(
-  { home }: any,
-  ref?: any,
-  ..._args: any[]
-) {
+export default forwardRef(function Doctors({ home }: any, ref?: any) {
   const { socket, timeZone, isMobile } = useUtilsContext();
   const { userData: user } = useUserContext();
   const { doctorsData, isLoading, fetchDoctorsData, isError } =
@@ -40,7 +36,7 @@ export default forwardRef(function Doctors(
             }}
           >
             {doctorsData?.length > 0 ? (
-              doctorsData?.map(function (record?: any, ..._args: any[]) {
+              doctorsData?.map(function (record?: any) {
                 return (
                   <div className="mb-16" key={record?.doctor_id}>
                     <DoctorCard
@@ -84,11 +80,7 @@ export default forwardRef(function Doctors(
               lastItem
               colKey="doctor"
               heightFull
-              items={doctorsData?.map(function (
-                record?: any,
-                i?: any,
-                ..._args: any[]
-              ) {
+              items={doctorsData?.map(function (record?: any, i?: any) {
                 return {
                   key: record?.doctor_id,
                   element: (

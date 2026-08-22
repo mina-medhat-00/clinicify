@@ -21,12 +21,15 @@ export default function AppointmentDetails({ doctorId }: any) {
   const { slotsData, isLoading, fetchSlotsData } = useSlotsContext();
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [showPop, setShowPop] = useState<any>(null);
-  useEffect(function () {
-    socket.emit("join_doctor", doctorId);
-  }, []);
   useEffect(
     function () {
-      function getSlots(data?: any, ..._args: any[]) {
+      socket.emit("join_doctor", doctorId);
+    },
+    [socket, doctorId],
+  );
+  useEffect(
+    function () {
+      function getSlots(data?: any) {
         if (selectedDate?.date == data?.date)
           fetchSlotsData(
             {
@@ -47,7 +50,7 @@ export default function AppointmentDetails({ doctorId }: any) {
         socket?.off("all_slots", getSlots);
       };
     },
-    [selectedDate],
+    [selectedDate, doctorId, fetchSlotsData, socket],
   );
   return (
     <>

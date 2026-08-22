@@ -18,5 +18,26 @@ export default defineConfig([
     languageOptions: {
       globals: globals.browser,
     },
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+        },
+      ],
+    },
+  },
+  {
+    files: [
+      "src/contexts/**/*.{ts,tsx}",
+      "src/components/ui/form.tsx",
+      "src/components/ui/message.tsx",
+    ],
+    rules: {
+      "react-refresh/only-export-components": "off",
+    },
   },
 ]);

@@ -22,13 +22,13 @@ export default function AdminReports() {
   const [showPop, setShowPop] = useState(false);
   const { isLoading: isReportLoading, reportData } = useReportContext();
   const searchInput = useRef(null);
-  function handleSearch(confirm?: any, ..._args: any[]) {
+  function handleSearch(confirm?: any) {
     confirm();
   }
-  function handleReset(clearFilters?: any, ..._args: any[]) {
+  function handleReset(clearFilters?: any) {
     clearFilters();
   }
-  function getColumnSearchProps(dataIndex?: any, ..._args: any[]) {
+  function getColumnSearchProps(dataIndex?: any) {
     return {
       filterDropdown: function ({
         setSelectedKeys,
@@ -40,7 +40,7 @@ export default function AdminReports() {
         return (
           <div
             className="p-2"
-            onKeyDown={function (e?: any, ..._args: any[]) {
+            onKeyDown={function (e?: any) {
               e.stopPropagation();
             }}
           >
@@ -48,11 +48,11 @@ export default function AdminReports() {
               ref={searchInput}
               placeholder={`Search ${dataIndex}`}
               value={selectedKeys[0]}
-              onChange={function (e?: any, ..._args: any[]) {
+              onChange={function (e?: any) {
                 setSelectedKeys(e.target.value ? [e.target.value] : []);
               }}
               onPressEnter={function () {
-                handleSearch(selectedKeys, confirm, dataIndex);
+                handleSearch(confirm);
               }}
               className="mb-2 block"
             />
@@ -61,7 +61,7 @@ export default function AdminReports() {
                 type="primary"
                 className="flex items-center justify-center w-24"
                 onClick={function () {
-                  handleSearch(selectedKeys, confirm, dataIndex);
+                  handleSearch(confirm);
                 }}
                 icon={<Search className="size-4" />}
                 size="small"
@@ -70,7 +70,7 @@ export default function AdminReports() {
               </Button>
               <Button
                 onClick={function () {
-                  clearFilters && handleReset(clearFilters);
+                  if (clearFilters) handleReset(clearFilters);
                 }}
                 size="small"
                 className="w-24"
@@ -90,17 +90,17 @@ export default function AdminReports() {
           </div>
         );
       },
-      filterIcon: function (filtered?: any, ..._args: any[]) {
+      filterIcon: function (filtered?: any) {
         return <Search className={filtered ? "text-blue-500" : undefined} />;
       },
-      onFilter: function (value?: any, record?: any, ..._args: any[]) {
+      onFilter: function (value?: any, record?: any) {
         return record[dataIndex].nick_name
           .toString()
           .toLowerCase()
           .includes(value.toLowerCase());
       },
       filterDropdownProps: {
-        onOpenChange: function (visible?: any, ..._args: any[]) {
+        onOpenChange: function (visible?: any) {
           if (visible) {
             setTimeout(function () {
               searchInput.current?.select();
@@ -116,7 +116,7 @@ export default function AdminReports() {
       dataIndex: "name",
       key: "name",
       ...getColumnSearchProps("name"),
-      render: function (rec?: any, record?: any, ..._args: any[]) {
+      render: function (rec?: any, record?: any) {
         return (
           <Link
             to={`/profile/${record?.key}`}
@@ -151,10 +151,10 @@ export default function AdminReports() {
           value: "admin",
         },
       ],
-      onFilter: function (val?: any, rec?: any, ..._args: any[]) {
+      onFilter: function (val?: any, rec?: any) {
         return val?.toLowerCase() == rec?.user_type?.toLowerCase();
       },
-      render: function (value?: any, ..._args: any[]) {
+      render: function (value?: any) {
         return (
           <div className="flex px-1 py-2 bg-blue-400/80 shadow-md  rounded-md flex-col justify-center gap-2 items-center">
             {value == "doctor" ? (

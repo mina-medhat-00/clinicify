@@ -97,6 +97,7 @@ const Menu = forwardRef(function Menu(
   return (
     <ul
       ref={listRef}
+      style={style}
       className={cx(
         "ant-menu-root m-0 list-none p-0",
         mode === "vertical" && "w-full",

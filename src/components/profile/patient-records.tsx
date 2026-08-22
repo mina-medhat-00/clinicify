@@ -20,7 +20,7 @@ export default function PatientRecords({
             isAuth ? (
               <FileHeart
                 onClick={function () {
-                  setHandleDrawer(function (draw?: any, ..._args: any[]) {
+                  setHandleDrawer(function (draw?: any) {
                     return {
                       ...draw,
                       isOpen: true,
@@ -37,12 +37,9 @@ export default function PatientRecords({
           }
           data={Object.entries(records).map(function ([name, value]: any) {
             return {
-              name: name?.replace(
-                /[A-Z]/,
-                function (val?: any, ..._args: any[]) {
-                  return ` ${val}`;
-                },
-              ),
+              name: name?.replace(/[A-Z]/, function (val?: any) {
+                return ` ${val}`;
+              }),
               value,
             };
           })}
@@ -50,7 +47,7 @@ export default function PatientRecords({
         {isAuth && (
           <div
             onClick={function () {
-              setHandleDrawer(function (draw?: any, ..._args: any[]) {
+              setHandleDrawer(function (draw?: any) {
                 return {
                   ...draw,
                   isOpen: true,

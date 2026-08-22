@@ -23,7 +23,7 @@ export default function DatePicker({
     >
       <ChevronsLeft
         onClick={function () {
-          setSelectedDate(function (val?: any, ..._args: any[]) {
+          setSelectedDate(function (val?: any) {
             return val.count
               ? {
                   count: val.count - 1,
@@ -60,7 +60,7 @@ export default function DatePicker({
       </div>
       <ChevronsRight
         onClick={function () {
-          setSelectedDate(function (val?: any, ..._args: any[]) {
+          setSelectedDate(function (val?: any) {
             return {
               count: val.count + 1,
               date: dayjs(

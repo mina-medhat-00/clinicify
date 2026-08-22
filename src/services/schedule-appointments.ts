@@ -74,7 +74,7 @@ export default function scheduleAppointments(
         true,
       );
     })
-    .catch(function (err?: any, ..._args: any[]) {
+    .catch(function (err?: any) {
       if (err?.response?.status == 400) {
         const timeSlots = err?.response?.data?.data?.timeSlots;
         if (timeSlots) {

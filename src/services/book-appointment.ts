@@ -71,7 +71,7 @@ export default function bookAppointment(
         }
         if (isCheck) resolve("done");
       })
-      .catch(function (err?: any, ..._args: any[]) {
+      .catch(function (err?: any) {
         if (pi) setIsLoading(false);
         if (isCheck) resolve("err");
         if (err?.response?.status == 400) {

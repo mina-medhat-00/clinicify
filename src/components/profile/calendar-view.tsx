@@ -16,7 +16,7 @@ export default function CalendarView({
     <>
       <Checkbox
         onChange={function () {
-          setCalendarView(function (val?: any, ..._args: any[]) {
+          setCalendarView(function (val?: any) {
             return !val;
           });
         }}
@@ -28,7 +28,7 @@ export default function CalendarView({
       <Calendar
         fullscreen={calendarView}
         value={selectedDate}
-        onSelect={function (val?: any, ..._args: any[]) {
+        onSelect={function (val?: any) {
           handleDate(val);
         }}
       />
@@ -37,7 +37,7 @@ export default function CalendarView({
     <DatePicker
       className="w-full mb-2"
       value={selectedDate}
-      onChange={function (val?: any, ..._args: any[]) {
+      onChange={function (val?: any) {
         handleDate(val);
       }}
     />

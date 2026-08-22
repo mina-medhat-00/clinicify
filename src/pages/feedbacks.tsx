@@ -22,13 +22,16 @@ export default function Feedbacks({
   });
   const [showFeedback, setShowFeedback] = useState(false);
   const [showPopUp, setShowPopUp] = useState(false);
+  if (showFeedback && showPopUp !== showFeedback) setShowPopUp(showFeedback);
   useEffect(
     function () {
-      if (!showFeedback)
-        setTimeout(function () {
-          setShowPopUp(null);
-        }, 400);
-      else setShowPopUp(showFeedback);
+      if (showFeedback) return;
+      const timeId = setTimeout(function () {
+        setShowPopUp(null);
+      }, 400);
+      return function () {
+        clearTimeout(timeId);
+      };
     },
     [showFeedback],
   );
@@ -42,10 +45,10 @@ export default function Feedbacks({
           fetchFeedback == false || fetchFeedback == true,
         );
     },
-    [fetchFeedback],
+    [fetchFeedback, fetchFeedbackData, noDirectFetch, username],
   );
   if (isLoading) return <Loader />;
-  async function bodyHandler(order?: any, ..._args: any[]) {
+  async function bodyHandler(order?: any) {
     const bodyElement = document.getElementById(`feedback--body--${order + 1}`);
     const paragraphElement = document.getElementById(
       `feedback--paragraph--${order + 1}`,

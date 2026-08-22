@@ -22,29 +22,32 @@ export default function Chat(_props: any) {
   const [withUser, setWithUser] = useState(function () {
     return parseInt(window.localStorage.getItem("chatTo")) || null;
   });
-  useEffect(function () {
-    const cookies = new Cookies();
-    if (user?.user_id) {
-      socket.emit("join_user", user.user_id);
-    }
-    function fetchChat() {
-      fetchChatData(
-        true,
-        cookies.get("accessToken"),
-        {
-          chat_to: withUser,
-        },
-        true,
-      );
-    }
-    socket?.on("new_chat", fetchChat);
-    fetchChatData(true, cookies.get("accessToken"), {
-      chat_to: withUser,
-    });
-    return function () {
-      socket.off("new_chat", fetchChat);
-    };
-  }, []);
+  useEffect(
+    function () {
+      const cookies = new Cookies();
+      if (user?.user_id) {
+        socket.emit("join_user", user.user_id);
+      }
+      function fetchChat() {
+        fetchChatData(
+          true,
+          cookies.get("accessToken"),
+          {
+            chat_to: withUser,
+          },
+          true,
+        );
+      }
+      socket?.on("new_chat", fetchChat);
+      fetchChatData(true, cookies.get("accessToken"), {
+        chat_to: withUser,
+      });
+      return function () {
+        socket.off("new_chat", fetchChat);
+      };
+    },
+    [fetchChatData, socket, user?.user_id, withUser],
+  );
   useEffect(
     function () {
       if (withUser) window.localStorage.setItem("chatTo", String(withUser));

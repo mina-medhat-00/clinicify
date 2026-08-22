@@ -112,7 +112,7 @@ export default function DoctorCard({
                 size={200}
                 src={profileImage || undefined}
                 userType="doctor"
-                onClick={function (e?: any, ..._args: any[]) {
+                onClick={function (e?: any) {
                   e.stopPropagation();
                   e.preventDefault();
                 }}
@@ -123,11 +123,7 @@ export default function DoctorCard({
               </div>
             </div>
             <div className="grow flex flex-col justify-center">
-              {cardDetails?.map(function (
-                { data }: any,
-                i?: any,
-                ..._args: any[]
-              ) {
+              {cardDetails?.map(function ({ data }: any, i?: any) {
                 return (
                   <div key={i + 1}>
                     {i !== 0 ? (
@@ -165,7 +161,7 @@ export default function DoctorCard({
                 className="flex justify-center items-center hover:bg-yellow-700 bg-yellow-500 
               hover:text-black gap-2
               rounded w-full text-gray-700 h-9"
-                onClick={function (e?: any, ..._args: any[]) {
+                onClick={function (e?: any) {
                   e.stopPropagation();
                   e.preventDefault();
                   if (doctorId & user?.user_id) {

@@ -27,6 +27,7 @@ export default function BookAppointment({
   const [isPayment, setIsPayment] = useState<any>(null);
   const [appointmentSuccess, setAppointmentSuccess] = useState<any>(null);
   const [freeSlots, setFreeSlots] = useState(null);
+  const [now] = useState(Date.now);
   const navigate = useNavigate();
   const bDate = window?.localStorage?.getItem("book_date");
   const [selectedDate, setSelectedDate] = useState(function () {
@@ -42,23 +43,32 @@ export default function BookAppointment({
     "payment_intent_client_secret",
   );
   const appointmentId = window?.localStorage?.getItem("book_appointment");
+  const selectedDateKey = selectedDate?.format("YYYY-MM-DD");
+  const [prevSlotsData, setPrevSlotsData] = useState(slotsData);
+  const [prevSelectedDateKey, setPrevSelectedDateKey] =
+    useState(selectedDateKey);
+  if (slotsData !== prevSlotsData || selectedDateKey !== prevSelectedDateKey) {
+    setPrevSlotsData(slotsData);
+    setPrevSelectedDateKey(selectedDateKey);
+    setFreeSlots(slotsData?.freeSlots);
+  }
+  if (appointmentId && !bookedAppointment && !isPayment && !isLoading) {
+    const appDetails = freeSlots?.filter(function ({
+      appointmentId: appointment_id,
+    }: any) {
+      return appointmentId == appointment_id;
+    });
+    if (appDetails) {
+      setIsPayment("payment_processing");
+      setBookedAppointment(appDetails?.[0]);
+    }
+  }
   useEffect(
     function () {
-      if (appointmentId && !bookedAppointment && !isPayment && !isLoading) {
-        const appDetails = freeSlots?.filter(function ({
-          appointmentId: appointment_id,
-        }: any) {
-          return appointmentId == appointment_id;
-        });
-        if (appDetails) {
-          setIsPayment("payment_processing");
-          setBookedAppointment(appDetails?.[0]);
-        }
-      }
       if (appointmentId && !isLoading)
         window.localStorage.removeItem("book_appointment");
     },
-    [appointmentId, freeSlots],
+    [appointmentId, isLoading],
   );
 
   useEffect(
@@ -94,20 +104,17 @@ export default function BookAppointment({
       }
       handleBook();
     },
-    [clientSecret],
+    [clientSecret, isLoading, selectedDate],
   );
   useEffect(
     function () {
-      setFreeSlots(slotsData?.freeSlots);
+      socket.emit("join_doctor", doctorId);
     },
-    [slotsData, selectedDate?.format("YYYY-MM-DD")],
+    [socket, doctorId],
   );
-  useEffect(function () {
-    socket.emit("join_doctor", doctorId);
-  }, []);
   useEffect(
     function () {
-      function getSlots(data?: any, ..._args: any[]) {
+      function getSlots(data?: any) {
         if (selectedDate.format("YYYY-MM-DD") == data?.date)
           fetchSlotsData(
             {
@@ -128,18 +135,18 @@ export default function BookAppointment({
         socket.off("update_slots", getSlots);
       };
     },
-    [selectedDate, doctorId],
+    [selectedDate, doctorId, fetchSlotsData, socket],
   );
-  function handleDate(val?: any, ..._args: any[]) {
+  function handleDate(val?: any) {
     setSelectedDate(val);
     window?.localStorage?.setItem("book_date", val?.format("YYYY-MM-DD"));
   }
-  function isToday(val?: any, ..._args: any[]) {
+  function isToday(val?: any) {
     return (
       new Date(
         selectedDate.format("YYYY-MM-DD") + " " + val + timeZone,
       ).getTime() >
-      Date.now() + 1000 * 60
+      now + 1000 * 60
     );
   }
   const isUpToDate =

@@ -2,7 +2,7 @@ import { Button, Input } from "@/components/ui";
 import axios from "axios";
 import { Loader2, Settings, Video } from "lucide-react";
 import { OpenVidu } from "openvidu-browser";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
 import UserVideoComponent from "@/components/meeting/user-video";
@@ -36,42 +36,52 @@ export default function VideoMeeting({
   const { fetchUserData } = useUserContext();
   const navigate = useNavigate();
   const OVRef = useRef(null);
-  function leaveSession() {
-    const mySession = sessionDetails.session;
+  const sessionDetailsRef = useRef(sessionDetails);
+  useEffect(
+    function () {
+      sessionDetailsRef.current = sessionDetails;
+    },
+    [sessionDetails],
+  );
+  const leaveSession = useCallback(function () {
+    const mySession = sessionDetailsRef.current.session;
     if (mySession) {
       mySession.disconnect();
     }
 
     OVRef.current = null;
-    setSessionDetails(function (sD?: any, ..._args: any[]) {
+    setSessionDetails(function (sD?: any) {
       return {
         ...sD,
         session: undefined,
         isLoading: false,
-        sessionException: sessionDetails.subscribers.length < 1 ? "End" : false,
+        sessionException: sD.subscribers.length < 1 ? "End" : false,
         isError: false,
         subscribers: [],
         mainStreamManager: undefined,
         publisher: undefined,
       };
     });
-  }
-  useEffect(function () {
-    return function () {
-      leaveSession();
-    };
   }, []);
-  function handleChangeUserName(e?: any, ..._args: any[]) {
-    setSessionDetails(function (sD?: any, ..._args: any[]) {
+  useEffect(
+    function () {
+      return function () {
+        leaveSession();
+      };
+    },
+    [leaveSession],
+  );
+  function handleChangeUserName(e?: any) {
+    setSessionDetails(function (sD?: any) {
       return {
         ...sD,
         myNickName: e.target.value,
       };
     });
   }
-  function handleMainVideoStream(stream?: any, ..._args: any[]) {
+  function handleMainVideoStream(stream?: any) {
     if (sessionDetails.mainStreamManager !== stream) {
-      setSessionDetails(function (sD?: any, ..._args: any[]) {
+      setSessionDetails(function (sD?: any) {
         return {
           ...sD,
           mainStreamManager: stream,
@@ -79,16 +89,16 @@ export default function VideoMeeting({
       });
     }
   }
-  function deleteSubscriber(streamManager?: any, ..._args: any[]) {
-    let subscribers = new Array(sessionDetails?.subscribers);
-    let index = subscribers.indexOf(streamManager, 0);
+  function deleteSubscriber(streamManager?: any) {
+    const subscribers = new Array(sessionDetails?.subscribers);
+    const index = subscribers.indexOf(streamManager, 0);
     subscribers.splice(index, 1);
     if (index > -1) {
       if (
         streamManager.stream.connection.connectionId ==
         sessionDetails.session.connection.connectionId
       )
-        setSessionDetails(function (sD?: any, ..._args: any[]) {
+        setSessionDetails(function (sD?: any) {
           return {
             ...sD,
             session: undefined,
@@ -98,7 +108,7 @@ export default function VideoMeeting({
             publisher: undefined,
           };
         });
-      setSessionDetails(function (sD?: any, ..._args: any[]) {
+      setSessionDetails(function (sD?: any) {
         return {
           ...sD,
           subscribers: subscribers,
@@ -109,36 +119,36 @@ export default function VideoMeeting({
   function joinSession() {
     OVRef.current = new OpenVidu();
     if (!sessionDetails?.session)
-      setSessionDetails(function (sD?: any, ..._args: any[]) {
+      setSessionDetails(function (sD?: any) {
         return {
           ...sD,
           isLoading: true,
         };
       });
     const session = OVRef.current.initSession();
-    setSessionDetails(function (sD?: any, ..._args: any[]) {
+    setSessionDetails(function (sD?: any) {
       return {
         ...sD,
         session: session,
       };
     });
-    var mySession = session;
-    mySession.on("streamCreated", function (event?: any, ..._args: any[]) {
-      var subscriber = mySession.subscribe(event.stream, undefined);
-      var subscribers = new Array(...sessionDetails.subscribers);
+    const mySession = session;
+    mySession.on("streamCreated", function (event?: any) {
+      const subscriber = mySession.subscribe(event.stream, undefined);
+      const subscribers = new Array(...sessionDetails.subscribers);
       subscribers.push(subscriber);
-      setSessionDetails(function (sD?: any, ..._args: any[]) {
+      setSessionDetails(function (sD?: any) {
         return {
           ...sD,
           subscribers: subscribers,
         };
       });
     });
-    mySession.on("streamDestroyed", function (event?: any, ..._args: any[]) {
+    mySession.on("streamDestroyed", function (event?: any) {
       deleteSubscriber(event.stream.streamManager);
     });
     mySession.on("sessionDisconnected", function () {
-      setSessionDetails(function (sD?: any, ..._args: any[]) {
+      setSessionDetails(function (sD?: any) {
         return {
           ...sD,
           session: undefined,
@@ -152,43 +162,42 @@ export default function VideoMeeting({
     });
 
     getToken()
-      .then(function (token?: any, ..._args: any[]) {
+      .then(function (token?: any) {
         mySession
           .connect(token, {
             clientData: sessionDetails.myNickName,
           })
           .then(async function () {
-            let publisher = await OVRef.current.initPublisherAsync(undefined, {
-              audioSource: undefined,
-              videoSource: undefined,
-              publishAudio: true,
-              publishVideo: true,
-              resolution: "640x480",
-              frameRate: 30,
-              insertMode: "APPEND",
-              mirror: false,
-            });
+            const publisher = await OVRef.current.initPublisherAsync(
+              undefined,
+              {
+                audioSource: undefined,
+                videoSource: undefined,
+                publishAudio: true,
+                publishVideo: true,
+                resolution: "640x480",
+                frameRate: 30,
+                insertMode: "APPEND",
+                mirror: false,
+              },
+            );
 
             mySession.publish(publisher);
 
-            var devices = await OVRef.current.getDevices();
-            var videoDevices = devices.filter(function (
-              device?: any,
-              ..._args: any[]
-            ) {
+            const devices = await OVRef.current.getDevices();
+            const videoDevices = devices.filter(function (device?: any) {
               return device.kind === "videoinput";
             });
-            var currentVideoDeviceId = publisher.stream
+            const currentVideoDeviceId = publisher.stream
               .getMediaStream()
               .getVideoTracks()[0]
               .getSettings().deviceId;
-            var currentVideoDevice = videoDevices.find(function (
+            const currentVideoDevice = videoDevices.find(function (
               device?: any,
-              ..._args: any[]
             ) {
               return device.deviceId === currentVideoDeviceId;
             });
-            setSessionDetails(function (sD?: any, ..._args: any[]) {
+            setSessionDetails(function (sD?: any) {
               return {
                 ...sD,
                 isLoading: false,
@@ -198,10 +207,10 @@ export default function VideoMeeting({
               };
             });
           })
-          .catch(function (err?: any, ..._args: any[]) {
+          .catch(function (err?: any) {
             if (err?.response?.status == 401) {
               if (err?.response?.data?.data?.noSchedule) {
-                setSessionDetails(function (sD?: any, ..._args: any[]) {
+                setSessionDetails(function (sD?: any) {
                   return {
                     ...sD,
                     session: undefined,
@@ -217,7 +226,7 @@ export default function VideoMeeting({
               }
               fetchUserData(true, new Cookies().get("accessToken"));
             }
-            setSessionDetails(function (sD?: any, ..._args: any[]) {
+            setSessionDetails(function (sD?: any) {
               return {
                 ...sD,
                 session: undefined,
@@ -230,10 +239,10 @@ export default function VideoMeeting({
             });
           });
       })
-      .catch(function (err?: any, ..._args: any[]) {
+      .catch(function (err?: any) {
         if (err?.response?.status == 401) {
           if (err?.response?.data?.data?.noSchedule) {
-            setSessionDetails(function (sD?: any, ..._args: any[]) {
+            setSessionDetails(function (sD?: any) {
               return {
                 ...sD,
                 session: undefined,
@@ -249,7 +258,7 @@ export default function VideoMeeting({
           }
           fetchUserData(true, new Cookies().get("accessToken"));
         }
-        setSessionDetails(function (sD?: any, ..._args: any[]) {
+        setSessionDetails(function (sD?: any) {
           return {
             ...sD,
             session: undefined,
@@ -264,20 +273,17 @@ export default function VideoMeeting({
   }
   async function switchCamera() {
     const devices = await OVRef.current.getDevices();
-    var videoDevices = devices.filter(function (device?: any, ..._args: any[]) {
+    const videoDevices = devices.filter(function (device?: any) {
       return device.kind === "videoinput";
     });
 
     if (videoDevices && videoDevices.length > 1) {
-      var newVideoDevice = videoDevices.filter(function (
-        device?: any,
-        ..._args: any[]
-      ) {
+      const newVideoDevice = videoDevices.filter(function (device?: any) {
         return device.deviceId !== sessionDetails.currentVideoDevice.deviceId;
       });
 
       if (newVideoDevice.length > 0) {
-        var newPublisher = OVRef.current.initPublisher(undefined, {
+        const newPublisher = OVRef.current.initPublisher(undefined, {
           videoSource: newVideoDevice[0].deviceId,
           publishAudio: true,
           publishVideo: true,
@@ -289,7 +295,7 @@ export default function VideoMeeting({
         );
 
         await sessionDetails.session.publish(newPublisher);
-        setSessionDetails(function (sD?: any, ..._args: any[]) {
+        setSessionDetails(function (sD?: any) {
           return {
             ...sD,
             currentVideoDevice: newVideoDevice[0],
@@ -304,7 +310,7 @@ export default function VideoMeeting({
     return await createToken(sessionDetails.mySession);
   }
   async function createSession() {
-    setSessionDetails(function (sD?: any, ..._args: any[]) {
+    setSessionDetails(function (sD?: any) {
       return {
         ...sD,
         isLoading: true,
@@ -321,8 +327,8 @@ export default function VideoMeeting({
           },
         },
       )
-      .then(function (res?: any, ..._args: any[]) {
-        setSessionDetails(function (sD?: any, ..._args: any[]) {
+      .then(function (res?: any) {
+        setSessionDetails(function (sD?: any) {
           return {
             ...sD,
             session: undefined,
@@ -337,7 +343,7 @@ export default function VideoMeeting({
         });
         navigate(`/join/meeting/${res.data}?appointment_id=${appointmentId}`);
       })
-      .catch(function (err?: any, ..._args: any[]) {
+      .catch(function (err?: any) {
         if (err?.response?.status == 400) {
           messageApi.open({
             key: 1,
@@ -349,7 +355,7 @@ export default function VideoMeeting({
         }
         if (err?.response?.status == 401) {
           if (err?.response?.data?.data?.noSchedule) {
-            setSessionDetails(function (sD?: any, ..._args: any[]) {
+            setSessionDetails(function (sD?: any) {
               return {
                 ...sD,
                 session: undefined,
@@ -365,7 +371,7 @@ export default function VideoMeeting({
           }
           fetchUserData(true, new Cookies().get("accessToken"));
         }
-        setSessionDetails(function (cD?: any, ..._args: any[]) {
+        setSessionDetails(function (cD?: any) {
           return {
             ...cD,
             isError: true,
@@ -376,7 +382,7 @@ export default function VideoMeeting({
         });
       });
   }
-  async function createToken(sessionId?: any, ..._args: any[]) {
+  async function createToken(sessionId?: any) {
     const response = await axios.post(
       `${APPLICATION_SERVER_URL}/join/meeting/?session=${sessionId}`,
       {
@@ -552,10 +558,7 @@ export default function VideoMeeting({
               id="video-container"
               className="scroll--h flex gap-2 overflow-auto [&_img]:relative [&_img]:float-left [&_img]:h-44 [&_img]:w-1/2 [&_img]:cursor-pointer [&_img]:object-cover [&_p]:inline-block [&_p]:rounded-br [&_p]:bg-neutral-50 [&_p]:px-1 [&_p]:font-bold [&_p]:text-neutral-500 [&_video]:relative [&_video]:cursor-pointer"
             >
-              {sessionDetails.subscribers.map(function (
-                sub?: any,
-                ..._args: any[]
-              ) {
+              {sessionDetails.subscribers.map(function (sub?: any) {
                 return (
                   <div
                     key={sub.id}
