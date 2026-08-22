@@ -57,7 +57,7 @@ function ChatRestrict({ userid }: any) {
                 checked={is_open}
                 className={`${
                   !is_open ? "bg-blue-400" : "bg-red-400"
-                } shadow-lg box-content !bg-white border-[0.25px] border-solid border-white`}
+                } shadow-lg box-content bg-white border-[0.25px] border-solid border-white`}
                 onChange={function (is_open?: any, ..._args: any[]) {
                   changeState(
                     fetchUserData,

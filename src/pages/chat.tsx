@@ -86,7 +86,7 @@ function Chat(_props: any) {
           className={`grow justify-between flex flex-col bg-gray-200 text-gray-700 px-2 h-full`}
         >
           {!isMobile && !isError && (
-            <div className="flex justify-between border-b border-gray-300 rounded-md p-2 bg-white items-center border-gray-100 shadow-sm">
+            <div className="flex justify-between border-b rounded-md p-2 bg-white items-center border-gray-100 shadow-sm">
               <div className="flex gap-2 items-center">
                 <UserAvatar
                   src={chatRecord?.img_url}

@@ -95,7 +95,7 @@ function Navbar({ DoctorRef }: any) {
         >
           <Link
             to="/"
-            className="text-center max-md:relative max-md:flex max-md:flex-row max-md:items-center max-md:justify-start max-md:gap-1 [&_h3]:max-md:mb-0 [&_a]:!text-indigo-200"
+            className="text-center max-md:relative max-md:flex max-md:flex-row max-md:items-center max-md:justify-start max-md:gap-1 [&_h3]:max-md:mb-0"
           >
             <Avatar
               src={clinicLogo}
@@ -125,7 +125,7 @@ function Navbar({ DoctorRef }: any) {
           ref={menuElement}
           theme="dark"
           mode={!isMobile ? "inline" : "vertical"}
-          className={`mt-8 overflow-hidden px-1 text-base bg-blue-950 border-r border-white transition-all duration-300 ease-out max-md:mt-0 max-md:w-full max-md:[&_li:hover]:!bg-emerald-400 ${
+          className={`mt-8 overflow-hidden px-1 text-base bg-blue-950 border-r border-white transition-all duration-300 ease-out max-md:mt-0 max-md:w-full max-md:[&_li:hover]:bg-emerald-400 ${
             isMobile
               ? "sm absolute top-full"
               : "overflow-x-hidden overflow-y-auto"

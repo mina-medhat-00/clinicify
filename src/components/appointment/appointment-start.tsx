@@ -74,7 +74,7 @@ function AppointmentStart({ appointmentDetails }: any) {
                 appointmentDetails?.withId,
               );
             }}
-            className="font-medium h-full hover:text-gray-200 text-xl flex justify-center items-center gap-2 hover:bg-blue-700 block text-white bg-blue-700/90 p-2 rounded-md"
+            className="font-medium h-full hover:text-gray-200 text-xl justify-center items-center gap-2 hover:bg-blue-700 block text-white bg-blue-700/90 p-2 rounded-md"
           >
             Chat with {appointmentDetails?.withNickName}
             <MessageSquare className="text-white text-xl" />
@@ -88,7 +88,7 @@ function AppointmentStart({ appointmentDetails }: any) {
           className={`video--details p-2 bg-blue-600/80 hover:bg-blue-600 cursor-pointer
            rounded shadow-md h-full ${isLoading ? "cursor-not-allowed" : ""}`}
         >
-          <div className="font-medium h-full flex items-center gap-2 flex-wrap hover:text-gray-200 text-xl flex justify-center items-center gap-2 hover:bg-blue-700 block text-white bg-blue-700/90 p-2 rounded-md">
+          <div className="font-medium h-full flex items-center gap-2 flex-wrap hover:text-gray-200 text-xl justify-center hover:bg-blue-700 text-white bg-blue-700/90 p-2 rounded-md">
             Video Call with {appointmentDetails?.withNickName}
             {!isLoading ? (
               <Video className="flex items-center text-white text-3xl" />

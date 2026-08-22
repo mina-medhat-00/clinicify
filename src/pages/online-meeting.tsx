@@ -26,13 +26,13 @@ function OnlineMeeting() {
       <div className="flex gap-2 items-center justify-center mt-8">
         <Link
           to="/signup"
-          className="p-2 hover:bg-white bg-gray-100 rounded text-blue-500 !font-semibold hover:text-blue-600"
+          className="p-2 hover:bg-white bg-gray-100 rounded text-blue-500 font-semibold hover:text-blue-600"
         >
           Sign Up
         </Link>
         <Link
           to="/login"
-          className="p-2 hover:bg-white bg-gray-100 rounded text-blue-500 !font-semibold hover:text-blue-600"
+          className="p-2 hover:bg-white bg-gray-100 rounded text-blue-500 font-semibold hover:text-blue-600"
         >
           Login
         </Link>
@@ -46,13 +46,13 @@ function OnlineMeeting() {
       <div className="flex gap-2 items-center justify-center mt-8">
         <Link
           to="/"
-          className="p-2 hover:bg-white bg-gray-100 rounded text-blue-500 !font-semibold hover:text-blue-600"
+          className="p-2 hover:bg-white bg-gray-100 rounded text-blue-500 font-semibold hover:text-blue-600"
         >
           Go Home
         </Link>
         <Link
           to="/doctors"
-          className="p-2 hover:bg-white bg-gray-100 rounded text-blue-500 !font-semibold hover:text-blue-600"
+          className="p-2 hover:bg-white bg-gray-100 rounded text-blue-500 font-semibold hover:text-blue-600"
         >
           Find Doctors
         </Link>
