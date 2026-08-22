@@ -1,4 +1,4 @@
-import { Carousel, Col, Empty } from "@/components/ui/kit";
+import { Carousel, Col, Empty } from "@/components/ui";
 import { Star } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
@@ -9,7 +9,12 @@ import ServerError from "@/components/ui/server-error";
 import TitleHeader from "@/components/ui/title-header";
 import { useFeedbackContext } from "@/contexts/feedback-context";
 
-function Feedbacks({ home, noDirectFetch, username, fetchFeedback }: any) {
+export default function Feedbacks({
+  home,
+  noDirectFetch,
+  username,
+  fetchFeedback,
+}: any) {
   const { feedbackData, isLoading, isError, fetchFeedbackData } =
     useFeedbackContext();
   const isMobile = useMediaQuery({
@@ -209,5 +214,3 @@ function Feedbacks({ home, noDirectFetch, username, fetchFeedback }: any) {
     </>
   );
 }
-
-export default Feedbacks;

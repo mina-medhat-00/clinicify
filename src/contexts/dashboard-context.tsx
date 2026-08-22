@@ -4,7 +4,7 @@ import { useUserContext } from "@/contexts/user-context";
 import { apiUrl } from "@/utils/api";
 
 const DashboardData = createContext<any>(null);
-function DashboardContextProvider({ children, token }: any) {
+export default function DashboardContextProvider({ children, token }: any) {
   const { fetchUserData } = useUserContext();
   const [isLoading, setIsLoading] = useState(true);
   const [dashboardData, setDashboardData] = useState({});
@@ -79,8 +79,6 @@ function DashboardContextProvider({ children, token }: any) {
     </DashboardData.Provider>
   );
 }
-
-export default DashboardContextProvider;
 
 export function useDashboardContext() {
   return useContext(DashboardData);

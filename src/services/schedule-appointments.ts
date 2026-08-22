@@ -3,7 +3,7 @@ import Cookies from "universal-cookie";
 import { apiUrl } from "@/utils/api";
 
 const cookies = new Cookies();
-function scheduleAppointments(
+export default function scheduleAppointments(
   activeDate?: any,
   addedAppointments?: any,
   tAppointments?: any,
@@ -104,5 +104,3 @@ function scheduleAppointments(
       }
     });
 }
-
-export default scheduleAppointments;

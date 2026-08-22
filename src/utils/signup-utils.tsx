@@ -1,4 +1,4 @@
-import { Form, Select } from "@/components/ui/kit";
+import { Form, Select } from "@/components/ui";
 import { currencyOptions, phonePrefixOptions } from "@/utils/sign-data";
 
 const prefixSelector = (

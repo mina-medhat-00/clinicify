@@ -4,7 +4,7 @@ import type { ProfileData } from "@/types";
 import { apiUrl } from "@/utils/api";
 
 const ProfileData = createContext<any>(null);
-function ProfileContextProvider({ children }: any) {
+export default function ProfileContextProvider({ children }: any) {
   const [isLoading, setIsLoading] = useState(true);
   const [profileData, setProfileData] = useState<ProfileData>({});
   const [isError, setIsError] = useState(false);
@@ -36,8 +36,6 @@ function ProfileContextProvider({ children }: any) {
     </ProfileData.Provider>
   );
 }
-
-export default ProfileContextProvider;
 
 export function useProfileContext() {
   return useContext(ProfileData);

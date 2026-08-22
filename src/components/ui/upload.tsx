@@ -1,6 +1,6 @@
 import { ImagePlus, X } from "lucide-react";
 import { useRef, useState } from "react";
-import { cx } from "@/components/ui/kit/cx";
+import { cx } from "@/components/ui/cx";
 
 const LIST_IGNORE = "LIST_IGNORE";
 

@@ -11,7 +11,7 @@ import {
   useState,
 } from "react";
 import { Check, CircleAlert, Loader2 } from "lucide-react";
-import { cx } from "@/components/ui/kit/cx";
+import { cx } from "@/components/ui/cx";
 
 type NamePath = string | (string | number)[];
 

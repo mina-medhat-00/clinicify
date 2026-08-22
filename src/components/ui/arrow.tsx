@@ -1,6 +1,6 @@
 import { ChevronsDown } from "lucide-react";
 
-function Arrow({ color, arrowColor }: any) {
+export default function Arrow({ color, arrowColor }: any) {
   return (
     <ChevronsDown
       className={`mx-auto size-8 sm:size-10 ${
@@ -9,5 +9,3 @@ function Arrow({ color, arrowColor }: any) {
     />
   );
 }
-
-export default Arrow;

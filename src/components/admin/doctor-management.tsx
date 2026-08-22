@@ -1,4 +1,4 @@
-import { Button, Input, Space, Table, Tag } from "@/components/ui/kit";
+import { Button, Input, Space, Table, Tag } from "@/components/ui";
 import { Search } from "lucide-react";
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
@@ -11,7 +11,7 @@ import { useDoctorsContext } from "@/contexts/doctors-context";
 import { useUserContext } from "@/contexts/user-context";
 import changeState from "@/services/change-state";
 
-function DoctorManagement(_props?: any) {
+export default function DoctorManagement(_props?: any) {
   const searchInput = useRef(null);
   function handleSearch(confirm?: any, ..._args: any[]) {
     confirm();
@@ -263,5 +263,3 @@ function DoctorManagement(_props?: any) {
     </div>
   );
 }
-
-export default DoctorManagement;

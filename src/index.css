@@ -2,7 +2,7 @@
 
 @font-face {
   font-family: "SF Pro Display";
-  src: url("./assets/fonts/SFProDisplay-Regular.otf") format("opentype");
+  src: url("../public/fonts/SFProDisplay-Regular.otf") format("opentype");
   font-weight: 100 400;
   font-style: normal;
   font-display: swap;
@@ -10,7 +10,7 @@
 
 @font-face {
   font-family: "SF Pro Display";
-  src: url("./assets/fonts/SFProDisplay-Medium.otf") format("opentype");
+  src: url("../public/fonts/SFProDisplay-Medium.otf") format("opentype");
   font-weight: 500;
   font-style: normal;
   font-display: swap;
@@ -18,7 +18,7 @@
 
 @font-face {
   font-family: "SF Pro Display";
-  src: url("./assets/fonts/SFProDisplay-Bold.otf") format("opentype");
+  src: url("../public/fonts/SFProDisplay-Bold.otf") format("opentype");
   font-weight: 600 900;
   font-style: normal;
   font-display: swap;
@@ -69,15 +69,19 @@
   html,
   body,
   #root {
-    @apply min-h-full font-sans;
+    min-height: 100%;
+    font-family: var(--font-sans);
   }
 
   html {
-    @apply min-h-screen;
+    min-height: 100vh;
   }
 
   body {
-    @apply m-0 bg-white text-sm text-black/85;
+    margin: 0;
+    background-color: var(--color-white);
+    font-size: var(--text-sm);
+    color: color-mix(in oklab, var(--color-black) 85%, transparent);
   }
 
   button,
@@ -89,7 +93,8 @@
   }
 
   a {
-    @apply text-blue-500 no-underline;
+    color: var(--color-blue-500);
+    text-decoration: none;
   }
 }
 
@@ -105,24 +110,30 @@
   }
 
   .scroll--h::-webkit-scrollbar-thumb {
-    @apply bg-gray-500;
+    background-color: var(--color-gray-500);
   }
 
   .scroll--v::-webkit-scrollbar-thumb,
   ul[id*="sub31"]::-webkit-scrollbar-thumb {
-    @apply bg-blue-600;
+    background-color: var(--color-blue-600);
   }
 
   ul[id*="sub31"]::-webkit-scrollbar-track {
-    @apply bg-zinc-200;
+    background-color: var(--color-zinc-200);
   }
 
   .scroll--v--comment::-webkit-scrollbar-thumb {
-    @apply border border-solid border-slate-400 bg-slate-700;
+    border: 1px solid var(--color-slate-400);
+    background-color: var(--color-slate-700);
   }
 
   .scroll--v--chat::-webkit-scrollbar-thumb {
-    @apply border border-solid border-slate-200 bg-violet-950/70;
+    border: 1px solid var(--color-slate-200);
+    background-color: color-mix(
+      in oklab,
+      var(--color-violet-950) 70%,
+      transparent
+    );
   }
 
   .scroll--h--chat--white::-webkit-scrollbar-thumb {
@@ -146,7 +157,7 @@
   }
 
   .epr-body::-webkit-scrollbar-thumb {
-    @apply bg-slate-700;
+    background-color: var(--color-slate-700);
   }
 
   .flip .segment-overlay__top {
@@ -172,11 +183,15 @@
   }
 
   .ant-upload-list-item {
-    @apply bg-bg-bar text-lg text-white;
+    background-color: var(--color-bg-bar);
+    font-size: var(--text-lg);
+    color: var(--color-white);
   }
 
   .ant-upload-list {
-    @apply flex flex-wrap justify-between;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
   }
 
   .ant-upload-list-item:hover {
@@ -185,7 +200,7 @@
 
   .ant-upload-list-item-action svg {
     color: #ccb7be !important;
-    @apply text-xl;
+    font-size: var(--text-xl);
   }
 
   .ant-upload-list-item-action svg:hover {
@@ -193,7 +208,8 @@
   }
 
   .users--table {
-    @apply bg-gray-700 text-white;
+    background-color: var(--color-gray-700);
+    color: var(--color-white);
   }
 
   .users--table tr:hover {
@@ -201,7 +217,8 @@
   }
 
   .reports--table {
-    @apply bg-sky-700 text-white;
+    background-color: var(--color-sky-700);
+    color: var(--color-white);
   }
 
   .reports--table tr:hover {

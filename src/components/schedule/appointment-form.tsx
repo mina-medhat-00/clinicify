@@ -1,4 +1,4 @@
-import { Button, Input, Popover, Select } from "@/components/ui/kit";
+import { Button, Input, Popover, Select } from "@/components/ui";
 import { Clock, Plus, PoundSterling, Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import CountdownTimer from "@/components/schedule/schedule-countdown-timer";
@@ -349,7 +349,7 @@ function AppointmentDetails({
     </div>
   );
 }
-function AppointmentForm({
+export default function AppointmentForm({
   doctorData,
   selectedDate,
   messageApi,
@@ -507,5 +507,3 @@ function AppointmentForm({
     </div>
   );
 }
-
-export default AppointmentForm;

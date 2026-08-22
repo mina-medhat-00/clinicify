@@ -4,7 +4,11 @@ import type { User } from "@/types";
 import { apiUrl } from "@/utils/api";
 
 const DoctorsData = createContext<any>(null);
-function DoctorsContextProvider({ children, query, noFirstRender }: any) {
+export default function DoctorsContextProvider({
+  children,
+  query,
+  noFirstRender,
+}: any) {
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [doctorsData, setDoctorsData] = useState<User[] | null>(null);
@@ -57,8 +61,6 @@ function DoctorsContextProvider({ children, query, noFirstRender }: any) {
     </DoctorsData.Provider>
   );
 }
-
-export default DoctorsContextProvider;
 
 export function useDoctorsContext() {
   return useContext(DoctorsData);

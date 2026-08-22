@@ -1,7 +1,7 @@
 import { Check, CircleAlert, Info, Loader2, X } from "lucide-react";
 import { useEffect, useState, type ReactElement } from "react";
 import { createPortal } from "react-dom";
-import { cx } from "@/components/ui/kit/cx";
+import { cx } from "@/components/ui/cx";
 
 type Toast = {
   id: any;

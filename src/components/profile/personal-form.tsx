@@ -5,7 +5,7 @@ import {
   Input,
   Select,
   Space,
-} from "@/components/ui/kit";
+} from "@/components/ui";
 import { Mail } from "lucide-react";
 import ProfileTable from "@/components/profile/profile-table";
 import submitPersonal from "@/services/submit-personal";
@@ -13,7 +13,7 @@ import { cityOptions } from "@/utils/sign-data";
 import { prefixSelector } from "@/utils/signup-utils";
 
 const { Item } = Form;
-function PersonalForm({
+export default function PersonalForm({
   messageApi,
   fetchProfileData,
   fetchUserData,
@@ -230,5 +230,3 @@ function PersonalForm({
     </div>
   );
 }
-
-export default PersonalForm;

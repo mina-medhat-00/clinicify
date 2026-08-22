@@ -1,4 +1,4 @@
-import { Popover } from "@/components/ui/kit";
+import { Popover } from "@/components/ui";
 import {
   Calendar,
   ChartColumn,
@@ -8,7 +8,7 @@ import {
 import { useState } from "react";
 import { useMediaQuery } from "react-responsive";
 
-function DashNav({ setDashType, dashType }: any) {
+export default function DashNav({ setDashType, dashType }: any) {
   const items = [
     {
       name: "profile",
@@ -92,17 +92,8 @@ function DashNav({ setDashType, dashType }: any) {
           className={`absolute bg-gray-600 opacity-0 transition-all duration-500 ${
             isMobile ? "top-0 left-full h-1/5 w-1" : "top-full left-0 h-1 w-1/5"
           }`}
-          style={
-            hoverIdx == null
-              ? undefined
-              : isMobile
-                ? { top: `${hoverIdx * 20}%`, opacity: 1 }
-                : { left: `${hoverIdx * 20}%`, opacity: 1 }
-          }
         ></div>
       </div>
     </div>
   );
 }
-
-export default DashNav;

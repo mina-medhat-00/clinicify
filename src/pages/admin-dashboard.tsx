@@ -17,7 +17,7 @@ import { useUtilsContext } from "@/contexts/utils-context";
 import Chat from "@/pages/chat";
 import UserProfile from "@/pages/user-profile";
 
-function AdminDashboard() {
+export default function AdminDashboard() {
   const isMobile = useMediaQuery({
     query: "(max-width:878px)",
   });
@@ -119,4 +119,3 @@ function AdminDashboard() {
     </div>
   );
 }
-export default AdminDashboard;

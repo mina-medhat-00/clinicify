@@ -1,4 +1,4 @@
-import { Drawer, Empty, message } from "@/components/ui/kit";
+import { Drawer, Empty, message } from "@/components/ui";
 import dayjs from "dayjs";
 import { LayoutGrid } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -12,7 +12,7 @@ import { useSlotsContext } from "@/contexts/slots-context";
 import cancelAppointment from "@/services/cancel-appointment";
 import scheduleAppointments from "@/services/schedule-appointments";
 
-function ScheduleAppointments({
+export default function ScheduleAppointments({
   doctorData,
   userid,
   isDoctorLoading,
@@ -275,5 +275,3 @@ function ScheduleAppointments({
     </div>
   );
 }
-
-export default ScheduleAppointments;

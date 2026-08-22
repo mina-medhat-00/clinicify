@@ -1,6 +1,6 @@
 import { CalendarCheck } from "lucide-react";
 
-function AppointmentSuccess({ bookedAppointment }: any) {
+export default function AppointmentSuccess({ bookedAppointment }: any) {
   return (
     <div>
       <div className="flex flex-col items-center justify-center gap-4">
@@ -26,5 +26,3 @@ function AppointmentSuccess({ bookedAppointment }: any) {
     </div>
   );
 }
-
-export default AppointmentSuccess;

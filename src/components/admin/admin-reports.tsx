@@ -1,4 +1,4 @@
-import { Button, Input, Space, Table } from "@/components/ui/kit";
+import { Button, Input, Space, Table } from "@/components/ui";
 import {
   Briefcase,
   Flag,
@@ -17,7 +17,7 @@ import ReportContextProvider, {
   useReportContext,
 } from "@/contexts/report-context";
 
-function AdminReports() {
+export default function AdminReports() {
   const [selectedUser, setSelectedUser] = useState<any>("");
   const [showPop, setShowPop] = useState(false);
   const { isLoading: isReportLoading, reportData } = useReportContext();
@@ -266,5 +266,3 @@ function AdminReports() {
     </div>
   );
 }
-
-export default AdminReports;

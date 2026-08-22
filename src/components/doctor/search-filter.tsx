@@ -1,4 +1,4 @@
-import { Button, Input, Select } from "@/components/ui/kit";
+import { Button, Input, Select } from "@/components/ui";
 import { Search } from "lucide-react";
 import {
   forwardRef,
@@ -14,7 +14,11 @@ import { doctorSpecialtyOptions } from "@/utils/sign-data";
 function opt(val?: any, ..._args: any[]) {
   return val == "null" || !val ? null : val;
 }
-function SearchFilter({ fetchDoctorsData }: any, ref?: any, ..._args: any[]) {
+export default forwardRef(function SearchFilter(
+  { fetchDoctorsData }: any,
+  ref?: any,
+  ..._args: any[]
+) {
   const [searchFilter, setSearchFilter] = useState({
     specialty: opt(window.localStorage.getItem("specialty")) || "",
     doctorName: opt(window.localStorage.getItem("doctorName")) || "",
@@ -70,11 +74,8 @@ function SearchFilter({ fetchDoctorsData }: any, ref?: any, ..._args: any[]) {
       <div
         ref={searchElement}
         className="relative p-2 shadow-lg rounded-bl-lg mx-2 bg-gray-600 transition-all duration-200"
-        style={{
-          marginTop: `${showSearch ? 0 : -heightSearch - 1}px`,
-        }}
       >
-        <HeaderLine value="Search For a Doctor" center />
+        <HeaderLine value="Search for a doctor" center />
         <div className="flex flex-wrap gap-2">
           <div className="grow w-full sm:w-1/3">
             <HeaderLine
@@ -178,6 +179,4 @@ function SearchFilter({ fetchDoctorsData }: any, ref?: any, ..._args: any[]) {
       </div>
     </>
   );
-}
-
-export default forwardRef(SearchFilter);
+});

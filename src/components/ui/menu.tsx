@@ -1,6 +1,6 @@
 import { ChevronDown } from "lucide-react";
 import { forwardRef, useImperativeHandle, useRef, useState } from "react";
-import { cx } from "@/components/ui/kit/cx";
+import { cx } from "@/components/ui/cx";
 
 function MenuItem({ item, theme, onClick, depth = 0 }: any) {
   const [open, setOpen] = useState(false);
@@ -40,7 +40,6 @@ function MenuItem({ item, theme, onClick, depth = 0 }: any) {
             : "text-gray-700 hover:bg-gray-100",
           String(item.key).includes("user") && "justify-start pl-1",
         )}
-        style={{ paddingLeft: depth ? 12 + depth * 12 : undefined }}
       >
         {item.icon}
         <span className="min-w-0 grow">{item.label}</span>
@@ -98,7 +97,6 @@ const Menu = forwardRef(function Menu(
   return (
     <ul
       ref={listRef}
-      style={style}
       className={cx(
         "ant-menu-root m-0 list-none p-0",
         mode === "vertical" && "w-full",

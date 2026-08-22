@@ -3,7 +3,7 @@ import Cookies from "universal-cookie";
 import { apiUrl } from "@/utils/api";
 
 const cookies = new Cookies();
-async function submitFeedback(
+export default async function submitFeedback(
   rateValue?: any,
   feedbackValue?: any,
   feedback_to?: any,
@@ -67,5 +67,3 @@ async function submitFeedback(
         });
     });
 }
-
-export default submitFeedback;

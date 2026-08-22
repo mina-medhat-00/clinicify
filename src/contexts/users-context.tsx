@@ -4,7 +4,7 @@ import type { User } from "@/types";
 import { apiUrl } from "@/utils/api";
 
 const UsersData = createContext<any>(null);
-function UsersContextProvider({ children }: any) {
+export default function UsersContextProvider({ children }: any) {
   const [isLoading, setIsLoading] = useState(true);
   const [usersData, setUsersData] = useState<User[] | null>(null);
   const [isError, setIsError] = useState(false);
@@ -37,8 +37,6 @@ function UsersContextProvider({ children }: any) {
     </UsersData.Provider>
   );
 }
-
-export default UsersContextProvider;
 
 export function useUsersContext() {
   return useContext(UsersData);

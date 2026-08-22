@@ -1,4 +1,4 @@
-import { message } from "@/components/ui/kit";
+import { message } from "@/components/ui";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import type { AuthTokenPayload, User } from "@/types";
@@ -8,7 +8,7 @@ import Cookies from "universal-cookie";
 import { apiUrl } from "@/utils/api";
 
 const UserData = createContext<any>(null);
-function UserContextProvider({ children, token }: any) {
+export default function UserContextProvider({ children, token }: any) {
   const [isLoading, setIsLoading] = useState(true);
   const [tokenExpired, setTokenExpired] = useState(false);
   const navigate = useNavigate();
@@ -123,8 +123,6 @@ function UserContextProvider({ children, token }: any) {
     </UserData.Provider>
   );
 }
-
-export default UserContextProvider;
 
 export function useUserContext() {
   return useContext(UserData);

@@ -3,7 +3,7 @@ import Cookies from "universal-cookie";
 import { apiUrl } from "@/utils/api";
 
 const cookies = new Cookies();
-async function submitPersonal(
+export default async function submitPersonal(
   values?: any,
   messageApi?: any,
   fetchProfileData?: any,
@@ -60,5 +60,3 @@ async function submitPersonal(
         });
     });
 }
-
-export default submitPersonal;

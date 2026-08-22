@@ -1,4 +1,4 @@
-import { Button, Form, Input, Radio } from "@/components/ui/kit";
+import { Button, Form, Input, Radio } from "@/components/ui";
 import { Flag } from "lucide-react";
 import HeaderLine from "@/components/ui/header-line";
 import TitleHeader from "@/components/ui/title-header";
@@ -37,7 +37,7 @@ const reportTypeData = [
     value: "Other issue",
   },
 ];
-function ReportProblem() {
+export default function ReportProblem() {
   const { messageApi } = useUtilsContext();
   const [form] = Form.useForm();
   const { fetchUserData } = useUserContext();
@@ -130,5 +130,3 @@ function ReportProblem() {
     </div>
   );
 }
-
-export default ReportProblem;

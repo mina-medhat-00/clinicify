@@ -10,7 +10,7 @@ import { useSlotsContext } from "@/contexts/slots-context";
 import { useUserContext } from "@/contexts/user-context";
 import bookAppointment from "@/services/book-appointment";
 
-function CheckoutForm({
+export default function CheckoutForm({
   bookedAppointment,
   doctorId,
   socket,
@@ -186,5 +186,3 @@ function CheckoutForm({
     </div>
   );
 }
-
-export default CheckoutForm;

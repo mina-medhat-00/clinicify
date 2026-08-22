@@ -6,7 +6,7 @@ import {
   Input,
   message,
   Upload,
-} from "@/components/ui/kit";
+} from "@/components/ui";
 import { ImagePlus, MessageCircleQuestion, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import PostWrapper from "@/components/post/post-wrapper";
@@ -14,7 +14,6 @@ import Loader from "@/components/ui/loader";
 import ServerError from "@/components/ui/server-error";
 import TableGrid from "@/components/ui/table-grid";
 import TitleHeader from "@/components/ui/title-header";
-import TransitionContent from "@/components/ui/transition-content";
 import { CommentsContextProvider } from "@/contexts";
 import { usePostsContext } from "@/contexts/posts-context";
 import { useUserContext } from "@/contexts/user-context";
@@ -44,7 +43,7 @@ function beforeUpload(file?: any, ..._args: any[]) {
   }
   return isImg && isLt2M;
 }
-function Posts({ home }: any) {
+export default function Posts({ home }: any) {
   const { socket, isMobile } = useUtilsContext();
   const {
     fetchUserData,
@@ -252,29 +251,18 @@ function Posts({ home }: any) {
       />
       <div className="pr-2">
         {posts?.length > 0 ? (
-          <TransitionContent
-            id="posts"
-            speed="extraspeed"
-            direction="bottomleft"
-            parentClassName={`flex flex-wrap gap-2 ${
-              home
-                ? "max-h-96 overflow-auto trans--post scroll--v scroll--v--chat scroll--h"
-                : ""
-            } ${!isMobile ? "mx-8" : ""} items-start py-2 px-1`}
-          >
-            <TableGrid
-              noMargin
-              noGap
-              colKey="post"
-              isFull={
-                allPosts?.filter(function ({ is_img }: any) {
-                  return is_img;
-                }) || []
-              }
-              customGrid={`${home ? "bg-white" : "bg-gray-100"}`}
-              items={allPosts}
-            />
-          </TransitionContent>
+          <TableGrid
+            noMargin
+            noGap
+            colKey="post"
+            isFull={
+              allPosts?.filter(function ({ is_img }: any) {
+                return is_img;
+              }) || []
+            }
+            customGrid={`${home ? "bg-white" : "bg-gray-100"}`}
+            items={allPosts}
+          />
         ) : isError ? (
           <ServerError errorTitle={"Posts"} />
         ) : isLoading || postsData?.length > 0 ? (
@@ -299,5 +287,3 @@ function Posts({ home }: any) {
     </div>
   );
 }
-
-export default Posts;

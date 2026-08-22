@@ -6,7 +6,7 @@ function adjustTime(date?: any, time?: any, timeZone?: any, ..._args: any[]) {
     minute: "numeric",
   });
 }
-function BookButton({
+export default function BookButton({
   appointmentType,
   appointmentFees,
   appointmentState,
@@ -47,5 +47,3 @@ function BookButton({
     </div>
   );
 }
-
-export default BookButton;

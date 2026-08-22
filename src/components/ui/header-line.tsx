@@ -1,4 +1,4 @@
-function HeaderLine({
+export default function HeaderLine({
   font,
   value,
   color,
@@ -24,5 +24,3 @@ function HeaderLine({
     </>
   );
 }
-
-export default HeaderLine;

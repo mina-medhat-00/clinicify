@@ -2,7 +2,7 @@ import { Inbox, Pencil, Star, X } from "lucide-react";
 import { useState } from "react";
 import SkeletonLib from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { cx } from "@/components/ui/kit/cx";
+import { cx } from "@/components/ui/cx";
 
 const avatarSize = {
   small: 24,
@@ -31,7 +31,6 @@ function Avatar({
         shape === "square" ? "rounded-md" : "rounded-full",
         className,
       )}
-      style={{ width: px, height: px, fontSize: px * 0.45 }}
       {...props}
     >
       {showImg ? (
@@ -253,11 +252,7 @@ function Row({ children, className, justify, align, gutter, ...props }: any) {
 
 function Col({ children, className, span, ...props }: any) {
   return (
-    <div
-      className={className}
-      style={span ? { width: `${(span / 24) * 100}%` } : undefined}
-      {...props}
-    >
+    <div className={className} {...props}>
       {children}
     </div>
   );
@@ -372,10 +367,7 @@ function Rate({
               )}
             />
             {half ? (
-              <span
-                className="absolute inset-0.5 overflow-hidden"
-                style={{ width: "50%" }}
-              >
+              <span className="absolute inset-0.5 overflow-hidden">
                 <Star className="size-5 fill-amber-400 text-amber-400" />
               </span>
             ) : null}

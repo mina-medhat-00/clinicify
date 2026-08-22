@@ -32,6 +32,7 @@ import Signup from "@/pages/signup";
 import UserProfile from "@/pages/user-profile";
 
 const cookies = new Cookies();
+
 function handleRoute(
   element?: any,
   permission?: any,
@@ -49,7 +50,8 @@ function handleRoute(
     <Navigate to="/forbidden" replace />
   );
 }
-function App() {
+
+export default function App() {
   const [navActive, setNavActive] = useState(true);
   const DoctorRef = useRef<any>(null);
   const location = useLocation();
@@ -183,5 +185,3 @@ function App() {
     </div>
   );
 }
-
-export default App;

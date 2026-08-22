@@ -3,7 +3,7 @@ import Cookies from "universal-cookie";
 import { apiUrl } from "@/utils/api";
 
 const cookies = new Cookies();
-async function submitLike(
+export default async function submitLike(
   user?: any,
   fetchUserData?: any,
   fetchCommentsData?: any,
@@ -91,5 +91,3 @@ async function submitLike(
         });
     });
 }
-
-export default submitLike;

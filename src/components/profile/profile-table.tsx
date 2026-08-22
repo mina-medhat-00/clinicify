@@ -1,6 +1,6 @@
-import { Skeleton } from "@/components/ui/kit";
+import { Skeleton } from "@/components/ui";
 
-function ProfileTable({
+export default function ProfileTable({
   data,
   headers,
   headerColor,
@@ -109,5 +109,3 @@ function ProfileTable({
     </div>
   );
 }
-
-export default ProfileTable;

@@ -10,7 +10,7 @@ import getStripe from "@/utils/get-stripe";
 import { apiUrl } from "@/utils/api";
 
 const stripePromise = getStripe();
-function AppointmentPayment({
+export default function AppointmentPayment({
   bookedAppointment,
   doctorId,
   setBookedAppointment,
@@ -88,5 +88,3 @@ function AppointmentPayment({
     </div>
   );
 }
-
-export default AppointmentPayment;

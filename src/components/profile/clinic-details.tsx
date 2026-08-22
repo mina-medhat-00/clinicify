@@ -44,6 +44,7 @@ const clinicDetails = [
     icon: <Ban />,
   },
 ];
+
 function ClinicTable({
   headers,
   data,
@@ -70,7 +71,8 @@ function ClinicTable({
     </div>
   );
 }
-function ClinicDetails({
+
+export default function ClinicDetails({
   admin,
   setHandleDrawer,
   clinicValues,
@@ -124,5 +126,3 @@ my-5 rounded-xl"
     </div>
   );
 }
-
-export default ClinicDetails;

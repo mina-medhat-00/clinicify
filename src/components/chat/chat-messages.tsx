@@ -1,4 +1,4 @@
-import { Input, Skeleton } from "@/components/ui/kit";
+import { Input, Skeleton } from "@/components/ui";
 import dayjs from "dayjs";
 import EmojiPicker from "emoji-picker-react";
 import { Loader2, Send, Smile } from "lucide-react";
@@ -21,7 +21,7 @@ function getDate(
     ? dayjs(`${issued_date} ${issued_time} ${timeZone}`).format("YYYY-DD-MM")
     : null;
 }
-function Messages({
+export default function Messages({
   isMobile,
   fetchUserData,
   withUser,
@@ -231,5 +231,3 @@ function Messages({
     </>
   );
 }
-
-export default Messages;

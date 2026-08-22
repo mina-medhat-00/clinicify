@@ -16,7 +16,7 @@ function handleQuery(obj?: any, ..._args: any[]) {
         .join("&");
 }
 const FeedbackData = createContext<any>(null);
-function FeedbackContextProvider({
+export default function FeedbackContextProvider({
   children,
   noDirectFetch,
   noLoading,
@@ -52,8 +52,6 @@ function FeedbackContextProvider({
     </FeedbackData.Provider>
   );
 }
-
-export default FeedbackContextProvider;
 
 export function useFeedbackContext() {
   return useContext(FeedbackData);

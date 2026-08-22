@@ -1,4 +1,4 @@
-import { Empty, Switch, Tag } from "@/components/ui/kit";
+import { Empty, Switch, Tag } from "@/components/ui";
 import { useEffect, useState } from "react";
 import Cookies from "universal-cookie";
 import Loader from "@/components/ui/loader";
@@ -8,7 +8,7 @@ import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
 import changeState from "@/services/change-state";
 
-function ChatRestrict({ userid }: any) {
+export default function ChatRestrict({ userid }: any) {
   const { fetchChatData, chatData, isLoading } = useChatContext();
   const [, setIsLoading] = useState<any>(null);
   const { messageApi } = useUtilsContext();
@@ -94,5 +94,3 @@ function ChatRestrict({ userid }: any) {
     />
   );
 }
-
-export default ChatRestrict;

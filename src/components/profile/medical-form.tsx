@@ -1,9 +1,9 @@
-import { Button, Form, Input } from "@/components/ui/kit";
+import { Button, Form, Input } from "@/components/ui";
 import ProfileTable from "@/components/profile/profile-table";
 import submitMedical from "@/services/submit-medical";
 
 const { Item } = Form;
-function MedicalForm({
+export default function MedicalForm({
   userName,
   messageApi,
   fetchProfileData,
@@ -119,5 +119,3 @@ rounded-lg resize-none"
     </Form>
   );
 }
-
-export default MedicalForm;

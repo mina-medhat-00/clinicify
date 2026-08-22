@@ -3,7 +3,7 @@ import Cookies from "universal-cookie";
 import { apiUrl } from "@/utils/api";
 
 const cookies = new Cookies();
-function bookAppointment(
+export default function bookAppointment(
   selectedDate?: any,
   bookedSlot?: any,
   appointmentId?: any,
@@ -121,5 +121,3 @@ function bookAppointment(
       });
   }
 }
-
-export default bookAppointment;

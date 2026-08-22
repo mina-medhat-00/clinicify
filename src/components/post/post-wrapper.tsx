@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Post from "@/components/post/post";
 import PopUp from "@/components/ui/pop-up";
 
-function PostWrapper({
+export default function PostWrapper({
   setPosts,
   showPost,
   setShowPost,
@@ -101,5 +101,3 @@ function PostWrapper({
     />
   );
 }
-
-export default PostWrapper;

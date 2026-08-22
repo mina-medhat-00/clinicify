@@ -5,7 +5,11 @@ import type { Appointment } from "@/types";
 import { apiUrl } from "@/utils/api";
 
 const AppointmentData = createContext<any>(null);
-function AppointmentContextProvider({ children, token, isDoctor }: any) {
+export default function AppointmentContextProvider({
+  children,
+  token,
+  isDoctor,
+}: any) {
   const { fetchUserData } = useUserContext();
   const [isLoading, setIsLoading] = useState(true);
   const [appointmentData, setAppointmentData] = useState<Appointment[] | null>(
@@ -112,8 +116,6 @@ function AppointmentContextProvider({ children, token, isDoctor }: any) {
     </AppointmentData.Provider>
   );
 }
-
-export default AppointmentContextProvider;
 
 export function useAppointmentContext() {
   return useContext(AppointmentData);

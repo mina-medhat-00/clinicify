@@ -8,7 +8,7 @@ import {
   Select,
   Space,
   Upload,
-} from "@/components/ui/kit";
+} from "@/components/ui";
 import axios from "axios";
 import { ImagePlus, Lock, Mail, User } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -82,7 +82,7 @@ function checkUserName(uname?: any, setValidState?: any, ..._args: any[]) {
     });
 }
 
-function Signup() {
+export default function Signup() {
   const { messageApi } = useUtilsContext();
   const { userData: user } = useUserContext();
   const { Item } = Form;
@@ -505,5 +505,3 @@ function Signup() {
     </div>
   );
 }
-
-export default Signup;

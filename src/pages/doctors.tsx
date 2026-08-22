@@ -1,5 +1,5 @@
-import { Carousel, Empty } from "@/components/ui/kit";
 import { forwardRef, useState } from "react";
+import { Carousel, Empty } from "@/components/ui";
 import DoctorCard from "@/components/doctor/doctor-card";
 import SearchFilter from "@/components/doctor/search-filter";
 import Loader from "@/components/ui/loader";
@@ -9,7 +9,11 @@ import { useDoctorsContext } from "@/contexts/doctors-context";
 import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
 
-function Doctors({ home }: any, ref?: any, ..._args: any[]) {
+export default forwardRef(function Doctors(
+  { home }: any,
+  ref?: any,
+  ..._args: any[]
+) {
   const { socket, timeZone, isMobile } = useUtilsContext();
   const { userData: user } = useUserContext();
   const { doctorsData, isLoading, fetchDoctorsData, isError } =
@@ -68,7 +72,7 @@ function Doctors({ home }: any, ref?: any, ..._args: any[]) {
             ) : (
               <Empty
                 className="my-4 text-gray-500 font-medium"
-                description="There's no doctors"
+                description="There are no doctors"
               />
             )}
           </Carousel>
@@ -129,7 +133,7 @@ function Doctors({ home }: any, ref?: any, ..._args: any[]) {
                       : "text-gray-500"
                   }`}
                 >
-                  There's no doctors
+                  There are no doctors
                 </span>
               }
             />
@@ -138,5 +142,4 @@ function Doctors({ home }: any, ref?: any, ..._args: any[]) {
       )}
     </>
   );
-}
-export default forwardRef(Doctors);
+});

@@ -1,6 +1,6 @@
 import { Loader2 } from "lucide-react";
 
-function Loader({ gray }: any) {
+export default function Loader({ gray }: any) {
   return (
     <div className="my-4 flex w-full items-center justify-center">
       <Loader2
@@ -9,5 +9,3 @@ function Loader({ gray }: any) {
     </div>
   );
 }
-
-export default Loader;

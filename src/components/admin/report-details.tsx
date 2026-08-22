@@ -1,8 +1,8 @@
-import { Empty } from "@/components/ui/kit";
+import { Empty } from "@/components/ui";
 import ProfileTable from "@/components/profile/profile-table";
 import { useReportContext } from "@/contexts/report-context";
 
-function ReportDetails(_props?: any) {
+export default function ReportDetails(_props?: any) {
   const { reportData: reportDetailsData, isLoading } = useReportContext();
   return (
     <div>
@@ -47,5 +47,3 @@ function ReportDetails(_props?: any) {
     </div>
   );
 }
-
-export default ReportDetails;

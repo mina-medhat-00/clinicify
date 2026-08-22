@@ -1,7 +1,7 @@
-import { Tag } from "@/components/ui/kit";
+import { Tag } from "@/components/ui";
 import { CircleX, Loader2 } from "lucide-react";
 
-function AccountVerify({ isVerified }: any) {
+export default function AccountVerify({ isVerified }: any) {
   return isVerified == null ? (
     <div className="flex p-2  text-center bg-yellow-600/60 rounded-lg flex-wrap gap-2 items-center justify-center">
       <div className="text-2xl text-yellow-100 font-medium">
@@ -28,5 +28,3 @@ function AccountVerify({ isVerified }: any) {
     </div>
   ) : null;
 }
-
-export default AccountVerify;

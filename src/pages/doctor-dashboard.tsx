@@ -16,7 +16,7 @@ import Appointments from "@/pages/appointments";
 import Chat from "@/pages/chat";
 import UserProfile from "@/pages/user-profile";
 
-function DoctorDashboard({ setNavActive }: any) {
+export default function DoctorDashboard({ setNavActive }: any) {
   const { timeZone, messageApi, socket } = useUtilsContext();
   const {
     isLoading: isUserLoading,
@@ -114,5 +114,3 @@ function DoctorDashboard({ setNavActive }: any) {
     </div>
   );
 }
-
-export default DoctorDashboard;

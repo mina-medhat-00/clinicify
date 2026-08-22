@@ -17,7 +17,7 @@ function handleQuery(obj?: any, ..._args: any[]) {
         .join("&");
 }
 const ChatData = createContext<any>(null);
-function ChatContextProvider({ children, token }: any) {
+export default function ChatContextProvider({ children, token }: any) {
   const { fetchUserData } = useUserContext();
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
@@ -96,8 +96,6 @@ function ChatContextProvider({ children, token }: any) {
     </ChatData.Provider>
   );
 }
-
-export default ChatContextProvider;
 
 export function useChatContext() {
   return useContext(ChatData);

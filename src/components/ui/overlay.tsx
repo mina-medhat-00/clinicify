@@ -1,6 +1,6 @@
 import { X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { cx } from "@/components/ui/kit/cx";
+import { cx } from "@/components/ui/cx";
 
 const placementClass: Record<string, string> = {
   top: "bottom-full left-1/2 mb-2 -translate-x-1/2",

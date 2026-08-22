@@ -1,4 +1,4 @@
-import { Button, Input, Space, Table } from "@/components/ui/kit";
+import { Button, Input, Space, Table } from "@/components/ui";
 import {
   Briefcase,
   Mars,
@@ -17,7 +17,7 @@ import { useUserContext } from "@/contexts/user-context";
 import { useUsersContext } from "@/contexts/users-context";
 import changeState from "@/services/change-state";
 
-function UserManagement(_props?: any) {
+export default function UserManagement(_props?: any) {
   const [selectedUser, setSelectedUser] = useState<any>("");
   const [showPop, setShowPop] = useState(false);
   const searchInput = useRef(null);
@@ -313,5 +313,3 @@ function UserManagement(_props?: any) {
     </div>
   );
 }
-
-export default UserManagement;

@@ -12,8 +12,8 @@ import {
   useRef,
   useState,
 } from "react";
-import { cx, hasWidthClass } from "@/components/ui/kit/cx";
-import { FormContext } from "@/components/ui/kit/form";
+import { cx, hasWidthClass } from "@/components/ui/cx";
+import { FormContext } from "@/components/ui/form";
 
 const sizePad = {
   small: "h-7 px-2 text-xs",

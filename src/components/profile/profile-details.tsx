@@ -27,7 +27,7 @@ function UserDetails({
   );
 }
 
-function ProfileDetails({
+export default function ProfileDetails({
   isAuth,
   isUser,
   showEdit,
@@ -163,5 +163,3 @@ my-5 rounded-xl"
     </>
   );
 }
-
-export default ProfileDetails;

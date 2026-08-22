@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 
-function PopUp({
+export default function PopUp({
   children,
   show,
   mt,
@@ -64,5 +64,3 @@ function PopUp({
     </>
   );
 }
-
-export default PopUp;

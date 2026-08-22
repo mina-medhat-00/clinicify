@@ -1,6 +1,6 @@
 import { Ban } from "lucide-react";
 
-function DoctorDetails({ data }: any) {
+export default function DoctorDetails({ data }: any) {
   return (
     <div className="flex md:flex-col flex-wrap gap-3 justify-end items-center">
       {data?.map(function ({ label, value }: any) {
@@ -18,5 +18,3 @@ function DoctorDetails({ data }: any) {
     </div>
   );
 }
-
-export default DoctorDetails;

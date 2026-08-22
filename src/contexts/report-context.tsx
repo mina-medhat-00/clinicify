@@ -6,7 +6,7 @@ import type { Report } from "@/types";
 import { apiUrl } from "@/utils/api";
 
 const ReportData = createContext<any>(null);
-function ReportContextProvider({ children, reportFrom }: any) {
+export default function ReportContextProvider({ children, reportFrom }: any) {
   const [isLoading, setIsLoading] = useState(true);
   const [reportData, setReportData] = useState<Report[] | null>(null);
   const [isError, setIsError] = useState(false);
@@ -79,8 +79,6 @@ function ReportContextProvider({ children, reportFrom }: any) {
     </ReportData.Provider>
   );
 }
-
-export default ReportContextProvider;
 
 export function useReportContext() {
   return useContext(ReportData);

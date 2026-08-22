@@ -1,4 +1,4 @@
-import { Popover } from "@/components/ui/kit";
+import { Popover } from "@/components/ui";
 import { Bell, ChevronDown, Menu, MessageSquare } from "lucide-react";
 import { useEffect } from "react";
 
@@ -18,17 +18,14 @@ function NavButton({ name, title, customFunc, icon, dotColor, dashType }: any) {
           dashType == name ? "bg-gray-700 text-gray-100" : "hover:bg-gray-200"
         }`}
       >
-        <span
-          className="absolute inline-flex rounded-full h-2 w-2 right-2 top-2"
-          style={dotColor ? { background: dotColor } : undefined}
-        />
+        <span className="absolute inline-flex rounded-full h-2 w-2 right-2 top-2" />
         {icon}
       </button>
     </Popover>
   );
 }
 
-function Navbar({
+export default function Navbar({
   dashType,
   isMobile,
   setActiveMenu,
@@ -112,5 +109,3 @@ function Navbar({
     </div>
   );
 }
-
-export default Navbar;

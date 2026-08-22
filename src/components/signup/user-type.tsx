@@ -1,10 +1,10 @@
-import { Form, Input, InputNumber, Select, Switch } from "@/components/ui/kit";
+import { Form, Input, InputNumber, Select, Switch } from "@/components/ui";
 import { useState } from "react";
 import HeaderLine from "@/components/ui/header-line";
 import { doctorSpecialtyOptions } from "@/utils/sign-data";
 
 const { Item } = Form;
-function UserType({ userType, setFormValues }: any) {
+export default function UserType({ userType, setFormValues }: any) {
   const [moreInf, setMoreInf] = useState(false);
   return userType === "doctor" ? (
     <>
@@ -118,5 +118,3 @@ function UserType({ userType, setFormValues }: any) {
     </>
   ) : null;
 }
-
-export default UserType;

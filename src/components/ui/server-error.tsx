@@ -1,7 +1,7 @@
-import { Result } from "@/components/ui/kit";
+import { Result } from "@/components/ui";
 import { Link } from "react-router-dom";
 
-function ServerError({ extra, status, statusTitle }: any) {
+export default function ServerError({ extra, status, statusTitle }: any) {
   return (
     <Result
       className="m-auto"
@@ -16,5 +16,3 @@ function ServerError({ extra, status, statusTitle }: any) {
     />
   );
 }
-
-export default ServerError;

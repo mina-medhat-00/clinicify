@@ -1,4 +1,4 @@
-import { Empty, Rate } from "@/components/ui/kit";
+import { Empty, Rate } from "@/components/ui";
 import dayjs from "dayjs";
 import {
   CheckCircle,
@@ -57,7 +57,7 @@ function getAppointmentVal(
             ? valRunning
             : valDefault;
 }
-function Appointments({ fromDash }: any) {
+export default function Appointments({ fromDash }: any) {
   const { messageApi, timeZone, socket } = useUtilsContext();
   const { userData: user, fetchUserData } = useUserContext();
   const [selectedDate, setSelectedDate] = useState(function () {
@@ -453,5 +453,3 @@ function Appointments({ fromDash }: any) {
     </div>
   );
 }
-
-export default Appointments;

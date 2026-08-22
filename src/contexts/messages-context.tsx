@@ -18,7 +18,10 @@ function handleQuery(obj?: any, ..._args: any[]) {
 }
 const cookies = new Cookies();
 const MessagesData = createContext<any>(null);
-function MessagesContextProvider({ children, fetchUserData }: any) {
+export default function MessagesContextProvider({
+  children,
+  fetchUserData,
+}: any) {
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [messagesData, setMessagesData] = useState<ChatMessage[] | null>(null);
@@ -88,8 +91,6 @@ function MessagesContextProvider({ children, fetchUserData }: any) {
     </MessagesData.Provider>
   );
 }
-
-export default MessagesContextProvider;
 
 export function useMessagesContext() {
   return useContext(MessagesData);

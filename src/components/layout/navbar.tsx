@@ -1,20 +1,14 @@
-import { Menu, EllipsisVertical } from "lucide-react";
-import {
-  Avatar,
-  Button,
-  Menu as AntMenu,
-  Typography,
-} from "@/components/ui/kit";
+import { Menu, EllipsisVertical, Hospital } from "lucide-react";
+import { Avatar, Button, Menu as AntMenu, Typography } from "@/components/ui";
 import { useEffect, useRef, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import clinicLogo from "@/assets/images/clinic.png";
 import items from "@/components/layout/nav-items";
 import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
 
 const { Title } = Typography;
-function Navbar({ DoctorRef }: any) {
+export default function Navbar({ DoctorRef }: any) {
   const { messageApi } = useUtilsContext();
   const { setUserData, userData: user, isLoading } = useUserContext();
   const navigate = useNavigate();
@@ -65,9 +59,6 @@ function Navbar({ DoctorRef }: any) {
             ? "relative"
             : "fixed flex h-full w-1/5 min-w-72 max-w-72 flex-col"
         }`}
-        style={{
-          marginLeft: `${!isMobile ? -navWidth : 0}px`,
-        }}
       >
         {!isMobile ? (
           <>
@@ -95,14 +86,9 @@ function Navbar({ DoctorRef }: any) {
         >
           <Link
             to="/"
-            className="text-center max-md:relative max-md:flex max-md:flex-row max-md:items-center max-md:justify-start max-md:gap-1 [&_h3]:max-md:mb-0"
+            className="flex flex-col items-center justify-center py-4 gap-2"
           >
-            <Avatar
-              src={clinicLogo}
-              size="large"
-              shape="square"
-              className="navbar--logo--view mt-4 mb-1"
-            ></Avatar>
+            <Hospital className="size-10 text-white" />
             <Title
               level={3}
               className={`navbar--logo--title ${
@@ -130,9 +116,6 @@ function Navbar({ DoctorRef }: any) {
               ? "sm absolute top-full"
               : "overflow-x-hidden overflow-y-auto"
           }`}
-          style={{
-            height: `${!isMobile ? "" : mobileMenuHeight}`,
-          }}
           items={items(
             navigate,
             location,
@@ -149,5 +132,3 @@ function Navbar({ DoctorRef }: any) {
     )
   );
 }
-
-export default Navbar;

@@ -1,7 +1,7 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import dayjs from "dayjs";
 import { useEffect, useMemo, useState } from "react";
-import { cx, hasWidthClass } from "@/components/ui/kit/cx";
+import { cx, hasWidthClass } from "@/components/ui/cx";
 
 function DatePicker({
   value,

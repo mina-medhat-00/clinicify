@@ -1,4 +1,4 @@
-import { Avatar, Skeleton } from "@/components/ui/kit";
+import { Avatar, Skeleton } from "@/components/ui";
 import {
   ClipboardList,
   Flag,
@@ -62,7 +62,7 @@ function subItems() {
   });
 }
 
-function items(
+export default function items(
   navigate?: any,
   location?: any,
   DoctorRef?: any,
@@ -190,5 +190,3 @@ function items(
       : null,
   ];
 }
-
-export default items;

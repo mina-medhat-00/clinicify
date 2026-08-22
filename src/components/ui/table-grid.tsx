@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { cx } from "@/components/ui/kit/cx";
+import { cx } from "@/components/ui/cx";
 
-function TableGrid({
+export default function TableGrid({
   noGap,
   noMargin,
   customGrid,
@@ -77,5 +77,3 @@ function TableGrid({
     </div>
   );
 }
-
-export default TableGrid;

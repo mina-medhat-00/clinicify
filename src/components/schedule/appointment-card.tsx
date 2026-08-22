@@ -36,7 +36,7 @@ function getAppointmentVal(
           ? valRunning
           : valDefault;
 }
-function AppointmentCard({
+export default function AppointmentCard({
   setShowPop,
   appointmentState,
   appointmentType,
@@ -206,5 +206,3 @@ function AppointmentCard({
     </div>
   );
 }
-
-export default AppointmentCard;

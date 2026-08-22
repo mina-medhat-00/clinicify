@@ -1,4 +1,4 @@
-import { Button, Empty, Popover } from "@/components/ui/kit";
+import { Button, Empty, Popover } from "@/components/ui";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -8,7 +8,7 @@ import Loader from "@/components/ui/loader";
 import { useSlotsContext } from "@/contexts/slots-context";
 import { useUserContext } from "@/contexts/user-context";
 
-function BookCard({ doctorId, socket, timeZone }: any) {
+export default function BookCard({ doctorId, socket, timeZone }: any) {
   const { slotsData, isLoading, fetchSlotsData } = useSlotsContext();
   const { userData } = useUserContext();
   const [selectedDate, setSelectedDate] = useState(function () {
@@ -181,5 +181,3 @@ function BookCard({ doctorId, socket, timeZone }: any) {
     </>
   );
 }
-
-export default BookCard;

@@ -1,4 +1,4 @@
-import { Alert, Button, Image, Input } from "@/components/ui/kit";
+import { Alert, Button, Image, Input } from "@/components/ui";
 import axios from "axios";
 import {
   Angry,
@@ -675,7 +675,7 @@ function PostTemplate({
     </div>
   );
 }
-function Post({
+export default function Post({
   postId,
   imgUrl,
   userType,
@@ -853,5 +853,3 @@ function Post({
     </div>
   );
 }
-
-export default Post;

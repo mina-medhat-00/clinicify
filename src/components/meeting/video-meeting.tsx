@@ -1,4 +1,4 @@
-import { Button, Input } from "@/components/ui/kit";
+import { Button, Input } from "@/components/ui";
 import axios from "axios";
 import { Loader2, Settings, Video } from "lucide-react";
 import { OpenVidu } from "openvidu-browser";
@@ -13,7 +13,12 @@ import { apiOrigin } from "@/utils/api";
 
 const APPLICATION_SERVER_URL = apiOrigin;
 
-function VideoMeeting({ nickname, username, session, appointmentId }: any) {
+export default function VideoMeeting({
+  nickname,
+  username,
+  session,
+  appointmentId,
+}: any) {
   const [sessionDetails, setSessionDetails] = useState<any>({
     myNickName: nickname,
     username: username,
@@ -571,5 +576,3 @@ function VideoMeeting({ nickname, username, session, appointmentId }: any) {
     </>
   );
 }
-
-export default VideoMeeting;

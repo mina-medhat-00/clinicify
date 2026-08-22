@@ -8,7 +8,7 @@ function adjustTime(date?: any, time?: any, timeZone?: any, ..._args: any[]) {
     minute: "numeric",
   });
 }
-function AppointmentTime({
+export default function AppointmentTime({
   appointmentId,
   appointment_state,
   schedule_date,
@@ -149,5 +149,3 @@ function AppointmentTime({
     </div>
   );
 }
-
-export default AppointmentTime;

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-function CountdownTimer({ targetDate, order }: any) {
+export default function CountdownTimer({ targetDate, order }: any) {
   useEffect(
     function () {
       function getTimeSegmentElements(segmentElement?: any, ..._args: any[]) {
@@ -275,5 +275,3 @@ function CountdownTimer({ targetDate, order }: any) {
     </div>
   );
 }
-
-export default CountdownTimer;

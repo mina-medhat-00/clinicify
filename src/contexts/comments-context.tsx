@@ -16,7 +16,7 @@ function handleQuery(obj?: any, ..._args: any[]) {
         .join("&");
 }
 const CommentsData = createContext<any>(null);
-function CommentsContextProvider({ children }: any) {
+export default function CommentsContextProvider({ children }: any) {
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [commentsData, setCommentsData] = useState<Comment[] | null>(null);
@@ -60,8 +60,6 @@ function CommentsContextProvider({ children }: any) {
     </CommentsData.Provider>
   );
 }
-
-export default CommentsContextProvider;
 
 export function useCommentsContext() {
   return useContext(CommentsData);

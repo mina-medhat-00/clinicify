@@ -3,7 +3,7 @@ import Cookies from "universal-cookie";
 import { apiUrl } from "@/utils/api";
 
 const cookies = new Cookies();
-async function changeState(
+export default async function changeState(
   fetchUserData?: any,
   fetchDoctorsData?: any,
   messageApi?: any,
@@ -89,5 +89,3 @@ async function changeState(
         });
     });
 }
-
-export default changeState;

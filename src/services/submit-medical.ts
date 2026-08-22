@@ -3,7 +3,7 @@ import Cookies from "universal-cookie";
 import { apiUrl } from "@/utils/api";
 
 const cookies = new Cookies();
-async function submitMedical(
+export default async function submitMedical(
   values?: any,
   messageApi?: any,
   fetchProfileData?: any,
@@ -57,5 +57,3 @@ async function submitMedical(
         });
     });
 }
-
-export default submitMedical;

@@ -1,4 +1,4 @@
-import { Button, Empty, Popover, Typography } from "@/components/ui/kit";
+import { Button, Empty, Popover, Typography } from "@/components/ui";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -14,7 +14,12 @@ import getStripe from "@/utils/get-stripe";
 
 const { Title } = Typography;
 
-function BookAppointment({ userid, doctorId, socket, timeZone }: any) {
+export default function BookAppointment({
+  userid,
+  doctorId,
+  socket,
+  timeZone,
+}: any) {
   const { slotsData, isLoading, fetchSlotsData } = useSlotsContext();
   const [bookedAppointment, setBookedAppointment] = useState(null);
   const { messageApi } = useUserContext();
@@ -315,5 +320,3 @@ function BookAppointment({ userid, doctorId, socket, timeZone }: any) {
     </div>
   );
 }
-
-export default BookAppointment;

@@ -1,7 +1,7 @@
-import { Avatar } from "@/components/ui/kit";
+import { Avatar } from "@/components/ui";
 import { Stethoscope, User } from "lucide-react";
 
-function UserAvatar({
+export default function UserAvatar({
   src,
   userType,
   size = "large",
@@ -19,5 +19,3 @@ function UserAvatar({
     />
   );
 }
-
-export default UserAvatar;

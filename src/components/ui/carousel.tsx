@@ -1,5 +1,5 @@
 import { Children, useEffect, useState } from "react";
-import { cx } from "@/components/ui/kit/cx";
+import { cx } from "@/components/ui/cx";
 
 function Carousel({
   children,
@@ -29,10 +29,7 @@ function Carousel({
 
   return (
     <div className={cx("relative overflow-hidden", className)}>
-      <div
-        className="flex transition-transform duration-500"
-        style={{ transform: `translateX(-${index * 100}%)` }}
-      >
+      <div className="flex transition-transform duration-500">
         {slides.map(function (slide, slideIndex) {
           return (
             <div key={slideIndex} className="w-full shrink-0">

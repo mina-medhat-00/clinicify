@@ -138,7 +138,7 @@ function updateAllSegments(
   updateTimeSection(`minutes--${order}`, minutes);
   updateTimeSection(`hours--${order}`, directHour || hours);
 }
-function CountdownTimer({
+export default function CountdownTimer({
   order,
   appointmentDetails,
   setAppointmentDetails,
@@ -374,5 +374,3 @@ function CountdownTimer({
     </div>
   );
 }
-
-export default CountdownTimer;

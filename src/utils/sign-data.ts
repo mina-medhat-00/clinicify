@@ -1,7 +1,7 @@
-import type { SelectProps } from "@/components/ui/kit";
 import { City, Country } from "country-state-city";
 import { data as isoCurrencies } from "currency-codes";
 import getSymbolFromCurrency from "currency-symbol-map";
+import type { SelectProps } from "@/components/ui";
 
 type SelectOptions = NonNullable<SelectProps["options"]>;
 

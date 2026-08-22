@@ -3,7 +3,7 @@ import { createContext, useContext, useLayoutEffect, useState } from "react";
 import { apiUrl } from "@/utils/api";
 
 const HomeData = createContext<any>(null);
-function HomeContextProvider({ children }: any) {
+export default function HomeContextProvider({ children }: any) {
   const [isLoading, setIsLoading] = useState(true);
   const [homeData, setHomeData] = useState({});
   async function fetchHomeData() {
@@ -31,8 +31,6 @@ function HomeContextProvider({ children }: any) {
     </HomeData.Provider>
   );
 }
-
-export default HomeContextProvider;
 
 export function useHomeContext() {
   return useContext(HomeData);

@@ -3,7 +3,7 @@ import VideoMeeting from "@/components/meeting/video-meeting";
 import Loader from "@/components/ui/loader";
 import { useUserContext } from "@/contexts/user-context";
 
-function OnlineMeeting() {
+export default function OnlineMeeting() {
   const { session } = useParams();
   const [searchParams] = useSearchParams();
   const appointment_id = searchParams.get("appointment_id");
@@ -60,5 +60,3 @@ function OnlineMeeting() {
     </div>
   );
 }
-
-export default OnlineMeeting;

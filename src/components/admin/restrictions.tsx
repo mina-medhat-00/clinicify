@@ -3,7 +3,7 @@ import ChatRestrict from "@/components/admin/chat-restrict";
 import UserAvatar from "@/components/ui/user-avatar";
 import { ChatContextProvider } from "@/contexts";
 
-function Restrictions({ selectedUser }: any) {
+export default function Restrictions({ selectedUser }: any) {
   const [restrictType] = useState("chat");
   return (
     <div className="">
@@ -31,5 +31,3 @@ function Restrictions({ selectedUser }: any) {
     </div>
   );
 }
-
-export default Restrictions;

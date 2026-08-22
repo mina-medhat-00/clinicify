@@ -1,4 +1,4 @@
-function Message({ isMobile, me, content, issued_time }: any) {
+export default function Message({ isMobile, me, content, issued_time }: any) {
   return (
     <div className={me ? "pl-2" : "pr-2"}>
       <div
@@ -27,5 +27,3 @@ function Message({ isMobile, me, content, issued_time }: any) {
     </div>
   );
 }
-
-export default Message;

@@ -7,7 +7,7 @@ import {
   Input,
   Rate,
   Typography,
-} from "@/components/ui/kit";
+} from "@/components/ui";
 import dayjs from "dayjs";
 import { Ban, MessageCircle, Pencil } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -49,7 +49,7 @@ function editingObject(
   };
 }
 
-function UserProfile(_props?: any) {
+export default function UserProfile(_props?: any) {
   const { username } = useParams();
   const { socket, timeZone, messageApi } = useUtilsContext();
   const {
@@ -513,5 +513,3 @@ function UserProfile(_props?: any) {
     </div>
   );
 }
-
-export default UserProfile;

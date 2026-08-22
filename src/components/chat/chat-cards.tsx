@@ -1,4 +1,4 @@
-import { Segmented, Skeleton } from "@/components/ui/kit";
+import { Segmented, Skeleton } from "@/components/ui";
 import { Home } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -28,7 +28,7 @@ function UserCard({ imgUrl, name, isMobile, active, userType }: any) {
     </div>
   );
 }
-function Cards({
+export default function Cards({
   isMobile,
   chatData,
   setWithUser,
@@ -115,19 +115,7 @@ function Cards({
     >
       <div className="bg-white">
         {withUser && !isLoading && (
-          <div
-            style={{
-              height: `${element?.clientHeight}px`,
-              top: `${
-                element?.offsetHeight *
-                chatData?.findIndex(function ({ user_id }) {
-                  return user_id == withUser;
-                })
-              }px`,
-              transition: "top 0.2s cubic-bezier(0.645, 0.045, 0.355, 1)",
-            }}
-            className="absolute w-full p-1"
-          >
+          <div className="absolute w-full p-1">
             <div className="bg-gray-700 rounded-lg w-full h-full"></div>
           </div>
         )}
@@ -188,5 +176,3 @@ function Cards({
     </div>
   );
 }
-
-export default Cards;

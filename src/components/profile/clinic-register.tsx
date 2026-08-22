@@ -1,4 +1,4 @@
-import { Button, Form, Input, Select, Space } from "@/components/ui/kit";
+import { Button, Form, Input, Select, Space } from "@/components/ui";
 import { Building2, Map, Phone, Smartphone } from "lucide-react";
 import { useProfileContext } from "@/contexts/profile-context";
 import { useUserContext } from "@/contexts/user-context";
@@ -7,7 +7,7 @@ import { cityOptions } from "@/utils/sign-data";
 import { prefixSelector } from "@/utils/signup-utils";
 
 const { Item } = Form;
-function ClinicRegister() {
+export default function ClinicRegister() {
   const { messageApi, fetchUserData, userData } = useUserContext();
   const { fetchProfileData } = useProfileContext();
   return (
@@ -137,5 +137,3 @@ function ClinicRegister() {
     </div>
   );
 }
-
-export default ClinicRegister;

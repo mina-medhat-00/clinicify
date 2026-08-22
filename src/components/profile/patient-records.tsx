@@ -1,7 +1,7 @@
 import { Ban, ClipboardPlus, FileHeart } from "lucide-react";
 import ProfileTable from "@/components/profile/profile-table";
 
-function PatientRecords({
+export default function PatientRecords({
   records,
   setHandleDrawer,
   profileData,
@@ -73,5 +73,3 @@ function PatientRecords({
     </>
   );
 }
-
-export default PatientRecords;

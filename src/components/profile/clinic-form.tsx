@@ -1,11 +1,11 @@
-import { Button, Form, Input, Select, Space } from "@/components/ui/kit";
+import { Button, Form, Input, Select, Space } from "@/components/ui";
 import ProfileTable from "@/components/profile/profile-table";
 import submitClinic from "@/services/submit-clinic";
 import { cityOptions } from "@/utils/sign-data";
 import { prefixSelector } from "@/utils/signup-utils";
 
 const { Item } = Form;
-function ClinicForm({
+export default function ClinicForm({
   messageApi,
   fetchProfileData,
   fetchUserData,
@@ -145,5 +145,3 @@ function ClinicForm({
     </div>
   );
 }
-
-export default ClinicForm;

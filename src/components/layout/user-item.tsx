@@ -1,5 +1,5 @@
 import { LogOut } from "lucide-react";
-import { Button, Skeleton } from "@/components/ui/kit";
+import { Button, Skeleton } from "@/components/ui";
 import { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -7,7 +7,7 @@ import Cookies from "universal-cookie";
 import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
 
-function UserItem(_props?: any) {
+export default function UserItem(_props?: any) {
   const { messageApi } = useUtilsContext();
   const { isloading, setUserData, userData: user } = useUserContext();
   const navigate = useNavigate();
@@ -95,5 +95,3 @@ function UserItem(_props?: any) {
     <Skeleton.Button active className="w-full" />
   );
 }
-
-export default UserItem;

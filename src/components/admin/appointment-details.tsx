@@ -1,4 +1,4 @@
-import { Empty } from "@/components/ui/kit";
+import { Empty } from "@/components/ui";
 import dayjs from "dayjs";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -11,7 +11,7 @@ import { useUtilsContext } from "@/contexts/utils-context";
 import cancelAppointment from "@/services/cancel-appointment";
 import scheduleAppointments from "@/services/schedule-appointments";
 
-function AppointmentDetails({ doctorId }: any) {
+export default function AppointmentDetails({ doctorId }: any) {
   const { timeZone, messageApi, socket } = useUtilsContext();
   const { fetchUserData } = useUserContext();
   const [selectedDate, setSelectedDate] = useState({
@@ -150,5 +150,3 @@ function AppointmentDetails({ doctorId }: any) {
     </>
   );
 }
-
-export default AppointmentDetails;

@@ -1,4 +1,4 @@
-import { Rate } from "@/components/ui/kit";
+import { Rate } from "@/components/ui";
 import { ArrowLeft, ArrowUp, CircleAlert, User, UserPlus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
@@ -12,7 +12,7 @@ import MessagesContextProvider from "@/contexts/messages-context";
 import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
 
-function Chat(_props: any) {
+export default function Chat(_props: any) {
   const { messageApi, socket, timeZone } = useUtilsContext();
   const { fetchUserData, userData: user } = useUserContext();
   const { fetchChatData, chatData, isLoading, isError } = useChatContext();
@@ -173,5 +173,3 @@ function Chat(_props: any) {
     </div>
   );
 }
-
-export default Chat;

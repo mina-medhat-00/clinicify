@@ -3,7 +3,7 @@ import Cookies from "universal-cookie";
 import { apiUrl } from "@/utils/api";
 
 const cookies = new Cookies();
-async function submitPost(
+export default async function submitPost(
   user?: any,
   fetchUserData?: any,
   fetchPostsData?: any,
@@ -71,5 +71,3 @@ async function submitPost(
         });
     });
 }
-
-export default submitPost;

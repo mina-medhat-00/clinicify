@@ -8,7 +8,7 @@ import { useUtilsContext } from "@/contexts/utils-context";
 import { apiOrigin } from "@/utils/api";
 
 const APPLICATION_SERVER_URL = apiOrigin;
-function AppointmentStart({ appointmentDetails }: any) {
+export default function AppointmentStart({ appointmentDetails }: any) {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<any>(null);
   const { messageApi } = useUtilsContext();
@@ -101,5 +101,3 @@ function AppointmentStart({ appointmentDetails }: any) {
     </div>
   ) : null;
 }
-
-export default AppointmentStart;

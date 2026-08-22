@@ -1,4 +1,4 @@
-import { Card, Popover, Rate } from "@/components/ui/kit";
+import { Card, Popover, Rate } from "@/components/ui";
 import { Ban, MessageCircle } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -6,7 +6,7 @@ import BookCard from "@/components/doctor/book-card";
 import UserAvatar from "@/components/ui/user-avatar";
 import { SlotsContextProvider } from "@/contexts";
 
-function DoctorCard({
+export default function DoctorCard({
   profileImage,
   rate,
   specialty,
@@ -187,5 +187,3 @@ function DoctorCard({
     </div>
   );
 }
-
-export default DoctorCard;

@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-function TitleHeader({
+export default function TitleHeader({
   icon,
   to,
   title,
@@ -44,5 +44,3 @@ function TitleHeader({
     </div>
   );
 }
-
-export default TitleHeader;

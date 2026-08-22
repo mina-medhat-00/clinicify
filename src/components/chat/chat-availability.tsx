@@ -5,7 +5,7 @@ import Loader from "@/components/ui/loader";
 import { useAppointmentContext } from "@/contexts/appointment-context";
 import { useChatContext } from "@/contexts/chat-context";
 
-function ChatAvailability({
+export default function ChatAvailability({
   withUser,
   withUserType,
   timeZone,
@@ -110,5 +110,3 @@ function ChatAvailability({
     </div>
   );
 }
-
-export default ChatAvailability;

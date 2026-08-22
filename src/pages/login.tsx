@@ -1,4 +1,4 @@
-import { Button, Checkbox, Form, Input, Typography } from "@/components/ui/kit";
+import { Button, Checkbox, Form, Input, Typography } from "@/components/ui";
 import axios from "axios";
 import { Lock, User } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -86,7 +86,7 @@ function signing(
       }
     });
 }
-function Login() {
+export default function Login() {
   const { messageApi } = useUtilsContext();
   const {
     tokenExpired: isTokenExpired,
@@ -218,5 +218,3 @@ function Login() {
     </div>
   );
 }
-
-export default Login;

@@ -16,7 +16,11 @@ function handleQuery(obj?: any, ..._args: any[]) {
         .join("&");
 }
 const PostsData = createContext<any>(null);
-function PostsContextProvider({ children, noFirstRender, query }: any) {
+export default function PostsContextProvider({
+  children,
+  noFirstRender,
+  query,
+}: any) {
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [postsData, setPostsData] = useState<Post[] | null>(null);
@@ -52,8 +56,6 @@ function PostsContextProvider({ children, noFirstRender, query }: any) {
     </PostsData.Provider>
   );
 }
-
-export default PostsContextProvider;
 
 export function usePostsContext() {
   return useContext(PostsData);

@@ -72,7 +72,8 @@ const links = [
     ],
   },
 ];
-function Sidebar({
+
+export default function Sidebar({
   activeMenu,
   setActiveMenu,
   isMobile,
@@ -165,5 +166,3 @@ function Sidebar({
     </div>
   );
 }
-
-export default Sidebar;

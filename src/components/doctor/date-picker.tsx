@@ -1,7 +1,11 @@
 import dayjs from "dayjs";
 import { ChevronsLeft, ChevronsRight } from "lucide-react";
 
-function DatePicker({ setSelectedDate, selectedDate, fromAppointment }: any) {
+export default function DatePicker({
+  setSelectedDate,
+  selectedDate,
+  fromAppointment,
+}: any) {
   new Date(selectedDate.date).toLocaleString("en-us", {
     weekday: "long",
     year: "numeric",
@@ -72,5 +76,3 @@ function DatePicker({ setSelectedDate, selectedDate, fromAppointment }: any) {
     </div>
   );
 }
-
-export default DatePicker;

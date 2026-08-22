@@ -1,8 +1,8 @@
-import { Calendar, Checkbox, DatePicker } from "@/components/ui/kit";
 import { useState } from "react";
 import { useMediaQuery } from "react-responsive";
+import { Calendar, Checkbox, DatePicker } from "@/components/ui";
 
-function CalendarView({
+export default function CalendarView({
   offsetWidth,
   selectedDate,
   handleDate,
@@ -43,5 +43,3 @@ function CalendarView({
     />
   );
 }
-
-export default CalendarView;

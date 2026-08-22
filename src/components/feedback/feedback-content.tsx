@@ -1,7 +1,7 @@
-import { Col, Empty, Rate, Row } from "@/components/ui/kit";
+import { Col, Empty, Rate, Row } from "@/components/ui";
 import UserAvatar from "@/components/ui/user-avatar";
 
-function FeedbackContent({
+export default function FeedbackContent({
   order,
   uimgUrl,
   dimgUrl,
@@ -80,5 +80,3 @@ function FeedbackContent({
     </div>
   );
 }
-
-export default FeedbackContent;

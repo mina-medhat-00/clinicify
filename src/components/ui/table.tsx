@@ -1,6 +1,6 @@
 import { ChevronDown, Filter, Loader2 } from "lucide-react";
 import { Fragment, useMemo, useState } from "react";
-import { cx } from "@/components/ui/kit/cx";
+import { cx } from "@/components/ui/cx";
 
 const EXPAND_COLUMN = "EXPAND_COLUMN";
 

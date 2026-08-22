@@ -3,7 +3,7 @@ import Cookies from "universal-cookie";
 import { apiUrl } from "@/utils/api";
 
 const cookies = new Cookies();
-function cancelAppointment(
+export default function cancelAppointment(
   selectedDate?: any,
   bookedSlot?: any,
   appointmentId?: any,
@@ -85,5 +85,3 @@ function cancelAppointment(
       }
     });
 }
-
-export default cancelAppointment;

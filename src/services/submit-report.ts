@@ -3,7 +3,7 @@ import Cookies from "universal-cookie";
 import { apiUrl } from "@/utils/api";
 
 const cookies = new Cookies();
-function submitReport(
+export default function submitReport(
   issue?: any,
   reportType?: any,
   messageApi?: any,
@@ -51,5 +51,3 @@ function submitReport(
         });
     });
 }
-
-export default submitReport;

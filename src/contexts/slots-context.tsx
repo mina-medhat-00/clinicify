@@ -4,7 +4,7 @@ import type { SlotsData } from "@/types";
 import { apiUrl } from "@/utils/api";
 
 const SlotsData = createContext<any>(null);
-function SlotsContextProvider({ children }: any) {
+export default function SlotsContextProvider({ children }: any) {
   const [isLoading, setIsLoading] = useState(true);
   const [tokenExpired] = useState(false);
   const [slotsData, setSlotsData] = useState<SlotsData>({
@@ -47,8 +47,6 @@ function SlotsContextProvider({ children }: any) {
     </SlotsData.Provider>
   );
 }
-
-export default SlotsContextProvider;
 
 export function useSlotsContext() {
   return useContext(SlotsData);
