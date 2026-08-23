@@ -12,9 +12,11 @@ export default function DatePicker({
     month: "short",
     day: "numeric",
   });
+
   const day = new Date(selectedDate.date).toLocaleString("en-us", {
     weekday: "long",
   });
+
   return (
     <div
       className={`${
@@ -42,6 +44,7 @@ export default function DatePicker({
             : "bg-gray-300 cursor-not-allowed"
         } rounded-xl  h-10 w-10 shadow-lg ml-1`}
       />
+
       <div className="text-center grow">
         <div
           className={`font-medium select-none ${
@@ -58,6 +61,7 @@ export default function DatePicker({
           {selectedDate.date}
         </div>
       </div>
+
       <ChevronsRight
         onClick={function () {
           setSelectedDate(function (val?: any) {

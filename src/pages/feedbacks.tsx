@@ -1,12 +1,10 @@
-import { Carousel, Col, Empty } from "@/components/ui";
-import { Star } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import FeedbackContent from "@/components/feedback/feedback-content";
+import { Carousel, Col, Empty } from "@/components/ui";
 import Loader from "@/components/ui/loader";
 import PopUp from "@/components/ui/pop-up";
 import ServerError from "@/components/ui/server-error";
-import TitleHeader from "@/components/ui/title-header";
 import { useFeedbackContext } from "@/contexts/feedback-context";
 
 export default function Feedbacks({
@@ -67,15 +65,6 @@ export default function Feedbacks({
   }
   return (
     <>
-      {home && (
-        <TitleHeader
-          contClass="flex gap-2 items-center justify-center flex-row-reverse"
-          wrapperBg={"no"}
-          contentBg={"bg-blue-900/90"}
-          title="Feedbacks"
-          icon={<Star className="text-white w-16 h-16" />}
-        />
-      )}
       <Col
         className={`${
           home && username ? "bg-blue-600/60" : ""

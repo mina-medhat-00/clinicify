@@ -1,4 +1,3 @@
-import { Avatar, Skeleton } from "@/components/ui";
 import {
   ClipboardList,
   Flag,
@@ -12,6 +11,7 @@ import {
   UserPlus,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Avatar, Skeleton } from "@/components/ui";
 import UserItem from "@/components/layout/user-item";
 import { doctorSpecialties } from "@/utils/sign-data";
 
@@ -30,6 +30,7 @@ function getItem(
     type,
   };
 }
+
 function toDoctors(val?: any, navigate?: any, DoctorRef?: any) {
   let specialty = val.domEvent.target.getAttribute("specialty");
   navigate("/doctors");
@@ -45,6 +46,7 @@ function toDoctors(val?: any, navigate?: any, DoctorRef?: any) {
     }
   });
 }
+
 function subItems() {
   return doctorSpecialties.map(function (specialty) {
     return getItem(

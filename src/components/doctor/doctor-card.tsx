@@ -63,6 +63,7 @@ export default function DoctorCard({
       ],
     },
   ];
+
   return (
     <div
       className={`${isLast ? "" : "grow xl:w-1/3"} cursor-default my-2 sm:m-2`}

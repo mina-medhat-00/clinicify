@@ -39,12 +39,14 @@ export default function ScheduleAppointments({
       : dayjs();
   });
   const isVerified = doctorData?.is_verified;
+
   useEffect(
     function () {
       if (userid) socket.emit("join_doctor", userid);
     },
     [socket, userid],
   );
+
   useEffect(
     function () {
       function getSlots(data?: any) {
@@ -57,6 +59,7 @@ export default function ScheduleAppointments({
             true,
           );
       }
+
       if (
         userid &&
         selectedDate.format("YYYY-MM-DD") &&
@@ -68,20 +71,24 @@ export default function ScheduleAppointments({
           doctorId: userid,
         });
       }
+
       return function () {
         socket?.off("all_slots", getSlots);
       };
     },
     [selectedDate, userid, fetchSlotsData, isDoctorLoading, isVerified, socket],
   );
+
   function handleDate(val?: any) {
     setSelectedDate(val);
     window?.localStorage?.setItem("schedule_date", val?.format("YYYY-MM-DD"));
   }
+
   const isUpToDate =
     selectedDate?.toDate()?.setHours(0, 0, 0, 0) >=
     new Date().setHours(0, 0, 0, 0);
   const tAppointments = slotsData?.totalSlots;
+
   return (
     <div
       className={`schedule--wrapper

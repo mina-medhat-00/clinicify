@@ -1,12 +1,12 @@
-import { Popover } from "@/components/ui";
+import { useState } from "react";
+import { useMediaQuery } from "react-responsive";
 import {
   Calendar,
   ChartColumn,
   MessageCircleQuestion,
   User,
 } from "lucide-react";
-import { useState } from "react";
-import { useMediaQuery } from "react-responsive";
+import { Popover } from "@/components/ui";
 
 export default function DashNav({ setDashType, dashType }: any) {
   const items = [

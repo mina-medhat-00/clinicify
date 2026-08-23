@@ -17,13 +17,7 @@ export default forwardRef(function Doctors({ home }: any, ref?: any) {
   const [isPayment, setIsPayment] = useState<any>(null);
   return (
     <>
-      <div className="relative">
-        {home ? (
-          <>
-            <SearchFilter ref={ref} fetchDoctorsData={fetchDoctorsData} />
-          </>
-        ) : null}
-      </div>
+      <SearchFilter ref={ref} fetchDoctorsData={fetchDoctorsData} />
       {home && isMobile ? (
         <div className="px-2 my-2">
           <Carousel

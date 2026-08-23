@@ -1,4 +1,4 @@
-import { Col, Rate, Row, Skeleton, Statistic } from "@/components/ui";
+import { Col, Rate, Row, Statistic } from "@/components/ui";
 import React from "react";
 import CountUpPkg from "react-countup";
 import { Link } from "react-router-dom";
@@ -12,10 +12,8 @@ import {
   Stethoscope,
   User,
 } from "lucide-react";
-import Arrow from "@/components/ui/arrow";
 import Loader from "@/components/ui/loader";
 import TitleHeader from "@/components/ui/title-header";
-import UserAvatar from "@/components/ui/user-avatar";
 import {
   DoctorsContextProvider,
   FeedbackContextProvider,
@@ -33,7 +31,7 @@ const Countup =
 
 export default function HomePage() {
   const { socket, isMobile } = useUtilsContext();
-  const { isLoading: isUserLoading, userData: user } = useUserContext();
+  const { userData: user } = useUserContext();
   const { homeData, isLoading } = useHomeContext();
   const globalStats = homeData;
   const HomeData = [
@@ -84,124 +82,65 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="text-center px-2 w-full min-h-screen">
-      {!isUserLoading ? (
-        <div className="mb-8 sm:mx-6">
-          <h1
-            className="mt-10 text-gray-100 shadow-lg py-6 sm:py-8 xl:py-10
-          rounded-lg text-xl sm:text-4xl ml-auto mr-auto bg-linear-to-r from-blue-900 via-blue-700 to-blue-600"
+    <div className="w-full min-h-screen">
+      <div className="mb-8">
+        <h1 className="text-gray-100 text-center py-6 text-3xl bg-linear-to-r from-blue-900 via-blue-700 to-blue-600">
+          Clinicify
+        </h1>
+
+        <div className="flex flex-col sm:flex-row flex-wrap gap-2 items-center justify-center py-2">
+          <Link
+            className="w-4/5 sm:w-1/6 overflow-hidden flex flex-col items-center justify-center gap-2 bg-blue-800 text-white text-base font-bold p-4 rounded-lg hover:bg-blue-500"
+            to={
+              user?.user_type == "user"
+                ? `/profile/${user?.user_name}`
+                : user?.user_type == "admin"
+                  ? `/admin`
+                  : `/dashboard`
+            }
           >
-            Clinicify
-          </h1>
-          {user && (
-            <div className="flex gap-8 mt-2 justify-center px-2">
-              <div className="w-5/6">
-                <Arrow />
-                <div className="mt-2">
-                  <Link
-                    className="p-2 py-4 flex flex-col items-center gap-1 bg-blue-900 hover:text-white text-center hover:bg-blue-500 text-xs sm:text-base rounded-lg font-medium text-gray-100"
-                    to={
-                      user?.user_type == "user"
-                        ? `/profile/${user?.user_name}`
-                        : user?.user_type == "admin"
-                          ? `/admin`
-                          : `/dashboard`
-                    }
-                  >
-                    {user?.img_url ? (
-                      <UserAvatar
-                        src={user.img_url}
-                        userType={user?.user_type}
-                      />
-                    ) : user?.user_type == "user" ? (
-                      <User className="mb-2 flex justify-center items-center w-full size-5 sm:size-6" />
-                    ) : (
-                      <LayoutDashboard className="mb-2 flex justify-center items-center w-full size-5 sm:size-6" />
-                    )}
-                    {user?.user_type == "user"
-                      ? "My Profile"
-                      : user?.user_type == "admin"
-                        ? "My Admin Dashboard"
-                        : "My Doctor Dashboard"}
-                  </Link>
-                </div>
-              </div>
-            </div>
-          )}
-          {user && (
-            <div className="flex gap-8 mt-2 justify-center px-2">
-              <div
-                className={`${user?.user_type == "admin" ? "w-4/5" : "w-1/2"}`}
-              >
-                <Arrow />
-                <div className="mt-2">
-                  <Link
-                    className="p-2 py-4 bg-blue-800 hover:text-white text-center hover:bg-blue-500 text-xs sm:text-base block rounded-lg font-medium text-gray-100"
-                    to="/chat"
-                  >
-                    <MessageSquare className="mb-2 flex justify-center items-center w-full size-5 sm:size-6" />
-                    {"Chatting"}
-                  </Link>
-                </div>
-              </div>
-              {user.user_type !== "admin" && (
-                <div className="w-1/2">
-                  <Arrow />
-                  <div className="mt-2">
-                    <Link
-                      className="p-2 py-4 bg-blue-700 hover:text-white text-center hover:bg-blue-600 text-xs sm:text-base block rounded-lg font-medium text-gray-100"
-                      to="/appointments"
-                    >
-                      <Calendar className="mb-2 flex justify-center items-center w-full size-5 sm:size-6" />
-                      {"Your Appointments"}
-                    </Link>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-          <div className="flex gap-8 mt-2 justify-center px-2">
-            <div className="w-1/2">
-              <Arrow />
-              <div className="mt-2">
-                <Link
-                  className="p-2 py-4 bg-blue-600 hover:text-white text-center hover:bg-blue-700 text-xs sm:text-base block rounded-lg font-medium text-gray-100"
-                  to="/doctors"
-                >
-                  <Stethoscope className="mb-2 flex justify-center items-center w-full size-5 sm:size-6" />
-                  {"Doctors"}
-                </Link>
-              </div>
-            </div>
-            <div className="w-1/2">
-              <Arrow />
-              <div className="mt-2">
-                <Link
-                  className="p-2 hover:text-white text-center bg-blue-500 py-4 hover:bg-blue-800 text-xs sm:text-base block rounded-lg font-medium text-gray-100"
-                  to="/posts"
-                >
-                  <MessageCircleQuestion className="mb-2 flex justify-center items-center w-full size-5 sm:size-6" />
-                  {"Questions"}
-                </Link>
-              </div>
-            </div>
-          </div>
+            {user?.user_type == "user" ? (
+              <User className="size-6" />
+            ) : (
+              <LayoutDashboard className="size-6" />
+            )}
+            Dashboard
+          </Link>
+
+          <Link
+            className="w-4/5 sm:w-1/6 overflow-hidden flex flex-col items-center justify-center gap-2 bg-blue-800 text-white text-base font-bold p-4 rounded-lg hover:bg-blue-500"
+            to="/chat"
+          >
+            <MessageSquare className="size-6" />
+            Chatting
+          </Link>
+
+          <Link
+            className="w-4/5 sm:w-1/6 overflow-hidden flex flex-col items-center justify-center gap-2 bg-blue-800 text-white text-base font-bold p-4 rounded-lg hover:bg-blue-500"
+            to="/appointments"
+          >
+            <Calendar className="size-6" />
+            Appointments
+          </Link>
+
+          <Link
+            className="w-4/5 sm:w-1/6 overflow-hidden flex flex-col items-center justify-center gap-2 bg-blue-800 text-white text-base font-bold p-4 rounded-lg hover:bg-blue-500"
+            to="/doctors"
+          >
+            <Stethoscope className="size-6" />
+            Doctors
+          </Link>
+
+          <Link
+            className="w-4/5 sm:w-1/6 overflow-hidden flex flex-col items-center justify-center gap-2 bg-blue-800 text-white text-base font-bold p-4 rounded-lg hover:bg-blue-500"
+            to="/posts"
+          >
+            <MessageCircleQuestion className="size-6" />
+            Questions
+          </Link>
         </div>
-      ) : (
-        <div className="mt-10">
-          <Skeleton.Button className="w-full" active size={90 as any} />
-          <div className="flex w-full items-center gap-4 justify-center">
-            <div className="grow">
-              <Arrow />
-              <Skeleton.Button className="w-full" active size={65 as any} />
-            </div>
-            <div className="grow">
-              <Arrow />
-              <Skeleton.Button className="w-full" active size={65 as any} />
-            </div>
-          </div>
-        </div>
-      )}
+      </div>
+
       <PostsContextProvider>
         <Posts socket={socket} home isMobile={isMobile} />
       </PostsContextProvider>
@@ -268,7 +207,8 @@ export default function HomePage() {
           })}
         </Row>
       )}
-      <div className="showmore--container">
+
+      <div>
         <TitleHeader
           wrapperBg={"no"}
           to="doctors"

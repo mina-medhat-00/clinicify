@@ -152,7 +152,7 @@ export default function Posts({ home }: any) {
           <div className="border border-gray-200 shadow-md w-full p-4 bg-gray-300/30 rounded-lg sm:w-3/4 xl:w-1/2">
             <Input.TextArea
               placeholder={
-                "Ask for any question, state your condition or medical issue"
+                "Ask any question, state your condition or medical issue"
               }
               className="rounded-lg border scroll--v border-gray-400 resize-none"
               value={content}
@@ -215,11 +215,9 @@ export default function Posts({ home }: any) {
                     );
                   else setShowWarn(true);
                 }}
-                className="rounded-lg justify-center font-medium flex w-1/2 items-center border border-blue-600 text-white m-0
-            py-4 bg-blue-700/80 hover:bg-blue-700
-            "
+                className="rounded-lg py-4"
               >
-                {"Post"}
+                Post
               </Button>
               {(!userid || !content) && showWarn && (
                 <Alert
@@ -280,7 +278,7 @@ export default function Posts({ home }: any) {
                     : "text-gray-500"
                 }`}
               >
-                {"There are no posts"}
+                There are no posts
               </span>
             }
           />

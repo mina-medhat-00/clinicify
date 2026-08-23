@@ -1,48 +1,26 @@
-import { Button, Input, Select } from "@/components/ui";
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { Search } from "lucide-react";
-import {
-  forwardRef,
-  useEffect,
-  useImperativeHandle,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
-import HeaderLine from "@/components/ui/header-line";
+import { Button, Input, Select } from "@/components/ui";
 import { doctorSpecialtyOptions } from "@/utils/sign-data";
 
 function opt(val?: any) {
   return val == "null" || !val ? null : val;
 }
+
+function storedFilters() {
+  return {
+    specialty: opt(window.localStorage.getItem("specialty")) || "",
+    doctorName: opt(window.localStorage.getItem("doctorName")) || "",
+    location: opt(window.localStorage.getItem("location")) || "",
+  };
+}
+
 export default forwardRef(function SearchFilter(
   { fetchDoctorsData }: any,
   ref?: any,
 ) {
-  const [searchFilter, setSearchFilter] = useState({
-    specialty: opt(window.localStorage.getItem("specialty")) || "",
-    doctorName: opt(window.localStorage.getItem("doctorName")) || "",
-    location: opt(window.localStorage.getItem("location")) || "",
-  });
-  const searchElement = useRef(null);
-  const [heightSearch, setHeightSearch] = useState(0);
-  const [showSearch, setShowSearch] = useState(false);
-  useEffect(function () {
-    const obs = new ResizeObserver(function () {
-      setHeightSearch(searchElement?.current?.offsetHeight);
-    });
-    obs.observe(searchElement?.current);
-  }, []);
-  useLayoutEffect(function () {
-    if (searchElement.current.style) {
-      searchElement.current.style.marginTop = `${
-        -searchElement?.current?.offsetHeight - 1
-      }px`;
-      searchElement.current.style.transition = "none";
-      setTimeout(function () {
-        searchElement.current.style.transition = "margin 0.2s linear";
-      }, 10);
-    }
-  }, []);
+  const [searchFilter, setSearchFilter] = useState(storedFilters);
+
   useImperativeHandle(
     ref,
     function () {
@@ -55,6 +33,7 @@ export default forwardRef(function SearchFilter(
     },
     [searchFilter],
   );
+
   useEffect(
     function () {
       window.localStorage.setItem("specialty", searchFilter.specialty || "");
@@ -68,117 +47,73 @@ export default forwardRef(function SearchFilter(
     },
     [searchFilter, fetchDoctorsData],
   );
+
+  function updateField(name?: any, value?: any) {
+    setSearchFilter(function (current?: any) {
+      return { ...current, [name]: value };
+    });
+  }
+
   return (
-    <>
-      <div
-        ref={searchElement}
-        className="relative p-2 shadow-lg rounded-bl-lg mx-2 bg-gray-600 transition-all duration-200"
-        style={{
-          marginTop: showSearch ? 0 : `${-(heightSearch || 0) - 1}px`,
-        }}
-      >
-        <HeaderLine value="Search for a doctor" center />
-        <div className="flex flex-wrap gap-2">
-          <div className="grow w-full sm:w-1/3">
-            <HeaderLine
-              value="by specialty"
-              classLine="w-full sm:w-1/3  h-3"
-              size="sm"
-              font="medium"
-            />
-            <Select
-              onChange={function (val?: any) {
-                setSearchFilter(function (searchFilter?: any) {
-                  return {
-                    ...searchFilter,
-                    specialty: val,
-                  };
-                });
-              }}
-              value={!searchFilter.specialty ? null : searchFilter.specialty}
-              placeholder="choose specialty"
-              className="w-full"
-              showSearch
-              optionFilterProp="label"
-              options={[
-                { value: "", label: "All Doctors" },
-                ...doctorSpecialtyOptions,
-              ]}
-            />
-          </div>
-          <div className="grow w-full sm:w-1/3">
-            <HeaderLine
-              value="by doctor name"
-              classLine="w-full sm:w-1/3  h-3"
-              size="sm"
-              font="medium"
-            />
-            <Input
-              onChange={function (e?: any) {
-                setSearchFilter(function (searchFilter?: any) {
-                  return {
-                    ...searchFilter,
-                    doctorName: e?.target?.value,
-                  };
-                });
-              }}
-              value={searchFilter.doctorName}
-              placeholder="your doctor name"
-            />
-          </div>
-          <div className="grow w-full sm:w-1/3">
-            <HeaderLine
-              value="by location"
-              classLine="w-full sm:w-1/3  h-3"
-              size="sm"
-              font="medium"
-            />
-            <Input
-              onChange={function (e?: any) {
-                setSearchFilter(function (searchFilter?: any) {
-                  return {
-                    ...searchFilter,
-                    location: e?.target?.value,
-                  };
-                });
-              }}
-              value={searchFilter.location}
-              placeholder="your Location"
-            />
-          </div>
-        </div>
-        <div className="flex justify-between mt-3">
-          <Button
-            type="primary"
-            onClick={function () {
-              setSearchFilter(function () {
-                return {
-                  specialty: "",
-                  doctorName: "",
-                  location: "",
-                };
-              });
+    <section className="relative z-10 m-2 rounded-lg bg-white p-3 shadow-sm">
+      <div className="mb-3 flex items-center gap-2 text-gray-700">
+        <Search className="size-4 shrink-0" />
+        <h2 className="text-base font-medium">Search for a doctor</h2>
+      </div>
+      <div className="grid gap-3 sm:grid-cols-3">
+        <label className="flex min-w-0 flex-col gap-1">
+          <span className="text-sm font-medium text-gray-600">Specialty</span>
+          <Select
+            onChange={function (val?: any) {
+              updateField("specialty", val);
             }}
-            className="bg-red-400 rounded-lg"
-          >
-            Reset
-          </Button>
-        </div>
+            value={searchFilter.specialty || null}
+            placeholder="All specialties"
+            className="w-full"
+            showSearch
+            optionFilterProp="label"
+            options={[
+              { value: "", label: "All Doctors" },
+              ...doctorSpecialtyOptions,
+            ]}
+          />
+        </label>
+        <label className="flex min-w-0 flex-col gap-1">
+          <span className="text-sm font-medium text-gray-600">Doctor name</span>
+          <Input
+            onChange={function (e?: any) {
+              updateField("doctorName", e?.target?.value);
+            }}
+            value={searchFilter.doctorName}
+            placeholder="Doctor's name"
+          />
+        </label>
+        <label className="flex min-w-0 flex-col gap-1">
+          <span className="text-sm font-medium text-gray-600">Location</span>
+          <Input
+            onChange={function (e?: any) {
+              updateField("location", e?.target?.value);
+            }}
+            value={searchFilter.location}
+            placeholder="City or area"
+          />
+        </label>
       </div>
-      <div
-        onClick={function () {
-          setShowSearch(function (val?: any) {
-            return !val;
-          });
-        }}
-        className="border-gray-700 cursor-pointer hover:bg-gray-800 break-all  rounded-bl-lg rounded-br-lg border-2 p-2 bg-gray-700 block w-fit m-auto max-w-xs min-w-24"
-      >
-        <h1 className="text-center my-5 text-2xl sm:text-4xl text-white">
-          {" "}
-          {searchFilter.doctorName} <Search className="inline size-4" />{" "}
-          {searchFilter?.specialty}
-        </h1>
+      <div className="mt-3">
+        <Button
+          type="primary"
+          onClick={function () {
+            setSearchFilter({
+              specialty: "",
+              doctorName: "",
+              location: "",
+            });
+          }}
+          className="bg-red-400 hover:bg-red-500"
+        >
+          Reset
+        </Button>
       </div>
-    </>
+    </section>
   );
 });
