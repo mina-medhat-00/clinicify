@@ -1,17 +1,14 @@
 import { Button, Input } from "@/components/ui";
-import axios from "axios";
 import { Loader2, Settings, Video } from "lucide-react";
 import { OpenVidu } from "openvidu-browser";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Cookies from "universal-cookie";
 import UserVideoComponent from "@/components/meeting/user-video";
 import TitleHeader from "@/components/ui/title-header";
 import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
-import { apiOrigin } from "@/utils/api";
-
-const APPLICATION_SERVER_URL = apiOrigin;
+import { api } from "@/services/client";
+import { toQuery } from "@/utils/query";
 
 export default function VideoMeeting({
   nickname,
@@ -224,7 +221,7 @@ export default function VideoMeeting({
                 });
                 return;
               }
-              fetchUserData(true, new Cookies().get("accessToken"));
+              fetchUserData({ silent: true });
             }
             setSessionDetails(function (sD?: any) {
               return {
@@ -256,7 +253,7 @@ export default function VideoMeeting({
             });
             return;
           }
-          fetchUserData(true, new Cookies().get("accessToken"));
+          fetchUserData({ silent: true });
         }
         setSessionDetails(function (sD?: any) {
           return {
@@ -316,17 +313,10 @@ export default function VideoMeeting({
         isLoading: true,
       };
     });
-    await axios
-      .post(
-        `${APPLICATION_SERVER_URL}/join/meeting`,
-        { data: { appointment_id: sessionDetails?.appointmentId } },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${new Cookies().get("accessToken")}`,
-          },
-        },
-      )
+    await api
+      .post("/join/meeting", {
+        data: { appointment_id: sessionDetails?.appointmentId },
+      })
       .then(function (res?: any) {
         setSessionDetails(function (sD?: any) {
           return {
@@ -369,7 +359,7 @@ export default function VideoMeeting({
             });
             return;
           }
-          fetchUserData(true, new Cookies().get("accessToken"));
+          fetchUserData({ silent: true });
         }
         setSessionDetails(function (cD?: any) {
           return {
@@ -383,18 +373,12 @@ export default function VideoMeeting({
       });
   }
   async function createToken(sessionId?: any) {
-    const response = await axios.post(
-      `${APPLICATION_SERVER_URL}/join/meeting/?session=${sessionId}`,
+    const response = await api.post(
+      `/join/meeting/${toQuery({ session: sessionId })}`,
       {
         data: {
           appointment_id: sessionDetails.appointmentId,
           username: sessionDetails.username,
-        },
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${new Cookies().get("accessToken")}`,
         },
       },
     );

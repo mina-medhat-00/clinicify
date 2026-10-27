@@ -1,4 +1,4 @@
-export type UserType = "admin" | "doctor" | "patient" | string;
+export type UserType = "admin" | "doctor" | "user" | string;
 
 export type User = {
   user_id?: string | number;

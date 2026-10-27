@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { useSlotsContext } from "@/contexts/slots-context";
 import { useUserContext } from "@/contexts/user-context";
 import bookAppointment from "@/services/book-appointment";
+import { toQuery } from "@/utils/query";
 
 export default function CheckoutForm({
   bookedAppointment,
@@ -44,7 +45,10 @@ export default function CheckoutForm({
       stripe.retrievePaymentIntent(clientSecret).then(function ({
         paymentIntent,
       }: any) {
-        switch (paymentIntent.status) {
+        switch (paymentIntent?.status) {
+          case "succeeded":
+            setMessage("Payment succeeded!");
+            break;
           case "processing":
             setMessage("Your payment is processing.");
             break;
@@ -65,55 +69,65 @@ export default function CheckoutForm({
     if (!stripe || !elements) {
       return;
     }
+    const booking = {
+      date: selectedDate,
+      slotTime: bookedAppointment?.slotTime,
+      appointmentId: bookedAppointment?.appointmentId,
+      doctorId,
+      messageApi,
+      fetchUserData,
+    };
+    function refreshSlots() {
+      fetchSlotsData({ date: selectedDate, doctorId }, { silent: true });
+    }
+    function dropSelection() {
+      refreshSlots();
+      setBookedAppointment(null);
+      setIsPayment(null);
+    }
 
     setIsLoading(true);
-    const result = await new Promise(function (resolve?: any) {
-      return bookAppointment(
-        selectedDate,
-        bookedAppointment?.slotTime,
-        bookedAppointment?.appointmentId,
-        messageApi,
-        fetchSlotsData,
-        doctorId,
-        setBookedAppointment,
-        fetchUserData,
-        null,
-        true,
-        setIsPayment,
-        resolve,
-      );
-    });
-    if (result === "err") return;
-    stripe
-      .confirmPayment({
+    // Make sure the slot is still free before charging the card.
+    const check = await bookAppointment({ ...booking, check: true });
+    if (check !== "booked") {
+      setIsLoading(false);
+      if (check === "unavailable") dropSelection();
+      return;
+    }
+    let paymentIntent;
+    try {
+      const payment = await stripe.confirmPayment({
         elements,
         redirect: "if_required",
-      })
-      .then(function (paymentIntent?: any) {
-        const pi = paymentIntent?.paymentIntent;
-        if (pi) {
-          bookAppointment(
-            selectedDate,
-            bookedAppointment?.slotTime,
-            bookedAppointment?.appointmentId,
-            messageApi,
-            fetchSlotsData,
-            doctorId,
-            setBookedAppointment,
-            fetchUserData,
-            setIsLoading,
-            null,
-            setIsPayment,
-            null,
-            socket,
-            pi,
-            navigate,
-          );
-        } else {
-          setMessage(paymentIntent?.error?.message);
-          setIsLoading(false);
-        }
       });
+      paymentIntent = payment.paymentIntent;
+      if (!paymentIntent) throw payment.error;
+    } catch (err: any) {
+      setMessage(err?.message || "Payment failed, please try again.");
+      setIsLoading(false);
+      return;
+    }
+    const result = await bookAppointment({
+      ...booking,
+      paymentIntentId: paymentIntent.id,
+    });
+    setIsLoading(false);
+    if (result === "unavailable") return dropSelection();
+    if (result !== "booked") return;
+    refreshSlots();
+    socket?.emit("update_appointments", {
+      date: selectedDate,
+      doctorId,
+      appointmentId: booking.appointmentId,
+    });
+    setBookedAppointment(null);
+    setTimeout(function () {
+      navigate(
+        `/profile/${doctorId}${toQuery({
+          payment_intent_client_secret: paymentIntent.client_secret,
+        })}`,
+      );
+    }, 500);
   }
   const paymentElementOptions = {
     layout: "tabs",
@@ -144,6 +158,11 @@ export default function CheckoutForm({
           }}
         />
         <PaymentElement
+          onLoadError={function () {
+            setMessage(
+              "The payment form failed to load, please try again later.",
+            );
+          }}
           id="payment-element"
           className="mb-6"
           options={paymentElementOptions as any}

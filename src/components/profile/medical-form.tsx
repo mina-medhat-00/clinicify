@@ -1,6 +1,6 @@
 import { Button, Form, Input } from "@/components/ui";
 import ProfileTable from "@/components/profile/profile-table";
-import submitMedical from "@/services/submit-medical";
+import submitProfile from "@/services/submit-profile";
 
 const { Item } = Form;
 export default function MedicalForm({
@@ -14,15 +14,15 @@ export default function MedicalForm({
   return (
     <Form
       initialValues={initialValues}
-      onFinish={function (values?: any) {
-        return submitMedical(
+      onFinish={async function (values?: any) {
+        const saved = await submitProfile({
+          section: "medical",
           values,
-          messageApi,
-          fetchProfileData,
-          fetchUserData,
-          userName,
           isEdit,
-        );
+          messageApi,
+          fetchUserData,
+        });
+        if (saved) fetchProfileData(userName, { silent: true });
       }}
     >
       <div className="bg-gray-200 shadow-sm rounded-lg p-2">

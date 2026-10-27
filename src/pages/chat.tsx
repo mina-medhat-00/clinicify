@@ -3,7 +3,6 @@ import { ArrowLeft, ArrowUp, CircleAlert, User, UserPlus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import { Link } from "react-router-dom";
-import Cookies from "universal-cookie";
 import Cards from "@/components/chat/chat-cards";
 import Messages from "@/components/chat/chat-messages";
 import UserAvatar from "@/components/ui/user-avatar";
@@ -24,24 +23,14 @@ export default function Chat(_props: any) {
   });
   useEffect(
     function () {
-      const cookies = new Cookies();
       if (user?.user_id) {
         socket.emit("join_user", user.user_id);
       }
       function fetchChat() {
-        fetchChatData(
-          true,
-          cookies.get("accessToken"),
-          {
-            chat_to: withUser,
-          },
-          true,
-        );
+        fetchChatData({ chat_to: withUser }, { silent: true });
       }
       socket?.on("new_chat", fetchChat);
-      fetchChatData(true, cookies.get("accessToken"), {
-        chat_to: withUser,
-      });
+      fetchChatData({ chat_to: withUser });
       return function () {
         socket.off("new_chat", fetchChat);
       };
@@ -59,7 +48,7 @@ export default function Chat(_props: any) {
   });
   const me = user?.user_id === withUser ? true : false;
   return (
-    <div className={`flex h-screen ${isMobile && "flex-col"}`}>
+    <div className={`flex h-screen ${isMobile ? "flex-col" : ""}`}>
       {isError ? (
         <div className="p-1 flex flex-col bg-red-500/70 justify-evenly items-center">
           <span className="text-white font-medium text-xl sm:text-2xl lg:text-3xl">
@@ -115,7 +104,7 @@ export default function Chat(_props: any) {
               )}
             </div>
           )}
-          <MessagesContextProvider fetchUserData={fetchUserData}>
+          <MessagesContextProvider>
             <Messages
               key={withUser || "user"}
               isOpen={
@@ -137,7 +126,6 @@ export default function Chat(_props: any) {
               fetchUserData={fetchUserData}
               messageApi={messageApi}
               timeZone={timeZone || ""}
-              isNew={!(chatRecord?.chat_from && chatRecord?.chat_to)}
             />
           </MessagesContextProvider>
         </div>

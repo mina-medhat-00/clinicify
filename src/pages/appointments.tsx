@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Cookies from "universal-cookie";
 import AppointmentStart from "@/components/appointment/appointment-start";
 import AppointmentTime from "@/components/appointment/appointment-time";
 import DoctorDetails from "@/components/appointment/doctor-details";
@@ -65,13 +64,15 @@ export default function Appointments({ fromDash }: any) {
   const [appointmentState, setAppointmentState] = useState("total");
   const [showPop, setShowPop] = useState({ show: false, data: null });
   const [cancelAppoint, setCancelAppoint] = useState<any>(null);
-  const { appointmentData, isLoading, fetchAppointmentData } =
-    useAppointmentContext();
+  const {
+    appointmentData,
+    isLoading,
+    fetchAppointmentData,
+    updateAppointment,
+  } = useAppointmentContext();
   useEffect(
     function () {
-      fetchAppointmentData(true, new Cookies().get("accessToken"), null, null, {
-        date: selectedDate.date,
-      });
+      fetchAppointmentData({ date: selectedDate.date });
     },
     [selectedDate.date, fetchAppointmentData],
   );
@@ -88,8 +89,8 @@ export default function Appointments({ fromDash }: any) {
       />
       <div
         className={`mt-4 flex flex-wrap ${
-          fromDash ? "lg" : "sm"
-        }:flex-nowrap gap-1 justify-evenly px-2 cursor-pointer text-white text-center text-sm xl:text-lg`}
+          fromDash ? "lg:flex-nowrap" : "sm:flex-nowrap"
+        } gap-1 justify-evenly px-2 cursor-pointer text-white text-center text-sm xl:text-lg`}
       >
         <div
           className={`flex  items-center hover:shadow-xl ${
@@ -162,7 +163,8 @@ export default function Appointments({ fromDash }: any) {
                 patientId,
                 doctorId,
                 appointment_state,
-                appointment_id,
+                // The API names this field appointmentId.
+                appointmentId: appointment_id,
                 appointment_type,
                 appointment_duration,
                 slot_time,
@@ -183,7 +185,7 @@ export default function Appointments({ fromDash }: any) {
                 (appointment_state == appointmentState ||
                   appointmentState == "total") && (
                   <div
-                    key={i}
+                    key={appointment_id ?? i}
                     className={`appointment--container grow p-1 rounded-lg shadow-sm`}
                   >
                     <div
@@ -274,7 +276,7 @@ export default function Appointments({ fromDash }: any) {
                               appointment_state={appointment_state}
                               appointmentData={appointmentData}
                               getAppointmentVal={getAppointmentVal}
-                              fetchAppointmentData={fetchAppointmentData}
+                              updateAppointment={updateAppointment}
                               order={i}
                               timeZone={timeZone || ""}
                               socket={socket}
@@ -296,7 +298,8 @@ export default function Appointments({ fromDash }: any) {
                                     ? patientId
                                     : doctorId,
                                 patientId,
-                                appointment_id,
+                                // The API names this field appointmentId.
+                                appointmentId: appointment_id,
                                 doctorId,
                                 appointment_state,
                                 appointment_type,
@@ -408,20 +411,23 @@ export default function Appointments({ fromDash }: any) {
           </div>
           <div className="flex justify-center gap-2 p-2 mt-4">
             <div
-              onClick={function () {
-                cancelAppointment(
-                  cancelAppoint?.selectedDate,
-                  cancelAppoint?.bookedSlot,
-                  cancelAppoint?.appointmentId,
-                  messageApi,
-                  fetchAppointmentData,
-                  cancelAppoint?.doctorId,
-                  setCancelAppoint,
-                  "patient",
-                  fetchUserData,
-                  selectedDate.date,
-                  setShowPop,
+              onClick={async function () {
+                const canceled = await cancelAppointment({
+                  date: cancelAppoint?.selectedDate?.format("YYYY-MM-DD"),
+                  slotTime: cancelAppoint?.bookedSlot,
+                  appointmentId: cancelAppoint?.appointmentId,
+                  doctorId: cancelAppoint?.doctorId,
+                  cancelFrom: "patient",
                   socket,
+                  messageApi,
+                  fetchUserData,
+                });
+                if (!canceled) return;
+                setCancelAppoint(null);
+                setShowPop({ data: null, show: false });
+                fetchAppointmentData(
+                  { date: selectedDate.date },
+                  { silent: true },
                 );
               }}
               className="cursor-pointer text-center bg-red-500 p-2 grow text-white font-medium rounded-lg shadow-sm"

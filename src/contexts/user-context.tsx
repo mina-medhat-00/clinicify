@@ -1,140 +1,161 @@
 import { message } from "@/components/ui";
-import axios from "axios";
 import { jwtDecode } from "jwt-decode";
-import type { AuthTokenPayload, User } from "@/types";
 import {
   createContext,
   useCallback,
   useContext,
   useEffect,
-  useLayoutEffect,
   useRef,
   useState,
 } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import Cookies from "universal-cookie";
-import { apiUrl } from "@/utils/api";
+import {
+  api,
+  clearToken,
+  errorStatus,
+  getToken,
+  sessionError,
+  type LoadOptions,
+} from "@/services/client";
+import type { AuthTokenPayload, User } from "@/types";
+
+// setTimeout fires immediately for delays above this.
+const MAX_TIMEOUT = 2 ** 31 - 1;
+
+// The signed-in user, or null when there is no token.
+async function requestUser() {
+  if (!getToken()) return null;
+  const { data } = await api.get("/user");
+  return (data?.data ?? null) as User | null;
+}
 
 const UserData = createContext<any>(null);
-export default function UserContextProvider({ children, token }: any) {
+export default function UserContextProvider({ children }: any) {
   const [isLoading, setIsLoading] = useState(true);
-  const [tokenExpired, setTokenExpired] = useState(false);
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [messageApi, contextHolder] = message.useMessage();
-  const [userData, setUserData] = useState<User | null>(null);
   const [isError, setIsError] = useState(false);
-  const pathname = location?.pathname;
+  const [tokenExpired, setTokenExpired] = useState(false);
+  const [userData, setUserData] = useState<User | null>(null);
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const [messageApi, contextHolder] = message.useMessage();
+
+  // Read inside callbacks without making them change on every navigation.
   const pathnameRef = useRef(pathname);
+  const userDataRef = useRef(userData);
+  const navigateRef = useRef(navigate);
+  const messageApiRef = useRef(messageApi);
   useEffect(
     function () {
       pathnameRef.current = pathname;
+      userDataRef.current = userData;
+      navigateRef.current = navigate;
+      messageApiRef.current = messageApi;
     },
-    [pathname],
+    [pathname, userData, navigate, messageApi],
   );
-  const fetchUserData = useCallback(
-    async function (
-      active?: any,
-      directToken?: any,
-      directError?: any,
-      noRender?: any,
-    ) {
-      await Promise.resolve();
-      if (!noRender) setIsLoading(true);
-      if (!token && !directToken) {
+
+  // The token expired: drop it, and if someone was signed in, tell them and
+  // send them to login so they can come back to the same page.
+  const expireSession = useCallback(function () {
+    clearToken();
+    if (!userDataRef.current || pathnameRef.current.includes("login")) return;
+    setTokenExpired(true);
+    messageApiRef.current.open({
+      key: 1,
+      type: "error",
+      content: "your time has expired, redirecting to login page ...",
+      duration: 3,
+    });
+    setTimeout(function () {
+      setUserData(null);
+      navigateRef.current(
+        `/login?redirect=${encodeURIComponent(pathnameRef.current)}`,
+      );
+    }, 3000);
+  }, []);
+
+  // Returns true when the error meant "your session is over" and was handled.
+  const handleSessionError = useCallback(
+    function (err: unknown) {
+      // Most protected routes answer a bad or expired token with a bare 401
+      // ("Unauthenticated."), so treat any 401 like an expired session.
+      const name =
+        sessionError(err) ??
+        (errorStatus(err) === 401 ? "TokenExpiredError" : undefined);
+      if (name === "TokenExpiredError") expireSession();
+      else if (name === "JsonWebTokenError") {
+        clearToken();
         setUserData(null);
-        return setIsLoading(false);
       }
-      try {
-        if (directError) throw directError;
-        const { data } = await axios.request({
-          url: apiUrl("/user"),
-          ...{
-            headers: {
-              Authorization: `Bearer ${active ? directToken : token}`,
-            },
-            timeout: 10000,
-          },
-        });
-        setUserData(data?.data);
-        setIsLoading(false);
-        setIsError(false);
-        return data;
-      } catch (err) {
-        const msg = err?.response?.data?.data?.name;
-        switch (msg) {
-          case "TokenExpiredError": {
-            let userData;
-            setUserData(function (dat?: any) {
-              userData = dat;
-              return dat;
-            });
-            if (userData && !pathnameRef.current.includes("login")) {
-              setTokenExpired(true);
-              messageApi.open({
-                key: 1,
-                type: "error",
-                content: "your time has expired, redirecting to login page ...",
-                duration: 3,
-              });
-              setTimeout(function () {
-                setUserData(null);
-                navigate(`/login?redirect=${pathnameRef.current}`);
-              }, 3000);
-            }
-            const cookie = new Cookies();
-            cookie.remove("accessToken");
-            break;
-          }
-          case "JsonWebTokenError":
-            setUserData(null);
-            break;
-          default:
+      return Boolean(name);
+    },
+    [expireSession],
+  );
+
+  // Store the outcome of a /user request.
+  const settleUser = useCallback(
+    function (pending: Promise<User | null>) {
+      return pending.then(
+        function (user) {
+          setUserData(user);
+          setIsError(false);
+          setIsLoading(false);
+          return user;
+        },
+        function (err) {
+          if (!handleSessionError(err)) {
             setIsError(true);
             setUserData(null);
-            break;
-        }
-        setIsLoading(false);
-      }
+          }
+          setIsLoading(false);
+          return null;
+        },
+      );
     },
-    [token, navigate, messageApi],
+    [handleSessionError],
   );
-  useLayoutEffect(
+
+  const fetchUserData = useCallback(
+    function ({ silent }: LoadOptions = {}) {
+      if (!silent) setIsLoading(true);
+      return settleUser(requestUser());
+    },
+    [settleUser],
+  );
+
+  useEffect(
     function () {
-      const timeId = setTimeout(function () {
-        fetchUserData(true, new Cookies().get("accessToken"), null, true);
-      });
+      settleUser(requestUser());
+    },
+    [settleUser],
+  );
+
+  // Re-check the session the moment the current token expires.
+  const userId = userData?.user_id;
+  useEffect(
+    function () {
+      const token = getToken();
+      if (!userId || !token) return;
+      let exp: number | undefined;
+      try {
+        exp = jwtDecode<AuthTokenPayload>(token).exp;
+      } catch {
+        return;
+      }
+      if (!exp) return;
+      const timeId = setTimeout(
+        function () {
+          fetchUserData({ silent: true });
+        },
+        Math.min(Math.max(exp * 1000 - Date.now(), 0), MAX_TIMEOUT),
+      );
       return function () {
         clearTimeout(timeId);
       };
     },
-    [fetchUserData],
+    [userId, fetchUserData],
   );
-  useLayoutEffect(
-    function () {
-      const accessToken = token || new Cookies().get("accessToken");
-      if (!accessToken) return;
-      let timeId;
-      async function handleExpired() {
-        try {
-          const record = jwtDecode<AuthTokenPayload>(accessToken);
-          timeId = setTimeout(
-            function () {
-              fetchUserData(true, new Cookies().get("accessToken"), null, true);
-            },
-            Math.abs(+(record?.exp + "000") - Date.now()),
-          );
-        } catch {
-          return;
-        }
-      }
-      handleExpired();
-      return function () {
-        clearTimeout(timeId);
-      };
-    },
-    [token, fetchUserData],
-  );
+
   return (
     <UserData.Provider
       value={{
@@ -142,6 +163,7 @@ export default function UserContextProvider({ children, token }: any) {
         userData,
         fetchUserData,
         setUserData,
+        handleSessionError,
         isError,
         tokenExpired,
         messageApi,

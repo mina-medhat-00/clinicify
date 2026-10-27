@@ -1,13 +1,11 @@
 import { Elements } from "@stripe/react-stripe-js";
-import axios from "axios";
 import { useEffect, useState } from "react";
-import Cookies from "universal-cookie";
 import CheckoutForm from "@/components/booking/checkout-form";
 import Loader from "@/components/ui/loader";
 import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
 import getStripe from "@/utils/get-stripe";
-import { apiUrl } from "@/utils/api";
+import { api } from "@/services/client";
 
 const stripePromise = getStripe();
 export default function AppointmentPayment({
@@ -23,22 +21,9 @@ export default function AppointmentPayment({
   useEffect(
     function () {
       if (bookedAppointment?.appointmentId && doctorId) {
-        axios
-          .request({
-            url: apiUrl("/create/payment"),
-            ...{
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${new Cookies()?.get("accessToken")}`,
-              },
-              data: JSON.stringify({
-                data: {
-                  doctorId,
-                  ...bookedAppointment,
-                },
-              }),
-            },
+        api
+          .post("/create/payment", {
+            data: { doctorId, ...bookedAppointment },
           })
           .then(function ({ data }: any) {
             setClientSecret(data.clientSecret);
@@ -46,7 +31,7 @@ export default function AppointmentPayment({
           .catch(function (err?: any) {
             setIsPayment(null);
             if (err?.response?.status == 401) {
-              fetchUserData(true, new Cookies().get("accessToken"));
+              fetchUserData({ silent: true });
             } else
               messageApi.open({
                 key: 1,

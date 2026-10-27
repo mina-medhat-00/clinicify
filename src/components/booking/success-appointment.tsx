@@ -10,7 +10,7 @@ export default function AppointmentSuccess({ bookedAppointment }: any) {
         </span>
         <div className="flex gap-2 flex-wrap w-full justify-between items-center">
           <span className="text-xl text-white bg-blue-800/60 p-2 rounded-md font-medium text-center">
-            Time: {bookedAppointment?.schedule_date}
+            Date: {bookedAppointment?.schedule_date}
           </span>
           <span className="text-xl text-white bg-blue-800/60 p-2 rounded-md font-medium text-center">
             Time: {bookedAppointment?.slotTime}

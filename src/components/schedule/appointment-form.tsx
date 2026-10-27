@@ -1,6 +1,6 @@
 import { Button, Input, Popover, Select } from "@/components/ui";
 import { Clock, Plus, PoundSterling, Trash2 } from "lucide-react";
-import React, { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import CountdownTimer from "@/components/schedule/schedule-countdown-timer";
 import scheduleAppointments from "@/services/schedule-appointments";
 
@@ -81,21 +81,22 @@ function AppointmentDetails({
           appointmentFees: doctorData?.fees || 300,
         },
   );
-  const [prevAppointmentDetails, setPrevAppointmentDetails] = useState(null);
-  if (appointmentDetails !== prevAppointmentDetails) {
-    setPrevAppointmentDetails(appointmentDetails);
-    if (typeof setAppointDetails === "function") {
-      setAppointDetails(function (val?: any) {
-        val[order - 1] = {
+  // Report this block's values to the form (also after its position changes).
+  useEffect(
+    function () {
+      setAppointDetails?.(function (val?: any) {
+        const next = [...val];
+        next[order - 1] = {
           ...appointmentDetails,
           slotTime: `${adjustHMin(appointmentDetails.slotTime.h)}:${adjustHMin(
             appointmentDetails.slotTime.m,
           )} ${appointmentDetails.slotTime.timeMode}`,
         };
-        return new Array(...val);
+        return next;
       });
-    }
-  }
+    },
+    [appointmentDetails, order, setAppointDetails],
+  );
   return (
     <div className="grow bg-gray-100 p-2 rounded-lg shadow-sm border-2 border-gray-300">
       <div className="border-b-2 flex items-center justify-between border-gray-200 mb-2">
@@ -105,13 +106,14 @@ function AppointmentDetails({
         {appointmentElements.length > 1 && (
           <div
             onClick={function () {
+              function withoutThis(_: unknown, i: number) {
+                return i !== order - 1;
+              }
               setAppointDetails(function (val?: any) {
-                val.splice(order - 1, 1);
-                return new Array(...val);
+                return val.filter(withoutThis);
               });
-              setAppointmentElements(function (ele?: any) {
-                ele.splice(order - 1, 1);
-                return new Array(...ele);
+              setAppointmentElements(function (ids?: any) {
+                return ids.filter(withoutThis);
               });
             }}
           >
@@ -356,9 +358,10 @@ export default function AppointmentForm({
   timeZone,
 }: any) {
   const [appointmentDetails, setAppointmentDetails] = useState([]);
-  const [appointmentElements, setAppointmentElements] = useState([
-    <AppointmentDetails />,
-  ]);
+  // One stable id per appointment block, so removing a block keeps the
+  // others' inputs attached to the right block.
+  const nextId = useRef(1);
+  const [appointmentElements, setAppointmentElements] = useState<number[]>([0]);
   const isFilled = chkFillingData(appointmentDetails);
   const isAdjusted = chkTimeSlot([
     ...appointmentDetails,
@@ -389,18 +392,21 @@ export default function AppointmentForm({
     <div className="p-2 sm:p-4">
       <div className="scroll--h scroll--v overflow-auto max-h-96">
         <div className="flex flex-wrap gap-2">
-          {appointmentElements.map(function (ele?: any, i?: any) {
-            return React.cloneElement(ele, {
-              order: i + 1,
-              key: i + 1,
-              isEdit,
-              editAppointment,
-              appointmentElements,
-              setAppointmentElements,
-              setAppointDetails: setAppointmentDetails,
-              schedule_date: selectedDate?.format("YYYY-MM-YY"),
-              timeZone,
-            });
+          {appointmentElements.map(function (id, i) {
+            return (
+              <AppointmentDetails
+                key={id}
+                order={i + 1}
+                doctorData={doctorData}
+                isEdit={isEdit}
+                editAppointment={editAppointment}
+                appointmentElements={appointmentElements}
+                setAppointmentElements={setAppointmentElements}
+                setAppointDetails={setAppointmentDetails}
+                schedule_date={selectedDate?.format("YYYY-MM-DD")}
+                timeZone={timeZone}
+              />
+            );
           })}
         </div>
       </div>
@@ -409,11 +415,9 @@ export default function AppointmentForm({
           <div className="text-left">
             <div
               onClick={function () {
-                setAppointmentElements(function (val?: any) {
-                  return [
-                    ...val,
-                    <AppointmentDetails doctorData={doctorData} />,
-                  ];
+                const id = nextId.current++;
+                setAppointmentElements(function (ids) {
+                  return [...ids, id];
                 });
               }}
               className="inline-block sm:w-fit text-center cursor-pointer hover:bg-gray-600 p-2 text-white font-medium bg-gray-500 rounded-lg"
@@ -457,22 +461,22 @@ export default function AppointmentForm({
         >
           <Button
             onClick={function () {
-              if (isDone) {
-                scheduleAppointments(
-                  selectedDate,
-                  appointmentDetails,
-                  tAppointments,
-                  messageApi,
-                  fetchSlotsData,
-                  userid,
-                  fetchUserData,
-                  function () {},
-                  null,
-                  isEdit,
-                  [editAppointment?.appointmentId],
-                  socket,
-                );
-              }
+              if (!isDone) return;
+              const date = selectedDate?.format("YYYY-MM-DD");
+              scheduleAppointments({
+                date,
+                doctorId: userid,
+                addedAppointments: appointmentDetails,
+                totalSlots: tAppointments,
+                isEdit,
+                editSlot: [editAppointment?.appointmentId],
+                socket,
+                messageApi,
+                fetchUserData,
+              }).then(function () {
+                // Reload either way: on a conflict the list shows which slots are taken.
+                fetchSlotsData({ date, doctorId: userid }, { silent: true });
+              });
             }}
             type="primary"
             className={`m-auto mt-2 w-full sm:w-fit font-medium h-10 grow block ${

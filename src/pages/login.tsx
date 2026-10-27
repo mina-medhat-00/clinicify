@@ -1,13 +1,11 @@
 import { Button, Checkbox, Form, Input, Typography } from "@/components/ui";
-import axios from "axios";
 import { Lock, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import Cookies from "universal-cookie";
 import HeaderLine from "@/components/ui/header-line";
 import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
-import { apiUrl } from "@/utils/api";
+import { api, setToken } from "@/services/client";
 
 const { Title } = Typography;
 
@@ -20,6 +18,12 @@ function getMessage(key?: any, type?: any, content?: any, duration?: any) {
   };
 }
 
+// Only follow in-app paths, never another origin (e.g. "//evil.com").
+function getRedirect(search?: string) {
+  const target = new URLSearchParams(search).get("redirect");
+  return target?.startsWith("/") && !target.startsWith("//") ? target : "/";
+}
+
 function signing(
   values?: any,
   messageApi?: any,
@@ -30,28 +34,15 @@ function signing(
 ) {
   messageApi.open(getMessage(1, "loading", "verifying...", 8));
   delete values?.remember;
-  axios
-    .post(
-      apiUrl("/login"),
-      {
-        data: values,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        withCredentials: true,
-      },
-    )
+  api
+    .post("/login", { data: values }, { withCredentials: true })
     .then(async function ({ data }: any) {
-      const cookies = new Cookies();
-      if (data?.data?.token) cookies.set("accessToken", data?.data?.token);
+      if (data?.data?.token) setToken(data.data.token);
 
       messageApi.open(getMessage(1, "success", "logged in successfully", 2));
       setTimeout(function () {
-        const loc = new URLSearchParams(location?.search)?.get("redirect");
-        navigate(loc ? loc : "/");
-        fetchUserData(true, cookies.get("accessToken"));
+        navigate(getRedirect(location?.search));
+        fetchUserData();
       }, 2000);
     })
     .catch(function (err?: any) {
@@ -103,7 +94,6 @@ export default function Login() {
     },
     [user, navigate],
   );
-  const [, setFormValues] = useState(null);
   return (
     <div className="grow bg-linear-to-tr from-slate-500/85 to-blue-400/90">
       <div
@@ -139,8 +129,7 @@ export default function Login() {
               location,
             );
           }}
-          onValuesChange={function (c?: any, values?: any) {
-            setFormValues(values);
+          onValuesChange={function () {
             setValidState({ invalidUser: 0, invalidPass: 0 });
           }}
         >

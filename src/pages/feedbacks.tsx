@@ -36,12 +36,8 @@ export default function Feedbacks({
   useEffect(
     function () {
       if (noDirectFetch)
-        fetchFeedbackData(
-          {
-            username,
-          },
-          fetchFeedback == false || fetchFeedback == true,
-        );
+        // After a new feedback (fetchFeedback toggled), refresh without a spinner.
+        fetchFeedbackData({ username }, { silent: fetchFeedback !== null });
     },
     [fetchFeedback, fetchFeedbackData, noDirectFetch, username],
   );

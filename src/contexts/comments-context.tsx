@@ -1,51 +1,25 @@
-import axios from "axios";
-import { createContext, useCallback, useContext, useState } from "react";
+import { createContext, useContext } from "react";
+import { useRemoteData } from "@/contexts/use-remote-data";
+import { api } from "@/services/client";
 import type { Comment } from "@/types";
-import { apiUrl } from "@/utils/api";
+import { toQuery } from "@/utils/query";
 
-function handleQuery(obj?: any) {
-  return !obj
-    ? ""
-    : Object.entries(obj)
-        .filter(function ([_, val]: any) {
-          return val || val === 0;
-        })
-        .map(function ([name, val]: any, i?: any) {
-          return i == 0 ? `?${name}=${val}` : `${name}=${val}`;
-        })
-        .join("&");
+export type CommentsQuery = { postId: string | number; limit?: number };
+
+async function getComments(query: CommentsQuery) {
+  const { data } = await api.get(`/get/comments${toQuery(query)}`);
+  return data?.data as Comment[];
 }
+
 const CommentsData = createContext<any>(null);
 export default function CommentsContextProvider({ children }: any) {
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
-  const [commentsData, setCommentsData] = useState<Comment[] | null>(null);
-  const fetchCommentsData = useCallback(async function (
-    query?: any,
-    noRender?: any,
-  ) {
-    await Promise.resolve();
-    if (!noRender) setIsLoading(true);
-    try {
-      const { data } = await axios.request({
-        url: apiUrl(`/get/comments${handleQuery(query)}`),
-        ...{
-          timeout: 10000,
-        },
-      });
-      setCommentsData(function () {
-        return data?.data;
-      });
-      setIsError(false);
-      setIsLoading(false);
-      return data;
-    } catch (err) {
-      setIsLoading(false);
-      setIsError(true);
-      throw err;
-    }
-  }, []);
-
+  const {
+    data: commentsData,
+    setData: setCommentsData,
+    isLoading,
+    isError,
+    load: fetchCommentsData,
+  } = useRemoteData(getComments, { initialLoading: false });
   return (
     <CommentsData.Provider
       value={{

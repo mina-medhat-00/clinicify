@@ -37,7 +37,7 @@ export default function BookCard({ doctorId, socket, timeZone }: any) {
               date: selectedDate.date,
               doctorId,
             },
-            true,
+            { silent: true },
           );
       }
 

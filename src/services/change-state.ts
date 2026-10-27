@@ -1,91 +1,61 @@
-import axios from "axios";
-import Cookies from "universal-cookie";
-import { apiUrl } from "@/utils/api";
+import {
+  api,
+  handleFailure,
+  notify,
+  type ServiceContext,
+} from "@/services/client";
 
-const cookies = new Cookies();
-export default async function changeState(
-  fetchUserData?: any,
-  fetchDoctorsData?: any,
-  messageApi?: any,
-  setIsLoading?: any,
-  type?: any,
-  doctorId?: any,
-  isUser?: any,
-) {
-  messageApi.open({
-    key: 1,
-    content: `${
-      type == "verify"
-        ? "Verifying"
-        : type == "delete"
-          ? "Deleting"
-          : type == "reject"
-            ? "Rejecting"
-            : type == "restrict"
-              ? "Restricting"
-              : ""
-    } ${isUser ? "user" : "doctor"} account ...`,
-    type: "loading",
-    duration: 8,
-  });
-  setIsLoading(true);
-  axios
-    .post(
-      apiUrl(`/change/${isUser ? "user" : "doctor"}`),
-      {
-        data: {
-          type,
-          ...(type == "restrict"
-            ? doctorId
-            : isUser
-              ? { userId: doctorId }
-              : { doctorId }),
-        },
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${cookies?.get("accessToken")}`,
-        },
-      },
-    )
-    .then(function () {
-      messageApi.open({
-        key: 1,
-        content: `${isUser ? "user" : "doctor"} account ${
-          type == "verify"
-            ? "has been verified"
-            : type == "delete"
-              ? "has been deleted"
-              : type == "reject"
-                ? "has been rejected"
-                : type == "restrict"
-                  ? "Restricted"
-                  : ""
-        }`,
-        type: "success",
-        duration: 4,
-      });
-      fetchDoctorsData(
-        {
-          total: true,
-        },
-        type == "restrict" ? new Cookies().get("accessToken") : true,
-        type == "restrict" ? { userid: doctorId?.chat_from } : null,
-        type == "restrict" ? true : null,
-      );
-      setIsLoading(false);
-    })
-    .catch(function (err?: any) {
-      setIsLoading(false);
-      if (err?.response?.status == 401) {
-        fetchUserData(true, cookies.get("accessToken"));
-      } else
-        messageApi.open({
-          key: 1,
-          content: "there's some issues cannot submit your operation now",
-          type: "error",
-          duration: 3,
-        });
-    });
+export type AccountAction = "verify" | "reject" | "delete" | "restrict";
+
+type ChangeStateParams = ServiceContext & {
+  action: AccountAction;
+  target: "user" | "doctor";
+  // The account to change; for "restrict" this is the chat to open/close.
+  id?: string | number;
+  chat?: {
+    chat_from: string | number;
+    chat_to: string | number;
+    is_open: unknown;
+  };
+};
+
+const progress: Record<AccountAction, string> = {
+  verify: "Verifying",
+  reject: "Rejecting",
+  delete: "Deleting",
+  restrict: "Restricting",
+};
+const done: Record<AccountAction, string> = {
+  verify: "has been verified",
+  reject: "has been rejected",
+  delete: "has been deleted",
+  restrict: "restricted",
+};
+
+export default async function changeState({
+  action,
+  target,
+  id,
+  chat,
+  ...ctx
+}: ChangeStateParams) {
+  notify(ctx, "loading", `${progress[action]} ${target} account ...`, 8);
+  const subject =
+    action === "restrict"
+      ? chat
+      : target === "user"
+        ? { userId: id }
+        : { doctorId: id };
+  try {
+    await api.post(`/change/${target}`, { data: { type: action, ...subject } });
+    notify(ctx, "success", `${target} account ${done[action]}`, 4);
+    return true;
+  } catch (err) {
+    handleFailure(
+      err,
+      ctx,
+      "there's some issues cannot submit your operation now",
+    );
+    return false;
+  }
 }

@@ -1,7 +1,7 @@
 export type AppointmentState =
   "free" | "booked" | "running" | "done" | "canceled" | string;
 
-export type AppointmentKind = "inClinic" | "chat" | "videoChat" | string;
+export type AppointmentKind = "inClinic" | "chat" | "videoCall" | string;
 
 export type Appointment = {
   appointment_id?: string | number;

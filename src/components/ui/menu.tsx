@@ -28,12 +28,30 @@ function MenuItem({ item, theme, onClick, depth = 0 }: any) {
     });
   }
 
+  // Leaf labels are often links or buttons themselves, which can't sit inside
+  // a <button>; render those as a focusable menu item instead.
+  const Trigger: any = hasChildren ? "button" : "div";
+  const triggerProps = hasChildren
+    ? { type: "button" }
+    : {
+        role: "menuitem",
+        tabIndex: 0,
+        onKeyDown: function (event: any) {
+          if (event.target !== event.currentTarget) return;
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            handleClick(event);
+          }
+        },
+      };
+
   return (
     <li data-menu-id={item.key}>
-      <button
-        type="button"
+      <Trigger
+        {...triggerProps}
         onClick={handleClick}
         className={cx(
+          "cursor-pointer",
           "flex w-full items-center gap-2 rounded-md px-3 py-2 text-left",
           dark
             ? "text-gray-200 hover:bg-[#1f3458] hover:text-white"
@@ -48,7 +66,7 @@ function MenuItem({ item, theme, onClick, depth = 0 }: any) {
             className={cx("size-4 shrink-0 transition", open && "rotate-180")}
           />
         ) : null}
-      </button>
+      </Trigger>
       {hasChildren && open ? (
         <ul
           id={String(item.key)}

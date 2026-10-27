@@ -1,99 +1,32 @@
-import axios from "axios";
-import { createContext, useCallback, useContext, useState } from "react";
-import { useUserContext } from "@/contexts/user-context";
+import { createContext, useContext } from "react";
+import { useRemoteData } from "@/contexts/use-remote-data";
+import { api } from "@/services/client";
 import type { ChatThread } from "@/types";
-import { apiUrl } from "@/utils/api";
+import { toQuery } from "@/utils/query";
 
-function handleQuery(obj?: any) {
-  return !obj
-    ? ""
-    : Object.entries(obj)
-        .filter(function ([_, val]: any) {
-          return val || val === 0;
-        })
-        .map(function ([name, val]: any, i?: any) {
-          return i == 0 ? `?${name}=${val}` : `${name}=${val}`;
-        })
-        .join("&");
+// chat_to: also return this user's chat; userid: (admin) list another user's chats.
+export type ChatQuery = {
+  chat_to?: number | string | null;
+  userid?: number | string;
+};
+
+async function getChats(query?: ChatQuery) {
+  const { data } = await api.get(`/get/chat${toQuery(query)}`);
+  return data?.data as ChatThread[];
 }
-const ChatData = createContext<any>(null);
-export default function ChatContextProvider({ children, token }: any) {
-  const { fetchUserData } = useUserContext();
-  const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
-  const [chatData, setChatData] = useState<ChatThread[] | null>(null);
-  const fetchChatData = useCallback(
-    async function (
-      active?: any,
-      directToken?: any,
-      query?: any,
-      noWaiting?: any,
-    ) {
-      await Promise.resolve();
-      if (!noWaiting) setIsLoading(true);
-      if (!token && !active) {
-        setChatData(null);
-        return setIsLoading(false);
-      }
-      try {
-        const { data } = await axios.request({
-          url: apiUrl(`/get/chat${handleQuery(query)}`),
-          ...{
-            headers: {
-              Authorization: `Bearer ${active ? directToken : token}`,
-            },
-          },
-        });
-        setChatData(data?.data);
-        setIsError(false);
-        setIsLoading(false);
-      } catch (err) {
-        const msg = err?.response?.data?.data?.name;
-        switch (msg) {
-          case "TokenExpiredError":
-            fetchUserData(true, null, {
-              response: {
-                data: {
-                  data: {
-                    name: "TokenExpiredError",
-                  },
-                },
-              },
-            });
-            break;
-          case "JsonWebTokenError":
-            setChatData(null);
-            fetchUserData(true, null, {
-              response: {
-                data: {
-                  data: {
-                    name: "JsonWebTokenError",
-                  },
-                },
-              },
-            });
-            break;
-          default:
-            setIsError(true);
-            setChatData(null);
-            break;
-        }
-        setIsLoading(false);
-        throw err;
-      }
-    },
-    [token, fetchUserData],
-  );
 
+const ChatData = createContext<any>(null);
+export default function ChatContextProvider({ children }: any) {
+  const {
+    data: chatData,
+    setData: setChatData,
+    isLoading,
+    isError,
+    load: fetchChatData,
+  } = useRemoteData(getChats, { requiresAuth: true });
   return (
     <ChatData.Provider
-      value={{
-        isLoading,
-        isError,
-        chatData,
-        fetchChatData,
-        setChatData,
-      }}
+      value={{ isLoading, isError, chatData, fetchChatData, setChatData }}
     >
       {children}
     </ChatData.Provider>

@@ -9,7 +9,6 @@ import { useSlotsContext } from "@/contexts/slots-context";
 import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
 import cancelAppointment from "@/services/cancel-appointment";
-import scheduleAppointments from "@/services/schedule-appointments";
 
 export default function AppointmentDetails({ doctorId }: any) {
   const { timeZone, messageApi, socket } = useUtilsContext();
@@ -36,7 +35,7 @@ export default function AppointmentDetails({ doctorId }: any) {
               doctorId,
               date: selectedDate?.date,
             },
-            true,
+            { silent: true },
           );
       }
       if (selectedDate?.date) {
@@ -47,7 +46,7 @@ export default function AppointmentDetails({ doctorId }: any) {
         });
       }
       return function () {
-        socket?.off("all_slots", getSlots);
+        socket?.off("update_slots", getSlots);
       };
     },
     [selectedDate, doctorId, fetchSlotsData, socket],
@@ -74,21 +73,21 @@ export default function AppointmentDetails({ doctorId }: any) {
             </div>
             <div className="flex justify-center gap-2 p-2 mt-4">
               <div
-                onClick={function () {
-                  cancelAppointment(
-                    dayjs(selectedDate?.date),
-                    selectedAppointment?.slotTime,
-                    selectedAppointment?.appointmentId,
-                    messageApi,
-                    fetchSlotsData,
+                onClick={async function () {
+                  const canceled = await cancelAppointment({
+                    date: selectedDate?.date,
+                    slotTime: selectedAppointment?.slotTime,
+                    appointmentId: selectedAppointment?.appointmentId,
                     doctorId,
-                    setSelectedAppointment,
-                    "admin",
-                    fetchUserData,
-                    null,
-                    setShowPop,
+                    cancelFrom: "admin",
                     socket,
-                  );
+                    messageApi,
+                    fetchUserData,
+                  });
+                  if (!canceled) return;
+                  setSelectedAppointment(null);
+                  setShowPop(null);
+                  fetchSlotsData({ date: selectedDate?.date, doctorId });
                 }}
                 className="cursor-pointer text-center bg-red-500 p-2 grow text-white font-medium rounded-lg shadow-sm"
               >
@@ -142,7 +141,6 @@ export default function AppointmentDetails({ doctorId }: any) {
                     appointmentState={appointmentState}
                     appointmentType={appointmentType}
                     messageApi={messageApi}
-                    scheduleAppointments={scheduleAppointments}
                   />
                 </div>
               );

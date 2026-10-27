@@ -3,6 +3,7 @@ import { useState } from "react";
 import SkeletonLib from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { cx } from "@/components/ui/cx";
+import { imageUrl } from "@/utils/api";
 
 const avatarSize = {
   small: 24,
@@ -23,7 +24,7 @@ function Avatar({
   const [failed, setFailed] = useState(false);
   const px =
     typeof size === "number" ? size : avatarSize[size] || avatarSize.default;
-  const showImg = src && !failed;
+  const showImg = imageUrl(src) && !failed;
   return (
     <span
       className={cx(

@@ -1,4 +1,4 @@
-import { Hospital, Loader2, MessageSquareText } from "lucide-react";
+import { Hospital, Loader2, MessageSquareText, Video } from "lucide-react";
 
 function adjustTime(date?: any, time?: any, timeZone?: any) {
   return new Date(`${date} ${time} ${timeZone}`).toLocaleTimeString("en", {
@@ -19,7 +19,6 @@ export default function BookButton({
       <div className="flex flex-wrap justify-between gap-2">
         <div className={`flex gap-2 bg-gray-400/40 p-2 rounded-lg`}>
           <Loader2 className="flex items-center text-yellow-200 text-2xl animate-spin" />
-          ,
           <span className="text-white font-medium">
             {appointmentState?.toUpperCase()}
           </span>
@@ -29,6 +28,8 @@ export default function BookButton({
             <Hospital className="flex items-center text-gray-200 text-xl" />
           ) : appointmentType == "chat" ? (
             <MessageSquareText className="flex items-center text-gray-200 text-xl" />
+          ) : appointmentType == "videoCall" ? (
+            <Video className="flex items-center text-gray-200 text-xl" />
           ) : null}
           <span className="text-white font-medium">
             {appointmentType?.toUpperCase()}

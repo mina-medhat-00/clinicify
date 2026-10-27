@@ -1,6 +1,5 @@
 import { Empty, Switch, Tag } from "@/components/ui";
-import { useEffect, useState } from "react";
-import Cookies from "universal-cookie";
+import { useEffect } from "react";
 import Loader from "@/components/ui/loader";
 import UserAvatar from "@/components/ui/user-avatar";
 import { useChatContext } from "@/contexts/chat-context";
@@ -10,12 +9,11 @@ import changeState from "@/services/change-state";
 
 export default function ChatRestrict({ userid }: any) {
   const { fetchChatData, chatData, isLoading } = useChatContext();
-  const [, setIsLoading] = useState<any>(null);
   const { messageApi } = useUtilsContext();
   const { fetchUserData } = useUserContext();
   useEffect(
     function () {
-      fetchChatData(true, new Cookies().get("accessToken"), { userid });
+      fetchChatData({ userid });
     },
     [fetchChatData, userid],
   );
@@ -61,20 +59,15 @@ export default function ChatRestrict({ userid }: any) {
                 className={`${
                   !is_open ? "bg-blue-400" : "bg-red-400"
                 } shadow-lg box-content bg-white border-[0.25px] border-solid border-white`}
-                onChange={function (is_open?: any) {
-                  changeState(
-                    fetchUserData,
-                    fetchChatData,
+                onChange={async function (is_open?: any) {
+                  const changed = await changeState({
+                    action: "restrict",
+                    target: "user",
+                    chat: { chat_from: userid, chat_to: user_id, is_open },
                     messageApi,
-                    setIsLoading,
-                    "restrict",
-                    {
-                      chat_from: userid,
-                      chat_to: user_id,
-                      is_open,
-                    },
-                    true,
-                  );
+                    fetchUserData,
+                  });
+                  if (changed) fetchChatData({ userid }, { silent: true });
                 }}
                 checkedChildren={
                   <span className="font-medium text-white">Close Chat</span>

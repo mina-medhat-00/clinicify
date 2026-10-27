@@ -3,17 +3,16 @@ import dayjs from "dayjs";
 import EmojiPicker from "emoji-picker-react";
 import { Loader2, Send, Smile } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
-import Cookies from "universal-cookie";
 import ChatAvailability from "@/components/chat/chat-availability";
 import Message from "@/components/chat/chat-message";
 import { AppointmentContextProvider } from "@/contexts";
 import { useChatContext } from "@/contexts/chat-context";
 import { useMessagesContext } from "@/contexts/messages-context";
-import submitMessage from "@/services/submit-message";
+import submitMessage, { chatRoomId } from "@/services/submit-message";
 
 function getDate(issued_date?: any, issued_time?: any, timeZone?: any) {
   return issued_date
-    ? dayjs(`${issued_date} ${issued_time} ${timeZone}`).format("YYYY-DD-MM")
+    ? dayjs(`${issued_date} ${issued_time} ${timeZone}`).format("YYYY-MM-DD")
     : null;
 }
 export default function Messages({
@@ -23,7 +22,6 @@ export default function Messages({
   user_id,
   messageApi,
   socket,
-  isNew,
   isOpen,
   withUserType,
   withNickName,
@@ -49,10 +47,7 @@ export default function Messages({
   const isError = isChatError || isMessageError;
   useEffect(
     function () {
-      if (withUser)
-        fetchMessagesData(new Cookies().get("accessToken"), {
-          message_to: withUser,
-        });
+      if (withUser) fetchMessagesData({ message_to: withUser });
       function addMessage(m1?: any) {
         setMessages(function (m?: any) {
           const m2 = new Array(...(m ? m : []));
@@ -75,12 +70,7 @@ export default function Messages({
   useEffect(
     function () {
       if (withUser && user_id)
-        socket?.emit(
-          "join_chat",
-          `${withUser > user_id ? withUser : user_id},${
-            user_id > withUser ? withUser : user_id
-          }`,
-        );
+        socket?.emit("join_chat", chatRoomId(withUser, user_id));
     },
     [withUser, user_id, socket],
   );
@@ -170,20 +160,28 @@ export default function Messages({
               ) : (
                 <Send
                   className="flex hover:text-blue-600 cursor-pointer items-center text-3xl text-blue-700"
-                  onClick={function () {
-                    submitMessage(
-                      fetchUserData,
-                      fetchMessagesData,
-                      messageApi,
-                      message,
-                      withUser,
-                      isNew && messages?.length,
+                  onClick={async function () {
+                    setIsLoading(true);
+                    const result = await submitMessage({
+                      content: message,
+                      messageTo: withUser,
+                      userId: user_id,
+                      // First message of the conversation: tell the other user.
+                      isFirst: !messages?.length,
                       socket,
-                      setMessage,
-                      user_id,
-                      setIsLoading,
-                      fetchChatData,
-                    );
+                      messageApi,
+                      fetchUserData,
+                    });
+                    setIsLoading(false);
+                    if (result === "sent") {
+                      setMessage("");
+                      fetchMessagesData(
+                        { message_to: withUser },
+                        { silent: true },
+                      );
+                    } else if (result === "closed") {
+                      fetchChatData({ chat_to: withUser }, { silent: true });
+                    }
                   }}
                 />
               ))}

@@ -30,7 +30,7 @@ const reportTypeData = [
   },
   {
     name: "Privacy vulnerable issue",
-    value: "  Privacy issue that make my information vulnerable",
+    value: "Privacy issue that make my information vulnerable",
   },
   {
     name: "Other issue",
@@ -55,14 +55,14 @@ export default function ReportProblem() {
       >
         <Form
           form={form}
-          onFinish={function (values?: any) {
-            submitReport(
-              values?.issue,
-              values?.reportType,
+          onFinish={async function (values?: any) {
+            const sent = await submitReport({
+              issue: values?.issue,
+              reportType: values?.reportType,
               messageApi,
               fetchUserData,
-              form,
-            );
+            });
+            if (sent) form.resetFields();
           }}
         >
           <div className="flex flex-col gap-4">

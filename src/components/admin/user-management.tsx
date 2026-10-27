@@ -214,7 +214,6 @@ export default function UserManagement(_props?: any) {
 
   const { fetchUserData, messageApi } = useUserContext();
   const { usersData, isLoading, fetchUsersData } = useUsersContext();
-  const [, setIsLoading] = useState(false);
   const usersDetails = usersData?.map(function ({
     user_id,
     img_url,
@@ -233,15 +232,15 @@ export default function UserManagement(_props?: any) {
           {
             <Button
               onClick={function () {
-                changeState(
-                  fetchUserData,
-                  fetchUsersData,
+                changeState({
+                  action: "delete",
+                  target: "user",
+                  id: user_id,
                   messageApi,
-                  setIsLoading,
-                  "delete",
-                  user_id,
-                  true,
-                );
+                  fetchUserData,
+                }).then(function (changed) {
+                  if (changed) fetchUsersData(undefined, { silent: true });
+                });
               }}
               className="bg-blue-400 hover:bg-blue-600 rounded-lg font-medium text-white"
             >

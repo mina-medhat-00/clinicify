@@ -3,23 +3,29 @@ import { Button, Skeleton } from "@/components/ui";
 import { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import Cookies from "universal-cookie";
+import { clearToken } from "@/services/client";
 import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
 
-export default function UserItem(_props?: any) {
+export default function UserItem() {
   const { messageApi } = useUtilsContext();
-  const { isloading, setUserData, userData: user } = useUserContext();
+  const { isLoading, setUserData, userData: user } = useUserContext();
   const navigate = useNavigate();
   const isMobile = useMediaQuery({
     query: "(max-width:678px)",
   });
   const [showLogout, setShowLogout] = useState(false);
-  useEffect(function () {
-    document.querySelector(".user--nav--wrapper");
-  }, []);
+  const [loggingOut, setLoggingOut] = useState(false);
   const location = useLocation();
-  return !isloading && user ? (
+  // Sign out only once the home page shows: clearing the user while still on
+  // a protected page would bounce to the login page instead.
+  useEffect(
+    function () {
+      if (loggingOut && location.pathname === "/") setUserData(null);
+    },
+    [loggingOut, location.pathname, setUserData],
+  );
+  return !isLoading && user ? (
     <div
       onTouchMove={function () {
         setShowLogout(true);
@@ -68,7 +74,8 @@ export default function UserItem(_props?: any) {
                 content: "logout...",
                 duration: 1,
               });
-              new Cookies().remove("accessToken");
+              clearToken();
+              setLoggingOut(true);
               if (location?.pathname != "/") {
                 setTimeout(function () {
                   messageApi.open({
@@ -80,12 +87,8 @@ export default function UserItem(_props?: any) {
                 }, 1000);
                 setTimeout(function () {
                   navigate(`/`);
-                  setUserData(null);
                 }, 2000);
-              } else
-                setTimeout(function () {
-                  setUserData(null);
-                }, 1000);
+              }
             }}
           ></Button>
         </div>

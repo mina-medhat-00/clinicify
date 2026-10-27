@@ -58,11 +58,13 @@ export default function UserProfile(_props?: any) {
   const { isLoading, profileData, fetchProfileData, isError } =
     useProfileContext();
   const userid = user?.user_id;
+  // The URL names the profile; dashboards (no URL param) show the user's own.
+  const profileKey = username || userid;
   useEffect(
     function () {
-      fetchProfileData({ path: "profile", username: username || userid });
+      if (profileKey) fetchProfileData(profileKey);
     },
-    [fetchProfileData, username, userid],
+    [fetchProfileData, profileKey],
   );
   const [handleDrawer, setHandleDrawer] = useState({
     isOpen: false,
@@ -329,15 +331,19 @@ export default function UserProfile(_props?: any) {
                         {userValues?.nickname}
                       </Title>
                       <Form
-                        onFinish={function (values?: any) {
-                          submitFeedback(
-                            rateValue,
-                            values?.feedback,
-                            profileId,
+                        onFinish={async function (values?: any) {
+                          const sent = await submitFeedback({
+                            rate: rateValue,
+                            feedback: values?.feedback,
+                            doctorId: profileId,
                             messageApi,
-                            setFetchFeedback,
                             fetchUserData,
-                          );
+                          });
+                          // Toggling tells the feedback list to reload.
+                          if (sent)
+                            setFetchFeedback(function (val?: any) {
+                              return !val;
+                            });
                         }}
                       >
                         <Form.Item

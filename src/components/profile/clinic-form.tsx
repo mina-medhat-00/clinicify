@@ -1,8 +1,8 @@
 import { Button, Form, Input, Select, Space } from "@/components/ui";
 import ProfileTable from "@/components/profile/profile-table";
-import submitClinic from "@/services/submit-clinic";
+import submitProfile from "@/services/submit-profile";
 import { cityOptions } from "@/utils/sign-data";
-import { prefixSelector } from "@/utils/signup-utils";
+import { prefixSelector } from "@/components/signup/signup-utils";
 
 const { Item } = Form;
 export default function ClinicForm({
@@ -59,15 +59,15 @@ export default function ClinicForm({
     <div className="bg-gray-200 p-2 w-full rounded-lg">
       <Form
         initialValues={{ ...initialValues }}
-        onFinish={function (values?: any) {
-          return submitClinic(
+        onFinish={async function (values?: any) {
+          const saved = await submitProfile({
+            section: "clinic",
             values,
+            isEdit: true,
             messageApi,
-            fetchProfileData,
             fetchUserData,
-            userName,
-            true,
-          );
+          });
+          if (saved) fetchProfileData(userName, { silent: true });
         }}
       >
         <div>

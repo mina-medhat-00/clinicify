@@ -92,11 +92,13 @@ export default function HomePage() {
           <Link
             className="w-4/5 sm:w-1/6 overflow-hidden flex flex-col items-center justify-center gap-2 bg-blue-800 text-white text-base font-bold p-4 rounded-lg hover:bg-blue-500"
             to={
-              user?.user_type == "user"
-                ? `/profile/${user?.user_name}`
-                : user?.user_type == "admin"
-                  ? `/admin`
-                  : `/dashboard`
+              !user
+                ? "/login"
+                : user?.user_type == "user"
+                  ? `/profile/${user?.user_name}`
+                  : user?.user_type == "admin"
+                    ? `/admin`
+                    : `/dashboard`
             }
           >
             {user?.user_type == "user" ? (
@@ -165,9 +167,7 @@ export default function HomePage() {
                 <hr
                   className={`${
                     isLine
-                      ? `w-full ${
-                          noLine == "no" ? "" : `sm:hidden ${noLine}:w-0`
-                        }`
+                      ? `w-full ${noLine == "no" ? "" : "sm:hidden sm:w-0"}`
                       : ""
                   } ${
                     borderLine == "2"

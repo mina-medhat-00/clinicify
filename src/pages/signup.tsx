@@ -9,9 +9,8 @@ import {
   Space,
   Upload,
 } from "@/components/ui";
-import axios from "axios";
 import { ImagePlus, Lock, Mail, User } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import { useNavigate } from "react-router-dom";
 import UserType from "@/components/signup/user-type";
@@ -19,8 +18,8 @@ import HeaderLine from "@/components/ui/header-line";
 import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
 import { cityOptions } from "@/utils/sign-data";
-import { prefixSelector } from "@/utils/signup-utils";
-import { apiUrl } from "@/utils/api";
+import { prefixSelector } from "@/components/signup/signup-utils";
+import { api } from "@/services/client";
 
 function getMessage(key?: any, type?: any, content?: any, duration?: any) {
   return {
@@ -32,40 +31,52 @@ function getMessage(key?: any, type?: any, content?: any, duration?: any) {
 }
 
 function beforeUpload(file?: any): any {
-  return new Promise(function (resolve?: any) {
-    const isImg =
-      file.type === "image/jpeg" ||
-      file.type === "image/jpg" ||
-      file.type === "image/png" ||
-      file.type === "image/gif" ||
-      file.type === "image/webp";
-    const isLt5M = file.size / 1024 / 1024 <= 5;
-    if (!isImg) {
-      message.error("You can only upload images", 4);
-    } else if (!isLt5M) {
-      message.error("Image must smaller than 5MB!", 4);
-    } else resolve(false);
+  const isImg = [
+    "image/jpeg",
+    "image/jpg",
+    "image/png",
+    "image/gif",
+    "image/webp",
+  ].includes(file.type);
+  const isLt5M = file.size / 1024 / 1024 <= 5;
+  if (!isImg) message.error("You can only upload images", 4);
+  else if (!isLt5M) message.error("Image must smaller than 5MB!", 4);
+  // false = keep the file in the list without uploading it.
+  return isImg && isLt5M ? false : Upload.LIST_IGNORE;
+}
+
+function readAsDataUrl(file: File) {
+  return new Promise<string>(function (resolve, reject) {
+    const reader = new FileReader();
+    reader.onload = function () {
+      resolve(reader.result as string);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
   });
 }
+
 function normFile(e?: any, setImageUrls?: any) {
   if (Array.isArray(e)) {
     return e;
   }
-  const imageUrls = [];
-  e?.fileList.map(function (file?: any, i?: any) {
-    const reader = new FileReader();
-    reader.addEventListener("load", function () {
-      imageUrls[i] = reader.result;
+  const files = e?.fileList ?? [];
+  // Store the data URLs only once every file has been read.
+  Promise.all(
+    files.map(function (file?: any) {
+      return readAsDataUrl(file.originFileObj);
+    }),
+  )
+    .then(setImageUrls)
+    .catch(function () {
+      setImageUrls([]);
     });
-    reader.readAsDataURL(file.originFileObj);
-  });
-  setImageUrls(imageUrls);
-  return e?.fileList;
+  return files;
 }
 
 function checkUserName(uname?: any, setValidState?: any) {
-  axios
-    .get(apiUrl(`/chkuname/${uname}`))
+  api
+    .get(`/chkuname/${encodeURIComponent(uname)}`)
     .then(function () {
       if (uname) setValidState("success");
       else setValidState("");
@@ -87,7 +98,8 @@ export default function Signup() {
   const [formValues, setFormValues] = useState<any>({
     prefix: "20",
   });
-  const [imageUrls, setImageUrls] = useState([]);
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const usernameCheck = useRef(0);
   const navigate = useNavigate();
 
   useEffect(
@@ -106,9 +118,9 @@ export default function Signup() {
       values.birth = values?.birth?.format("YYYY-MM-DD");
       values.images = imageUrls?.[0];
       values.moreInf = formValues.moreInf;
-      axios
+      api
         .post(
-          apiUrl("/adduser"),
+          "/adduser",
           {
             data: values,
           },
@@ -156,11 +168,18 @@ export default function Signup() {
   }
 
   function setValues(changedVal?: any, values?: any) {
-    const chk = /^([A-Z]|[a-z])+.{0,22}$/.test(changedVal?.username);
-    if (changedVal?.username && chk) {
-      setValidState("validating");
-      checkUserName(changedVal.username, setValidState);
-    } else if (changedVal?.username === "" || !chk) setValidState("");
+    if ("username" in (changedVal ?? {})) {
+      // Only the latest check may update the field, so a slow response for
+      // an older value can't overwrite the current one.
+      const checkId = ++usernameCheck.current;
+      const chk = /^([A-Z]|[a-z])+.{0,22}$/.test(changedVal.username);
+      if (changedVal.username && chk) {
+        setValidState("validating");
+        checkUserName(changedVal.username, function (state?: any) {
+          if (checkId === usernameCheck.current) setValidState(state);
+        });
+      } else setValidState("");
+    }
     setFormValues({ ...formValues, ...values });
   }
 
@@ -385,7 +404,7 @@ export default function Signup() {
           </Item>
         </div>
         <div className={`flex ${isMobile ? "flex-wrap" : ""} gap-1`}>
-          <div className={`grow ${!isMobile && "max-w-2xl"}`}>
+          <div className={`grow ${isMobile ? "" : "max-w-2xl"}`}>
             <Item
               name="phone"
               rules={[
@@ -406,7 +425,7 @@ export default function Signup() {
               </Space.Compact>
             </Item>
           </div>
-          <div className={`grow ${!isMobile && "max-w-2xl"}`}>
+          <div className={`grow ${isMobile ? "" : "max-w-2xl"}`}>
             <Item
               name="email"
               rules={[
@@ -467,7 +486,7 @@ export default function Signup() {
             <Radio.Button
               className={`hover:bg-gray-200 border-2 
               bg-gray-700 text-white
-              ${formValues?.userType === "user" && "bg-purple-500"}
+              ${formValues?.userType === "user" ? "bg-purple-500" : ""}
               `}
               value="user"
             >
@@ -476,7 +495,7 @@ export default function Signup() {
             <Radio.Button
               className={`ml-1 hover:bg-gray-200 border-2 
               bg-gray-700 text-white
-              ${formValues?.userType === "doctor" && "bg-purple-500"}
+              ${formValues?.userType === "doctor" ? "bg-purple-500" : ""}
               `}
               value="doctor"
             >

@@ -17,7 +17,8 @@ export default forwardRef(function Doctors({ home }: any, ref?: any) {
   const [isPayment, setIsPayment] = useState<any>(null);
   return (
     <>
-      <SearchFilter ref={ref} fetchDoctorsData={fetchDoctorsData} />
+      {/* The home section keeps its own fixed query (top 5), so no filter there. */}
+      {!home && <SearchFilter ref={ref} fetchDoctorsData={fetchDoctorsData} />}
       {home && isMobile ? (
         <div className="px-2 my-2">
           <Carousel

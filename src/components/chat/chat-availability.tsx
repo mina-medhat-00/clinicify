@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Cookies from "universal-cookie";
 import Loader from "@/components/ui/loader";
 import { useAppointmentContext } from "@/contexts/appointment-context";
 import { useChatContext } from "@/contexts/chat-context";
@@ -32,8 +31,8 @@ function nearestRemaining(appointmentData?: any, timeZone?: any, now?: any) {
           mode: "now",
         };
       }
-      temp_app = temp_app?.filter(function ({ appointment_id }: any) {
-        return appointment_id != nearestTime?.appointment_id;
+      temp_app = temp_app?.filter(function ({ appointmentId }: any) {
+        return appointmentId != nearestTime?.appointmentId;
       });
     } else break;
   }
@@ -53,9 +52,7 @@ export default function ChatAvailability({
   const remaining = nearestRemaining(appointmentData, timeZone, now);
   useEffect(
     function () {
-      fetchAppointmentData(true, new Cookies().get("accessToken"), null, null, {
-        doctorId: withUser,
-      });
+      fetchAppointmentData({ doctorId: withUser });
     },
     [fetchAppointmentData, withUser],
   );
@@ -65,26 +62,12 @@ export default function ChatAvailability({
       if (remaining.mode === "later" && remaining.targetDate) {
         timeId = setTimeout(
           function () {
-            fetchChatData(
-              true,
-              new Cookies().get("accessToken"),
-              {
-                chat_to: withUser,
-              },
-              true,
-            );
+            fetchChatData({ chat_to: withUser }, { silent: true });
           },
           remaining.targetDate.getTime() + 1000 - now,
         );
       } else if (remaining.mode === "now") {
-        fetchChatData(
-          true,
-          new Cookies().get("accessToken"),
-          {
-            chat_to: withUser,
-          },
-          true,
-        );
+        fetchChatData({ chat_to: withUser }, { silent: true });
       }
       return function () {
         clearTimeout(timeId);

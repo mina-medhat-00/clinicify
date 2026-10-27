@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
-import Cookies from "universal-cookie";
 import DashNav from "@/components/dashboard/dash-nav";
 import ScheduleAppointments from "@/components/dashboard/schedule-appointments";
 import {
@@ -17,22 +16,11 @@ import Chat from "@/pages/chat";
 import UserProfile from "@/pages/user-profile";
 
 export default function DoctorDashboard({ setNavActive }: any) {
-  const { timeZone, messageApi, socket } = useUtilsContext();
-  const {
-    isLoading: isUserLoading,
-    userData: user,
-    fetchUserData,
-  } = useUserContext();
+  const { timeZone, socket } = useUtilsContext();
+  const { userData: user, fetchUserData } = useUserContext();
   const userid = user?.user_id;
-  const { dashboardData, isLoading, fetchDashboardData } =
-    useDashboardContext();
-  useEffect(
-    function () {
-      const token = new Cookies().get("accessToken");
-      fetchDashboardData(true, token);
-    },
-    [fetchDashboardData],
-  );
+  // The dashboard provider loads its data on mount.
+  const { dashboardData, isLoading } = useDashboardContext();
   const isMobile = useMediaQuery({
     query: "(max-width:678px)",
   });
@@ -55,7 +43,6 @@ export default function DoctorDashboard({ setNavActive }: any) {
     },
     [setNavActive],
   );
-  const isVerified = dashboardData?.is_verified;
   return (
     <div className={`${isMobile ? "flex" : ""} grow overflow-hidden  w-full`}>
       <DashNav setDashType={setDashType} dashType={dashType} />
@@ -63,12 +50,7 @@ export default function DoctorDashboard({ setNavActive }: any) {
         {dashType == "profile" ? (
           <div className="flex flex-col h-full grow overflow-hidden">
             <ProfileContextProvider>
-              <UserProfile
-                isVerified={isVerified}
-                userid={userid}
-                fetchUserData={fetchUserData}
-                isUserLoading={isUserLoading}
-              />
+              <UserProfile />
             </ProfileContextProvider>
           </div>
         ) : dashType == "schedule" ? (
@@ -88,29 +70,12 @@ export default function DoctorDashboard({ setNavActive }: any) {
             </SlotsContextProvider>
           </div>
         ) : dashType == "appointments" ? (
-          <AppointmentContextProvider
-            isDoctor={true}
-            token={new Cookies().get("accessToken")}
-            fetchUserData={fetchUserData}
-          >
-            <Appointments
-              setDashType={setDashType}
-              timeZone={timeZone}
-              messageApi={messageApi}
-              user={user}
-              fetchUserData={fetchUserData}
-              fromDash={true}
-            />
+          <AppointmentContextProvider isDoctor={true}>
+            <Appointments fromDash={true} />
           </AppointmentContextProvider>
         ) : dashType == "chat" ? (
-          <ChatContextProvider fetchUserData={fetchUserData}>
-            <Chat
-              socket={socket}
-              user={user}
-              fetchUserData={fetchUserData}
-              messageApi={messageApi}
-              timeZone={timeZone}
-            />
+          <ChatContextProvider>
+            <Chat />
           </ChatContextProvider>
         ) : dashType == "statistics" ? (
           <div>statistics</div>

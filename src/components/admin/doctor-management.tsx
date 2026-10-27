@@ -148,7 +148,6 @@ export default function DoctorManagement(_props?: any) {
   const [openKey, setOpenKey] = useState<any>(null);
   const [doctorRecord, setDoctorRecord] = useState<any>(null);
   const [showPopUp, setShowPopUp] = useState<any>(null);
-  const [, setIsLoading] = useState(false);
   const doctorsDetails = doctorsData?.map(function (
     {
       doctor_id,
@@ -180,14 +179,16 @@ export default function DoctorManagement(_props?: any) {
           {!is_verified && (
             <Button
               onClick={function () {
-                changeState(
-                  fetchUserData,
-                  fetchDoctorsData,
+                changeState({
+                  action: "verify",
+                  target: "doctor",
+                  id: doctor_id,
                   messageApi,
-                  setIsLoading,
-                  "verify",
-                  doctor_id,
-                );
+                  fetchUserData,
+                }).then(function (changed) {
+                  if (changed)
+                    fetchDoctorsData({ total: true }, { silent: true });
+                });
               }}
               className="bg-blue-400 hover:bg-blue-600 rounded-lg font-medium text-white"
             >
@@ -197,14 +198,16 @@ export default function DoctorManagement(_props?: any) {
           {is_verified !== 0 && (
             <Button
               onClick={function () {
-                changeState(
-                  fetchUserData,
-                  fetchDoctorsData,
+                changeState({
+                  action: "reject",
+                  target: "doctor",
+                  id: doctor_id,
                   messageApi,
-                  setIsLoading,
-                  "reject",
-                  doctor_id,
-                );
+                  fetchUserData,
+                }).then(function (changed) {
+                  if (changed)
+                    fetchDoctorsData({ total: true }, { silent: true });
+                });
               }}
               className="bg-red-400 hover:bg-red-600 rounded-lg font-medium text-white"
             >

@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import Cookies from "universal-cookie";
 import CountdownTimer from "@/components/appointment/appointment-countdown-timer";
 
 function adjustTime(date?: any, time?: any, timeZone?: any) {
@@ -15,79 +14,38 @@ export default function AppointmentTime({
   slot_time,
   doctorId,
   patientId,
-  fetchAppointmentData,
+  updateAppointment,
   order,
   date,
   appointment_duration,
   timeZone,
   socket,
 }: any) {
+  // When a booked appointment starts, or a running one ends, ask the API to
+  // move it to its next state.
   useEffect(
     function () {
-      const timeStamp =
-        new Date(schedule_date + " " + slot_time + timeZone).getTime() -
-        new Date().getTime();
-      if (appointment_state == "booked" && !isNaN(timeStamp)) {
-        const timeId = setTimeout(
-          function () {
-            fetchAppointmentData(
-              true,
-              new Cookies().get("accessToken"),
-              true,
-              {
-                doctorId,
-                patientId,
-                appointmentId,
-              },
-              {
-                date,
-              },
-              true,
-            );
-          },
-          timeStamp < 0 ? 0 : timeStamp,
-        );
-        return function () {
-          clearTimeout(timeId);
-        };
-      } else if (appointment_state == "running") {
-        const time_stamp = timeStamp + appointment_duration;
-        if (!isNaN(timeStamp)) {
-          socket?.emit("update_appointments", {
-            date: schedule_date,
-            doctorId,
-            appointmentId,
-          });
-          const timeId = setTimeout(
-            function () {
-              if (
-                new Date(schedule_date + " " + slot_time + timeZone).getTime() +
-                  appointment_duration <=
-                new Date().getTime()
-              ) {
-                fetchAppointmentData(
-                  true,
-                  new Cookies().get("accessToken"),
-                  true,
-                  {
-                    doctorId,
-                    patientId,
-                    appointmentId,
-                  },
-                  {
-                    date,
-                  },
-                  true,
-                );
-              }
-              return function () {
-                clearTimeout(timeId);
-              };
-            },
-            time_stamp < 0 ? 0 : time_stamp,
-          );
-        }
+      const startsAt = new Date(
+        schedule_date + " " + slot_time + timeZone,
+      ).getTime();
+      if (isNaN(startsAt)) return;
+      function advance() {
+        updateAppointment({ doctorId, patientId, appointmentId }, { date });
       }
+      let at: number;
+      if (appointment_state == "booked") at = startsAt;
+      else if (appointment_state == "running") {
+        socket?.emit("update_appointments", {
+          date: schedule_date,
+          doctorId,
+          appointmentId,
+        });
+        at = startsAt + appointment_duration;
+      } else return;
+      const timeId = setTimeout(advance, Math.max(at - Date.now(), 0));
+      return function () {
+        clearTimeout(timeId);
+      };
     },
     [
       schedule_date,
@@ -97,7 +55,7 @@ export default function AppointmentTime({
       appointment_duration,
       date,
       doctorId,
-      fetchAppointmentData,
+      updateAppointment,
       patientId,
       socket,
       timeZone,

@@ -1,53 +1,29 @@
-import axios from "axios";
-import { createContext, useCallback, useContext, useState } from "react";
+import { createContext, useContext } from "react";
+import { useRemoteData } from "@/contexts/use-remote-data";
+import { api } from "@/services/client";
 import type { SlotsData } from "@/types";
-import { apiUrl } from "@/utils/api";
 
-const SlotsData = createContext<any>(null);
+export type SlotsQuery = { date: string; doctorId: string | number };
+
+async function getSlots(query: SlotsQuery) {
+  const { data } = await api.post("/get/slots", { data: query });
+  return data?.data as SlotsData;
+}
+
+const SlotsDataContext = createContext<any>(null);
 export default function SlotsContextProvider({ children }: any) {
-  const [isLoading, setIsLoading] = useState(true);
-  const [tokenExpired] = useState(false);
-  const [slotsData, setSlotsData] = useState<SlotsData>({
-    bookedSlots: null,
-    totalSlots: null,
-    freeSlots: null,
-  });
-  const fetchSlotsData = useCallback(async function (
-    postData?: any,
-    noLoading?: any,
-  ) {
-    await Promise.resolve();
-    if (!noLoading) setIsLoading(true);
-    try {
-      const { data } = await axios.post(
-        apiUrl("/get/slots"),
-        {
-          data: postData,
-        },
-        {
-          timeout: 10000,
-        },
-      );
-      setSlotsData(function () {
-        return data?.data;
-      });
-      setIsLoading(false);
-      return data;
-    } catch (err) {
-      setIsLoading(false);
-      throw err;
-    }
-  }, []);
-
+  const {
+    data: slotsData,
+    isLoading,
+    load: fetchSlotsData,
+  } = useRemoteData(getSlots);
   return (
-    <SlotsData.Provider
-      value={{ isLoading, slotsData, fetchSlotsData, tokenExpired }}
-    >
+    <SlotsDataContext.Provider value={{ isLoading, slotsData, fetchSlotsData }}>
       {children}
-    </SlotsData.Provider>
+    </SlotsDataContext.Provider>
   );
 }
 
 export function useSlotsContext() {
-  return useContext(SlotsData);
+  return useContext(SlotsDataContext);
 }

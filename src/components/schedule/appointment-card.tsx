@@ -11,6 +11,7 @@ import {
   Trash2,
   Video,
 } from "lucide-react";
+import scheduleAppointments from "@/services/schedule-appointments";
 
 function adjustTime(date?: any, time?: any, timeZone?: any) {
   return new Date(`${date} ${time} ${timeZone}`).toLocaleTimeString("en", {
@@ -47,7 +48,6 @@ export default function AppointmentCard({
   setIsEdit,
   setHandleDrawer,
   setBookedAppointment,
-  scheduleAppointments,
   tAppointments,
   selectedDate,
   messageApi,
@@ -140,21 +140,21 @@ export default function AppointmentCard({
               </div>,
               <div
                 onClick={function () {
-                  scheduleAppointments(
-                    selectedDate,
-                    null,
-                    tAppointments,
-                    messageApi,
-                    fetchSlotsData,
-                    userid,
-                    fetchUserData,
-                    null,
-                    [appointmentId],
-                    null,
-                    null,
+                  const date = selectedDate?.format("YYYY-MM-DD");
+                  scheduleAppointments({
+                    date,
+                    doctorId: userid,
+                    totalSlots: tAppointments,
+                    deletedAppointments: [appointmentId],
                     socket,
-                    userid,
-                  );
+                    messageApi,
+                    fetchUserData,
+                  }).then(function () {
+                    fetchSlotsData(
+                      { date, doctorId: userid },
+                      { silent: true },
+                    );
+                  });
                 }}
                 className="flex cursor-pointer items-center bg-red-700/60 hover:bg-red-700/80 grow gap-1 justify-center"
               >
@@ -185,7 +185,7 @@ export default function AppointmentCard({
             <Hospital className="flex items-center text-gray-200 text-xl" />
           ) : appointmentType == "chat" ? (
             <MessageSquareText className="flex items-center text-gray-200 text-xl" />
-          ) : appointmentType == "videoChat" ? (
+          ) : appointmentType == "videoCall" ? (
             <Video className="flex items-center text-gray-200 text-xl" />
           ) : null}
           <span className="text-white font-medium">

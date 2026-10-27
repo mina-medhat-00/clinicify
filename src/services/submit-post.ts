@@ -1,73 +1,51 @@
-import axios from "axios";
-import Cookies from "universal-cookie";
-import { apiUrl } from "@/utils/api";
+import {
+  api,
+  handleFailure,
+  notify,
+  type ServiceContext,
+  type Socket,
+} from "@/services/client";
+import { liveTimestamp } from "@/services/submit-comment";
+import type { User } from "@/types";
 
-const cookies = new Cookies();
-export default async function submitPost(
-  user?: any,
-  fetchUserData?: any,
-  fetchPostsData?: any,
-  messageApi?: any,
-  content?: any,
-  postImg?: any,
-  setContent?: any,
-  socket?: any,
-) {
-  const data = { content, postImg };
-  messageApi.open({
-    key: 1,
-    content: "posting your question ...",
-    type: "loading",
-    duration: 8,
-  });
-  axios
-    .post(
-      apiUrl("/submit/post"),
-      {
-        data,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${cookies?.get("accessToken")}`,
-        },
-      },
-    )
-    .then(function (res?: any) {
-      messageApi.open({
-        key: 1,
-        content: "thank you for your question",
-        type: "success",
-        duration: 2,
-      });
-      setContent("");
-      socket?.emit("send_post", {
-        user_id: user?.user_id,
-        post_img: postImg,
-        img_url: user?.img_url,
-        nick_name: user?.nick_name,
-        content,
-        issued_time: new Date(new Date().getTime() + 2 * 60 * 1000)
-          .toISOString()
-          .slice(0, 19)
-          .replace("T", " "),
-        num_comments: 0,
-        angry: 0,
-        dislike: 0,
-        like_emoji: 0,
-        post_id: res?.data?.data?.post_id,
-      });
-      fetchPostsData(null, true);
-    })
-    .catch(function (err?: any) {
-      if (err?.response?.status == 401) {
-        fetchUserData(true, cookies.get("accessToken"));
-      } else
-        messageApi.open({
-          key: 1,
-          content: "there's some issues cannot submit your question now",
-          type: "error",
-          duration: 2,
-        });
+export default async function submitPost({
+  user,
+  content,
+  postImg,
+  socket,
+  ...ctx
+}: ServiceContext & {
+  user: User | null;
+  content: string;
+  postImg?: string | null;
+  socket?: Socket;
+}) {
+  notify(ctx, "loading", "posting your question ...", 8);
+  try {
+    const { data } = await api.post("/submit/post", {
+      data: { content, postImg },
     });
+    notify(ctx, "success", "thank you for your question", 2);
+    socket?.emit("send_post", {
+      user_id: user?.user_id,
+      post_img: postImg,
+      img_url: user?.img_url,
+      nick_name: user?.nick_name,
+      content,
+      issued_time: liveTimestamp(),
+      num_comments: 0,
+      angry: 0,
+      dislike: 0,
+      like_emoji: 0,
+      post_id: data?.data?.post_id,
+    });
+    return true;
+  } catch (err) {
+    handleFailure(
+      err,
+      ctx,
+      "there's some issues cannot submit your question now",
+    );
+    return false;
+  }
 }

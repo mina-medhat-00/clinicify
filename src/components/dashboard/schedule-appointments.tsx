@@ -10,7 +10,6 @@ import Loader from "@/components/ui/loader";
 import PopUp from "@/components/ui/pop-up";
 import { useSlotsContext } from "@/contexts/slots-context";
 import cancelAppointment from "@/services/cancel-appointment";
-import scheduleAppointments from "@/services/schedule-appointments";
 
 export default function ScheduleAppointments({
   doctorData,
@@ -56,15 +55,12 @@ export default function ScheduleAppointments({
               date: selectedDate.format("YYYY-MM-DD"),
               doctorId: userid,
             },
-            true,
+            { silent: true },
           );
       }
 
-      if (
-        userid &&
-        selectedDate.format("YYYY-MM-DD") &&
-        !(!isDoctorLoading && !isVerified)
-      ) {
+      // Only verified doctors have a schedule; wait until that is known.
+      if (userid && !isDoctorLoading && isVerified) {
         socket.on("update_slots", getSlots);
         fetchSlotsData({
           date: selectedDate.format("YYYY-MM-DD"),
@@ -73,7 +69,7 @@ export default function ScheduleAppointments({
       }
 
       return function () {
-        socket?.off("all_slots", getSlots);
+        socket?.off("update_slots", getSlots);
       };
     },
     [selectedDate, userid, fetchSlotsData, isDoctorLoading, isVerified, socket],
@@ -144,7 +140,6 @@ export default function ScheduleAppointments({
                   setIsEdit={setIsAction}
                   setHandleDrawer={setHandleDrawer}
                   order={i + 1}
-                  scheduleAppointments={scheduleAppointments}
                   setBookedAppointment={setBookedAppointment}
                   setShowPop={setShowPop}
                   timeZone={timeZone}
@@ -238,21 +233,22 @@ export default function ScheduleAppointments({
           </div>
           <div className="flex justify-center gap-2 p-2 mt-4">
             <div
-              onClick={function () {
-                cancelAppointment(
-                  selectedDate,
-                  bookedAppointment?.slotTime,
-                  bookedAppointment?.appointmentId,
-                  messageApi,
-                  fetchSlotsData,
-                  userid,
-                  setBookedAppointment,
-                  "doctor",
-                  fetchUserData,
-                  null,
-                  setShowPop,
+              onClick={async function () {
+                const date = selectedDate.format("YYYY-MM-DD");
+                const canceled = await cancelAppointment({
+                  date,
+                  slotTime: bookedAppointment?.slotTime,
+                  appointmentId: bookedAppointment?.appointmentId,
+                  doctorId: userid,
+                  cancelFrom: "doctor",
                   socket,
-                );
+                  messageApi,
+                  fetchUserData,
+                });
+                if (!canceled) return;
+                setBookedAppointment(null);
+                setShowPop(null);
+                fetchSlotsData({ date, doctorId: userid });
               }}
               className="cursor-pointer text-center bg-red-500 p-2 grow text-white font-medium rounded-lg shadow-sm"
             >

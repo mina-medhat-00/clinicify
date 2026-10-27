@@ -1,8 +1,6 @@
 import type { ReactNode } from "react";
 import { useRef, useState } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
-import Cookies from "universal-cookie";
-import AppointmentPayment from "@/components/booking/appointment-payment";
 import Footer from "@/components/layout/footer";
 import Navbar from "@/components/layout/navbar";
 import Loader from "@/components/ui/loader";
@@ -32,23 +30,26 @@ import ReportProblem from "@/pages/report-problem";
 import Signup from "@/pages/signup";
 import UserProfile from "@/pages/user-profile";
 
-const cookies = new Cookies();
-
 function handleRoute(
   element: ReactNode,
   permission: any,
   isLoading: boolean,
   isError: boolean,
+  isLoggedIn: boolean,
+  pathname: string,
 ) {
-  return permission ? (
-    element
-  ) : isLoading ? (
-    <Loader />
-  ) : isError ? (
-    <Navigate to="/error" replace />
-  ) : (
-    <Navigate to="/forbidden" replace />
-  );
+  if (permission) return element;
+  if (isLoading) return <Loader />;
+  if (isError) return <Navigate to="/error" replace />;
+  // Logged-out visitors should sign in, then come back here.
+  if (!isLoggedIn)
+    return (
+      <Navigate
+        to={`/login?redirect=${encodeURIComponent(pathname)}`}
+        replace
+      />
+    );
+  return <Navigate to="/forbidden" replace />;
 }
 
 export default function App() {
@@ -78,13 +79,13 @@ export default function App() {
               path="/forbidden"
               element={
                 <ServerError
-                  statusTitle={"403"}
                   status={403}
-                  message="Cannot access Resource Right now"
+                  message="You don't have access to this page"
+                  extra
                 />
               }
             />
-            <Route path="/error" element={<ServerError />} />
+            <Route path="/error" element={<ServerError extra />} />
             <Route
               path="/doctors"
               element={
@@ -96,12 +97,14 @@ export default function App() {
             <Route
               path="/chat"
               element={handleRoute(
-                <ChatContextProvider token={cookies.get("accessToken")}>
-                  <Chat isChat={true} />
+                <ChatContextProvider>
+                  <Chat />
                 </ChatContextProvider>,
                 userAuth,
                 isLoading,
                 isError,
+                !!userAuth,
+                location.pathname,
               )}
             />
             <Route
@@ -131,18 +134,16 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route
-              path="/appointment/payment"
-              element={<AppointmentPayment />}
-            />
-            <Route
               path="/appointments"
               element={handleRoute(
-                <AppointmentContextProvider token={cookies.get("accessToken")}>
+                <AppointmentContextProvider>
                   <Appointments />
                 </AppointmentContextProvider>,
                 userAuth && userAuth?.user_type !== "admin",
                 isLoading,
                 isError,
+                !!userAuth,
+                location.pathname,
               )}
             />
             <Route
@@ -152,6 +153,8 @@ export default function App() {
                 userAuth?.user_type == "admin",
                 isLoading,
                 isError,
+                !!userAuth,
+                location.pathname,
               )}
             />
             <Route
@@ -161,18 +164,32 @@ export default function App() {
                 !!userAuth?.user_type,
                 isLoading,
                 isError,
+                !!userAuth,
+                location.pathname,
               )}
             />
             <Route
               path="/dashboard"
               element={handleRoute(
-                <DashboardContextProvider token={cookies.get("accessToken")}>
+                <DashboardContextProvider>
                   <DoctorDashboard setNavActive={setNavActive} />
                 </DashboardContextProvider>,
                 userAuth?.user_type == "doctor",
                 isLoading,
                 isError,
+                !!userAuth,
+                location.pathname,
               )}
+            />
+            <Route
+              path="*"
+              element={
+                <ServerError
+                  status={404}
+                  message="This page doesn't exist"
+                  extra
+                />
+              }
             />
           </Routes>
         </div>

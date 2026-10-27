@@ -41,7 +41,7 @@ function beforeUpload(file?: any) {
   if (!isLt2M) {
     message.error("Image must smaller than 2MB!");
   }
-  return isImg && isLt2M;
+  return isImg && isLt2M ? true : Upload.LIST_IGNORE;
 }
 export default function Posts({ home }: any) {
   const { socket } = useUtilsContext();
@@ -121,7 +121,7 @@ export default function Posts({ home }: any) {
         <div className={`grow text-white`} key={postId}>
           <CommentsContextProvider key={postId}>
             <PostWrapper
-              order={postsData?.length - i}
+              order={posts.length - i}
               setPosts={setPosts}
               showPost={showPost}
               setShowPost={setShowPost}
@@ -202,18 +202,19 @@ export default function Posts({ home }: any) {
               </Upload>
               <Button
                 onClick={function () {
-                  if (userid && content)
-                    submitPost(
-                      userData,
-                      fetchUserData,
-                      fetchPostsData,
-                      messageApi,
-                      content,
-                      postImg,
-                      setContent,
-                      socket,
-                    );
-                  else setShowWarn(true);
+                  if (!userid || !content) return setShowWarn(true);
+                  submitPost({
+                    user: userData,
+                    content,
+                    postImg,
+                    socket,
+                    messageApi,
+                    fetchUserData,
+                  }).then(function (posted) {
+                    if (!posted) return;
+                    setContent("");
+                    fetchPostsData(undefined, { silent: true });
+                  });
                 }}
                 className="rounded-lg py-4"
               >

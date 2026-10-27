@@ -34,7 +34,10 @@ function getItem(
 function toDoctors(val?: any, navigate?: any, DoctorRef?: any) {
   let specialty = val.domEvent.target.getAttribute("specialty");
   navigate("/doctors");
+  // Wait for the doctors page to mount its filter, but give up after ~2s.
+  let attempts = 0;
   const id = setInterval(function () {
+    if (++attempts > 40) clearInterval(id);
     if (DoctorRef?.current) {
       clearInterval(id);
       const { specialtyValue, doctorName, location, setSearchFilter } =
@@ -44,7 +47,7 @@ function toDoctors(val?: any, navigate?: any, DoctorRef?: any) {
         setSearchFilter({ specialty, doctorName: "", location: "" });
       }
     }
-  });
+  }, 50);
 }
 
 function subItems() {
@@ -71,7 +74,7 @@ export default function items(
   return [
     user || isUserLoading
       ? getItem(
-          <UserItem isMobile={isMobile} />,
+          <UserItem />,
           "user",
           isUserLoading ? (
             <Skeleton.Avatar active />

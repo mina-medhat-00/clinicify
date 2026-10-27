@@ -23,7 +23,6 @@ export default function BookAppointment({
   const { slotsData, isLoading, fetchSlotsData } = useSlotsContext();
   const [bookedAppointment, setBookedAppointment] = useState(null);
   const { messageApi } = useUserContext();
-  const [isBookLoading] = useState(false);
   const [isPayment, setIsPayment] = useState<any>(null);
   const [appointmentSuccess, setAppointmentSuccess] = useState<any>(null);
   const [freeSlots, setFreeSlots] = useState(null);
@@ -53,14 +52,14 @@ export default function BookAppointment({
     setFreeSlots(slotsData?.freeSlots);
   }
   if (appointmentId && !bookedAppointment && !isPayment && !isLoading) {
-    const appDetails = freeSlots?.filter(function ({
+    const appDetails = freeSlots?.find(function ({
       appointmentId: appointment_id,
     }: any) {
       return appointmentId == appointment_id;
     });
     if (appDetails) {
       setIsPayment("payment_processing");
-      setBookedAppointment(appDetails?.[0]);
+      setBookedAppointment(appDetails);
     }
   }
   useEffect(
@@ -83,7 +82,12 @@ export default function BookAppointment({
         }: any) {
           switch (paymentIntent.status) {
             case "succeeded": {
-              const appointmentRecord = JSON.parse(paymentIntent?.description);
+              let appointmentRecord;
+              try {
+                appointmentRecord = JSON.parse(paymentIntent?.description);
+              } catch {
+                return;
+              }
               if (
                 appointmentRecord?.schedule_date ==
                 selectedDate?.format("YYYY-MM-DD")
@@ -121,7 +125,7 @@ export default function BookAppointment({
               date: selectedDate.format("YYYY-MM-DD"),
               doctorId,
             },
-            true,
+            { silent: true },
           );
       }
       if (doctorId && selectedDate.format("YYYY-MM-DD")) {
@@ -141,7 +145,8 @@ export default function BookAppointment({
     setSelectedDate(val);
     window?.localStorage?.setItem("book_date", val?.format("YYYY-MM-DD"));
   }
-  function isToday(val?: any) {
+  // True when the slot starts at least a minute from now.
+  function isUpcoming(val?: any) {
     return (
       new Date(
         selectedDate.format("YYYY-MM-DD") + " " + val + timeZone,
@@ -153,6 +158,10 @@ export default function BookAppointment({
     selectedDate?.toDate()?.setHours(0, 0, 0, 0) >=
     new Date().setHours(0, 0, 0, 0);
   const isUser = userid && userid != doctorId;
+  const upcomingSlots: any[] =
+    freeSlots?.filter(function ({ slotTime }: any) {
+      return isUpcoming(slotTime);
+    }) ?? [];
   const title = "Book Your Appointment";
   const buttonLabel = "book your appointment";
   return (
@@ -176,48 +185,42 @@ export default function BookAppointment({
             ) : (
               <>
                 <div className="flex flex-wrap gap-2 justify-center">
-                  {freeSlots?.map(function (
-                    {
+                  {upcomingSlots.map(function (slot) {
+                    const {
                       slotTime: value,
                       appointmentType,
                       appointmentFees,
                       appointmentState,
                       schedule_date,
-                    },
-                    i,
-                  ) {
+                    } = slot;
                     return (
-                      isToday(value) && (
-                        <div
-                          className={`flex cursor-pointer flex-col relative sm:w-1/3 lg:w-1/4 2xl:w-1/5 grow justify-between rounded-lg 
+                      <div
+                        className={`flex cursor-pointer flex-col relative sm:w-1/3 lg:w-1/4 2xl:w-1/5 grow justify-between rounded-lg 
                           ${
                             bookedAppointment?.slotTime == value
                               ? "bg-gray-700"
                               : "bg-blue-800/80"
                           } p-2`}
-                          onClick={function () {
-                            setBookedAppointment(function (val) {
-                              return val?.slotTime == value
-                                ? null
-                                : freeSlots?.[i];
-                            });
-                          }}
-                          key={value}
-                        >
-                          <BookButton
-                            slotTime={value}
-                            schedule_date={schedule_date}
-                            timeZone={timeZone}
-                            appointmentState={appointmentState}
-                            appointmentType={appointmentType}
-                            appointmentFees={appointmentFees}
-                          />
-                        </div>
-                      )
+                        onClick={function () {
+                          setBookedAppointment(function (val) {
+                            return val?.slotTime == value ? null : slot;
+                          });
+                        }}
+                        key={value}
+                      >
+                        <BookButton
+                          slotTime={value}
+                          schedule_date={schedule_date}
+                          timeZone={timeZone}
+                          appointmentState={appointmentState}
+                          appointmentType={appointmentType}
+                          appointmentFees={appointmentFees}
+                        />
+                      </div>
                     );
                   })}
                 </div>
-                {freeSlots.length ? (
+                {upcomingSlots.length ? (
                   <Popover
                     arrow={false}
                     color={isUser && bookedAppointment ? "green" : "red"}
@@ -246,7 +249,8 @@ export default function BookAppointment({
                   >
                     <Button
                       onClick={function () {
-                        if (isToday(bookedAppointment?.slotTime)) {
+                        if (!isUser || !bookedAppointment) return;
+                        if (isUpcoming(bookedAppointment?.slotTime)) {
                           setIsPayment("payment_processing");
                         } else {
                           messageApi?.open({
@@ -304,10 +308,7 @@ export default function BookAppointment({
                   socket={socket}
                 />
               ) : isPayment == "payment_success" || appointmentSuccess ? (
-                <SuccessAppointment
-                  isBookLoading={isBookLoading}
-                  bookedAppointment={appointmentSuccess}
-                />
+                <SuccessAppointment bookedAppointment={appointmentSuccess} />
               ) : null}
             </PopUp>
           </>

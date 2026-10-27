@@ -21,11 +21,18 @@ export default function AdminDashboard() {
   const isMobile = useMediaQuery({
     query: "(max-width:878px)",
   });
-  const { timeZone, socket, messageApi } = useUtilsContext();
-  const { fetchUserData, isLoading, userData: user } = useUserContext();
+  const { timeZone, socket } = useUtilsContext();
+  const { userData: user } = useUserContext();
   const [activeMenu, setActiveMenu] = useState(false);
+  // Open the sidebar on desktop and close it on mobile whenever the size changes.
+  const [prevIsMobile, setPrevIsMobile] = useState<boolean | null>(null);
+  if (prevIsMobile !== isMobile) {
+    setPrevIsMobile(isMobile);
+    setActiveMenu(!isMobile);
+  }
+  // Open the profile section on first visit instead of a blank page.
   const [dashType, setDashType] = useState(
-    window.localStorage.getItem("adminDashType"),
+    window.localStorage.getItem("adminDashType") || "profile",
   );
   useEffect(
     function () {
@@ -71,7 +78,6 @@ export default function AdminDashboard() {
               <Navbar
                 user={user}
                 dashType={dashType}
-                isMobile={isMobile}
                 setDashType={setDashType}
                 setActiveMenu={setActiveMenu}
                 activeMenu={activeMenu}
@@ -89,25 +95,12 @@ export default function AdminDashboard() {
               </DoctorsContextProvider>
             </UsersContextProvider>
           ) : dashType == "chat" ? (
-            <ChatContextProvider fetchUserData={fetchUserData}>
-              <Chat
-                isAdmin={true}
-                user={user}
-                fetchUserData={fetchUserData}
-                messageApi={messageApi}
-                socket={socket}
-                timeZone={timeZone}
-              />
+            <ChatContextProvider>
+              <Chat />
             </ChatContextProvider>
           ) : dashType == "profile" ? (
             <ProfileContextProvider>
-              <UserProfile
-                isUserLoading={isLoading}
-                socket={socket}
-                fetchUserData={fetchUserData}
-                timeZone={timeZone}
-                userid={user?.user_id}
-              />
+              <UserProfile />
             </ProfileContextProvider>
           ) : dashType == "reports" ? (
             <ReportContextProvider>

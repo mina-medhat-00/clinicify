@@ -1,110 +1,60 @@
-import axios from "axios";
-import { createContext, useCallback, useContext, useState } from "react";
+import { createContext, useCallback, useContext } from "react";
+import { useRemoteData } from "@/contexts/use-remote-data";
 import { useUserContext } from "@/contexts/user-context";
+import { api } from "@/services/client";
 import type { Appointment } from "@/types";
-import { apiUrl } from "@/utils/api";
+import { toQuery } from "@/utils/query";
+
+export type AppointmentQuery = { date?: string; doctorId?: string | number };
 
 const AppointmentData = createContext<any>(null);
 export default function AppointmentContextProvider({
   children,
-  token,
   isDoctor,
 }: any) {
-  const { fetchUserData } = useUserContext();
-  const [isLoading, setIsLoading] = useState(true);
-  const [appointmentData, setAppointmentData] = useState<Appointment[] | null>(
-    null,
+  const { handleSessionError } = useUserContext();
+  const getAppointments = useCallback(
+    async function (query?: AppointmentQuery) {
+      const { data } = await api.get(
+        `/get/appointments${toQuery({
+          date: query?.date,
+          doctor_id: query?.doctorId,
+          doctor: isDoctor,
+        })}`,
+      );
+      return data?.data as Appointment[];
+    },
+    [isDoctor],
   );
-  const fetchAppointmentData = useCallback(
+  const {
+    data: appointmentData,
+    setData: setAppointmentData,
+    isLoading,
+    load: fetchAppointmentData,
+  } = useRemoteData(getAppointments, { requiresAuth: true });
+
+  // Asks the API to move an appointment along (booked -> running -> done)
+  // once its time comes; the reply is the refreshed list for that date.
+  const updateAppointment = useCallback(
     async function (
-      active?: any,
-      directToken?: any,
-      done?: any,
-      postData?: any,
-      query?: any,
-      noWaiting?: any,
+      appointment: {
+        doctorId?: string | number;
+        patientId?: string | number;
+        appointmentId?: string | number;
+      },
+      { date }: { date?: string },
     ) {
-      await Promise.resolve();
-      if (!noWaiting) setIsLoading(true);
-      if (!token && !active) {
-        setAppointmentData(null);
-        return setIsLoading(false);
-      }
       try {
-        if (done) {
-          const { data } = await axios.post(
-            apiUrl(
-              `/update/appointment${
-                isDoctor || query?.doctor
-                  ? `?doctor=true${query.date && `&date=${query.date}`}`
-                  : `?date=${query?.date}`
-              }`,
-            ),
-            { data: postData },
-            {
-              headers: {
-                Authorization: `Bearer ${active ? directToken : token}`,
-              },
-              timeout: 10000,
-            },
-          );
-          setAppointmentData(data?.data);
-          setIsLoading(false);
-          return data;
-        } else {
-          const { data } = await axios.request({
-            url: apiUrl(
-              `/get/appointments?${
-                query?.date ? `&date=${query?.date}` : ""
-              }${query?.doctorId ? `&doctor_id=${query?.doctorId}` : ""}${
-                isDoctor || query?.doctor ? `&doctor=true` : ""
-              }`,
-            ),
-            ...{
-              headers: {
-                Authorization: `Bearer ${active ? directToken : token}`,
-              },
-              timeout: 10000,
-            },
-          });
-          setAppointmentData(data?.data);
-          setIsLoading(false);
-        }
+        const { data } = await api.post(
+          `/update/appointment${toQuery({ doctor: isDoctor, date })}`,
+          { data: appointment },
+        );
+        setAppointmentData(data?.data);
       } catch (err) {
-        const msg = err?.response?.data?.data?.name;
-        switch (msg) {
-          case "TokenExpiredError":
-            fetchUserData(true, null, {
-              response: {
-                data: {
-                  data: {
-                    name: "TokenExpiredError",
-                  },
-                },
-              },
-            });
-            break;
-          case "JsonWebTokenError":
-            setAppointmentData(null);
-            fetchUserData(true, null, {
-              response: {
-                data: {
-                  data: {
-                    name: "JsonWebTokenError",
-                  },
-                },
-              },
-            });
-            break;
-          default:
-            setAppointmentData(null);
-            break;
-        }
-        setIsLoading(false);
-        throw err;
+        handleSessionError(err);
       }
     },
-    [token, isDoctor, fetchUserData],
+    [isDoctor, setAppointmentData, handleSessionError],
   );
 
   return (
@@ -113,6 +63,7 @@ export default function AppointmentContextProvider({
         isLoading,
         appointmentData,
         fetchAppointmentData,
+        updateAppointment,
         setAppointmentData,
       }}
     >

@@ -2,9 +2,9 @@ import { Button, Form, Input, Select, Space } from "@/components/ui";
 import { Building2, Map, Phone, Smartphone } from "lucide-react";
 import { useProfileContext } from "@/contexts/profile-context";
 import { useUserContext } from "@/contexts/user-context";
-import submitClinic from "@/services/submit-clinic";
+import submitProfile from "@/services/submit-profile";
 import { cityOptions } from "@/utils/sign-data";
-import { prefixSelector } from "@/utils/signup-utils";
+import { prefixSelector } from "@/components/signup/signup-utils";
 
 const { Item } = Form;
 export default function ClinicRegister() {
@@ -20,14 +20,14 @@ export default function ClinicRegister() {
         initialValues={{
           prefix: "20",
         }}
-        onFinish={function (values?: any) {
-          submitClinic(
+        onFinish={async function (values?: any) {
+          const saved = await submitProfile({
+            section: "clinic",
             values,
             messageApi,
-            fetchProfileData,
             fetchUserData,
-            userData?.user_id,
-          );
+          });
+          if (saved) fetchProfileData(userData?.user_id, { silent: true });
         }}
       >
         <div className="bg-gray-700 p-2 rounded-md">

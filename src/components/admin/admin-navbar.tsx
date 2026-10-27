@@ -1,6 +1,6 @@
 import { Popover } from "@/components/ui";
 import { Bell, ChevronDown, Menu, MessageSquare } from "lucide-react";
-import { useState } from "react";
+import { imageUrl } from "@/utils/api";
 
 function NavButton({ name, title, customFunc, icon, dotColor, dashType }: any) {
   return (
@@ -30,18 +30,11 @@ function NavButton({ name, title, customFunc, icon, dotColor, dashType }: any) {
 
 export default function Navbar({
   dashType,
-  isMobile,
   setActiveMenu,
   activeMenu,
   setDashType,
   user,
 }: any) {
-  const [prevIsMobile, setPrevIsMobile] = useState<boolean | null>(null);
-  if (prevIsMobile !== isMobile) {
-    setPrevIsMobile(isMobile);
-    setActiveMenu(!isMobile);
-  }
-
   function handleActiveMenu() {
     setActiveMenu(!activeMenu);
   }
@@ -90,10 +83,10 @@ export default function Navbar({
             setDashType("profile");
           }}
         >
-          {user?.img_url ? (
+          {imageUrl(user?.img_url) ? (
             <img
               className="rounded-full w-8 h-8"
-              src={user.img_url}
+              src={imageUrl(user?.img_url)}
               alt="user-profile"
             />
           ) : null}

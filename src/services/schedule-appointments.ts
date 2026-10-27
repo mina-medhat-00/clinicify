@@ -1,106 +1,61 @@
-import axios from "axios";
-import Cookies from "universal-cookie";
-import { apiUrl } from "@/utils/api";
+import {
+  api,
+  errorData,
+  errorStatus,
+  handleFailure,
+  notify,
+  type ServiceContext,
+  type Socket,
+} from "@/services/client";
 
-const cookies = new Cookies();
-export default function scheduleAppointments(
-  activeDate?: any,
-  addedAppointments?: any,
-  tAppointments?: any,
-  messageApi?: any,
-  fetchSlotsData?: any,
-  userid?: any,
-  fetchUserData?: any,
-  setIsDone?: any,
-  deletedAppointments?: any,
-  isEdit?: any,
-  editSlot?: any,
-  socket?: any,
-  doctorId?: any,
-) {
-  messageApi.open({
-    key: 1,
-    type: "loading",
-    content: deletedAppointments
-      ? "deleting your appointment ...."
-      : isEdit
-        ? "editing your appointment ..."
-        : "scheduling your appointments ...",
-    duration: 8,
-  });
-  const data = {
-    data: {
-      date: activeDate?.format("YYYY-MM-DD"),
-      totalSlots: tAppointments,
-      deletedAppointments,
-      addedAppointments,
-      editSlot: editSlot,
-      doctorId,
-    },
-  };
-  if (!deletedAppointments) setIsDone(false);
-  axios
-    .post(
-      apiUrl(`/${isEdit ? "edit/appointment" : "schedule/appointments"}`),
-      data,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${cookies.get("accessToken")}`,
-        },
+type ScheduleParams = ServiceContext & {
+  date: string;
+  // The doctor whose schedule changes (also the room to notify).
+  doctorId: string | number;
+  totalSlots?: unknown;
+  addedAppointments?: unknown;
+  deletedAppointments?: (string | number)[];
+  isEdit?: boolean;
+  editSlot?: (string | number | undefined)[];
+  socket?: Socket;
+};
+
+export default async function scheduleAppointments({
+  date,
+  doctorId,
+  totalSlots,
+  addedAppointments,
+  deletedAppointments,
+  isEdit,
+  editSlot,
+  socket,
+  ...ctx
+}: ScheduleParams) {
+  const verb = deletedAppointments ? "delet" : isEdit ? "edit" : "schedul";
+  notify(ctx, "loading", `${verb}ing your appointments ...`, 8);
+  try {
+    await api.post(isEdit ? "/edit/appointment" : "/schedule/appointments", {
+      data: {
+        date,
+        totalSlots,
+        deletedAppointments,
+        addedAppointments,
+        editSlot,
+        doctorId,
       },
-    )
-    .then(function () {
-      messageApi.open({
-        key: 1,
-        type: "success",
-        content: deletedAppointments
-          ? "your schedule Appointment deleted"
-          : isEdit
-            ? "your appointment edited successfully ..."
-            : "Your schedule Appointments updated",
-
-        duration: 3,
-      });
-      socket?.emit("update_appointments", {
-        date: activeDate?.format("YYYY-MM-DD"),
-        doctorId: userid,
-      });
-      fetchSlotsData(
-        {
-          date: activeDate?.format("YYYY-MM-DD"),
-          doctorId: userid,
-        },
-        true,
-      );
-    })
-    .catch(function (err?: any) {
-      if (err?.response?.status == 400) {
-        const timeSlots = err?.response?.data?.data?.timeSlots;
-        if (timeSlots) {
-          messageApi.open({
-            key: 1,
-            type: "error",
-            content: `there's slot${
-              timeSlots.length > 1 ? "s" : ""
-            } booked in ${timeSlots?.join(" | ")}`,
-            duration: 3,
-          });
-          fetchSlotsData({
-            date: activeDate?.format("YYYY-MM-DD"),
-            doctorId: userid,
-          });
-        }
-      } else if (err?.response?.status == 401) {
-        fetchUserData(true, cookies.get("accessToken"));
-      } else {
-        messageApi.open({
-          key: 1,
-          type: "error",
-          content: "there's some issues, please try again later",
-          duration: 3,
-        });
-        if (!deletedAppointments) setIsDone(true);
-      }
     });
+    notify(ctx, "success", `your appointments ${verb}ed successfully`);
+    socket?.emit("update_appointments", { date, doctorId });
+    return true;
+  } catch (err) {
+    const timeSlots = errorData<{ timeSlots?: string[] }>(err)?.timeSlots;
+    if (errorStatus(err) === 400 && timeSlots)
+      notify(
+        ctx,
+        "error",
+        `there's slot${timeSlots.length > 1 ? "s" : ""} booked in ${timeSlots.join(" | ")}`,
+      );
+    else handleFailure(err, ctx);
+    return false;
+  }
 }

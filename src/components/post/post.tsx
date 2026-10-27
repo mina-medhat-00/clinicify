@@ -1,5 +1,4 @@
 import { Alert, Button, Image, Input } from "@/components/ui";
-import axios from "axios";
 import {
   Angry,
   CircleArrowDown,
@@ -16,26 +15,16 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Cookies from "universal-cookie";
 import UserAvatar from "@/components/ui/user-avatar";
 import { useCommentsContext } from "@/contexts/comments-context";
 import { useUserContext } from "@/contexts/user-context";
 import submitComment from "@/services/submit-comment";
-import submitLike from "@/services/submit-like";
-import { apiUrl } from "@/utils/api";
+import submitLike, { type LikeType } from "@/services/submit-like";
+import { api } from "@/services/client";
+import { toQuery } from "@/utils/query";
 
 async function getLike(setIsLike?: any, postId?: any, commentId?: any) {
-  const { data } = await axios(
-    apiUrl(
-      `/get/like?postId=${postId}${commentId ? `&commentId=${commentId}` : ""}`,
-    ),
-    {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${new Cookies()?.get("accessToken")}`,
-      },
-    },
-  );
+  const { data } = await api.get(`/get/like${toQuery({ postId, commentId })}`);
   setIsLike(data?.data);
 }
 function CommentActions({
@@ -67,6 +56,44 @@ function CommentActions({
     },
     [userData, commentId, postId],
   );
+  async function react(likeType: LikeType) {
+    if (!userData?.user_id)
+      return messageApi.open({
+        key: 1,
+        type: "warning",
+        content: "you need to login first",
+        duration: 3,
+      });
+    const counts = await submitLike({
+      likeType,
+      postId,
+      commentId,
+      isComment,
+      socket,
+      messageApi,
+      fetchUserData,
+    });
+    if (!counts) return;
+    setLikeData(counts);
+    const { like_emoji, dislike, angry } = counts;
+    // Show the new totals on this post or comment right away.
+    if (isComment)
+      setComments(function (comments?: any) {
+        return comments?.map(function (c?: any) {
+          return c?.comment_id == commentId
+            ? { ...c, like_emoji, dislike, angry }
+            : c;
+        });
+      });
+    else
+      setPosts(function (posts?: any) {
+        return posts?.map(function (post?: any) {
+          return post?.post_id == postId
+            ? { ...post, like_emoji, dislike, angry }
+            : post;
+        });
+      });
+  }
   const emojiData = [
     {
       type: "like",
@@ -75,30 +102,7 @@ function CommentActions({
       icon: (
         <ThumbsUp
           onClick={function () {
-            if (userData?.user_id)
-              submitLike(
-                null,
-                fetchUserData,
-                fetchCommentsData,
-                messageApi,
-                "like",
-                postId,
-                commentId,
-                !isComment,
-                lenViewedComments,
-                getLike,
-                setLikeData,
-                socket,
-                setPosts,
-                setComments,
-              );
-            else
-              messageApi.open({
-                key: 1,
-                type: "warning",
-                content: "you need to login first",
-                duration: 3,
-              });
+            react("like");
           }}
           className={`flex cursor-pointer rounded-full 
   items-center p-0.5
@@ -119,30 +123,7 @@ function CommentActions({
           fill="white"
           color="red"
           onClick={function () {
-            if (userData?.user_id)
-              submitLike(
-                null,
-                fetchUserData,
-                fetchCommentsData,
-                messageApi,
-                "dislike",
-                postId,
-                commentId,
-                !isComment,
-                lenViewedComments,
-                getLike,
-                setLikeData,
-                socket,
-                setPosts,
-                setComments,
-              );
-            else
-              messageApi.open({
-                key: 1,
-                type: "warning",
-                content: "you need to login first",
-                duration: 3,
-              });
+            react("dislike");
           }}
           className={`flex cursor-pointer rounded-full 
     items-center p-0.5
@@ -161,30 +142,7 @@ function CommentActions({
       icon: (
         <Angry
           onClick={function () {
-            if (userData?.user_id)
-              submitLike(
-                null,
-                fetchUserData,
-                fetchCommentsData,
-                messageApi,
-                "angry",
-                postId,
-                commentId,
-                !isComment,
-                lenViewedComments,
-                getLike,
-                setLikeData,
-                socket,
-                setPosts,
-                setComments,
-              );
-            else
-              messageApi.open({
-                key: 1,
-                type: "warning",
-                content: "you need to login first",
-                duration: 3,
-              });
+            react("angry");
           }}
           className={`flex  cursor-pointer rounded-full 
   items-center p-0.5
@@ -339,22 +297,27 @@ function ReplyBox({
             className="rounded-lg justify-center font-medium flex items-center border border-blue-600 text-white m-0
           py-4 bg-blue-500/60 hover:bg-blue-400
         "
-            onClick={function () {
-              if (userid && content)
-                submitComment(
-                  userData,
-                  fetchUserData,
-                  fetchCommentsData,
-                  messageApi,
-                  content,
-                  postId,
-                  commentId,
-                  setReply,
-                  socket,
-                  lenViewedComments,
-                  setLen,
-                );
-              else setShowWarn(true);
+            onClick={async function () {
+              if (!userid || !content) return setShowWarn(true);
+              const sent = await submitComment({
+                user: userData,
+                content,
+                postId,
+                commentId,
+                socket,
+                messageApi,
+                fetchUserData,
+              });
+              if (!sent) return;
+              // Load one more so the new comment shows up in the list.
+              fetchCommentsData(
+                { postId, limit: lenViewedComments + 1 },
+                { silent: true },
+              );
+              setLen(function (val?: any) {
+                return val + 1;
+              });
+              setReply(false);
             }}
           >
             send
@@ -439,7 +402,7 @@ function CommentTemplate({
       className={`rounded-lg
     ${
       commentId === makeComment ? "relative" : ""
-    } pl-5 sm:pl-10 bg-white pt-5 pb-2 ${!show && "border-b-2"}`}
+    } pl-5 sm:pl-10 bg-white pt-5 pb-2 ${show ? "" : "border-b-2"}`}
     >
       <div
         className={`p-1 flex gap-1 flex-wrap justify-between ${

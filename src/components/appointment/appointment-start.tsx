@@ -1,13 +1,10 @@
-import axios from "axios";
 import { Loader2, MessageSquare, Video } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Cookies from "universal-cookie";
 import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
-import { apiOrigin } from "@/utils/api";
+import { api } from "@/services/client";
 
-const APPLICATION_SERVER_URL = apiOrigin;
 export default function AppointmentStart({ appointmentDetails }: any) {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<any>(null);
@@ -15,17 +12,10 @@ export default function AppointmentStart({ appointmentDetails }: any) {
   const { fetchUserData } = useUserContext();
   async function createSession() {
     setIsLoading(true);
-    await axios
-      .post(
-        `${APPLICATION_SERVER_URL}/join/meeting`,
-        { data: { appointment_id: appointmentDetails?.appointment_id } },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${new Cookies().get("accessToken")}`,
-          },
-        },
-      )
+    await api
+      .post("/join/meeting", {
+        data: { appointment_id: appointmentDetails?.appointment_id },
+      })
       .then(function (res?: any) {
         navigate(
           `/join/meeting/${res.data}?appointment_id=${appointmentDetails?.appointment_id}`,
@@ -49,7 +39,7 @@ export default function AppointmentStart({ appointmentDetails }: any) {
             content: "cannot start that appointment right now!!",
             duration: 3,
           });
-          fetchUserData(true, new Cookies().get("accessToken"));
+          fetchUserData({ silent: true });
           return;
         }
         messageApi.open({

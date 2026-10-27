@@ -8,9 +8,9 @@ import {
 } from "@/components/ui";
 import { Mail } from "lucide-react";
 import ProfileTable from "@/components/profile/profile-table";
-import submitPersonal from "@/services/submit-personal";
+import submitProfile from "@/services/submit-profile";
 import { cityOptions } from "@/utils/sign-data";
-import { prefixSelector } from "@/utils/signup-utils";
+import { prefixSelector } from "@/components/signup/signup-utils";
 
 const { Item } = Form;
 export default function PersonalForm({
@@ -145,14 +145,14 @@ export default function PersonalForm({
     <div className="bg-gray-200 p-2 w-full rounded-lg">
       <Form
         initialValues={{ ...initialValues }}
-        onFinish={function (values?: any) {
-          return submitPersonal(
-            values,
+        onFinish={async function (values?: any) {
+          const saved = await submitProfile({
+            section: "personal",
+            values: { ...values, birth: values?.birth?.format("YYYY-MM-DD") },
             messageApi,
-            fetchProfileData,
             fetchUserData,
-            userName,
-          );
+          });
+          if (saved) fetchProfileData(userName, { silent: true });
         }}
       >
         {editData?.map(function ({ data, headers }: any, i?: any) {

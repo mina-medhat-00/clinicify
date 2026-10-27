@@ -39,11 +39,17 @@ export default forwardRef(function SearchFilter(
       window.localStorage.setItem("specialty", searchFilter.specialty || "");
       window.localStorage.setItem("doctorName", searchFilter.doctorName || "");
       window.localStorage.setItem("location", searchFilter.location || "");
-      fetchDoctorsData({
-        specialty: searchFilter.specialty,
-        dname: searchFilter.doctorName,
-        location: searchFilter.location,
-      });
+      // Wait for typing to pause before searching.
+      const timeId = setTimeout(function () {
+        fetchDoctorsData({
+          specialty: searchFilter.specialty,
+          dname: searchFilter.doctorName,
+          location: searchFilter.location,
+        });
+      }, 300);
+      return function () {
+        clearTimeout(timeId);
+      };
     },
     [searchFilter, fetchDoctorsData],
   );
