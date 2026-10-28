@@ -1,17 +1,19 @@
 import {
-  api,
+  apiPost,
   errorStatus,
   handleFailure,
   notify,
   type ServiceContext,
   type Socket,
 } from "@/services/client";
+import type { ChatMessage } from "@/types/content";
+import type { Id } from "@/types/user";
 
 export type MessageResult = "sent" | "closed" | "failed";
 
 // Both users join the same room, named "<higher id>,<lower id>".
-export function chatRoomId(a: string | number, b: string | number) {
-  return Number(a) > Number(b) ? `${a},${b}` : `${b},${a}`;
+export function chatRoomId(a: Id, b: Id) {
+  return a > b ? `${String(a)},${String(b)}` : `${String(b)},${String(a)}`;
 }
 
 export default async function submitMessage({
@@ -23,24 +25,26 @@ export default async function submitMessage({
   ...ctx
 }: ServiceContext & {
   content: string;
-  messageTo: string | number;
-  userId: string | number;
+  messageTo: Id;
+  userId: Id;
   isFirst?: boolean;
   socket?: Socket;
 }): Promise<MessageResult> {
   try {
-    const { data } = await api.post("/submit/message", {
+    const data = await apiPost<Partial<
+      Pick<ChatMessage, "message_id" | "issued_date" | "issued_time">
+    > | null>("/submit/message", {
       data: { content, message_to: messageTo, isFirst },
     });
     if (isFirst) socket?.emit("add_chat", messageTo);
     socket?.emit("send_message", {
-      message_id: data?.data?.message_id,
+      message_id: data?.message_id,
       content,
       chatId: chatRoomId(messageTo, userId),
       message_to: messageTo,
       message_from: userId,
-      issued_date: data?.data?.issued_date,
-      issued_time: data?.data?.issued_time,
+      issued_date: data?.issued_date,
+      issued_time: data?.issued_time,
     });
     return "sent";
   } catch (err) {

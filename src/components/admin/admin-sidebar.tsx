@@ -10,66 +10,32 @@ import {
   UserCog,
   X,
 } from "lucide-react";
+import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
+import type { AdminDashType } from "@/constants/dash-types";
 
-const links = [
+interface SidebarLink {
+  key: string;
+  value: string;
+  icon: ReactNode;
+}
+
+// Dashboard links switch the admin tab; general links leave the dashboard.
+const dashboardLinks: (SidebarLink & { key: AdminDashType })[] = [
+  { key: "profile", value: "My Profile", icon: <Shield /> },
+  { key: "user", value: "Users Management", icon: <UserCheck /> },
+  { key: "doctor", value: "Doctors Management", icon: <UserCog /> },
+  { key: "chat", value: "Chatting", icon: <Mail /> },
+  { key: "reports", value: "Reports", icon: <Flag /> },
+];
+const generalLinks: (SidebarLink & { link: string })[] = [
+  { link: "", key: "home", value: "Home", icon: <Home /> },
+  { link: "doctors", key: "doctors", value: "Doctors", icon: <Stethoscope /> },
   {
-    title: "Dashboard",
-    links: [
-      {
-        link: "profile",
-        key: "profile",
-        value: "My Profile",
-        icon: <Shield />,
-      },
-      {
-        link: "users",
-        key: "user",
-        value: "Users Management",
-        icon: <UserCheck />,
-      },
-      {
-        link: "doctors",
-        key: "doctor",
-        value: "Doctors Management",
-        icon: <UserCog />,
-      },
-      {
-        link: "chat",
-        key: "chat",
-        value: "Chatting",
-        icon: <Mail />,
-      },
-      {
-        link: "reports",
-        key: "reports",
-        value: "Reports",
-        icon: <Flag />,
-      },
-    ],
-  },
-  {
-    title: "General",
-    links: [
-      {
-        link: "",
-        key: "home",
-        value: "Home",
-        icon: <Home />,
-      },
-      {
-        link: "doctors",
-        key: "doctors",
-        value: "Doctors",
-        icon: <Stethoscope />,
-      },
-      {
-        link: "posts",
-        key: "posts",
-        value: "Questions",
-        icon: <MessageCircleQuestion />,
-      },
-    ],
+    link: "posts",
+    key: "posts",
+    value: "Questions",
+    icon: <MessageCircleQuestion />,
   },
 ];
 
@@ -79,16 +45,20 @@ export default function Sidebar({
   isMobile,
   setDashType,
   dashType,
-}: any) {
-  function handleCloseSideBar(value?: any) {
+}: {
+  activeMenu: boolean;
+  setActiveMenu: (active: boolean) => void;
+  isMobile: boolean;
+  setDashType: (type: AdminDashType) => void;
+  dashType: AdminDashType;
+}) {
+  function handleCloseSideBar(value?: AdminDashType) {
     if (value) setDashType(value);
-    if (activeMenu !== undefined && isMobile) {
-      setActiveMenu(false);
-    }
+    if (isMobile) setActiveMenu(false);
   }
 
   const activeLink =
-    "flex items-center gap-5 px-4 pt-3 pb-2.5 rounded-lg  text-white bg-blue-700  text-md m-2";
+    "flex items-center gap-5 px-4 pt-3 pb-2.5 rounded-lg text-white bg-blue-700 text-md m-2";
   const normalLink =
     "flex items-center gap-5 px-4 pt-3 pb-2.5 rounded-lg text-md text-gray-700 dark:text-gray-200 dark:hover:text-black hover:bg-gray-100 m-2";
 
@@ -116,48 +86,41 @@ export default function Sidebar({
               <X />
             </button>
           </div>
-          <div className="mt-10 ">
-            {links.map(function (item?: any) {
+          <div className="mt-10">
+            <p className="text-gray-400 dark:text-gray-400 m-3 mt-4 uppercase">
+              Dashboard
+            </p>
+            {dashboardLinks.map(function (link) {
               return (
-                <div key={item.title}>
-                  <p className="text-gray-400 dark:text-gray-400 m-3 mt-4 uppercase">
-                    {item.title}
-                  </p>
-                  {item.title == "Dashboard"
-                    ? item.links.map(function (link?: any) {
-                        return (
-                          <button
-                            key={link.key}
-                            onClick={function () {
-                              handleCloseSideBar(link.key);
-                            }}
-                            className={
-                              link.key == dashType ? activeLink : normalLink
-                            }
-                          >
-                            {link.icon}
-                            <span className="capitalize">{link.value}</span>
-                          </button>
-                        );
-                      })
-                    : item.links.map(function (link?: any) {
-                        return (
-                          <Link
-                            to={`/${link.link}`}
-                            key={link.key}
-                            onClick={function () {
-                              handleCloseSideBar();
-                            }}
-                            className={
-                              link.key == dashType ? activeLink : normalLink
-                            }
-                          >
-                            {link.icon}
-                            <span className="capitalize ">{link.value}</span>
-                          </Link>
-                        );
-                      })}
-                </div>
+                <button
+                  type="button"
+                  key={link.key}
+                  onClick={function () {
+                    handleCloseSideBar(link.key);
+                  }}
+                  className={link.key === dashType ? activeLink : normalLink}
+                >
+                  {link.icon}
+                  <span className="capitalize">{link.value}</span>
+                </button>
+              );
+            })}
+            <p className="text-gray-400 dark:text-gray-400 m-3 mt-4 uppercase">
+              General
+            </p>
+            {generalLinks.map(function (link) {
+              return (
+                <Link
+                  to={`/${link.link}`}
+                  key={link.key}
+                  onClick={function () {
+                    handleCloseSideBar();
+                  }}
+                  className={normalLink}
+                >
+                  {link.icon}
+                  <span className="capitalize">{link.value}</span>
+                </Link>
               );
             })}
           </div>

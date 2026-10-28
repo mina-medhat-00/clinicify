@@ -1,16 +1,21 @@
 import { Menu, EllipsisVertical, Hospital } from "lucide-react";
-import { Button, Menu as AntMenu, Typography } from "@/components/ui";
-import { useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/controls";
+import { Menu as AntMenu, type MenuRef } from "@/components/ui/menu";
+import { Typography } from "@/components/ui/display";
+import { useEffect, useRef, useState, type RefObject } from "react";
 import { useMediaQuery } from "react-responsive";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import items from "@/components/layout/nav-items";
 import { useUserContext } from "@/contexts/user-context";
-import { useUtilsContext } from "@/contexts/utils-context";
+import type { DoctorsHandle } from "@/pages/doctors";
 
 const { Title } = Typography;
-export default function Navbar({ DoctorRef }: any) {
-  const { messageApi } = useUtilsContext();
-  const { setUserData, userData: user, isLoading } = useUserContext();
+export default function Navbar({
+  DoctorRef,
+}: {
+  DoctorRef: RefObject<DoctorsHandle | null>;
+}) {
+  const { userData: user, isLoading } = useUserContext();
   const navigate = useNavigate();
   const isMobile = useMediaQuery({
     query: "(max-width:678px)",
@@ -21,45 +26,42 @@ export default function Navbar({ DoctorRef }: any) {
     setPrevIsMobile(isMobile);
     setShowMenu(false);
   }
-  const navElement = useRef(null);
+  const navElement = useRef<HTMLDivElement>(null);
   const [navWidth, setNavWidth] = useState(290);
-  const menuElement = useRef(null);
+  const menuElement = useRef<MenuRef>(null);
   const location = useLocation();
-  const menuItems = items(
+  const menuItems = items({
     navigate,
     location,
     DoctorRef,
     user,
-    messageApi,
-    setUserData,
-    isMobile,
-    isLoading,
-  );
+    isUserLoading: isLoading,
+  });
   function toggle() {
-    setShowMenu(function (state?: any) {
+    setShowMenu(function (state) {
       return !state;
     });
   }
+  // Skip the slide animation when switching between mobile and desktop.
   useEffect(
     function () {
       setTimeout(function () {
-        if (menuElement?.current?.menu?.list?.style && navElement.current) {
-          menuElement.current.menu.list.style.transition = "none !important";
-          navElement.current.style.transition = "none";
-          setTimeout(function () {
-            if (menuElement?.current?.menu?.list?.style && navElement.current) {
-              navElement.current.style.transition = "";
-              menuElement.current.menu.list.style.transition =
-                "background 0.3s, width 0.3s cubic-bezier(0.2, 0, 0, 1) 0s,height 0.5s ease";
-            }
-          });
-        }
+        const list = menuElement.current?.menu.list;
+        const nav = navElement.current;
+        if (!list || !nav) return;
+        list.style.transition = "none !important";
+        nav.style.transition = "none";
+        setTimeout(function () {
+          nav.style.transition = "";
+          list.style.transition =
+            "background 0.3s, width 0.3s cubic-bezier(0.2, 0, 0, 1) 0s,height 0.5s ease";
+        });
       });
     },
     [isMobile],
   );
   const mobileMenuHeight = showMenu
-    ? `${menuItems.filter(Boolean).length * 48}px`
+    ? `${String(menuItems.filter(Boolean).length * 48)}px`
     : "0px";
   return (
     !(
@@ -74,17 +76,18 @@ export default function Navbar({ DoctorRef }: any) {
             : "fixed flex h-full w-1/5 min-w-72 max-w-72 flex-col"
         }`}
         style={{
-          marginLeft: `${!isMobile ? -navWidth : 0}px`,
+          marginLeft: `${String(!isMobile ? -navWidth : 0)}px`,
         }}
       >
         {!isMobile ? (
           <>
             <div
-              className="show--navbar items-center justify-end flex
-          -z-10 absolute cursor-pointer bg-blue-950 size-11 top-8 left-full -ml-4 rounded-r-full"
+              className="show--navbar items-center justify-end flex -z-10 absolute cursor-pointer bg-blue-950 size-11 top-8 left-full -ml-4 rounded-r-full"
               onClick={function () {
-                setNavWidth(function (width?: any) {
-                  return width == 0 ? navElement?.current?.offsetWidth : 0;
+                setNavWidth(function (width) {
+                  return width === 0
+                    ? (navElement.current?.offsetWidth ?? 0)
+                    : 0;
                 });
               }}
             >
@@ -96,8 +99,7 @@ export default function Navbar({ DoctorRef }: any) {
         <div
           className={
             isMobile
-              ? `mx-1 w-full flex items-center
-      justify-between flex-wrap gap-2`
+              ? "mx-1 w-full flex items-center justify-between flex-wrap gap-2"
               : "text-center"
           }
         >

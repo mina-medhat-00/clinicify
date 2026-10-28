@@ -1,29 +1,37 @@
-import { createContext, useContext } from "react";
-import { useRemoteData } from "@/contexts/use-remote-data";
-import { api } from "@/services/client";
-import type { SlotsData } from "@/types";
+import type { ReactNode } from "react";
+import { createStrictContext } from "@/utils/create-strict-context";
+import { useRemoteData } from "@/hooks/use-remote-data";
+import { apiPost } from "@/services/client";
+import type { Id } from "@/types/user";
+import type { SlotsData } from "@/types/appointment";
 
-export type SlotsQuery = { date: string; doctorId: string | number };
-
-async function getSlots(query: SlotsQuery) {
-  const { data } = await api.post("/get/slots", { data: query });
-  return data?.data as SlotsData;
+export interface SlotsQuery {
+  date: string;
+  doctorId: Id;
 }
 
-const SlotsDataContext = createContext<any>(null);
-export default function SlotsContextProvider({ children }: any) {
+function getSlots(query: SlotsQuery) {
+  return apiPost<SlotsData>("/get/slots", { data: query });
+}
+
+function useSlotsValue() {
   const {
     data: slotsData,
     isLoading,
     load: fetchSlotsData,
-  } = useRemoteData(getSlots);
-  return (
-    <SlotsDataContext.Provider value={{ isLoading, slotsData, fetchSlotsData }}>
-      {children}
-    </SlotsDataContext.Provider>
-  );
+  } = useRemoteData(getSlots, {});
+  return { isLoading, slotsData, fetchSlotsData };
 }
 
-export function useSlotsContext() {
-  return useContext(SlotsDataContext);
+const [SlotsData, useSlotsContext] =
+  createStrictContext<ReturnType<typeof useSlotsValue>>("SlotsContext");
+export { useSlotsContext };
+
+export default function SlotsContextProvider({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const value = useSlotsValue();
+  return <SlotsData.Provider value={value}>{children}</SlotsData.Provider>;
 }

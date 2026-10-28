@@ -11,15 +11,25 @@ export default defineConfig([
     files: ["**/*.{ts,tsx}"],
     extends: [
       js.configs.recommended,
-      tseslint.configs.recommended,
-      reactHooks.configs.flat.recommended,
+      tseslint.configs.strictTypeChecked,
+      tseslint.configs.stylisticTypeChecked,
+      reactHooks.configs.flat["recommended-latest"],
       reactRefresh.configs.vite,
     ],
     languageOptions: {
       globals: globals.browser,
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+    linterOptions: {
+      reportUnusedDisableDirectives: "error",
+      reportUnusedInlineConfigs: "error",
     },
     rules: {
-      "@typescript-eslint/no-explicit-any": "off",
+      eqeqeq: ["error", "always"],
+      "no-console": ["error", { allow: ["warn", "error"] }],
       "@typescript-eslint/no-unused-vars": [
         "error",
         {
@@ -28,6 +38,7 @@ export default defineConfig([
           caughtErrorsIgnorePattern: "^_",
         },
       ],
+      "@typescript-eslint/switch-exhaustiveness-check": "error",
     },
   },
   {

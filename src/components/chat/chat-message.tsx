@@ -1,4 +1,15 @@
-export default function Message({ isMobile, me, content, issued_time }: any) {
+export default function Message({
+  isMobile,
+  me,
+  content,
+  issued_time,
+}: {
+  isMobile?: boolean;
+  // Sent by the signed-in user.
+  me?: boolean;
+  content: string;
+  issued_time?: string;
+}) {
   return (
     <div className={me ? "pl-2" : "pr-2"}>
       <div
@@ -10,7 +21,7 @@ export default function Message({ isMobile, me, content, issued_time }: any) {
             : "rounded-br-lg bg-white"
         } p-2`}
       >
-        <span className={`${me ? "block" : ""}`}>{content}</span>
+        <span className={me ? "block" : ""}>{content}</span>
         <span
           className={`${
             me ? "text-gray-400  block ml-auto" : "ml-auto text-gray-200"

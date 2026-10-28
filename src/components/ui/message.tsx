@@ -1,13 +1,32 @@
 import { Check, CircleAlert, Info, Loader2 } from "lucide-react";
-import { useEffect, useMemo, useState, type ReactElement } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type ReactElement,
+  type ReactNode,
+} from "react";
 import { createPortal } from "react-dom";
-import { cx } from "@/components/ui/cx";
+import { cx } from "@/utils/cx";
 
-type Toast = {
-  id: any;
-  type?: string;
-  content?: any;
-};
+export type MessageType = "loading" | "success" | "error" | "warning" | "info";
+
+type ToastKey = string | number;
+
+interface Toast {
+  id: ToastKey;
+  type: MessageType;
+  content?: ReactNode;
+}
+
+export interface MessageConfig {
+  key?: ToastKey;
+  type?: MessageType;
+  content?: ReactNode;
+  duration?: number;
+}
+
+let toastCount = 0;
 
 function createStore() {
   let toasts: Toast[] = [];
@@ -19,16 +38,12 @@ function createStore() {
     });
   }
 
-  function open(config: {
-    key?: any;
-    type?: string;
-    content?: any;
-    duration?: number;
-  }) {
-    const id = config.key ?? `${Date.now()}-${Math.random()}`;
+  function open(config: MessageConfig) {
+    toastCount += 1;
+    const id = config.key ?? `toast-${String(toastCount)}`;
     const toast: Toast = {
       id,
-      type: config.type || "info",
+      type: config.type ?? "info",
       content: config.content,
     };
     toasts = toasts.filter(function (item) {
@@ -37,7 +52,7 @@ function createStore() {
     toasts = [...toasts, toast];
     emit();
     const duration = config.duration ?? 3;
-    if (duration && duration > 0) {
+    if (duration > 0) {
       setTimeout(function () {
         toasts = toasts.filter(function (item) {
           return item.id !== id;
@@ -114,19 +129,19 @@ function useToasts(store: ReturnType<typeof createStore>) {
 function makeApi(store: ReturnType<typeof createStore>) {
   return {
     open: store.open,
-    error: function (content?: any, duration?: number) {
+    error: function (content?: ReactNode, duration?: number) {
       store.open({ type: "error", content, duration });
     },
-    success: function (content?: any, duration?: number) {
+    success: function (content?: ReactNode, duration?: number) {
       store.open({ type: "success", content, duration });
     },
-    info: function (content?: any, duration?: number) {
+    info: function (content?: ReactNode, duration?: number) {
       store.open({ type: "info", content, duration });
     },
-    warning: function (content?: any, duration?: number) {
+    warning: function (content?: ReactNode, duration?: number) {
       store.open({ type: "warning", content, duration });
     },
-    loading: function (content?: any, duration?: number) {
+    loading: function (content?: ReactNode, duration?: number) {
       store.open({ type: "loading", content, duration });
     },
   };

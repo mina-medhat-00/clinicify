@@ -1,8 +1,13 @@
-import { Tag } from "@/components/ui";
+import { Tag } from "@/components/ui/display";
 import { CircleX, Loader2 } from "lucide-react";
+import type { Verification } from "@/types/user";
 
-export default function AccountVerify({ isVerified }: any) {
-  return isVerified == null ? (
+export default function AccountVerify({
+  isVerified,
+}: {
+  isVerified: Verification | undefined;
+}) {
+  return isVerified === null || isVerified === undefined ? (
     <div className="flex p-2  text-center bg-yellow-600/60 rounded-lg flex-wrap gap-2 items-center justify-center">
       <div className="text-2xl text-yellow-100 font-medium">
         Your Account being Verified
@@ -14,7 +19,7 @@ export default function AccountVerify({ isVerified }: any) {
         pending <Loader2 className="animate-spin" />
       </Tag>
     </div>
-  ) : isVerified == 0 ? (
+  ) : isVerified === 0 ? (
     <div className="flex p-2 bg-red-600/60 rounded-lg flex-wrap gap-2 items-center justify-center">
       <div className="text-2xl text-red-100 font-medium">
         Your Account has been Rejected

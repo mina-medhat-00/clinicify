@@ -1,4 +1,5 @@
-import { Alert, Button, Image, Input } from "@/components/ui";
+import { Alert, Image } from "@/components/ui/display";
+import { Button, Input } from "@/components/ui/controls";
 import {
   Angry,
   CircleArrowDown,
@@ -13,20 +14,63 @@ import {
   ThumbsUp,
   X,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+  type Dispatch,
+  type ReactNode,
+  type SetStateAction,
+} from "react";
 import { Link } from "react-router-dom";
+import type { Socket } from "socket.io-client";
 import UserAvatar from "@/components/ui/user-avatar";
-import { useCommentsContext } from "@/contexts/comments-context";
+import {
+  type CommentsQuery,
+  useCommentsContext,
+} from "@/contexts/comments-context";
 import { useUserContext } from "@/contexts/user-context";
+import { apiGet, type LoadOptions } from "@/services/client";
 import submitComment from "@/services/submit-comment";
 import submitLike, { type LikeType } from "@/services/submit-like";
-import { api } from "@/services/client";
+import type {
+  Comment,
+  Like,
+  Post as PostData,
+  Reactions,
+} from "@/types/content";
+import type { Id } from "@/types/user";
 import { toQuery } from "@/utils/query";
 
-async function getLike(setIsLike?: any, postId?: any, commentId?: any) {
-  const { data } = await api.get(`/get/like${toQuery({ postId, commentId })}`);
-  setIsLike(data?.data);
+// The post or comment whose reply box is open. Post and comment ids are
+// separate sequences, so the kind is part of the key.
+export type ReplyTarget = `post:${string}` | `comment:${string}` | null;
+
+function postTarget(postId: Id): ReplyTarget {
+  return `post:${String(postId)}`;
 }
+
+function commentTarget(commentId: Id): ReplyTarget {
+  return `comment:${String(commentId)}`;
+}
+
+// Live reaction counts sent over the socket.
+export type ReactionUpdate = Reactions & {
+  post_id: Id;
+  comment_id?: Id | null;
+  updateEmoji: true;
+};
+
+type SetComments = Dispatch<SetStateAction<Comment[] | null>>;
+export type SetPosts = Dispatch<SetStateAction<PostData[]>>;
+type FetchComments = (
+  query: CommentsQuery,
+  options?: LoadOptions,
+) => Promise<unknown>;
+
+function getLike(postId: Id, commentId?: Id) {
+  return apiGet<Like | null>(`/get/like${toQuery({ postId, commentId })}`);
+}
+
 function CommentActions({
   isComment,
   postId,
@@ -46,24 +90,52 @@ function CommentActions({
   numDisLike,
   numLike,
   setPosts,
-}: any) {
-  const [likeData, setLikeData] = useState<any>(null);
+}: {
+  isComment: boolean;
+  postId: Id;
+  commentId?: Id;
+  fetchCommentsData: FetchComments;
+  setComments: SetComments;
+  // Offer to load more comments here.
+  show: boolean;
+  setReply: Dispatch<SetStateAction<ReplyTarget>>;
+  numComments: number;
+  showMore: boolean;
+  lenViewedComments: number;
+  isLoading: boolean;
+  socket: Socket;
+  setShowPost?: (postId: Id | null) => void;
+  showPost?: Id | null;
+  numAngry: number;
+  numDisLike: number;
+  numLike: number;
+  setPosts?: SetPosts;
+}) {
+  const [likeData, setLikeData] = useState<{
+    like_type?: LikeType | null;
+  } | null>(null);
   const activeEmoji = likeData?.like_type;
   const { messageApi, fetchUserData, userData } = useUserContext();
+  const signedIn = Boolean(userData);
   useEffect(
     function () {
-      if (userData?.user_id) getLike(setLikeData, postId, commentId);
+      if (!signedIn) return;
+      getLike(postId, commentId).then(setLikeData, function () {
+        // Without the user's reaction the buttons just show no highlight.
+      });
     },
-    [userData, commentId, postId],
+    [signedIn, commentId, postId],
   );
   async function react(likeType: LikeType) {
-    if (!userData?.user_id)
-      return messageApi.open({
+    if (!userData) {
+      messageApi.open({
         key: 1,
         type: "warning",
         content: "you need to login first",
         duration: 3,
       });
+      return;
+    }
     const counts = await submitLike({
       likeType,
       postId,
@@ -78,166 +150,157 @@ function CommentActions({
     const { like_emoji, dislike, angry } = counts;
     // Show the new totals on this post or comment right away.
     if (isComment)
-      setComments(function (comments?: any) {
-        return comments?.map(function (c?: any) {
-          return c?.comment_id == commentId
-            ? { ...c, like_emoji, dislike, angry }
-            : c;
-        });
+      setComments(function (comments) {
+        return (
+          comments?.map(function (c) {
+            return c.comment_id === commentId
+              ? { ...c, like_emoji, dislike, angry }
+              : c;
+          }) ?? null
+        );
       });
     else
-      setPosts(function (posts?: any) {
-        return posts?.map(function (post?: any) {
-          return post?.post_id == postId
+      setPosts?.(function (posts) {
+        return posts.map(function (post) {
+          return post.post_id === postId
             ? { ...post, like_emoji, dislike, angry }
             : post;
         });
       });
   }
-  const emojiData = [
+  const emojiData: {
+    type: LikeType;
+    total: number;
+    color: string;
+    icon: ReactNode;
+  }[] = [
     {
       type: "like",
       total: numLike,
-      color: "blue",
+      color: "text-blue-400",
       icon: (
         <ThumbsUp
           onClick={function () {
-            react("like");
+            void react("like");
           }}
-          className={`flex cursor-pointer rounded-full 
-  items-center p-0.5
-  ${
-    activeEmoji == "like"
-      ? "fill-white bg-blue-800 shadow-md"
-      : "fill-blue-400/80  hover:fill-blue-700/80 hover:shadow-lg"
-  } text-2xl`}
+          className={`flex cursor-pointer rounded-full items-center p-0.5 ${
+            activeEmoji === "like"
+              ? "fill-white bg-blue-800 shadow-md"
+              : "fill-blue-400/80 hover:fill-blue-700/80 hover:shadow-lg"
+          } text-2xl`}
         />
       ),
     },
     {
       type: "dislike",
       total: numDisLike,
-      color: " text-yellow-400 ",
+      color: "text-yellow-400",
       icon: (
         <ThumbsDown
           fill="white"
           color="red"
           onClick={function () {
-            react("dislike");
+            void react("dislike");
           }}
-          className={`flex cursor-pointer rounded-full 
-    items-center p-0.5
-  ${
-    activeEmoji == "dislike"
-      ? "fill-white bg-yellow-600 shadow-md"
-      : "fill-yellow-400/80 hover:fill-yellow-700/80 hover:shadow-lg"
-  }  text-2xl`}
+          className={`flex cursor-pointer rounded-full items-center p-0.5 ${
+            activeEmoji === "dislike"
+              ? "fill-white bg-yellow-600 shadow-md"
+              : "fill-yellow-400/80 hover:fill-yellow-700/80 hover:shadow-lg"
+          } text-2xl`}
         />
       ),
     },
     {
       type: "angry",
       total: numAngry,
-      color: "red",
+      color: "text-red-400",
       icon: (
         <Angry
           onClick={function () {
-            react("angry");
+            void react("angry");
           }}
-          className={`flex  cursor-pointer rounded-full 
-  items-center p-0.5
-  ${
-    activeEmoji == "angry"
-      ? "fill-red-100 bg-red-600 shadow-md"
-      : "fill-red-400/80 hover:shadow-lg hover:fill-red-700/80"
-  }  text-2xl`}
+          className={`flex cursor-pointer rounded-full items-center p-0.5 ${
+            activeEmoji === "angry"
+              ? "fill-red-100 bg-red-600 shadow-md"
+              : "fill-red-400/80 hover:shadow-lg hover:fill-red-700/80"
+          } text-2xl`}
         />
       ),
     },
   ];
+  const ownTarget =
+    isComment && commentId !== undefined
+      ? commentTarget(commentId)
+      : postTarget(postId);
+  function toggleReply() {
+    setReply(function (current) {
+      return current === ownTarget ? null : ownTarget;
+    });
+  }
   return (
-    <>
-      <div className="p-2">
-        <div className="flex flex-wrap gap-1 justify-between items-center">
-          <div className="flex gap-2 flex-wrap items-center">
-            <div className="flex flex-wrap gap-2 items-center bg-white p-2 rounded-lg shadow-sm">
-              {emojiData?.map(function ({ type, icon, total, color }: any) {
-                return (
-                  <div key={type}>
-                    {icon}
-                    <span className={`text-${color}-400 rounded-md p-1 z-20`}>
-                      {total}
-                    </span>
-                  </div>
-                );
-              })}
-              <div className="p-1 flex flex-col  gap-1 items-center shadow bg-blue-500/60 rounded-md">
-                <MessageCircle /> {numComments ? numComments : 0}
-              </div>
+    <div className="p-2">
+      <div className="flex flex-wrap gap-1 justify-between items-center">
+        <div className="flex gap-2 flex-wrap items-center">
+          <div className="flex flex-wrap gap-2 items-center bg-white p-2 rounded-lg shadow-sm">
+            {emojiData.map(function ({ type, icon, total, color }) {
+              return (
+                <div key={type}>
+                  {icon}
+                  <span className={`${color} rounded-md p-1 z-20`}>
+                    {total}
+                  </span>
+                </div>
+              );
+            })}
+            <div className="p-1 flex flex-col gap-1 items-center shadow bg-blue-500/60 rounded-md">
+              <MessageCircle /> {numComments}
             </div>
           </div>
-          {show && showMore && (
-            <div
-              onClick={function () {
-                fetchCommentsData({
-                  postId,
-                  limit: lenViewedComments + 5,
-                });
-                if (!isComment) setShowPost(postId);
-              }}
-              className="cursor-pointer p-2 rounded-lg hover:bg-gray-600 
-          bg-gray-500 flex flex-wrap justify-center items-center gap-1"
-            >
-              {isLoading ? (
-                <Loader2 className="animate-spin" />
-              ) : (
-                <CircleArrowDown
-                  className="flex hover:shadow-lg cursor-pointer 
-                rounded-full hover:bg-gray-900 items-center 
-                text-gray-100 text-xl"
-                />
-              )}
-              <span className="hidden sm:inline-block">
-                Show {isComment ? "More Comments" : "Comments"}
-              </span>
-            </div>
-          )}
-          {!isComment ? (
-            <div
-              onClick={function () {
-                setShowPost(postId);
-                if (showPost != postId)
-                  setTimeout(function () {
-                    setReply(function (val?: any) {
-                      return val === postId ? false : postId;
-                    });
-                  }, 100);
-                else
-                  setReply(function (val?: any) {
-                    return val === postId ? false : postId;
-                  });
-              }}
-              className="cursor-pointer p-2 rounded-lg text-gray-700 hover:bg-gray-100 bg-white"
-            >
-              Comment
-            </div>
-          ) : (
-            <Reply
-              onClick={function () {
-                setReply(function (val?: any) {
-                  return val === commentId ? false : commentId;
-                });
-              }}
-              className="flex hover:shadow-lg cursor-pointer 
-            rounded-full hover:text-blue-700 items-center 
-            text-blue-600 text-xl"
-            />
-          )}
         </div>
+        {show && showMore && (
+          <div
+            onClick={function () {
+              void fetchCommentsData({
+                postId,
+                limit: lenViewedComments + 5,
+              });
+              if (!isComment) setShowPost?.(postId);
+            }}
+            className="cursor-pointer p-2 rounded-lg hover:bg-gray-600 bg-gray-500 flex flex-wrap justify-center items-center gap-1"
+          >
+            {isLoading ? (
+              <Loader2 className="animate-spin" />
+            ) : (
+              <CircleArrowDown className="flex hover:shadow-lg cursor-pointer rounded-full hover:bg-gray-900 items-center text-gray-100 text-xl" />
+            )}
+            <span className="hidden sm:inline-block">
+              Show {isComment ? "More Comments" : "Comments"}
+            </span>
+          </div>
+        )}
+        {!isComment ? (
+          <div
+            onClick={function () {
+              setShowPost?.(postId);
+              // Let the popup open before the reply box appears in it.
+              if (showPost !== postId) setTimeout(toggleReply, 100);
+              else toggleReply();
+            }}
+            className="cursor-pointer p-2 rounded-lg text-gray-700 hover:bg-gray-100 bg-white"
+          >
+            Comment
+          </div>
+        ) : (
+          <Reply
+            onClick={toggleReply}
+            className="flex hover:shadow-lg cursor-pointer rounded-full hover:text-blue-700 items-center text-blue-600 text-xl"
+          />
+        )}
       </div>
-    </>
+    </div>
   );
 }
+
 function ReplyBox({
   isComment,
   setReply,
@@ -246,21 +309,26 @@ function ReplyBox({
   fetchCommentsData,
   socket,
   lenViewedComments,
-  makeComment,
   setLen,
-}: any) {
+}: {
+  isComment: boolean;
+  setReply: Dispatch<SetStateAction<ReplyTarget>>;
+  postId: Id;
+  commentId?: Id;
+  fetchCommentsData: FetchComments;
+  socket: Socket;
+  lenViewedComments: number;
+  setLen: Dispatch<SetStateAction<number>>;
+}) {
   const { userData, messageApi, fetchUserData } = useUserContext();
-  const [emojiOpen, setEmojiOpen] = useState<any>(null);
-  const userid = userData?.user_id;
-  const [content, setContent] = useState<any>(null);
+  const [emojiOpen, setEmojiOpen] = useState(false);
+  const [content, setContent] = useState("");
   const [showWarn, setShowWarn] = useState(false);
   return (
     <div
-      className={`
-      ${makeComment == commentId || makeComment == postId ? "z-20" : ""}
-        ${
-          isComment ? "pl-5 sm:pl-10 bg-gray-700" : "pl-5 sm:pl-10 bg-white"
-        } mr-1 rounded-lg relative`}
+      className={`z-20 ${
+        isComment ? "pl-5 sm:pl-10 bg-gray-700" : "pl-5 sm:pl-10 bg-white"
+      } mr-1 rounded-lg relative`}
     >
       <div
         className={`p-2 flex justify-between ${
@@ -269,18 +337,16 @@ function ReplyBox({
       >
         <div className="flex justify-left items-center gap-1">
           <UserAvatar src={userData?.img_url} userType={userData?.user_type} />
-          {userData?.nick_name || "user"}
+          {userData?.nick_name ?? "user"}
         </div>
         <div className="flex justify-center items-center">
           <MessageSquareX
             onClick={function () {
-              setReply(function () {
-                return false;
-              });
+              setReply(null);
             }}
-            className={`flex hover:shadow-lg cursor-pointer 
-          rounded-full hover:text-red-700 items-center 
-          ${isComment ? "text-gray-100" : "text-gray-700"} text-3xl`}
+            className={`flex hover:shadow-lg cursor-pointer rounded-full hover:text-red-700 items-center ${
+              isComment ? "text-gray-100" : "text-gray-700"
+            } text-3xl`}
           />
         </div>
       </div>
@@ -288,18 +354,19 @@ function ReplyBox({
         <Input.TextArea
           className="rounded-xl h-20 sm:w-1/2"
           value={content}
-          onChange={function (e?: any) {
-            setContent(e?.target?.value);
+          onChange={function (event) {
+            setContent(event.target.value);
           }}
         />
         <div className="p-3 flex justify-between gap-2">
           <Button
-            className="rounded-lg justify-center font-medium flex items-center border border-blue-600 text-white m-0
-          py-4 bg-blue-500/60 hover:bg-blue-400
-        "
-            onClick={async function () {
-              if (!userid || !content) return setShowWarn(true);
-              const sent = await submitComment({
+            className="rounded-lg justify-center font-medium flex items-center border border-blue-600 text-white m-0 py-4 bg-blue-500/60 hover:bg-blue-400"
+            onClick={function () {
+              if (!userData || !content) {
+                setShowWarn(true);
+                return;
+              }
+              void submitComment({
                 user: userData,
                 content,
                 postId,
@@ -307,48 +374,36 @@ function ReplyBox({
                 socket,
                 messageApi,
                 fetchUserData,
+              }).then(function (sent) {
+                if (!sent) return;
+                // Load one more so the new comment shows up in the list.
+                void fetchCommentsData(
+                  { postId, limit: lenViewedComments + 1 },
+                  { silent: true },
+                );
+                setLen(function (len) {
+                  return len + 1;
+                });
+                setReply(null);
               });
-              if (!sent) return;
-              // Load one more so the new comment shows up in the list.
-              fetchCommentsData(
-                { postId, limit: lenViewedComments + 1 },
-                { silent: true },
-              );
-              setLen(function (val?: any) {
-                return val + 1;
-              });
-              setReply(false);
             }}
           >
             send
           </Button>
           <div>
-            {emojiOpen ? (
-              <Smile
-                onClick={function () {
-                  setEmojiOpen(function (val?: any) {
-                    return !val;
-                  });
-                }}
-                className={`flex cursor-pointer items-center text-3xl ${
-                  emojiOpen ? "text-blue-700" : "text-blue-400"
-                }`}
-              />
-            ) : (
-              <Smile
-                onClick={function () {
-                  setEmojiOpen(function (val?: any) {
-                    return !val;
-                  });
-                }}
-                className={`flex cursor-pointer items-center text-3xl ${
-                  emojiOpen ? "text-blue-700" : "text-blue-400"
-                }`}
-              />
-            )}
+            <Smile
+              onClick={function () {
+                setEmojiOpen(function (open) {
+                  return !open;
+                });
+              }}
+              className={`flex cursor-pointer items-center text-3xl ${
+                emojiOpen ? "text-blue-700" : "text-blue-400"
+              }`}
+            />
           </div>
         </div>
-        {(!userid || !content) && showWarn && (
+        {(!userData || !content) && showWarn && (
           <Alert
             className="bg-red-400 mt-2"
             closable={{
@@ -359,7 +414,7 @@ function ReplyBox({
             }}
             description={
               <span className="text-white font-medium">
-                {!userid
+                {!userData
                   ? "Please Sign up or login to use these features"
                   : "type any comment to submit"}
               </span>
@@ -370,79 +425,78 @@ function ReplyBox({
     </div>
   );
 }
+
 function CommentTemplate({
+  comment,
   postId,
-  commentId,
   makeComment,
-  isComment,
   show,
   setComments,
   setMakeComment,
-  commentid,
-  userid,
-  userType,
-  order,
-  numComments,
-  content,
-  issuedTime,
-  imgUrl,
-  nickname,
-  numAngry,
-  numDisLike,
-  numLike,
   fetchCommentsData,
   showMore,
   socket,
   lenViewedComments,
   isLoading,
   setLen,
-}: any) {
+}: {
+  comment: Comment;
+  postId: Id;
+  makeComment: ReplyTarget;
+  // The last comment offers to load more.
+  show: boolean;
+  setComments: SetComments;
+  setMakeComment: Dispatch<SetStateAction<ReplyTarget>>;
+  fetchCommentsData: FetchComments;
+  showMore: boolean;
+  socket: Socket;
+  lenViewedComments: number;
+  isLoading: boolean;
+  setLen: Dispatch<SetStateAction<number>>;
+}) {
+  const {
+    comment_id: commentId,
+    user_id: userid,
+    img_url: imgUrl,
+    nick_name: nickname,
+    content,
+    issued_time: issuedTime,
+    num_replies: numComments,
+    angry: numAngry,
+    dislike: numDisLike,
+    like_emoji: numLike,
+  } = comment;
+  const replying = makeComment === commentTarget(commentId);
   return (
     <div
-      className={`rounded-lg
-    ${
-      commentId === makeComment ? "relative" : ""
-    } pl-5 sm:pl-10 bg-white pt-5 pb-2 ${show ? "" : "border-b-2"}`}
+      className={`rounded-lg ${
+        replying ? "relative" : ""
+      } pl-5 sm:pl-10 bg-white pt-5 pb-2 ${show ? "" : "border-b-2"}`}
     >
-      <div
-        className={`p-1 flex gap-1 flex-wrap justify-between ${
-          isComment ? "mr-1 text-gray-700" : "text-white"
-        } rounded`}
-      >
+      <div className="p-1 flex gap-1 flex-wrap justify-between mr-1 text-gray-700 rounded">
         <Link
-          to={`/profile/${userid}`}
-          className={`flex hover:text-gray-100 justify-left  ${
-            isComment ? "text-gray-700" : "text-white"
-          }  items-center gap-2`}
+          to={`/profile/${String(userid)}`}
+          className="flex hover:text-gray-100 justify-left text-gray-700 items-center gap-2"
         >
-          <UserAvatar src={imgUrl} userType={userType} />
+          <UserAvatar src={imgUrl} />
           {nickname || "Message 1"}
         </Link>
         <div className="flex justify-left items-center gap-2">
-          <span
-            className={`text-xs ${isComment ? "text-gray-700" : "text-gray-300"}`}
-          >
+          <span className="text-xs text-gray-700">
             {new Date(issuedTime).toLocaleString()}
           </span>
-          <Clock
-            className={`flex hover:shadow-lg cursor-pointer 
-                   hover:bg-gray-900 items-center 
-                  ${isComment ? "text-gray-700" : "text-gray-300"} text-sm`}
-          />
+          <Clock className="flex hover:shadow-lg cursor-pointer hover:bg-gray-900 items-center text-gray-700 text-sm" />
         </div>
       </div>
-      <div className={`p-3 text-gray-600`}>{content || "Message 1"}</div>
+      <div className="p-3 text-gray-600">{content || "Message 1"}</div>
 
-      {makeComment === commentId && (
+      {replying && (
         <ReplyBox
           commentId={commentId}
           postId={postId}
-          isComment={isComment}
-          makeComment={makeComment}
+          isComment
           setReply={setMakeComment}
           fetchCommentsData={fetchCommentsData}
-          userid={userid}
-          commentid={commentid}
           socket={socket}
           setLen={setLen}
           lenViewedComments={lenViewedComments}
@@ -450,7 +504,7 @@ function CommentTemplate({
       )}
       <CommentActions
         show={show}
-        isComment={isComment}
+        isComment
         setReply={setMakeComment}
         setComments={setComments}
         fetchCommentsData={fetchCommentsData}
@@ -459,7 +513,6 @@ function CommentTemplate({
         numDisLike={numDisLike}
         numLike={numLike}
         commentId={commentId}
-        order={order}
         showMore={showMore}
         numComments={numComments}
         lenViewedComments={lenViewedComments}
@@ -469,9 +522,22 @@ function CommentTemplate({
     </div>
   );
 }
+
+export interface PostFields {
+  postId: Id;
+  userid: Id;
+  imgUrl: string;
+  nickname: string;
+  numAngry: number;
+  numLike: number;
+  numDisLike: number;
+  content: string;
+  issuedTime: string;
+  postImg: string | null;
+}
+
 function PostTemplate({
   userid,
-  userType,
   setPosts,
   postId,
   imgUrl,
@@ -488,9 +554,7 @@ function PostTemplate({
   fetchCommentsData,
   makeComment,
   setMakeComment,
-  order,
   show,
-  isComment,
   postImg,
   socket,
   lenViewedComments,
@@ -498,11 +562,28 @@ function PostTemplate({
   setShowPost,
   showPost,
   setLen,
-}: any) {
-  const [showPopUp, setShowPopUp] = useState(false);
+}: PostFields & {
+  setPosts: SetPosts;
+  numComments: number;
+  showMore: boolean;
+  setComments: SetComments;
+  comments: Comment[];
+  fetchCommentsData: FetchComments;
+  makeComment: ReplyTarget;
+  setMakeComment: Dispatch<SetStateAction<ReplyTarget>>;
+  show: boolean;
+  socket: Socket;
+  lenViewedComments: number;
+  isLoading: boolean;
+  setShowPost: (postId: Id | null) => void;
+  showPost: Id | null;
+  setLen: Dispatch<SetStateAction<number>>;
+}) {
+  // Shows the full text once the popup has finished opening.
+  const [showPopUp, setShowPopUp] = useState<Id | null>(null);
   useEffect(
     function () {
-      if (showPost != postId) return;
+      if (showPost !== postId) return;
       const timeId = setTimeout(function () {
         setShowPopUp(postId);
       }, 400);
@@ -512,74 +593,56 @@ function PostTemplate({
     },
     [showPost, postId],
   );
-  const visiblePop = showPost == postId ? showPopUp : false;
+  const fullText = showPost === postId && showPopUp === postId;
+  const replying = makeComment === postTarget(postId);
   return (
     <div
-      className={`rounded-lg ${
-        postId === makeComment ? "relative" : ""
-      } bg-gray-700 ${
-        comments?.length >= 1 && "border-b-2 border-gray-100"
+      className={`rounded-lg ${replying ? "relative" : ""} bg-gray-700 ${
+        comments.length >= 1 ? "border-b-2 border-gray-100" : ""
       } top-0 left-0`}
     >
-      <div
-        className={`p-1 flex gap-1 flex-wrap justify-between text-white rounded`}
-      >
+      <div className="p-1 flex gap-1 flex-wrap justify-between text-white rounded">
         <Link
-          to={`/profile/${userid}`}
-          className={`flex hover:text-gray-100 justify-left text-white
-        items-center gap-2`}
+          to={`/profile/${String(userid)}`}
+          className="flex hover:text-gray-100 justify-left text-white items-center gap-2"
         >
-          <UserAvatar src={imgUrl} userType={userType} />
+          <UserAvatar src={imgUrl} />
           {nickname || "Message 1"}
         </Link>
         <div className="flex justify-left items-center gap-2">
           <span className="text-xs text-gray-300">
             {new Date(issuedTime).toLocaleString()}
           </span>
-          <Clock
-            className={`flex hover:shadow-lg cursor-pointer 
-                   hover:bg-gray-900 items-center 
-                  ${isComment ? "text-gray-700" : "text-gray-300"} text-sm`}
-          />
+          <Clock className="flex hover:shadow-lg cursor-pointer hover:bg-gray-900 items-center text-gray-300 text-sm" />
         </div>
-        {!!comments?.length && (
+        {comments.length > 0 && (
           <div
             onClick={function () {
-              setComments(function () {
-                return [];
-              });
+              setComments([]);
             }}
-            className="cursor-pointer p-2 rounded-lg hover:bg-gray-600 
-                  bg-gray-500 flex text-white justify-center items-center gap-1"
+            className="cursor-pointer p-2 rounded-lg hover:bg-gray-600 bg-gray-500 flex text-white justify-center items-center gap-1"
           >
-            <CircleArrowUp
-              className="flex hover:shadow-lg cursor-pointer 
-            rounded-full hover:bg-gray-900 items-center 
-            text-gray-100 text-xl"
-            />
+            <CircleArrowUp className="flex hover:shadow-lg cursor-pointer rounded-full hover:bg-gray-900 items-center text-gray-100 text-xl" />
             <span className="hidden sm:inline-block">Hide Comments</span>
           </div>
         )}
       </div>
-      <div
-        className={`px-3 py-3 text-center text-base sm:text-lg text-gray-300`}
-      >
+      <div className="px-3 py-3 text-center text-base sm:text-lg text-gray-300">
         {!content ? (
           "Message"
-        ) : visiblePop == postId ? (
+        ) : fullText ? (
           content
         ) : (
           <>
-            {content?.slice(0, 300)}&nbsp;
-            {content?.length > 300 ? (
+            {content.slice(0, 300)}&nbsp;
+            {content.length > 300 ? (
               <>
                 ...{" "}
                 <div
                   onClick={function () {
                     setShowPost(postId);
                   }}
-                  className="inline-block p-2 mt-2 bg-gray-800 hover:bg-gray-700 shadow cursor-pointer
-              text-white rounded"
+                  className="inline-block p-2 mt-2 bg-gray-800 hover:bg-gray-700 shadow cursor-pointer text-white rounded"
                 >
                   Show More
                 </div>
@@ -592,22 +655,20 @@ function PostTemplate({
         <div className="text-center w-full">
           <Image
             className="h-36 rounded-xl select-none"
-            onClick={function (e?: any) {
-              e.stopPropagation();
-              e.preventDefault();
+            onClick={function (event) {
+              event.stopPropagation();
+              event.preventDefault();
             }}
             src={postImg}
           />
         </div>
       )}
-      {makeComment === postId && (
+      {replying && (
         <ReplyBox
           postId={postId}
-          isComment={isComment}
+          isComment={false}
           setReply={setMakeComment}
-          makeComment={makeComment}
           fetchCommentsData={fetchCommentsData}
-          userid={userid}
           socket={socket}
           setLen={setLen}
           lenViewedComments={lenViewedComments}
@@ -618,7 +679,7 @@ function PostTemplate({
         show={show}
         showPost={showPost}
         setShowPost={setShowPost}
-        isComment={isComment}
+        isComment={false}
         setReply={setMakeComment}
         setComments={setComments}
         numAngry={numAngry}
@@ -626,7 +687,6 @@ function PostTemplate({
         numLike={numLike}
         fetchCommentsData={fetchCommentsData}
         postId={postId}
-        order={order}
         showMore={showMore}
         numComments={numComments}
         lenViewedComments={lenViewedComments}
@@ -636,19 +696,8 @@ function PostTemplate({
     </div>
   );
 }
+
 export default function Post({
-  postId,
-  imgUrl,
-  userType,
-  nickname,
-  numAngry,
-  numLike,
-  numDisLike,
-  content,
-  issuedTime,
-  numComments,
-  userid,
-  postImg,
   socket,
   setShowPost,
   showPost,
@@ -657,68 +706,83 @@ export default function Post({
   setMakeComment,
   makeComment,
   showPopUp,
-}: any) {
+  numComments,
+  ...post
+}: PostFields & {
+  socket: Socket;
+  // The post shown in the popup, if any.
+  setShowPost: (postId: Id | null) => void;
+  showPost: Id | null;
+  setPosts: SetPosts;
+  numComments: number;
+  setLen: Dispatch<SetStateAction<number>>;
+  setMakeComment: Dispatch<SetStateAction<ReplyTarget>>;
+  makeComment: ReplyTarget;
+  // The post whose popup is open (stays set while it slides away).
+  showPopUp: Id | null;
+}) {
+  const { postId } = post;
   const { isLoading, fetchCommentsData, commentsData, setCommentsData } =
     useCommentsContext();
+  // Comments are only listed inside the open popup.
+  const inPopUp = showPopUp === postId;
+  const comments = inPopUp ? (commentsData ?? []) : [];
   useEffect(
     function () {
-      if (!showPost || showPost !== postId)
-        setTimeout(function () {
-          setCommentsData([]);
-          setMakeComment(null);
-        }, 400);
+      if (showPost === postId) return;
+      const timeId = setTimeout(function () {
+        setCommentsData([]);
+        setMakeComment(null);
+      }, 400);
+      return function () {
+        clearTimeout(timeId);
+      };
     },
     [showPost, postId, setCommentsData, setMakeComment],
   );
   useEffect(
     function () {
-      if (postId) {
-        function receive_comment(data?: any) {
-          const isUpdate = data?.updateEmoji;
-          if (isUpdate) {
-            const { comment_id, like_emoji, dislike, angry } = data;
-            setCommentsData(function (comments?: any) {
-              return comments?.map(function (c?: any) {
-                return c?.comment_id == comment_id
-                  ? {
-                      ...c,
-                      like_emoji: like_emoji || 0,
-                      dislike: dislike || 0,
-                      angry: angry || 0,
-                    }
+      function receiveComment(data: Comment | ReactionUpdate) {
+        if ("updateEmoji" in data) {
+          const { comment_id, like_emoji, dislike, angry } = data;
+          setCommentsData(function (current) {
+            return (
+              current?.map(function (c) {
+                return c.comment_id === comment_id
+                  ? { ...c, like_emoji, dislike, angry }
                   : c;
-              });
-            });
-          } else {
-            if (
-              !commentsData?.some(function ({ comment_id }: any) {
-                return comment_id == data?.comment_id;
-              })
-            ) {
-              const reply_on = data?.reply_on;
-              setCommentsData(function (c?: any) {
-                return c?.length
-                  ? [
-                      data,
-                      ...c.map(function (c1?: any) {
-                        return c1.comment_id == reply_on
-                          ? { ...c1, num_replies: c1.num_replies + 1 }
-                          : c1;
-                      }),
-                    ]
-                  : [data];
-              });
-              setLen(function (val?: any) {
-                return val + 1;
-              });
-            }
-          }
+              }) ?? null
+            );
+          });
+          return;
         }
-        socket.on(`receive_comment_${postId}`, receive_comment);
-        return function () {
-          socket.off(`receive_comment_${postId}`, receive_comment);
-        };
+        if (
+          commentsData?.some(function ({ comment_id }) {
+            return comment_id === data.comment_id;
+          })
+        )
+          return;
+        setCommentsData(function (current) {
+          if (!current?.length) return [data];
+          // A reply also bumps its parent's reply count.
+          return [
+            data,
+            ...current.map(function (c) {
+              return c.comment_id === data.reply_on
+                ? { ...c, num_replies: c.num_replies + 1 }
+                : c;
+            }),
+          ];
+        });
+        setLen(function (len) {
+          return len + 1;
+        });
       }
+      const event = `receive_comment_${String(postId)}`;
+      socket.on(event, receiveComment);
+      return function () {
+        socket.off(event, receiveComment);
+      };
     },
     [commentsData, postId, setCommentsData, setLen, socket],
   );
@@ -726,85 +790,44 @@ export default function Post({
     <div className="p-2 grow w-full rounded-lg bg-gray-700">
       <div className="flex relative flex-col">
         <PostTemplate
+          {...post}
           setPosts={setPosts}
           setShowPost={setShowPost}
           showPost={showPost}
-          postImg={postImg}
-          userid={userid}
-          userType={userType}
-          postId={postId}
-          imgUrl={imgUrl}
-          nickname={nickname}
-          numAngry={numAngry}
           setLen={setLen}
-          numDisLike={numDisLike}
-          numLike={numLike}
           numComments={numComments}
-          showMore={numComments ? true : false}
-          content={content}
+          showMore={numComments > 0}
           setComments={setCommentsData}
-          issuedTime={issuedTime}
           socket={socket}
-          order={"c"}
           fetchCommentsData={fetchCommentsData}
           makeComment={makeComment}
           setMakeComment={setMakeComment}
-          show={showPopUp == postId ? !commentsData?.length : true}
-          comments={showPopUp == postId ? commentsData : []}
-          lenViewedComments={
-            showPopUp == postId ? commentsData?.length || 0 : 0
-          }
+          show={inPopUp ? !commentsData?.length : true}
+          comments={comments}
+          lenViewedComments={comments.length}
           isLoading={isLoading}
         />
 
         <div
-          className={`flex flex-col rounded-lg p-1 max-h-96
-          sm:bg-gray-700  transition-all duration-500 ${
+          className={`flex flex-col rounded-lg p-1 max-h-96 sm:bg-gray-700 transition-all duration-500 ${
             commentsData?.length ? "" : "max-h-0 p-2"
           } overflow-auto gap-2 top-full w-full scroll--v scroll--v--comment`}
         >
-          {(showPopUp == postId ? commentsData : [])?.map(function (
-            {
-              comment_id: commentId,
-              user_id: userid,
-              user_type: userType,
-              img_url: imgUrl,
-              nick_name: nickname,
-              content,
-              issued_time: issuedTime,
-              num_replies: numReplies,
-              angry: numAngry,
-              dislike: numDisLike,
-              like_emoji: numLike,
-            }: any,
-            i?: any,
-          ) {
+          {comments.map(function (comment, i) {
             return (
               <CommentTemplate
-                key={commentId}
+                key={comment.comment_id}
+                comment={comment}
                 socket={socket}
                 setLen={setLen}
-                userid={userid}
-                userType={userType}
                 postId={postId}
-                imgUrl={imgUrl}
-                nickname={nickname}
-                numAngry={numAngry}
-                numLike={numLike}
-                numDisLike={numDisLike}
-                showMore={numComments > commentsData?.length ? true : false}
-                content={content}
-                issuedTime={issuedTime}
-                order={i + 1}
-                numComments={numReplies}
+                showMore={numComments > comments.length}
                 fetchCommentsData={fetchCommentsData}
-                commentId={commentId}
-                isComment
                 setComments={setCommentsData}
                 setMakeComment={setMakeComment}
                 makeComment={makeComment}
-                show={i == commentsData.length - 1 ? true : false}
-                lenViewedComments={commentsData?.length}
+                show={i === comments.length - 1}
+                lenViewedComments={comments.length}
                 isLoading={isLoading}
               />
             );

@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { cx } from "@/components/ui/cx";
+import { useState, type Key, type ReactNode } from "react";
+import { cx } from "@/utils/cx";
 
 export default function TableGrid({
   noGap,
@@ -9,16 +9,25 @@ export default function TableGrid({
   maxPageSize,
   isFull,
   heightFull,
-}: any) {
-  const pageSize = maxPageSize || 10;
+}: {
+  noGap?: boolean;
+  noMargin?: boolean;
+  customGrid?: string;
+  items?: { key: Key; element: ReactNode }[];
+  maxPageSize?: number;
+  // Keys of the items that take a full row.
+  isFull?: { key: Key }[];
+  heightFull?: boolean;
+}) {
+  const pageSize = maxPageSize ?? 10;
   const [page, setPage] = useState(1);
-  const total = items?.length || 0;
-  const needPaging = total > pageSize;
-  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  const list = items ?? [];
+  const needPaging = list.length > pageSize;
+  const totalPages = Math.max(1, Math.ceil(list.length / pageSize));
   const current = Math.min(page, totalPages);
   const pageItems = needPaging
-    ? items.slice((current - 1) * pageSize, current * pageSize)
-    : items;
+    ? list.slice((current - 1) * pageSize, current * pageSize)
+    : list;
 
   return (
     <div className={cx("w-full", !noMargin && "m-4")}>
@@ -28,16 +37,16 @@ export default function TableGrid({
           noGap ? "gap-0" : "gap-1",
         )}
       >
-        {pageItems?.map(function ({ key, element }: any) {
-          const full = isFull?.some(function (item: any) {
-            return item.key == key;
+        {pageItems.map(function ({ key, element }) {
+          const full = isFull?.some(function (item) {
+            return item.key === key;
           });
           return (
             <div
               key={key}
               className={cx(
                 "flex grow rounded",
-                customGrid ? customGrid : "xl:w-1/3 2xl:w-1/4",
+                customGrid ?? "xl:w-1/3 2xl:w-1/4",
                 full && "w-full",
                 heightFull && "h-full",
               )}
@@ -49,10 +58,7 @@ export default function TableGrid({
       </div>
       {needPaging ? (
         <div className="mt-3 flex justify-center gap-2">
-          {Array.from({ length: totalPages }).map(function (
-            _: any,
-            index: number,
-          ) {
+          {Array.from({ length: totalPages }).map(function (_, index) {
             const number = index + 1;
             return (
               <button

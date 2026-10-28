@@ -1,20 +1,33 @@
+import type { StreamManager } from "openvidu-browser";
 import { Component } from "react";
 import OpenViduVideoComponent from "@/components/meeting/ov-video";
 
-export default class UserVideoComponent extends Component<any> {
-  getNicknameTag() {
-    const str = this.props.streamManager.stream.connection.data.split("%/%");
-    return JSON.parse(str[0]).clientData;
+// The name each participant sent when joining, stored as
+// '{"clientData": "<name>"}' in the connection data.
+function nicknameOf(streamManager: StreamManager) {
+  const [first = ""] = streamManager.stream.connection.data.split("%/%");
+  try {
+    const parsed: unknown = JSON.parse(first);
+    if (typeof parsed === "object" && parsed && "clientData" in parsed)
+      return String(parsed.clientData);
+  } catch {
+    // Not JSON: show nothing rather than break the call.
   }
+  return "";
+}
 
-  render() {
+export default class UserVideoComponent extends Component<{
+  streamManager?: StreamManager;
+}> {
+  override render() {
+    const { streamManager } = this.props;
     return (
       <div>
-        {this.props.streamManager !== undefined ? (
+        {streamManager ? (
           <div className="relative">
-            <OpenViduVideoComponent streamManager={this.props.streamManager} />
+            <OpenViduVideoComponent streamManager={streamManager} />
             <div className="absolute rounded-br bg-neutral-50 px-1 font-bold text-neutral-500">
-              <p className="m-0">{this.getNicknameTag()}</p>
+              <p className="m-0">{nicknameOf(streamManager)}</p>
             </div>
           </div>
         ) : null}

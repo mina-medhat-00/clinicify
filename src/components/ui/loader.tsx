@@ -1,6 +1,6 @@
 import { Loader2 } from "lucide-react";
 
-export default function Loader({ gray }: any) {
+export default function Loader({ gray }: { gray?: boolean }) {
   return (
     <div className="my-4 flex w-full items-center justify-center">
       <Loader2

@@ -1,12 +1,11 @@
 import { useEffect } from "react";
+import type { Socket } from "socket.io-client";
 import CountdownTimer from "@/components/appointment/appointment-countdown-timer";
+import type { useAppointmentContext } from "@/contexts/appointment-context";
+import type { AppointmentState } from "@/types/appointment";
+import type { Id } from "@/types/user";
+import { slotClock } from "@/utils/time";
 
-function adjustTime(date?: any, time?: any, timeZone?: any) {
-  return new Date(`${date} ${time} ${timeZone}`).toLocaleTimeString("en", {
-    hour: "numeric",
-    minute: "numeric",
-  });
-}
 export default function AppointmentTime({
   appointmentId,
   appointment_state,
@@ -15,12 +14,26 @@ export default function AppointmentTime({
   doctorId,
   patientId,
   updateAppointment,
-  order,
   date,
   appointment_duration,
   timeZone,
   socket,
-}: any) {
+}: {
+  appointmentId: Id;
+  appointment_state: AppointmentState;
+  schedule_date: string;
+  slot_time: string;
+  doctorId: Id;
+  patientId: Id;
+  updateAppointment: ReturnType<
+    typeof useAppointmentContext
+  >["updateAppointment"];
+  // The day the list shows (the API returns that day's list).
+  date: string;
+  appointment_duration: number;
+  timeZone: string;
+  socket: Socket;
+}) {
   // When a booked appointment starts, or a running one ends, ask the API to
   // move it to its next state.
   useEffect(
@@ -30,12 +43,15 @@ export default function AppointmentTime({
       ).getTime();
       if (isNaN(startsAt)) return;
       function advance() {
-        updateAppointment({ doctorId, patientId, appointmentId }, { date });
+        void updateAppointment(
+          { doctorId, patientId, appointmentId },
+          { date },
+        );
       }
       let at: number;
-      if (appointment_state == "booked") at = startsAt;
-      else if (appointment_state == "running") {
-        socket?.emit("update_appointments", {
+      if (appointment_state === "booked") at = startsAt;
+      else if (appointment_state === "running") {
+        socket.emit("update_appointments", {
           date: schedule_date,
           doctorId,
           appointmentId,
@@ -89,22 +105,22 @@ export default function AppointmentTime({
                   <td className="border-r border-gray-300 p-1">
                     {schedule_date}
                   </td>
-                  <td>{adjustTime(schedule_date, slot_time, timeZone)}</td>
+                  <td>{slotClock(schedule_date, slot_time, timeZone)}</td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
-        {(appointment_state == "booked" || appointment_state == "running") && (
+        {(appointment_state === "booked" ||
+          appointment_state === "running") && (
           <div className="text-white bg-gray-300/50 rounded-lg p-1 font-medium text-center">
             <span className="text-gray-700 font-medium text-base lg:text-lg 2xl:text-xl">
               Remaining Time
             </span>
             <hr className="border-gray-700" />
             <CountdownTimer
-              order={order}
               targetDate={
-                appointment_state == "booked"
+                appointment_state === "booked"
                   ? new Date(schedule_date + " " + slot_time + timeZone)
                   : new Date(
                       new Date(

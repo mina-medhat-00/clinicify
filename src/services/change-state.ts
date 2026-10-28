@@ -4,6 +4,7 @@ import {
   notify,
   type ServiceContext,
 } from "@/services/client";
+import type { Id } from "@/types/user";
 
 export type AccountAction = "verify" | "reject" | "delete" | "restrict";
 
@@ -11,11 +12,11 @@ type ChangeStateParams = ServiceContext & {
   action: AccountAction;
   target: "user" | "doctor";
   // The account to change; for "restrict" this is the chat to open/close.
-  id?: string | number;
+  id?: Id;
   chat?: {
-    chat_from: string | number;
-    chat_to: string | number;
-    is_open: unknown;
+    chat_from: Id;
+    chat_to: Id;
+    is_open: boolean;
   };
 };
 

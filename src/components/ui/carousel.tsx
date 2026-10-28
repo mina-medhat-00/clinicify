@@ -1,5 +1,5 @@
-import { Children, useEffect, useState } from "react";
-import { cx } from "@/components/ui/cx";
+import { Children, useEffect, useState, type ReactNode } from "react";
+import { cx } from "@/utils/cx";
 
 function Carousel({
   children,
@@ -8,7 +8,14 @@ function Carousel({
   dotPlacement = "bottom",
   dots,
   className,
-}: any) {
+}: {
+  children?: ReactNode;
+  autoplay?: boolean;
+  autoplaySpeed?: number;
+  dotPlacement?: "top" | "bottom";
+  dots?: boolean | { className?: string };
+  className?: string;
+}) {
   const slides = Children.toArray(children);
   const [index, setIndex] = useState(0);
 
@@ -45,10 +52,10 @@ function Carousel({
             dotPlacement === "bottom"
               ? "inset-x-0 bottom-2"
               : "inset-x-0 top-2",
-            dots?.className,
+            typeof dots === "object" && dots.className,
           )}
         >
-          {slides.map(function (_: any, slideIndex: number) {
+          {slides.map(function (_, slideIndex) {
             return (
               <button
                 type="button"

@@ -1,23 +1,25 @@
-import { createContext, useContext } from "react";
-import { useRemoteData } from "@/contexts/use-remote-data";
-import { api } from "@/services/client";
-import type { Feedback } from "@/types";
+import type { ReactNode } from "react";
+import { createStrictContext } from "@/utils/create-strict-context";
+import { useRemoteData } from "@/hooks/use-remote-data";
+import { apiGet } from "@/services/client";
+import type { Feedback } from "@/types/content";
 import { toQuery } from "@/utils/query";
 
-export type FeedbackQuery = { username?: string | number; limit?: number };
-
-async function getFeedback(query?: FeedbackQuery) {
-  const { data } = await api.get(`/get/feedback${toQuery(query)}`);
-  return data?.data as Feedback[];
+export interface FeedbackQuery {
+  username?: string;
+  limit?: number;
 }
 
-const FeedbackData = createContext<any>(null);
-// Loads `contextQuery` on mount unless `noDirectFetch` (the page loads it).
-export default function FeedbackContextProvider({
-  children,
-  noDirectFetch,
-  contextQuery,
-}: any) {
+function getFeedback(query?: FeedbackQuery) {
+  return apiGet<Feedback[]>(
+    `/get/feedback${toQuery(query ? { ...query } : null)}`,
+  );
+}
+
+function useFeedbackValue(
+  noDirectFetch?: boolean,
+  contextQuery?: FeedbackQuery,
+) {
   const {
     data: feedbackData,
     isLoading,
@@ -26,15 +28,25 @@ export default function FeedbackContextProvider({
   } = useRemoteData(getFeedback, {
     autoLoad: !noDirectFetch && { query: contextQuery },
   });
-  return (
-    <FeedbackData.Provider
-      value={{ isLoading, feedbackData, fetchFeedbackData, isError }}
-    >
-      {children}
-    </FeedbackData.Provider>
-  );
+  return { isLoading, feedbackData, fetchFeedbackData, isError };
 }
 
-export function useFeedbackContext() {
-  return useContext(FeedbackData);
+const [FeedbackData, useFeedbackContext] =
+  createStrictContext<ReturnType<typeof useFeedbackValue>>("FeedbackContext");
+export { useFeedbackContext };
+
+// Loads `contextQuery` on mount unless `noDirectFetch` (the page loads it).
+export default function FeedbackContextProvider({
+  children,
+  noDirectFetch,
+  contextQuery,
+}: {
+  children: ReactNode;
+  noDirectFetch?: boolean;
+  contextQuery?: FeedbackQuery;
+}) {
+  const value = useFeedbackValue(noDirectFetch, contextQuery);
+  return (
+    <FeedbackData.Provider value={value}>{children}</FeedbackData.Provider>
+  );
 }

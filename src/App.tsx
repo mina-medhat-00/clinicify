@@ -5,22 +5,20 @@ import Footer from "@/components/layout/footer";
 import Navbar from "@/components/layout/navbar";
 import Loader from "@/components/ui/loader";
 import ServerError from "@/components/ui/server-error";
-import {
-  ChatContextProvider,
-  DashboardContextProvider,
-  DoctorsContextProvider,
-  FeedbackContextProvider,
-  HomeContextProvider,
-  PostsContextProvider,
-  ProfileContextProvider,
-} from "@/contexts";
+import ChatContextProvider from "@/contexts/chat-context";
+import DashboardContextProvider from "@/contexts/dashboard-context";
+import DoctorsContextProvider from "@/contexts/doctors-context";
+import FeedbackContextProvider from "@/contexts/feedback-context";
+import HomeContextProvider from "@/contexts/home-context";
+import PostsContextProvider from "@/contexts/posts-context";
+import ProfileContextProvider from "@/contexts/profile-context";
 import AppointmentContextProvider from "@/contexts/appointment-context";
 import { useUserContext } from "@/contexts/user-context";
 import AdminDashboard from "@/pages/admin-dashboard";
 import Appointments from "@/pages/appointments";
 import Chat from "@/pages/chat";
 import DoctorDashboard from "@/pages/doctor-dashboard";
-import Doctors from "@/pages/doctors";
+import Doctors, { type DoctorsHandle } from "@/pages/doctors";
 import Feedbacks from "@/pages/feedbacks";
 import HomePage from "@/pages/home-page";
 import Login from "@/pages/login";
@@ -32,7 +30,7 @@ import UserProfile from "@/pages/user-profile";
 
 function handleRoute(
   element: ReactNode,
-  permission: any,
+  permission: boolean,
   isLoading: boolean,
   isError: boolean,
   isLoggedIn: boolean,
@@ -54,13 +52,14 @@ function handleRoute(
 
 export default function App() {
   const [navActive, setNavActive] = useState(true);
-  const DoctorRef = useRef<any>(null);
+  const DoctorRef = useRef<DoctorsHandle>(null);
   const location = useLocation();
   const { userData, isLoading, isError } = useUserContext();
   const userAuth = userData;
+  const userType = userAuth?.user_type;
 
   return (
-    <div className={`overflow-x-hidden app flex flex-col min-h-screen`}>
+    <div className="overflow-x-hidden app flex flex-col min-h-screen">
       <div className="relative flex grow flex-row flex-nowrap justify-between max-md:min-h-full max-md:flex-col max-md:justify-start">
         {navActive && <Navbar DoctorRef={DoctorRef} />}
         <div className="flex w-4/5 grow flex-col bg-neutral-100 max-md:w-full">
@@ -100,10 +99,10 @@ export default function App() {
                 <ChatContextProvider>
                   <Chat />
                 </ChatContextProvider>,
-                userAuth,
+                Boolean(userAuth),
                 isLoading,
                 isError,
-                !!userAuth,
+                Boolean(userAuth),
                 location.pathname,
               )}
             />
@@ -139,10 +138,10 @@ export default function App() {
                 <AppointmentContextProvider>
                   <Appointments />
                 </AppointmentContextProvider>,
-                userAuth && userAuth?.user_type !== "admin",
+                Boolean(userType) && userType !== "admin",
                 isLoading,
                 isError,
-                !!userAuth,
+                Boolean(userAuth),
                 location.pathname,
               )}
             />
@@ -150,10 +149,10 @@ export default function App() {
               path="/admin"
               element={handleRoute(
                 <AdminDashboard />,
-                userAuth?.user_type == "admin",
+                userType === "admin",
                 isLoading,
                 isError,
-                !!userAuth,
+                Boolean(userAuth),
                 location.pathname,
               )}
             />
@@ -161,10 +160,10 @@ export default function App() {
               path="/report/problem"
               element={handleRoute(
                 <ReportProblem />,
-                !!userAuth?.user_type,
+                Boolean(userType),
                 isLoading,
                 isError,
-                !!userAuth,
+                Boolean(userAuth),
                 location.pathname,
               )}
             />
@@ -174,10 +173,10 @@ export default function App() {
                 <DashboardContextProvider>
                   <DoctorDashboard setNavActive={setNavActive} />
                 </DashboardContextProvider>,
-                userAuth?.user_type == "doctor",
+                userType === "doctor",
                 isLoading,
                 isError,
-                !!userAuth,
+                Boolean(userAuth),
                 location.pathname,
               )}
             />
@@ -194,7 +193,7 @@ export default function App() {
           </Routes>
         </div>
       </div>
-      {location.pathname == "/" && (
+      {location.pathname === "/" && (
         <div className="bg-bg-bar text-center capitalize">
           <Footer />
         </div>

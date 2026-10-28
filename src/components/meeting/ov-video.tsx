@@ -1,21 +1,25 @@
-import React, { Component } from "react";
+import type { StreamManager } from "openvidu-browser";
+import { Component, createRef } from "react";
 
-export default class OpenViduVideoComponent extends Component<any> {
-  videoRef = React.createRef<any>();
+export default class OpenViduVideoComponent extends Component<{
+  streamManager: StreamManager;
+}> {
+  videoRef = createRef<HTMLVideoElement>();
 
-  componentDidUpdate(props?: any) {
-    if (props && !!this.videoRef) {
-      this.props.streamManager.addVideoElement(this.videoRef.current);
-    }
+  override componentDidUpdate() {
+    this.attach();
   }
 
-  componentDidMount() {
-    if (this.props && !!this.videoRef) {
-      this.props.streamManager.addVideoElement(this.videoRef.current);
-    }
+  override componentDidMount() {
+    this.attach();
   }
 
-  render() {
+  attach() {
+    if (this.videoRef.current)
+      this.props.streamManager.addVideoElement(this.videoRef.current);
+  }
+
+  override render() {
     return (
       <video
         autoPlay={true}

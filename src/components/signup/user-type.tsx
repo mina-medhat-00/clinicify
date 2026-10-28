@@ -1,25 +1,27 @@
-import { Form, Input, InputNumber, Select, Switch } from "@/components/ui";
-import { useState } from "react";
+import { Form } from "@/components/ui/form";
+import { Input, InputNumber, Select, Switch } from "@/components/ui/controls";
+import { useState, type Dispatch, type SetStateAction } from "react";
 import HeaderLine from "@/components/ui/header-line";
-import { doctorSpecialtyOptions } from "@/utils/sign-data";
+import { doctorSpecialtyOptions } from "@/constants/sign-data";
 
 const { Item } = Form;
-export default function UserType({ userType, setFormValues }: any) {
+export default function UserType<T extends { moreInf?: boolean }>({
+  userType,
+  setFormValues,
+}: {
+  userType?: string;
+  setFormValues: Dispatch<SetStateAction<T>>;
+}) {
   const [moreInf, setMoreInf] = useState(false);
   return userType === "doctor" ? (
     <>
       {
         <>
           <Switch
-            onChange={function () {
-              setFormValues(function (val?: any) {
-                return {
-                  ...val,
-                  moreInf: moreInf,
-                };
-              });
-              setMoreInf(function (moreInf?: any) {
-                return moreInf;
+            onChange={function (checked) {
+              setMoreInf(checked);
+              setFormValues(function (values) {
+                return { ...values, moreInf: checked };
               });
             }}
             checked={moreInf}

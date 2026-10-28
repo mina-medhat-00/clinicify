@@ -1,45 +1,45 @@
+import type { Dayjs } from "dayjs";
 import { useState } from "react";
 import { useMediaQuery } from "react-responsive";
-import { Calendar, Checkbox, DatePicker } from "@/components/ui";
+import { Calendar, DatePicker } from "@/components/ui/calendar";
+import { Checkbox } from "@/components/ui/controls";
 
 export default function CalendarView({
-  offsetWidth,
+  offsetWidth = 0,
   selectedDate,
   handleDate,
-  colorView,
-}: any) {
+}: {
+  // Extra width (px) before switching to the compact date input.
+  offsetWidth?: number;
+  selectedDate: Dayjs | null;
+  handleDate: (date: Dayjs | null) => void;
+}) {
   const [calendarView, setCalendarView] = useState(false);
   const isMobile = useMediaQuery({
-    query: `(max-width:${300 + (offsetWidth || 0)}px)`,
+    query: `(max-width:${String(300 + offsetWidth)}px)`,
   });
   return !isMobile ? (
     <>
       <Checkbox
         onChange={function () {
-          setCalendarView(function (val?: any) {
-            return !val;
+          setCalendarView(function (value) {
+            return !value;
           });
         }}
       >
-        <span className={`text-${colorView || "black"} font-bold`}>
-          Large View
-        </span>
+        <span className="text-black font-bold">Large View</span>
       </Checkbox>
       <Calendar
         fullscreen={calendarView}
         value={selectedDate}
-        onSelect={function (val?: any) {
-          handleDate(val);
-        }}
+        onSelect={handleDate}
       />
     </>
   ) : (
     <DatePicker
       className="w-full mb-2"
       value={selectedDate}
-      onChange={function (val?: any) {
-        handleDate(val);
-      }}
+      onChange={handleDate}
     />
   );
 }

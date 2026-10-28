@@ -1,14 +1,14 @@
+import { Button, Input, Radio, Select, Space } from "@/components/ui/controls";
+import { DatePicker } from "@/components/ui/calendar";
+import { Form } from "@/components/ui/form";
+import { message } from "@/components/ui/message";
 import {
-  Button,
-  DatePicker,
-  Form,
-  Input,
-  message,
-  Radio,
-  Select,
-  Space,
   Upload,
-} from "@/components/ui";
+  type BeforeUploadResult,
+  type UploadChange,
+  type UploadFile,
+} from "@/components/ui/upload";
+import type { Dayjs } from "dayjs";
 import { ImagePlus, Lock, Mail, User } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useMediaQuery } from "react-responsive";
@@ -17,27 +17,55 @@ import UserType from "@/components/signup/user-type";
 import HeaderLine from "@/components/ui/header-line";
 import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
-import { cityOptions } from "@/utils/sign-data";
-import { prefixSelector } from "@/components/signup/signup-utils";
-import { api } from "@/services/client";
+import { cityOptions } from "@/constants/sign-data";
+import {
+  minimumAgeRule,
+  passwordRule,
+  phoneRule,
+  usernameRule,
+} from "@/utils/validators";
+import { prefixSelector } from "@/components/signup/form-selectors";
+import { api, errorData, errorStatus } from "@/services/client";
 
-function getMessage(key?: any, type?: any, content?: any, duration?: any) {
-  return {
-    key,
-    type,
-    content,
-    duration,
-  };
+interface SignupValues {
+  nickname: string;
+  username: string;
+  password: string;
+  confirm: string;
+  gender: string;
+  birth: Dayjs | null;
+  address: { city: string; street: string };
+  prefix: string;
+  phone: string;
+  email: string;
+  images?: UploadFile[];
+  userType: "user" | "doctor";
+  // Doctors only.
+  specialty?: string;
+  currentHospital?: string;
+  graduationYear?: number | null;
+  experienceYears?: number | null;
+  fees?: number | null;
+  salary?: number | null;
+  about?: string;
+  achievement?: string;
+  // The doctor opened the optional fields.
+  moreInf?: boolean;
 }
 
-function beforeUpload(file?: any): any {
-  const isImg = [
-    "image/jpeg",
-    "image/jpg",
-    "image/png",
-    "image/gif",
-    "image/webp",
-  ].includes(file.type);
+// "error1": the server could not be reached.
+type UsernameState = "" | "validating" | "success" | "error" | "error1";
+
+const imageTypes = [
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/gif",
+  "image/webp",
+];
+
+function beforeUpload(file: File): BeforeUploadResult {
+  const isImg = imageTypes.includes(file.type);
   const isLt5M = file.size / 1024 / 1024 <= 5;
   if (!isImg) message.error("You can only upload images", 4);
   else if (!isLt5M) message.error("Image must smaller than 5MB!", 4);
@@ -51,19 +79,21 @@ function readAsDataUrl(file: File) {
     reader.onload = function () {
       resolve(reader.result as string);
     };
-    reader.onerror = reject;
+    reader.onerror = function () {
+      reject(new Error("cannot read the image"));
+    };
     reader.readAsDataURL(file);
   });
 }
 
-function normFile(e?: any, setImageUrls?: any) {
-  if (Array.isArray(e)) {
-    return e;
-  }
-  const files = e?.fileList ?? [];
+function normFile(
+  change: UploadChange,
+  setImageUrls: (urls: string[]) => void,
+) {
+  const files = change.fileList;
   // Store the data URLs only once every file has been read.
   Promise.all(
-    files.map(function (file?: any) {
+    files.map(function (file) {
       return readAsDataUrl(file.originFileObj);
     }),
   )
@@ -74,16 +104,17 @@ function normFile(e?: any, setImageUrls?: any) {
   return files;
 }
 
-function checkUserName(uname?: any, setValidState?: any) {
+function checkUserName(
+  uname: string,
+  setValidState: (state: UsernameState) => void,
+) {
   api
     .get(`/chkuname/${encodeURIComponent(uname)}`)
     .then(function () {
-      if (uname) setValidState("success");
-      else setValidState("");
+      setValidState(uname ? "success" : "");
     })
-    .catch(function (err?: any) {
-      if (err?.response?.status === 400) setValidState("error");
-      else setValidState("error1");
+    .catch(function (err: unknown) {
+      setValidState(errorStatus(err) === 400 ? "error" : "error1");
     });
 }
 
@@ -94,8 +125,8 @@ export default function Signup() {
   const isMobile = useMediaQuery({
     query: "(max-width:778px)",
   });
-  const [validState, setValidState] = useState<any>("");
-  const [formValues, setFormValues] = useState<any>({
+  const [validState, setValidState] = useState<UsernameState>("");
+  const [formValues, setFormValues] = useState<Partial<SignupValues>>({
     prefix: "20",
   });
   const [imageUrls, setImageUrls] = useState<string[]>([]);
@@ -104,78 +135,79 @@ export default function Signup() {
 
   useEffect(
     function () {
-      if (user?.user_id) {
-        navigate("/");
-        return;
-      }
+      if (user) void navigate("/");
     },
     [user, navigate],
   );
 
-  function addUser(values?: any) {
-    if (validState === "success" || validState === "") {
-      messageApi.open(getMessage(1, "loading", "signing up...", 8));
-      values.birth = values?.birth?.format("YYYY-MM-DD");
-      values.images = imageUrls?.[0];
-      values.moreInf = formValues.moreInf;
-      api
-        .post(
-          "/adduser",
-          {
-            data: values,
-          },
-          {
-            headers: { "Content-Type": "application/json" },
-          },
-        )
-        .then(function () {
-          messageApi.open(
-            getMessage(
-              1,
-              "success",
-              `${values?.username} added you can login now`,
-              2,
-            ),
-          );
-          setTimeout(function () {
-            navigate(`/login`);
-          }, 2000);
-        })
-        .catch(function (err?: any) {
-          if (err?.response?.data?.data?.err?.code == "ER_DUP_ENTRY") {
-            setValidState("error");
-            messageApi.open(
-              getMessage(
-                1,
-                "error",
-                `${values?.username} already exists, please write a new username`,
-                2,
-              ),
-            );
-          } else {
-            setValidState("");
-            messageApi.open(
-              getMessage(
-                1,
-                "error",
-                "there's some issues, please try again later",
-                2,
-              ),
-            );
-          }
+  function addUser(values: SignupValues) {
+    if (validState !== "success" && validState !== "") return;
+    messageApi.open({
+      key: 1,
+      type: "loading",
+      content: "signing up...",
+      duration: 8,
+    });
+    const data = {
+      ...values,
+      birth: values.birth?.format("YYYY-MM-DD"),
+      images: imageUrls[0],
+      moreInf: formValues.moreInf,
+    };
+    api
+      .post(
+        "/adduser",
+        { data },
+        { headers: { "Content-Type": "application/json" } },
+      )
+      .then(function () {
+        messageApi.open({
+          key: 1,
+          type: "success",
+          content: `${values.username} added you can login now`,
+          duration: 2,
         });
-    }
+        setTimeout(function () {
+          void navigate("/login");
+        }, 2000);
+      })
+      .catch(function (err: unknown) {
+        const dbError = errorData(err)?.err;
+        const duplicate =
+          typeof dbError === "object" &&
+          dbError !== null &&
+          "code" in dbError &&
+          dbError.code === "ER_DUP_ENTRY";
+        if (duplicate) {
+          setValidState("error");
+          messageApi.open({
+            key: 1,
+            type: "error",
+            content: `${values.username} already exists, please write a new username`,
+            duration: 2,
+          });
+        } else {
+          setValidState("");
+          messageApi.open({
+            key: 1,
+            type: "error",
+            content: "there's some issues, please try again later",
+            duration: 2,
+          });
+        }
+      });
   }
 
-  function setValues(changedVal?: any, values?: any) {
-    if ("username" in (changedVal ?? {})) {
+  function setValues(changedVal: Partial<SignupValues>, values: SignupValues) {
+    const { username } = changedVal;
+    if (username !== undefined) {
       // Only the latest check may update the field, so a slow response for
       // an older value can't overwrite the current one.
-      const checkId = ++usernameCheck.current;
-      const chk = /^([A-Z]|[a-z])+.{0,22}$/.test(changedVal.username);
-      if (changedVal.username && chk) {
+      usernameCheck.current += 1;
+      const checkId = usernameCheck.current;
+      if (username && /^([A-Z]|[a-z])+.{0,22}$/.test(username)) {
         setValidState("validating");
-        checkUserName(changedVal.username, function (state?: any) {
+        checkUserName(username, function (state) {
           if (checkId === usernameCheck.current) setValidState(state);
         });
       } else setValidState("");
@@ -185,7 +217,7 @@ export default function Signup() {
 
   return (
     <div className="flex grow justify-center bg-linear-to-tr from-slate-500/85 to-blue-400/90 p-2 sm:p-10">
-      <Form
+      <Form<SignupValues>
         name="register"
         autoComplete="on"
         layout="vertical"
@@ -197,21 +229,21 @@ export default function Signup() {
         scrollToFirstError
       >
         <HeaderLine
-          value={"Sign Up"}
+          value="Sign Up"
           center
           invisible
           size="no"
           classText="text-4xl sm:text-5xl xl:text-6xl text-white mb-16"
         />
-        <HeaderLine value={"Required Information"} />
+        <HeaderLine value="Required Information" />
         <div className="flex flex-wrap gap-1">
           <div className="grow sm:w-1/3 w-full">
             <HeaderLine
               imp
-              value={"nickname"}
-              size={"sm"}
+              value="nickname"
+              size="sm"
               font="medium"
-              classLine={"w-1/2 border mb-2"}
+              classLine="w-1/2 border mb-2"
             />
             <Item
               name="nickname"
@@ -222,26 +254,26 @@ export default function Signup() {
                 },
               ]}
             >
-              <Input placeholder={"nickname"} />
+              <Input placeholder="nickname" />
             </Item>
           </div>
           <div className="grow sm:w-1/3 w-full">
             <HeaderLine
               imp
-              value={"username"}
-              size={"sm"}
+              value="username"
+              size="sm"
               font="medium"
-              classLine={"w-1/2 border mb-2"}
+              classLine="w-1/2 border mb-2"
             />
             <Item
               name="username"
-              validateStatus={validState}
+              validateStatus={validState === "error1" ? "error" : validState}
               help={
                 validState === "error"
                   ? "username already exists"
-                  : validState?.at(-1) === "1"
+                  : validState === "error1"
                     ? "cannot contact the server right now"
-                    : null
+                    : undefined
               }
               hasFeedback
               rules={[
@@ -249,15 +281,12 @@ export default function Signup() {
                   required: true,
                   message: "Please input your username!",
                 },
-                {
-                  pattern: new RegExp("^([A-Z]|[a-z])+.{0,22}$"),
-                  message: "must begin with letters and max 22 characters",
-                },
+                usernameRule,
               ]}
             >
               <Input
                 prefix={<User className="size-4" />}
-                placeholder={"username"}
+                placeholder="username"
               />
             </Item>
           </div>
@@ -271,18 +300,12 @@ export default function Signup() {
                   required: true,
                   message: "Please input your password!",
                 },
-                {
-                  message:
-                    "Minimum 8 and maximum 14 characters, at least one uppercase letter, one lowercase letter",
-                  pattern: new RegExp(
-                    "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,14}$",
-                  ),
-                },
+                passwordRule,
               ]}
             >
               <Input.Password
                 prefix={<Lock className="size-4" />}
-                placeholder={"Password"}
+                placeholder="Password"
               />
             </Item>
           </div>
@@ -295,42 +318,38 @@ export default function Signup() {
                   required: true,
                   message: "Please confirm your password!",
                 },
-                function ({ getFieldValue }: any) {
+                function ({ getFieldValue }) {
                   return {
                     validator(_, value) {
-                      if (!value || getFieldValue("password") === value) {
-                        return Promise.resolve();
-                      }
-                      return Promise.reject(
-                        new Error(
+                      if (value && getFieldValue("password") !== value)
+                        throw new Error(
                           "The two passwords that you entered do not match!",
-                        ),
-                      );
+                        );
                     },
                   };
                 },
               ]}
             >
-              <Input.Password placeholder={"Confirm Password"} />
+              <Input.Password placeholder="Confirm Password" />
             </Form.Item>
           </div>
         </div>
-        <HeaderLine value={"Privacy Information"} />
+        <HeaderLine value="Privacy Information" />
         <div className="flex items-end gap-1 justify-between flex-wrap">
           <div className="grow">
             <HeaderLine
               imp
-              value={"Gender"}
-              size={"sm"}
+              value="Gender"
+              size="sm"
               font="medium"
-              classLine={"w-1/2 border mb-2"}
+              classLine="w-1/2 border mb-2"
             />
             <Item
               name="gender"
               rules={[{ required: true, message: "Please select gender!" }]}
             >
               <Select
-                placeholder={"Select your gender"}
+                placeholder="Select your gender"
                 options={[
                   { value: "male", label: "Male" },
                   { value: "female", label: "Female" },
@@ -346,27 +365,20 @@ export default function Signup() {
                   required: true,
                   message: "please enter your birthdate",
                 },
-                {
-                  message: "your age must be more than 13",
-                  validator(_, value) {
-                    if (new Date().getFullYear() - value?.year() < 13)
-                      return Promise.reject();
-                    else return Promise.resolve();
-                  },
-                },
+                minimumAgeRule,
               ]}
             >
-              <DatePicker className="w-full" placeholder={"birthdate"} />
+              <DatePicker className="w-full" placeholder="birthdate" />
             </Item>
           </div>
         </div>
         <div>
           <HeaderLine
             imp
-            value={"Address"}
-            size={"sm"}
+            value="Address"
+            size="sm"
             font="medium"
-            classLine={"w-1/2 border mb-2"}
+            classLine="w-1/2 border mb-2"
           />
           <Item className="w-full">
             <Space.Compact className="w-full" block>
@@ -398,7 +410,7 @@ export default function Signup() {
                   },
                 ]}
               >
-                <Input placeholder={"Your street"} />
+                <Input placeholder="Your street" />
               </Item>
             </Space.Compact>
           </Item>
@@ -412,16 +424,12 @@ export default function Signup() {
                   required: true,
                   message: "Please write your phone number!",
                 },
-                {
-                  message:
-                    "please write phone number with 8 digits after 01x or 1x",
-                  pattern: new RegExp("^0?(10|11|12|15)[0-9]{8,8}$"),
-                },
+                phoneRule,
               ]}
             >
               <Space.Compact className="w-full">
                 {prefixSelector}
-                <Input placeholder={"Your phone number"} />
+                <Input placeholder="Your phone number" />
               </Space.Compact>
             </Item>
           </div>
@@ -441,7 +449,7 @@ export default function Signup() {
             >
               <Input
                 prefix={<Mail className="size-4" />}
-                placeholder={"Your email"}
+                placeholder="Your email"
               />
             </Item>
           </div>
@@ -450,8 +458,8 @@ export default function Signup() {
           <Item
             name="images"
             valuePropName="fileList"
-            getValueFromEvent={function (e?: any) {
-              return normFile(e, setImageUrls);
+            getValueFromEvent={function (change: UploadChange) {
+              return normFile(change, setImageUrls);
             }}
             noStyle
           >
@@ -484,37 +492,34 @@ export default function Signup() {
         >
           <Radio.Group>
             <Radio.Button
-              className={`hover:bg-gray-200 border-2 
-              bg-gray-700 text-white
-              ${formValues?.userType === "user" ? "bg-purple-500" : ""}
-              `}
+              className={`hover:bg-gray-200 border-2 bg-gray-700 text-white ${
+                formValues.userType === "user" ? "bg-purple-500" : ""
+              }`}
               value="user"
             >
-              {"user"}
+              user
             </Radio.Button>
             <Radio.Button
-              className={`ml-1 hover:bg-gray-200 border-2 
-              bg-gray-700 text-white
-              ${formValues?.userType === "doctor" ? "bg-purple-500" : ""}
-              `}
+              className={`ml-1 hover:bg-gray-200 border-2 bg-gray-700 text-white ${
+                formValues.userType === "doctor" ? "bg-purple-500" : ""
+              }`}
               value="doctor"
             >
-              {"doctor"}
+              doctor
             </Radio.Button>
           </Radio.Group>
         </Item>
         <UserType
-          userType={formValues?.userType}
+          userType={formValues.userType}
           setFormValues={setFormValues}
-          formValues={formValues}
         />
         <Item>
           <Button
             type="primary"
             htmlType="submit"
-            className="w-full border border-white  bg-blue-600/80 hover:bg-blue-600"
+            className="w-full border border-white bg-blue-600/80 hover:bg-blue-600"
           >
-            {"Submit"}
+            Submit
           </Button>
         </Item>
       </Form>

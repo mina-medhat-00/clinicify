@@ -1,4 +1,5 @@
-import { Result } from "@/components/ui";
+import { Result } from "@/components/ui/display";
+import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 
 const statusTitles: Record<string, string> = {
@@ -13,15 +14,23 @@ export default function ServerError({
   statusTitle,
   message,
   errorTitle,
-}: any) {
+}: {
+  extra?: boolean;
+  status?: number | string;
+  statusTitle?: ReactNode;
+  message?: ReactNode;
+  // What failed to load, e.g. "doctors".
+  errorTitle?: string;
+}) {
+  const code = String(status ?? "500");
   return (
     <Result
       className="m-auto"
-      status={status || "500"}
-      title={statusTitle || statusTitles[String(status || "500")]}
+      status={code}
+      title={statusTitle ?? statusTitles[code]}
       subTitle={
         <span className="font-medium text-2xl text-gray-700">
-          {message ||
+          {message ??
             (errorTitle
               ? `Sorry, cannot load ${errorTitle} right now`
               : "Sorry, something went wrong")}

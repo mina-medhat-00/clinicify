@@ -1,28 +1,28 @@
-import { createContext, useCallback, useContext } from "react";
-import { useRemoteData } from "@/contexts/use-remote-data";
+import { useCallback, type ReactNode } from "react";
+import { createStrictContext } from "@/utils/create-strict-context";
+import { useRemoteData } from "@/hooks/use-remote-data";
 import { useUserContext } from "@/contexts/user-context";
-import { api } from "@/services/client";
-import type { Appointment } from "@/types";
+import { apiGet, apiPost } from "@/services/client";
+import type { Appointment } from "@/types/appointment";
+import type { Id } from "@/types/user";
 import { toQuery } from "@/utils/query";
 
-export type AppointmentQuery = { date?: string; doctorId?: string | number };
+export interface AppointmentQuery {
+  date?: string;
+  doctorId?: Id;
+}
 
-const AppointmentData = createContext<any>(null);
-export default function AppointmentContextProvider({
-  children,
-  isDoctor,
-}: any) {
+function useAppointmentValue(isDoctor: boolean) {
   const { handleSessionError } = useUserContext();
   const getAppointments = useCallback(
-    async function (query?: AppointmentQuery) {
-      const { data } = await api.get(
+    function (query: AppointmentQuery) {
+      return apiGet<Appointment[]>(
         `/get/appointments${toQuery({
-          date: query?.date,
-          doctor_id: query?.doctorId,
+          date: query.date,
+          doctor_id: query.doctorId,
           doctor: isDoctor,
         })}`,
       );
-      return data?.data as Appointment[];
     },
     [isDoctor],
   );
@@ -37,19 +37,15 @@ export default function AppointmentContextProvider({
   // once its time comes; the reply is the refreshed list for that date.
   const updateAppointment = useCallback(
     async function (
-      appointment: {
-        doctorId?: string | number;
-        patientId?: string | number;
-        appointmentId?: string | number;
-      },
-      { date }: { date?: string },
+      appointment: { doctorId: Id; patientId: Id; appointmentId: Id },
+      { date }: { date: string },
     ) {
       try {
-        const { data } = await api.post(
+        const data = await apiPost<Appointment[]>(
           `/update/appointment${toQuery({ doctor: isDoctor, date })}`,
           { data: appointment },
         );
-        setAppointmentData(data?.data);
+        setAppointmentData(data);
       } catch (err) {
         handleSessionError(err);
       }
@@ -57,21 +53,32 @@ export default function AppointmentContextProvider({
     [isDoctor, setAppointmentData, handleSessionError],
   );
 
+  return {
+    isLoading,
+    appointmentData,
+    fetchAppointmentData,
+    updateAppointment,
+    setAppointmentData,
+  };
+}
+
+const [AppointmentData, useAppointmentContext] =
+  createStrictContext<ReturnType<typeof useAppointmentValue>>(
+    "AppointmentContext",
+  );
+export { useAppointmentContext };
+
+export default function AppointmentContextProvider({
+  children,
+  isDoctor = false,
+}: {
+  children: ReactNode;
+  isDoctor?: boolean;
+}) {
+  const value = useAppointmentValue(isDoctor);
   return (
-    <AppointmentData.Provider
-      value={{
-        isLoading,
-        appointmentData,
-        fetchAppointmentData,
-        updateAppointment,
-        setAppointmentData,
-      }}
-    >
+    <AppointmentData.Provider value={value}>
       {children}
     </AppointmentData.Provider>
   );
-}
-
-export function useAppointmentContext() {
-  return useContext(AppointmentData);
 }

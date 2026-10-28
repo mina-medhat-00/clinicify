@@ -1,10 +1,19 @@
-import { Button, Form, Input, Select, Space } from "@/components/ui";
+import { Button, Input, Select, Space } from "@/components/ui/controls";
+import { Form } from "@/components/ui/form";
 import { Building2, Map, Phone, Smartphone } from "lucide-react";
 import { useProfileContext } from "@/contexts/profile-context";
 import { useUserContext } from "@/contexts/user-context";
 import submitProfile from "@/services/submit-profile";
-import { cityOptions } from "@/utils/sign-data";
-import { prefixSelector } from "@/components/signup/signup-utils";
+import { cityOptions } from "@/constants/sign-data";
+import { phoneRule } from "@/utils/validators";
+import { prefixSelector } from "@/components/signup/form-selectors";
+
+export interface ClinicValues {
+  address: { city: string; street: string };
+  phone: string;
+  telephone?: string;
+  prefix: string;
+}
 
 const { Item } = Form;
 export default function ClinicRegister() {
@@ -15,19 +24,21 @@ export default function ClinicRegister() {
       <div className="text-center text-xl sm:text-2xl border-b-2 border-gray-100/80">
         Update Your Clinic Information
       </div>
-      <Form
+      <Form<ClinicValues>
         className="p-2 bg-gray-500/80 shadow-md"
         initialValues={{
           prefix: "20",
         }}
-        onFinish={async function (values?: any) {
-          const saved = await submitProfile({
+        onFinish={function (values) {
+          void submitProfile({
             section: "clinic",
-            values,
+            values: { ...values },
             messageApi,
             fetchUserData,
+          }).then(function (saved) {
+            if (saved && userData)
+              void fetchProfileData(userData.user_id, { silent: true });
           });
-          if (saved) fetchProfileData(userData?.user_id, { silent: true });
         }}
       >
         <div className="bg-gray-700 p-2 rounded-md">
@@ -95,11 +106,7 @@ export default function ClinicRegister() {
                     required: true,
                     message: "Please write contact phone number!",
                   },
-                  {
-                    message:
-                      "please write phone number with 8 digits after 01x or 1x",
-                    pattern: new RegExp("^0?(10|11|12|15)[0-9]{8,8}$"),
-                  },
+                  phoneRule,
                 ]}
               >
                 <Space.Compact className="w-full">
@@ -127,7 +134,7 @@ export default function ClinicRegister() {
           <div className="w-fit ml-auto">
             <Button
               htmlType="submit"
-              className={`rounded-md hover:bg-gray-800 bg-gray-900 font-medium text-white`}
+              className="rounded-md hover:bg-gray-800 bg-gray-900 font-medium text-white"
             >
               Update Now
             </Button>

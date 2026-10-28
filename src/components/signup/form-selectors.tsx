@@ -1,5 +1,6 @@
-import { Form, Select } from "@/components/ui";
-import { currencyOptions, phonePrefixOptions } from "@/utils/sign-data";
+import { Form } from "@/components/ui/form";
+import { Select } from "@/components/ui/controls";
+import { currencyOptions, phonePrefixOptions } from "@/constants/sign-data";
 
 const prefixSelector = (
   <Form.Item name="prefix" noStyle rules={[{ required: true }]}>

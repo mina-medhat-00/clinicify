@@ -1,25 +1,60 @@
 import { ImagePlus, X } from "lucide-react";
-import { useRef, useState } from "react";
-import { cx } from "@/components/ui/cx";
+import { useRef, useState, type ReactNode } from "react";
+import { cx } from "@/utils/cx";
 
-const LIST_IGNORE = "LIST_IGNORE";
+const LIST_IGNORE = "LIST_IGNORE" as const;
 
-async function runBefore(beforeUpload: any, file: File) {
-  if (!beforeUpload) return true;
-  const result = beforeUpload(file);
-  return result;
+// true: keep and upload; false: keep without uploading; LIST_IGNORE: drop.
+export type BeforeUploadResult = boolean | typeof LIST_IGNORE;
+
+export interface UploadFile {
+  uid: string;
+  name: string;
+  status?: "done";
+  originFileObj: File;
 }
 
-function toItem(file: File, status?: string) {
+export interface UploadChange {
+  file: UploadFile;
+  fileList: UploadFile[];
+}
+
+export interface UploadProps {
+  children?: ReactNode;
+  beforeUpload?: (
+    file: File,
+  ) => BeforeUploadResult | Promise<BeforeUploadResult>;
+  customRequest?: (options: {
+    file: File;
+    onSuccess: () => void;
+    onError: () => void;
+  }) => void;
+  showUploadList?: boolean;
+  onChange?: (change: UploadChange) => void;
+  accept?: string;
+  multiple?: boolean;
+  maxCount?: number;
+  listType?: "text" | "picture";
+  name?: string;
+  fileList?: UploadFile[];
+  className?: string;
+  dragger?: boolean;
+}
+
+function noop() {
+  // Uploads finish instantly; there is nothing to report.
+}
+
+function toItem(file: File, status?: "done"): UploadFile {
   return {
-    uid: `${file.name}-${file.size}-${file.lastModified}`,
+    uid: `${file.name}-${String(file.size)}-${String(file.lastModified)}`,
     name: file.name,
     status,
     originFileObj: file,
   };
 }
 
-function Upload({
+function UploadBase({
   children,
   beforeUpload,
   customRequest,
@@ -33,17 +68,17 @@ function Upload({
   fileList,
   className,
   dragger,
-}: any) {
+}: UploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [internal, setInternal] = useState<any[]>([]);
-  const list = fileList || internal;
+  const [internal, setInternal] = useState<UploadFile[]>([]);
+  const list = fileList ?? internal;
 
   async function addFiles(files: FileList | File[]) {
     const incoming = Array.from(files);
     let next = [...list];
     for (const file of incoming) {
-      const allowed = await runBefore(beforeUpload, file);
-      if (allowed === LIST_IGNORE || allowed === false) {
+      const allowed = beforeUpload ? await beforeUpload(file) : true;
+      if (allowed === LIST_IGNORE || !allowed) {
         if (allowed === false) {
           const item = toItem(file);
           next = multiple ? [...next, item] : [item];
@@ -58,8 +93,8 @@ function Upload({
       if (maxCount) next = next.slice(-maxCount);
       customRequest?.({
         file,
-        onSuccess: function () {},
-        onError: function () {},
+        onSuccess: noop,
+        onError: noop,
       });
       const payload = { file: item, fileList: next };
       setInternal(next);
@@ -68,11 +103,13 @@ function Upload({
   }
 
   function removeAt(index: number) {
-    const next = list.filter(function (_: any, current: number) {
+    const removed = list[index];
+    if (!removed) return;
+    const next = list.filter(function (_, current) {
       return current !== index;
     });
     setInternal(next);
-    onChange?.({ file: list[index], fileList: next });
+    onChange?.({ file: removed, fileList: next });
   }
 
   return (
@@ -85,7 +122,7 @@ function Upload({
         multiple={multiple}
         className="hidden"
         onChange={function (event) {
-          if (event.target.files) addFiles(event.target.files);
+          if (event.target.files) void addFiles(event.target.files);
           event.target.value = "";
         }}
       />
@@ -98,7 +135,7 @@ function Upload({
         }}
         onDrop={function (event) {
           event.preventDefault();
-          if (event.dataTransfer.files) addFiles(event.dataTransfer.files);
+          void addFiles(event.dataTransfer.files);
         }}
         className={cx(
           "cursor-pointer",
@@ -110,13 +147,13 @@ function Upload({
       </div>
       {showUploadList && list.length ? (
         <div className="ant-upload-list mt-2 flex flex-wrap gap-2">
-          {list.map(function (file: any, index: number) {
+          {list.map(function (file, index) {
             return (
               <div
-                key={file.uid || index}
+                key={file.uid}
                 className="ant-upload-list-item flex max-w-full items-center gap-2 rounded bg-bg-bar px-2 py-1 text-white"
               >
-                {listType === "picture" && file.originFileObj ? (
+                {listType === "picture" ? (
                   <img
                     src={URL.createObjectURL(file.originFileObj)}
                     alt=""
@@ -146,13 +183,16 @@ function Upload({
     </div>
   );
 }
-Upload.displayName = "Upload";
-Upload.LIST_IGNORE = LIST_IGNORE;
+UploadBase.displayName = "Upload";
 
-function Dragger(props: any) {
-  return <Upload {...props} dragger />;
+function Dragger(props: Omit<UploadProps, "dragger">) {
+  return <UploadBase {...props} dragger />;
 }
 Dragger.displayName = "UploadDragger";
-Upload.Dragger = Dragger;
+
+const Upload = Object.assign(UploadBase, {
+  LIST_IGNORE,
+  Dragger,
+});
 
 export { Upload };

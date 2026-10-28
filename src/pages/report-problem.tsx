@@ -1,4 +1,5 @@
-import { Button, Form, Input, Radio } from "@/components/ui";
+import { Button, Input, Radio } from "@/components/ui/controls";
+import { Form } from "@/components/ui/form";
 import { Flag } from "lucide-react";
 import HeaderLine from "@/components/ui/header-line";
 import TitleHeader from "@/components/ui/title-header";
@@ -37,32 +38,38 @@ const reportTypeData = [
     value: "Other issue",
   },
 ];
+interface ReportValues {
+  issue: string;
+  reportType: string;
+}
+
 export default function ReportProblem() {
   const { messageApi } = useUtilsContext();
-  const [form] = Form.useForm();
+  const [form] = Form.useForm<ReportValues>();
   const { fetchUserData } = useUserContext();
   return (
     <div>
       <TitleHeader
         icon={<Flag className="text-white size-6 m-auto" />}
-        title={"Report a problem"}
+        title="Report a problem"
         contentBg="bg-gray-400"
-        wrapperBg={"no"}
+        wrapperBg="no"
       />
       <div
         className="rounded-lg bg-gray-600 shadow-xl p-3 m-auto
        sm:w-4/5 xl:w-2/3 "
       >
-        <Form
+        <Form<ReportValues>
           form={form}
-          onFinish={async function (values?: any) {
-            const sent = await submitReport({
-              issue: values?.issue,
-              reportType: values?.reportType,
+          onFinish={function (values) {
+            void submitReport({
+              issue: values.issue,
+              reportType: values.reportType,
               messageApi,
               fetchUserData,
+            }).then(function (sent) {
+              if (sent) form.resetFields();
             });
-            if (sent) form.resetFields();
           }}
         >
           <div className="flex flex-col gap-4">
@@ -87,23 +94,16 @@ export default function ReportProblem() {
                   message: "choose one of report cause",
                 },
               ]}
-              fieldId="reportType"
               name="reportType"
             >
               <Radio.Group>
                 <div className="bg-gray-700 rounded shadow-xl">
                   <HeaderLine value="Report Cause" classText="ml-2" />
-                  <div
-                    className={`font-medium text-white
-                  p-4 flex gap-4
-    items-center flex-wrap justify-between sm:justify-around`}
-                  >
-                    {reportTypeData.map(function ({ value, name }: any) {
+                  <div className="font-medium text-white p-4 flex gap-4 items-center flex-wrap justify-between sm:justify-around">
+                    {reportTypeData.map(function ({ value, name }) {
                       return (
                         <Radio
-                          className={
-                            "sm:w-1/3 text-xs sm:text-sm text-gray-200"
-                          }
+                          className="sm:w-1/3 text-xs sm:text-sm text-gray-200"
                           key={name}
                           value={name}
                         >
@@ -118,9 +118,7 @@ export default function ReportProblem() {
             <Button
               type="primary"
               htmlType="submit"
-              className={`rounded-lg w-fit text-xs lg:text-sm
-              bg-blue-600 py-4 font-medium text-white
-              border-white px-8 flex items-center hover:bg-blue-700`}
+              className="rounded-lg w-fit text-xs lg:text-sm bg-blue-600 py-4 font-medium text-white border-white px-8 flex items-center hover:bg-blue-700"
             >
               Send Now
             </Button>

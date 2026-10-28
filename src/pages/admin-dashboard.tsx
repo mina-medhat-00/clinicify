@@ -5,23 +5,21 @@ import AdminReports from "@/components/admin/admin-reports";
 import Sidebar from "@/components/admin/admin-sidebar";
 import DoctorManagement from "@/components/admin/doctor-management";
 import UserManagement from "@/components/admin/user-management";
-import {
-  ChatContextProvider,
-  DoctorsContextProvider,
-  ProfileContextProvider,
-  UsersContextProvider,
-} from "@/contexts";
+import ChatContextProvider from "@/contexts/chat-context";
+import DoctorsContextProvider from "@/contexts/doctors-context";
+import ProfileContextProvider from "@/contexts/profile-context";
+import UsersContextProvider from "@/contexts/users-context";
 import ReportContextProvider from "@/contexts/report-context";
 import { useUserContext } from "@/contexts/user-context";
-import { useUtilsContext } from "@/contexts/utils-context";
 import Chat from "@/pages/chat";
 import UserProfile from "@/pages/user-profile";
+import { adminDashTypes, type AdminDashType } from "@/constants/dash-types";
+import { readStoredChoice, storeChoice } from "@/utils/storage";
 
 export default function AdminDashboard() {
   const isMobile = useMediaQuery({
     query: "(max-width:878px)",
   });
-  const { timeZone, socket } = useUtilsContext();
   const { userData: user } = useUserContext();
   const [activeMenu, setActiveMenu] = useState(false);
   // Open the sidebar on desktop and close it on mobile whenever the size changes.
@@ -31,12 +29,12 @@ export default function AdminDashboard() {
     setActiveMenu(!isMobile);
   }
   // Open the profile section on first visit instead of a blank page.
-  const [dashType, setDashType] = useState(
-    window.localStorage.getItem("adminDashType") || "profile",
-  );
+  const [dashType, setDashType] = useState<AdminDashType>(function () {
+    return readStoredChoice("adminDashType", adminDashTypes, "profile");
+  });
   useEffect(
     function () {
-      if (dashType) window.localStorage.setItem("adminDashType", dashType);
+      storeChoice("adminDashType", dashType);
     },
     [dashType],
   );
@@ -46,7 +44,6 @@ export default function AdminDashboard() {
         {activeMenu ? (
           <div className="sidebar fixed w-full bg-white shadow-lg max-lg:z-50 sm:w-64 dark:bg-secondary-dark-bg ">
             <Sidebar
-              user={user}
               setDashType={setDashType}
               dashType={dashType}
               isMobile={isMobile}
@@ -57,7 +54,6 @@ export default function AdminDashboard() {
         ) : (
           <div className="w-0 dark:bg-secondary-dark-bg">
             <Sidebar
-              user={user}
               setDashType={setDashType}
               dashType={dashType}
               isMobile={isMobile}
@@ -84,29 +80,29 @@ export default function AdminDashboard() {
               />
             </div>
           </div>
-          {dashType == "doctor" ? (
+          {dashType === "doctor" ? (
             <DoctorsContextProvider query={{ total: true }}>
-              <DoctorManagement socket={socket} timeZone={timeZone} />
+              <DoctorManagement />
             </DoctorsContextProvider>
-          ) : dashType == "user" ? (
+          ) : dashType === "user" ? (
             <UsersContextProvider>
               <DoctorsContextProvider query={{ total: true }}>
-                <UserManagement socket={socket} />
+                <UserManagement />
               </DoctorsContextProvider>
             </UsersContextProvider>
-          ) : dashType == "chat" ? (
+          ) : dashType === "chat" ? (
             <ChatContextProvider>
               <Chat />
             </ChatContextProvider>
-          ) : dashType == "profile" ? (
+          ) : dashType === "profile" ? (
             <ProfileContextProvider>
               <UserProfile />
             </ProfileContextProvider>
-          ) : dashType == "reports" ? (
+          ) : (
             <ReportContextProvider>
               <AdminReports />
             </ReportContextProvider>
-          ) : null}
+          )}
         </div>
       </div>
     </div>

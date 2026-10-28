@@ -1,38 +1,60 @@
-import { createContext, useCallback, useContext } from "react";
-import { useRemoteData } from "@/contexts/use-remote-data";
-import { api } from "@/services/client";
-import type { Report } from "@/types";
+import { useCallback, type ReactNode } from "react";
+import { createStrictContext } from "@/utils/create-strict-context";
+import { useRemoteData } from "@/hooks/use-remote-data";
+import { apiGet } from "@/services/client";
+import type { Id } from "@/types/user";
+import type { Report, ReportSummary } from "@/types/content";
 import { toQuery } from "@/utils/query";
 
-const ReportData = createContext<any>(null);
-// Without `reportFrom`: every report (admin list). With it: one user's reports.
-export default function ReportContextProvider({ children, reportFrom }: any) {
+// Without `reportFrom`: one summary row per reporting user (admin list).
+// With it: that user's reports.
+type ReportsResult =
+  | { kind: "summaries"; rows: ReportSummary[] }
+  | { kind: "reports"; rows: Report[] };
+
+function useReportValue(reportFrom?: Id) {
   const getReports = useCallback(
-    async function () {
-      const { data } = await api.get(
-        reportFrom
-          ? `/get/details/report${toQuery({ reportFrom })}`
-          : "/get/reports",
-      );
-      return data?.data as Report[];
+    async function (): Promise<ReportsResult> {
+      if (reportFrom === undefined)
+        return {
+          kind: "summaries",
+          rows: await apiGet<ReportSummary[]>("/get/reports"),
+        };
+      return {
+        kind: "reports",
+        rows: await apiGet<Report[]>(
+          `/get/details/report${toQuery({ reportFrom })}`,
+        ),
+      };
     },
     [reportFrom],
   );
   const {
-    data: reportData,
+    data,
     isLoading,
     isError,
     load: fetchReportData,
   } = useRemoteData(getReports, { requiresAuth: true, autoLoad: {} });
-  return (
-    <ReportData.Provider
-      value={{ isLoading, reportData, isError, fetchReportData }}
-    >
-      {children}
-    </ReportData.Provider>
-  );
+  return {
+    isLoading,
+    isError,
+    fetchReportData,
+    summaries: data?.kind === "summaries" ? data.rows : null,
+    reports: data?.kind === "reports" ? data.rows : null,
+  };
 }
 
-export function useReportContext() {
-  return useContext(ReportData);
+const [ReportData, useReportContext] =
+  createStrictContext<ReturnType<typeof useReportValue>>("ReportContext");
+export { useReportContext };
+
+export default function ReportContextProvider({
+  children,
+  reportFrom,
+}: {
+  children: ReactNode;
+  reportFrom?: Id;
+}) {
+  const value = useReportValue(reportFrom);
+  return <ReportData.Provider value={value}>{children}</ReportData.Provider>;
 }

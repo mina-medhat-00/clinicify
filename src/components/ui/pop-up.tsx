@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import { X } from "lucide-react";
 
 export default function PopUp({
@@ -8,8 +8,17 @@ export default function PopUp({
   handleClose,
   customWidth,
   closeColor,
-  customStyle = {},
-}: any) {
+  customStyle,
+}: {
+  children?: ReactNode;
+  show?: unknown;
+  // A CSS length, e.g. "80px".
+  mt?: string;
+  handleClose?: () => void;
+  customWidth?: string;
+  closeColor?: string;
+  customStyle?: CSSProperties;
+}) {
   const [showPop, setShowPop] = useState(false);
   if (show && !showPop) setShowPop(true);
   useEffect(
@@ -36,16 +45,16 @@ export default function PopUp({
   );
   return (
     <>
-      {(showPop ? showPop : show) && (
+      {(showPop || Boolean(show)) && (
         <div className="mask--booked z-50 backdrop-blur-xl transition-all duration-500 fixed flex items-start justify-center top-0 left-0 h-full w-full">
           <div
             style={{
-              marginTop: mt ? mt : "30vh",
+              marginTop: mt ?? "30vh",
               maxHeight: mt ? `calc(100vh - ${mt})` : "70vh",
               ...customStyle,
             }}
             className={`bg-white overflow-auto flex flex-col scroll--v scroll--h h-fit relative ${
-              customWidth ? `${customWidth}` : "w-3/4 sm:w-1/2"
+              customWidth ?? "w-3/4 sm:w-1/2"
             } transition-all duration-500  ${
               showPop ? (!show ? "-left-full" : "left-0") : "-left-full"
             } p-4 rounded-lg shadow-lg`}
@@ -53,7 +62,7 @@ export default function PopUp({
             <X
               onClick={handleClose}
               className={`flex shrink-0 cursor-pointer ${
-                closeColor ? closeColor : "text-gray-700 hover:text-gray-800"
+                closeColor ?? "text-gray-700 hover:text-gray-800"
               } justify-center ml-auto my-2 items-center size-9`}
             />
             {children}

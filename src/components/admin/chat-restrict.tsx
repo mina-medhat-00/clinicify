@@ -1,4 +1,5 @@
-import { Empty, Switch, Tag } from "@/components/ui";
+import { Empty, Tag } from "@/components/ui/display";
+import { Switch } from "@/components/ui/controls";
 import { useEffect } from "react";
 import Loader from "@/components/ui/loader";
 import UserAvatar from "@/components/ui/user-avatar";
@@ -6,14 +7,15 @@ import { useChatContext } from "@/contexts/chat-context";
 import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
 import changeState from "@/services/change-state";
+import type { Id } from "@/types/user";
 
-export default function ChatRestrict({ userid }: any) {
+export default function ChatRestrict({ userid }: { userid: Id }) {
   const { fetchChatData, chatData, isLoading } = useChatContext();
   const { messageApi } = useUtilsContext();
   const { fetchUserData } = useUserContext();
   useEffect(
     function () {
-      fetchChatData({ userid });
+      void fetchChatData({ userid });
     },
     [fetchChatData, userid],
   );
@@ -21,13 +23,13 @@ export default function ChatRestrict({ userid }: any) {
     <Loader />
   ) : chatData?.length ? (
     <div className="overflow-auto mt-2 p-2 flex flex-col gap-2 text-white scroll--v scroll--h max-h-96">
-      {chatData?.map(function ({
+      {chatData.map(function ({
         user_id,
         img_url,
         nick_name,
         user_type,
         is_open,
-      }: any) {
+      }) {
         return (
           <div
             key={user_id}
@@ -39,8 +41,7 @@ export default function ChatRestrict({ userid }: any) {
               <div
                 className={`flex gap-2 ${
                   is_open ? "bg-blue-700/70" : "bg-red-600/70"
-                } border-r-2 border-gray-100 
-            rounded-bl-md rounded-tl-md shadow-md py-1 pr-3 items-center`}
+                } border-r-2 border-gray-100 rounded-bl-md rounded-tl-md shadow-md py-1 pr-3 items-center`}
               >
                 <UserAvatar
                   className="ml-2"
@@ -55,19 +56,25 @@ export default function ChatRestrict({ userid }: any) {
                 </span>
               </Tag>
               <Switch
-                checked={is_open}
+                checked={Boolean(is_open)}
                 className={`${
                   !is_open ? "bg-blue-400" : "bg-red-400"
                 } shadow-lg box-content bg-white border-[0.25px] border-solid border-white`}
-                onChange={async function (is_open?: any) {
-                  const changed = await changeState({
+                onChange={function (open) {
+                  void changeState({
                     action: "restrict",
                     target: "user",
-                    chat: { chat_from: userid, chat_to: user_id, is_open },
+                    chat: {
+                      chat_from: userid,
+                      chat_to: user_id,
+                      is_open: open,
+                    },
                     messageApi,
                     fetchUserData,
+                  }).then(function (changed) {
+                    if (changed)
+                      void fetchChatData({ userid }, { silent: true });
                   });
-                  if (changed) fetchChatData({ userid }, { silent: true });
                 }}
                 checkedChildren={
                   <span className="font-medium text-white">Close Chat</span>

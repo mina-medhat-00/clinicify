@@ -1,12 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import { useMediaQuery } from "react-responsive";
 import DashNav from "@/components/dashboard/dash-nav";
+import DoctorStatisticsView from "@/components/dashboard/doctor-statistics";
 import ScheduleAppointments from "@/components/dashboard/schedule-appointments";
-import {
-  ChatContextProvider,
-  ProfileContextProvider,
-  SlotsContextProvider,
-} from "@/contexts";
+import ChatContextProvider from "@/contexts/chat-context";
+import ProfileContextProvider from "@/contexts/profile-context";
+import SlotsContextProvider from "@/contexts/slots-context";
 import AppointmentContextProvider from "@/contexts/appointment-context";
 import { useDashboardContext } from "@/contexts/dashboard-context";
 import { useUserContext } from "@/contexts/user-context";
@@ -14,8 +13,14 @@ import { useUtilsContext } from "@/contexts/utils-context";
 import Appointments from "@/pages/appointments";
 import Chat from "@/pages/chat";
 import UserProfile from "@/pages/user-profile";
+import { doctorDashTypes, type DoctorDashType } from "@/constants/dash-types";
+import { readStoredChoice, storeChoice } from "@/utils/storage";
 
-export default function DoctorDashboard({ setNavActive }: any) {
+export default function DoctorDashboard({
+  setNavActive,
+}: {
+  setNavActive: Dispatch<SetStateAction<boolean>>;
+}) {
   const { timeZone, socket } = useUtilsContext();
   const { userData: user, fetchUserData } = useUserContext();
   const userid = user?.user_id;
@@ -24,14 +29,13 @@ export default function DoctorDashboard({ setNavActive }: any) {
   const isMobile = useMediaQuery({
     query: "(max-width:678px)",
   });
-  const [dashType, setDashType] = useState(
-    window.localStorage.getItem("dashType") || "profile",
-  );
+  const [dashType, setDashType] = useState<DoctorDashType>(function () {
+    return readStoredChoice("dashType", doctorDashTypes, "profile");
+  });
   useEffect(
     function () {
-      window.localStorage.setItem("dashType", dashType);
-      if (dashType == "chat") setNavActive(false);
-      else setNavActive(true);
+      storeChoice("dashType", dashType);
+      setNavActive(dashType !== "chat");
     },
     [dashType, setNavActive],
   );
@@ -44,16 +48,16 @@ export default function DoctorDashboard({ setNavActive }: any) {
     [setNavActive],
   );
   return (
-    <div className={`${isMobile ? "flex" : ""} grow overflow-hidden  w-full`}>
+    <div className={`${isMobile ? "flex" : ""} grow overflow-hidden w-full`}>
       <DashNav setDashType={setDashType} dashType={dashType} />
       <div className="grow overflow-hidden">
-        {dashType == "profile" ? (
+        {dashType === "profile" ? (
           <div className="flex flex-col h-full grow overflow-hidden">
             <ProfileContextProvider>
               <UserProfile />
             </ProfileContextProvider>
           </div>
-        ) : dashType == "schedule" ? (
+        ) : dashType === "schedule" ? (
           <div className="bg-white h-full">
             <SlotsContextProvider>
               <ScheduleAppointments
@@ -62,24 +66,26 @@ export default function DoctorDashboard({ setNavActive }: any) {
                 doctorData={dashboardData}
                 setDashType={setDashType}
                 offsetWidth={100}
-                buttonLabel="Schedule"
                 userid={userid}
                 timeZone={timeZone}
                 fetchUserData={fetchUserData}
               />
             </SlotsContextProvider>
           </div>
-        ) : dashType == "appointments" ? (
+        ) : dashType === "appointments" ? (
           <AppointmentContextProvider isDoctor={true}>
             <Appointments fromDash={true} />
           </AppointmentContextProvider>
-        ) : dashType == "chat" ? (
+        ) : dashType === "chat" ? (
           <ChatContextProvider>
             <Chat />
           </ChatContextProvider>
-        ) : dashType == "statistics" ? (
-          <div>statistics</div>
-        ) : null}
+        ) : (
+          <DoctorStatisticsView
+            statistics={dashboardData?.statistics}
+            isLoading={isLoading}
+          />
+        )}
       </div>
     </div>
   );

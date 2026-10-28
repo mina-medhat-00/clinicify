@@ -1,23 +1,23 @@
-import { message } from "@/components/ui";
+import { message } from "@/components/ui/message";
 import { jwtDecode } from "jwt-decode";
 import {
-  createContext,
   useCallback,
-  useContext,
   useEffect,
   useRef,
   useState,
+  type ReactNode,
 } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { createStrictContext } from "@/utils/create-strict-context";
 import {
-  api,
+  apiGet,
   clearToken,
   errorStatus,
   getToken,
   sessionError,
   type LoadOptions,
 } from "@/services/client";
-import type { AuthTokenPayload, User } from "@/types";
+import type { AuthTokenPayload, User } from "@/types/user";
 
 // setTimeout fires immediately for delays above this.
 const MAX_TIMEOUT = 2 ** 31 - 1;
@@ -25,12 +25,10 @@ const MAX_TIMEOUT = 2 ** 31 - 1;
 // The signed-in user, or null when there is no token.
 async function requestUser() {
   if (!getToken()) return null;
-  const { data } = await api.get("/user");
-  return (data?.data ?? null) as User | null;
+  return apiGet<User | null>("/user");
 }
 
-const UserData = createContext<any>(null);
-export default function UserContextProvider({ children }: any) {
+function useUserValue() {
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [tokenExpired, setTokenExpired] = useState(false);
@@ -68,7 +66,7 @@ export default function UserContextProvider({ children }: any) {
     });
     setTimeout(function () {
       setUserData(null);
-      navigateRef.current(
+      void navigateRef.current(
         `/login?redirect=${encodeURIComponent(pathnameRef.current)}`,
       );
     }, 3000);
@@ -102,7 +100,7 @@ export default function UserContextProvider({ children }: any) {
           setIsLoading(false);
           return user;
         },
-        function (err) {
+        function (err: unknown) {
           if (!handleSessionError(err)) {
             setIsError(true);
             setUserData(null);
@@ -125,7 +123,7 @@ export default function UserContextProvider({ children }: any) {
 
   useEffect(
     function () {
-      settleUser(requestUser());
+      void settleUser(requestUser());
     },
     [settleUser],
   );
@@ -145,7 +143,7 @@ export default function UserContextProvider({ children }: any) {
       if (!exp) return;
       const timeId = setTimeout(
         function () {
-          fetchUserData({ silent: true });
+          void fetchUserData({ silent: true });
         },
         Math.min(Math.max(exp * 1000 - Date.now(), 0), MAX_TIMEOUT),
       );
@@ -156,25 +154,35 @@ export default function UserContextProvider({ children }: any) {
     [userId, fetchUserData],
   );
 
+  return {
+    value: {
+      isLoading,
+      userData,
+      fetchUserData,
+      setUserData,
+      handleSessionError,
+      isError,
+      tokenExpired,
+      messageApi,
+    },
+    contextHolder,
+  };
+}
+
+const [UserData, useUserContext] =
+  createStrictContext<ReturnType<typeof useUserValue>["value"]>("UserContext");
+export { useUserContext };
+
+export default function UserContextProvider({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const { value, contextHolder } = useUserValue();
   return (
-    <UserData.Provider
-      value={{
-        isLoading,
-        userData,
-        fetchUserData,
-        setUserData,
-        handleSessionError,
-        isError,
-        tokenExpired,
-        messageApi,
-      }}
-    >
+    <UserData.Provider value={value}>
       {children}
       {contextHolder}
     </UserData.Provider>
   );
-}
-
-export function useUserContext() {
-  return useContext(UserData);
 }

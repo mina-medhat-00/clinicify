@@ -1,18 +1,21 @@
-import { createContext, useContext } from "react";
-import { useRemoteData } from "@/contexts/use-remote-data";
-import { api } from "@/services/client";
-import type { Comment } from "@/types";
+import type { ReactNode } from "react";
+import { createStrictContext } from "@/utils/create-strict-context";
+import { useRemoteData } from "@/hooks/use-remote-data";
+import { apiGet } from "@/services/client";
+import type { Comment } from "@/types/content";
+import type { Id } from "@/types/user";
 import { toQuery } from "@/utils/query";
 
-export type CommentsQuery = { postId: string | number; limit?: number };
-
-async function getComments(query: CommentsQuery) {
-  const { data } = await api.get(`/get/comments${toQuery(query)}`);
-  return data?.data as Comment[];
+export interface CommentsQuery {
+  postId: Id;
+  limit?: number;
 }
 
-const CommentsData = createContext<any>(null);
-export default function CommentsContextProvider({ children }: any) {
+function getComments(query: CommentsQuery) {
+  return apiGet<Comment[]>(`/get/comments${toQuery({ ...query })}`);
+}
+
+function useCommentsValue() {
   const {
     data: commentsData,
     setData: setCommentsData,
@@ -20,21 +23,26 @@ export default function CommentsContextProvider({ children }: any) {
     isError,
     load: fetchCommentsData,
   } = useRemoteData(getComments, { initialLoading: false });
-  return (
-    <CommentsData.Provider
-      value={{
-        isLoading,
-        commentsData,
-        setCommentsData,
-        fetchCommentsData,
-        isError,
-      }}
-    >
-      {children}
-    </CommentsData.Provider>
-  );
+  return {
+    isLoading,
+    commentsData,
+    setCommentsData,
+    fetchCommentsData,
+    isError,
+  };
 }
 
-export function useCommentsContext() {
-  return useContext(CommentsData);
+const [CommentsData, useCommentsContext] =
+  createStrictContext<ReturnType<typeof useCommentsValue>>("CommentsContext");
+export { useCommentsContext };
+
+export default function CommentsContextProvider({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const value = useCommentsValue();
+  return (
+    <CommentsData.Provider value={value}>{children}</CommentsData.Provider>
+  );
 }

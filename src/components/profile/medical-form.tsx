@@ -1,6 +1,19 @@
-import { Button, Form, Input } from "@/components/ui";
+import { Button, Input } from "@/components/ui/controls";
+import { Form } from "@/components/ui/form";
 import ProfileTable from "@/components/profile/profile-table";
+import type { LoadOptions, ServiceContext } from "@/services/client";
 import submitProfile from "@/services/submit-profile";
+import type { Id } from "@/types/user";
+
+// The names the API expects for each medical field.
+export interface MedicalValues {
+  currentIssue?: string | null;
+  illnessesHistory?: string | null;
+  allergies?: string | null;
+  immunizations?: string | null;
+  surgeries?: string | null;
+  testResults?: string | null;
+}
 
 const { Item } = Form;
 export default function MedicalForm({
@@ -10,19 +23,25 @@ export default function MedicalForm({
   fetchUserData,
   initialValues,
   isEdit,
-}: any) {
+}: ServiceContext & {
+  userName: Id;
+  fetchProfileData: (user: Id, options?: LoadOptions) => Promise<unknown>;
+  initialValues?: MedicalValues;
+  isEdit?: boolean;
+}) {
   return (
-    <Form
+    <Form<MedicalValues>
       initialValues={initialValues}
-      onFinish={async function (values?: any) {
-        const saved = await submitProfile({
+      onFinish={function (values) {
+        void submitProfile({
           section: "medical",
-          values,
+          values: { ...values },
           isEdit,
           messageApi,
           fetchUserData,
+        }).then(function (saved) {
+          if (saved) void fetchProfileData(userName, { silent: true });
         });
-        if (saved) fetchProfileData(userName, { silent: true });
       }}
     >
       <div className="bg-gray-200 shadow-sm rounded-lg p-2">
@@ -108,9 +127,7 @@ rounded-lg resize-none"
           <Button
             type="primary"
             htmlType="submit"
-            className={`rounded-lg text-xs lg:text-sm
-          bg-gray-600 py-6 font-medium text-white
-          border-gray-700 px-8 flex items-center hover:bg-gray-700`}
+            className="rounded-lg text-xs lg:text-sm bg-gray-600 py-6 font-medium text-white border-gray-700 px-8 flex items-center hover:bg-gray-700"
           >
             {isEdit ? "Edit Now" : "Add Now"}
           </Button>

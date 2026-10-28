@@ -1,9 +1,14 @@
-import { Empty } from "@/components/ui";
+import { Empty } from "@/components/ui/display";
+import { useState } from "react";
 import ProfileTable from "@/components/profile/profile-table";
 import { useReportContext } from "@/contexts/report-context";
 
-export default function ReportDetails(_props?: any) {
-  const { reportData: reportDetailsData, isLoading } = useReportContext();
+const DAY = 1000 * 60 * 60 * 24;
+
+export default function ReportDetails() {
+  const { reports: reportDetailsData, isLoading } = useReportContext();
+  // Ages are measured from when the list was opened.
+  const [now] = useState(Date.now);
   return (
     <div>
       {isLoading || reportDetailsData?.length ? (
@@ -16,19 +21,15 @@ export default function ReportDetails(_props?: any) {
             report_type,
             issue,
             issued_time,
-          }: any) {
+          }) {
             return {
               name: report_type,
               value: (
                 <div className="w-full flex justify-between gap-2">
                   <div>{issue}</div>
                   <div className="font-bold text-blue-500">
-                    from{" "}
-                    {Math.floor(
-                      (new Date(issued_time).getTime() - new Date().getTime()) /
-                        (1000 * 60 * 60 * 24),
-                    )}{" "}
-                    days
+                    {Math.floor((now - new Date(issued_time).getTime()) / DAY)}{" "}
+                    days ago
                   </div>
                 </div>
               ),

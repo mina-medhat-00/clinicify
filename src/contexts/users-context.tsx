@@ -1,30 +1,32 @@
-import { createContext, useContext } from "react";
-import { useRemoteData } from "@/contexts/use-remote-data";
-import { api } from "@/services/client";
-import type { User } from "@/types";
+import type { ReactNode } from "react";
+import { createStrictContext } from "@/utils/create-strict-context";
+import { useRemoteData } from "@/hooks/use-remote-data";
+import { apiGet } from "@/services/client";
+import type { ManagedUser } from "@/types/user";
 
-async function getUsers() {
-  const { data } = await api.get("/users");
-  return data?.data as User[];
+function getUsers() {
+  return apiGet<ManagedUser[]>("/users");
 }
 
-const UsersData = createContext<any>(null);
-export default function UsersContextProvider({ children }: any) {
+function useUsersValue() {
   const {
     data: usersData,
     isLoading,
     isError,
     load: fetchUsersData,
   } = useRemoteData(getUsers, { autoLoad: {} });
-  return (
-    <UsersData.Provider
-      value={{ isLoading, usersData, isError, fetchUsersData }}
-    >
-      {children}
-    </UsersData.Provider>
-  );
+  return { isLoading, usersData, isError, fetchUsersData };
 }
 
-export function useUsersContext() {
-  return useContext(UsersData);
+const [UsersData, useUsersContext] =
+  createStrictContext<ReturnType<typeof useUsersValue>>("UsersContext");
+export { useUsersContext };
+
+export default function UsersContextProvider({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const value = useUsersValue();
+  return <UsersData.Provider value={value}>{children}</UsersData.Provider>;
 }

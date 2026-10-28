@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useUserContext } from "@/contexts/user-context";
 import { errorStatus, getToken, type LoadOptions } from "@/services/client";
 
-type Options<Q> = {
+interface Options<Q> {
   // Skip the request (and show nothing) when nobody is signed in.
   requiresAuth?: boolean;
   // Load on mount (and when the query changes); omit to load manually.
@@ -10,12 +10,12 @@ type Options<Q> = {
   // Statuses that mean "nothing here" rather than an error (e.g. 400 = not found).
   emptyOn?: number[];
   initialLoading?: boolean;
-};
+}
 
 // Shared state for one API resource: data, loading and error flags, and a
 // `load(query, { silent })` function. An expired session is handed to the
 // user context, which signs the user out.
-export function useRemoteData<T, Q = void>(
+export function useRemoteData<T, Q = undefined>(
   request: (query: Q) => Promise<T>,
   {
     requiresAuth,
@@ -24,7 +24,7 @@ export function useRemoteData<T, Q = void>(
     initialLoading = true,
   }: Options<Q> = {},
 ) {
-  const { handleSessionError } = useUserContext() ?? {};
+  const { handleSessionError } = useUserContext();
   const [data, setData] = useState<T | null>(null);
   const [isLoading, setIsLoading] = useState(initialLoading);
   const [isError, setIsError] = useState(false);
@@ -49,11 +49,11 @@ export function useRemoteData<T, Q = void>(
           setIsLoading(false);
           return result;
         },
-        function (err) {
+        function (err: unknown) {
           setData(null);
           const status = String(errorStatus(err));
           const isEmpty = emptyKey.split(",").includes(status);
-          if (!isEmpty && !handleSessionError?.(err)) setIsError(true);
+          if (!isEmpty && !handleSessionError(err)) setIsError(true);
           setIsLoading(false);
           return null;
         },
@@ -75,7 +75,8 @@ export function useRemoteData<T, Q = void>(
   useEffect(
     function () {
       if (autoKey === null) return;
-      settle(fetchData(JSON.parse(autoKey) ?? undefined));
+      const query = (JSON.parse(autoKey) as Q | null) ?? (undefined as Q);
+      void settle(fetchData(query));
     },
     [autoKey, fetchData, settle],
   );

@@ -1,5 +1,6 @@
-import { Col, Empty, Rate, Row } from "@/components/ui";
+import { Col, Empty, Rate, Row } from "@/components/ui/display";
 import UserAvatar from "@/components/ui/user-avatar";
+import type { Feedback } from "@/types/content";
 
 export default function FeedbackContent({
   order,
@@ -14,7 +15,18 @@ export default function FeedbackContent({
   setShowFeedback,
   showFeedback,
   mobile,
-}: any) {
+}: Pick<
+  Feedback,
+  "uimgUrl" | "dimgUrl" | "doctorName" | "username" | "feedback" | "rate"
+> & {
+  order: number;
+  isMobile?: boolean;
+  // Opens or closes the review text of card `order`.
+  bodyHandler: (order: number) => void;
+  setShowFeedback?: (shown: number) => void;
+  showFeedback?: number;
+  mobile?: boolean;
+}) {
   return (
     <div
       key={order}
@@ -31,17 +43,19 @@ export default function FeedbackContent({
             if (showFeedback || mobile) {
               bodyHandler(order);
             }
-            if (mobile) setShowFeedback(order + 1);
+            if (mobile) setShowFeedback?.(order + 1);
           }}
         >
           <div className="p-2 flex items-center justify-between grow gap-2 bg-blue-600/80 shadow-md rounded-lg">
             <Col className="flex gap-1 flex-wrap items-center justify-between">
               <UserAvatar src={dimgUrl} userType="doctor" size="large" />
               <span className="text-white font-medium text-lg sm:text-xl lg:text-xl">
-                Dr. {doctorName?.slice(0, 12)}
+                Dr. {doctorName.slice(0, 12)}
               </span>
             </Col>
-            <Col>{<Rate disabled value={rate} />}</Col>
+            <Col>
+              <Rate disabled value={rate} />
+            </Col>
           </div>
           <div className="p-2 flex grow gap-2 bg-blue-200/30 rounded-lg">
             <Col className="flex flex-wrap items-center">
@@ -52,16 +66,16 @@ export default function FeedbackContent({
             <Col className="flex flex-wrap gap-1 items-center">
               <UserAvatar src={uimgUrl} userType="user" size="large" />
               <span className="text-white font-medium text-lg sm:text-xl lg:text-xl">
-                {username?.slice(0, 12)}
+                {username.slice(0, 12)}
               </span>
             </Col>
           </div>
         </Row>
         <Col
-          id={`feedback--body--${order + 1}`}
+          id={`feedback--body--${String(order + 1)}`}
           className="box-content h-0 min-h-0 overflow-hidden rounded-lg bg-blue-500/80 p-0 transition-all duration-500 ease-in-out"
         >
-          <div id={`feedback--paragraph--${order + 1}`}>
+          <div id={`feedback--paragraph--${String(order + 1)}`}>
             <span className="text-white break-all font-medium">
               {feedback || (
                 <Empty

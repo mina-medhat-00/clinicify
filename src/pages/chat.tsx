@@ -1,4 +1,4 @@
-import { Rate } from "@/components/ui";
+import { Rate } from "@/components/ui/display";
 import { ArrowLeft, ArrowUp, CircleAlert, User, UserPlus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
@@ -10,27 +10,38 @@ import { useChatContext } from "@/contexts/chat-context";
 import MessagesContextProvider from "@/contexts/messages-context";
 import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
+import type { Id } from "@/types/user";
 
-export default function Chat(_props: any) {
+// The conversation to reopen, saved by pages that link to a chat.
+function storedChat(): Id | null {
+  let saved: string | null = null;
+  try {
+    saved = window.localStorage.getItem("chatTo");
+  } catch {
+    // Storage can be blocked (private mode).
+  }
+  const id = Number(saved);
+  return Number.isInteger(id) && id > 0 ? id : null;
+}
+
+export default function Chat() {
   const { messageApi, socket, timeZone } = useUtilsContext();
   const { fetchUserData, userData: user } = useUserContext();
   const { fetchChatData, chatData, isLoading, isError } = useChatContext();
   const isMobile = useMediaQuery({
     query: "(max-width:678px)",
   });
-  const [withUser, setWithUser] = useState(function () {
-    return parseInt(window.localStorage.getItem("chatTo")) || null;
-  });
+  const [withUser, setWithUser] = useState(storedChat);
   useEffect(
     function () {
       if (user?.user_id) {
         socket.emit("join_user", user.user_id);
       }
       function fetchChat() {
-        fetchChatData({ chat_to: withUser }, { silent: true });
+        void fetchChatData({ chat_to: withUser }, { silent: true });
       }
-      socket?.on("new_chat", fetchChat);
-      fetchChatData({ chat_to: withUser });
+      socket.on("new_chat", fetchChat);
+      void fetchChatData({ chat_to: withUser });
       return function () {
         socket.off("new_chat", fetchChat);
       };
@@ -39,14 +50,29 @@ export default function Chat(_props: any) {
   );
   useEffect(
     function () {
-      if (withUser) window.localStorage.setItem("chatTo", String(withUser));
+      if (withUser === null) return;
+      try {
+        window.localStorage.setItem("chatTo", String(withUser));
+      } catch {
+        // Storage can be blocked (private mode).
+      }
     },
     [withUser],
   );
-  const chatRecord = chatData?.find(function ({ user_id }: any) {
-    return user_id == withUser;
+  const chatRecord = chatData?.find(function ({ user_id }) {
+    return user_id === withUser;
   });
-  const me = user?.user_id === withUser ? true : false;
+  const me = user?.user_id === withUser;
+  // Who may write: admins' own chats are always open; patients need an open
+  // chat with the doctor; doctors and admins can answer chats started with them.
+  const isOpen =
+    chatRecord?.user_type === "admin" && !chatRecord.chat_from
+      ? true
+      : user?.user_type === "user" && !me
+        ? chatRecord?.is_open === 1
+        : !chatRecord?.is_open ||
+          ((chatRecord.user_type === "user" || user?.user_type === "admin") &&
+            Boolean(chatRecord.chat_from));
   return (
     <div className={`flex h-screen ${isMobile ? "flex-col" : ""}`}>
       {isError ? (
@@ -69,14 +95,11 @@ export default function Chat(_props: any) {
           setWithUser={setWithUser}
           chatData={chatData}
           isMobile={isMobile}
-          me={me}
           userId={user?.user_id}
         />
       )}
       {chatRecord || isLoading ? (
-        <div
-          className={`grow justify-between flex flex-col bg-gray-200 text-gray-700 px-2 h-full`}
-        >
+        <div className="grow justify-between flex flex-col bg-gray-200 text-gray-700 px-2 h-full">
           {!isMobile && !isError && (
             <div className="flex justify-between border-b rounded-md p-2 bg-white items-center border-gray-100 shadow-sm">
               <div className="flex gap-2 items-center">
@@ -84,57 +107,50 @@ export default function Chat(_props: any) {
                   src={chatRecord?.img_url}
                   userType={chatRecord?.user_type}
                 >
-                  {chatRecord?.nick_name?.[0]?.toUpperCase()}
+                  {chatRecord?.nick_name.charAt(0).toUpperCase()}
                 </UserAvatar>
                 <div>
                   <div className="text-gray-700 font-medium">
                     {me ? "ME" : chatRecord?.nick_name}
                   </div>
                   {chatRecord?.specialty && (
-                    <div className="text-gray-500">{chatRecord?.specialty}</div>
+                    <div className="text-gray-500">{chatRecord.specialty}</div>
                   )}
                 </div>
               </div>
 
               <div className="text-lg font-medium">
-                {chatRecord?.user_type?.toUpperCase()}
+                {chatRecord?.user_type.toUpperCase()}
               </div>
-              {chatRecord?.user_type == "doctor" && (
-                <Rate disabled value={chatRecord?.rate} />
+              {chatRecord?.user_type === "doctor" && (
+                <Rate disabled value={chatRecord.rate} />
               )}
             </div>
           )}
-          <MessagesContextProvider>
-            <Messages
-              key={withUser || "user"}
-              isOpen={
-                chatRecord?.user_type == "admin" && !chatRecord?.chat_from
-                  ? true
-                  : user?.user_type == "user" && withUser !== user?.user_id
-                    ? chatRecord?.is_open == 1
-                    : !chatRecord?.is_open ||
-                      ((chatRecord?.user_type == "user" ||
-                        user?.user_type == "admin") &&
-                        chatRecord?.chat_from)
-              }
-              withNickName={chatRecord?.nick_name}
-              socket={socket}
-              withUser={withUser}
-              withUserType={chatRecord?.user_type}
-              user_id={user?.user_id}
-              isMobile={isMobile}
-              fetchUserData={fetchUserData}
-              messageApi={messageApi}
-              timeZone={timeZone || ""}
-            />
-          </MessagesContextProvider>
+          {user && withUser !== null ? (
+            <MessagesContextProvider>
+              <Messages
+                key={withUser}
+                isOpen={isOpen}
+                withNickName={chatRecord?.nick_name}
+                socket={socket}
+                withUser={withUser}
+                withUserType={chatRecord?.user_type}
+                user_id={user.user_id}
+                isMobile={isMobile}
+                fetchUserData={fetchUserData}
+                messageApi={messageApi}
+                timeZone={timeZone}
+              />
+            </MessagesContextProvider>
+          ) : null}
         </div>
       ) : (
         <div className="flex flex-col gap-4 h-full grow items-center justify-center">
           {chatData?.length ? (
             <>
               {isMobile ? (
-                <ArrowUp className="size-16 text-blue-700  m-0" />
+                <ArrowUp className="size-16 text-blue-700 m-0" />
               ) : (
                 <ArrowLeft className="size-16 text-blue-700 m-0" />
               )}

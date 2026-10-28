@@ -1,12 +1,12 @@
 import axios, { isAxiosError } from "axios";
-import type { ReactNode } from "react";
 import Cookies from "universal-cookie";
+import type { MessageConfig, MessageType } from "@/components/ui/message";
 import { apiOrigin } from "@/utils/api";
 
 const TOKEN_COOKIE = "accessToken";
 
-export function getToken(): string | undefined {
-  return new Cookies().get(TOKEN_COOKIE);
+export function getToken() {
+  return new Cookies().get<string | undefined>(TOKEN_COOKIE);
 }
 
 export function setToken(token: string) {
@@ -27,35 +27,50 @@ api.interceptors.request.use(function (config) {
   return config;
 });
 
-export type MessageType = "loading" | "success" | "error" | "warning" | "info";
+// Every API response wraps its payload in `data`.
+export interface ApiResponse<T> {
+  state?: string;
+  message?: string;
+  data: T;
+}
 
-export type MessageApi = {
-  open(config: {
-    key?: string | number;
-    type?: MessageType;
-    content?: ReactNode;
-    duration?: number;
-  }): void;
-};
+export async function apiGet<T>(url: string) {
+  const response = await api.get<ApiResponse<T>>(url);
+  return response.data.data;
+}
 
-export type LoadOptions = {
+export async function apiPost<T = unknown>(url: string, body?: unknown) {
+  const response = await api.post<ApiResponse<T>>(url, body);
+  return response.data.data;
+}
+
+export type { MessageType };
+
+export interface MessageApi {
+  open: (config: MessageConfig) => void;
+}
+
+export interface LoadOptions {
   // Refresh in the background without showing a loading state.
   silent?: boolean;
-};
+}
 
 // What every service needs to report progress and recover from an expired session.
-export type ServiceContext = {
+export interface ServiceContext {
   messageApi: MessageApi;
   fetchUserData: (options?: LoadOptions) => unknown;
-};
+}
 
 export function errorStatus(err: unknown) {
   return isAxiosError(err) ? err.response?.status : undefined;
 }
 
-export function errorData<T = Record<string, unknown>>(err: unknown) {
-  return isAxiosError(err)
-    ? (err.response?.data?.data as T | undefined)
+// The `data` of an error response, e.g. { isBooked: true }.
+export function errorData(err: unknown) {
+  return isAxiosError<
+    Partial<ApiResponse<Record<string, unknown>>> | undefined
+  >(err)
+    ? err.response?.data?.data
     : undefined;
 }
 
@@ -63,7 +78,7 @@ export function errorData<T = Record<string, unknown>>(err: unknown) {
 export type SessionError = "TokenExpiredError" | "JsonWebTokenError";
 
 export function sessionError(err: unknown): SessionError | undefined {
-  const name = errorData<{ name?: string }>(err)?.name;
+  const name = errorData(err)?.name;
   return name === "TokenExpiredError" || name === "JsonWebTokenError"
     ? name
     : undefined;
@@ -72,7 +87,7 @@ export function sessionError(err: unknown): SessionError | undefined {
 export function notify(
   { messageApi }: Pick<ServiceContext, "messageApi">,
   type: MessageType,
-  content: ReactNode,
+  content: MessageConfig["content"],
   duration = 3,
 ) {
   messageApi.open({ key: 1, type, content, duration });
@@ -89,6 +104,6 @@ export function handleFailure(
   else notify(ctx, "error", message);
 }
 
-export type Socket = {
-  emit(event: string, ...args: unknown[]): unknown;
-};
+export interface Socket {
+  emit: (event: string, ...args: unknown[]) => unknown;
+}

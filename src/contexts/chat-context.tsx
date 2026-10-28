@@ -1,22 +1,24 @@
-import { createContext, useContext } from "react";
-import { useRemoteData } from "@/contexts/use-remote-data";
-import { api } from "@/services/client";
-import type { ChatThread } from "@/types";
+import type { ReactNode } from "react";
+import { createStrictContext } from "@/utils/create-strict-context";
+import { useRemoteData } from "@/hooks/use-remote-data";
+import { apiGet } from "@/services/client";
+import type { ChatThread } from "@/types/content";
+import type { Id } from "@/types/user";
 import { toQuery } from "@/utils/query";
 
 // chat_to: also return this user's chat; userid: (admin) list another user's chats.
-export type ChatQuery = {
-  chat_to?: number | string | null;
-  userid?: number | string;
-};
-
-async function getChats(query?: ChatQuery) {
-  const { data } = await api.get(`/get/chat${toQuery(query)}`);
-  return data?.data as ChatThread[];
+export interface ChatQuery {
+  chat_to?: Id | null;
+  userid?: Id;
 }
 
-const ChatData = createContext<any>(null);
-export default function ChatContextProvider({ children }: any) {
+function getChats(query?: ChatQuery) {
+  return apiGet<ChatThread[]>(
+    `/get/chat${toQuery(query ? { ...query } : null)}`,
+  );
+}
+
+function useChatValue() {
   const {
     data: chatData,
     setData: setChatData,
@@ -24,15 +26,18 @@ export default function ChatContextProvider({ children }: any) {
     isError,
     load: fetchChatData,
   } = useRemoteData(getChats, { requiresAuth: true });
-  return (
-    <ChatData.Provider
-      value={{ isLoading, isError, chatData, fetchChatData, setChatData }}
-    >
-      {children}
-    </ChatData.Provider>
-  );
+  return { isLoading, isError, chatData, fetchChatData, setChatData };
 }
 
-export function useChatContext() {
-  return useContext(ChatData);
+const [ChatData, useChatContext] =
+  createStrictContext<ReturnType<typeof useChatValue>>("ChatContext");
+export { useChatContext };
+
+export default function ChatContextProvider({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const value = useChatValue();
+  return <ChatData.Provider value={value}>{children}</ChatData.Provider>;
 }

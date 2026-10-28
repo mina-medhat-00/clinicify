@@ -1,24 +1,62 @@
-import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 import { Search } from "lucide-react";
-import { Button, Input, Select } from "@/components/ui";
-import { doctorSpecialtyOptions } from "@/utils/sign-data";
+import { Button, Input, Select } from "@/components/ui/controls";
+import type { DoctorsQuery } from "@/contexts/doctors-context";
+import { doctorSpecialtyOptions } from "@/constants/sign-data";
 
-function opt(val?: any) {
-  return val == "null" || !val ? null : val;
+export interface SearchFilterValues {
+  specialty: string;
+  doctorName: string;
+  location: string;
 }
 
-function storedFilters() {
+// Lets the navbar's specialty menu read and set the filter.
+export interface SearchFilterHandle {
+  doctorName: string;
+  location: string;
+  specialtyValue: string;
+  setSearchFilter: Dispatch<SetStateAction<SearchFilterValues>>;
+}
+
+function stored(key: keyof SearchFilterValues) {
+  let value: string | null = null;
+  try {
+    value = window.localStorage.getItem(key);
+  } catch {
+    // Storage can be blocked (private mode); start with an empty filter.
+  }
+  return value === null || value === "null" ? "" : value;
+}
+
+function storedFilters(): SearchFilterValues {
   return {
-    specialty: opt(window.localStorage.getItem("specialty")) || "",
-    doctorName: opt(window.localStorage.getItem("doctorName")) || "",
-    location: opt(window.localStorage.getItem("location")) || "",
+    specialty: stored("specialty"),
+    doctorName: stored("doctorName"),
+    location: stored("location"),
   };
 }
 
-export default forwardRef(function SearchFilter(
-  { fetchDoctorsData }: any,
-  ref?: any,
-) {
+function store(values: SearchFilterValues) {
+  try {
+    window.localStorage.setItem("specialty", values.specialty);
+    window.localStorage.setItem("doctorName", values.doctorName);
+    window.localStorage.setItem("location", values.location);
+  } catch {
+    // Storage can be blocked (private mode); the filter just isn't kept.
+  }
+}
+
+export default forwardRef<
+  SearchFilterHandle,
+  { fetchDoctorsData: (query: DoctorsQuery) => Promise<unknown> }
+>(function SearchFilter({ fetchDoctorsData }, ref) {
   const [searchFilter, setSearchFilter] = useState(storedFilters);
 
   useImperativeHandle(
@@ -36,12 +74,10 @@ export default forwardRef(function SearchFilter(
 
   useEffect(
     function () {
-      window.localStorage.setItem("specialty", searchFilter.specialty || "");
-      window.localStorage.setItem("doctorName", searchFilter.doctorName || "");
-      window.localStorage.setItem("location", searchFilter.location || "");
+      store(searchFilter);
       // Wait for typing to pause before searching.
       const timeId = setTimeout(function () {
-        fetchDoctorsData({
+        void fetchDoctorsData({
           specialty: searchFilter.specialty,
           dname: searchFilter.doctorName,
           location: searchFilter.location,
@@ -54,8 +90,8 @@ export default forwardRef(function SearchFilter(
     [searchFilter, fetchDoctorsData],
   );
 
-  function updateField(name?: any, value?: any) {
-    setSearchFilter(function (current?: any) {
+  function updateField(name: keyof SearchFilterValues, value: string) {
+    setSearchFilter(function (current) {
       return { ...current, [name]: value };
     });
   }
@@ -69,9 +105,9 @@ export default forwardRef(function SearchFilter(
       <div className="grid gap-3 sm:grid-cols-3">
         <label className="flex min-w-0 flex-col gap-1">
           <span className="text-sm font-medium text-gray-600">Specialty</span>
-          <Select
-            onChange={function (val?: any) {
-              updateField("specialty", val);
+          <Select<string>
+            onChange={function (value) {
+              updateField("specialty", value);
             }}
             value={searchFilter.specialty || null}
             placeholder="All specialties"
@@ -87,8 +123,8 @@ export default forwardRef(function SearchFilter(
         <label className="flex min-w-0 flex-col gap-1">
           <span className="text-sm font-medium text-gray-600">Doctor name</span>
           <Input
-            onChange={function (e?: any) {
-              updateField("doctorName", e?.target?.value);
+            onChange={function (event) {
+              updateField("doctorName", event.target.value);
             }}
             value={searchFilter.doctorName}
             placeholder="Doctor's name"
@@ -97,8 +133,8 @@ export default forwardRef(function SearchFilter(
         <label className="flex min-w-0 flex-col gap-1">
           <span className="text-sm font-medium text-gray-600">Location</span>
           <Input
-            onChange={function (e?: any) {
-              updateField("location", e?.target?.value);
+            onChange={function (event) {
+              updateField("location", event.target.value);
             }}
             value={searchFilter.location}
             placeholder="City or area"

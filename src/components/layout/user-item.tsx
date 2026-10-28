@@ -1,5 +1,6 @@
 import { LogOut } from "lucide-react";
-import { Button, Skeleton } from "@/components/ui";
+import { Button } from "@/components/ui/controls";
+import { Skeleton } from "@/components/ui/display";
 import { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -45,17 +46,17 @@ export default function UserItem() {
     >
       <Link
         to={
-          user?.user_type == "user"
-            ? `/profile/${user?.user_name}`
-            : user?.user_type == "admin"
-              ? `/admin`
-              : `/dashboard`
+          user.user_type === "user"
+            ? `/profile/${user.user_name}`
+            : user.user_type === "admin"
+              ? "/admin"
+              : "/dashboard"
         }
         className="text-white grow inline-block
           font-bold hover:text-white z-10"
       >
         <Button className="w-full h-full bg-transparent text-white p-1 border-0 font-bold hover:text-white">
-          {user?.nick_name || "Profile"}
+          {user.nick_name || "Profile"}
         </Button>
       </Link>
       {(showLogout || isMobile) && (
@@ -76,7 +77,7 @@ export default function UserItem() {
               });
               clearToken();
               setLoggingOut(true);
-              if (location?.pathname != "/") {
+              if (location.pathname !== "/") {
                 setTimeout(function () {
                   messageApi.open({
                     key: 1,
@@ -86,7 +87,7 @@ export default function UserItem() {
                   });
                 }, 1000);
                 setTimeout(function () {
-                  navigate(`/`);
+                  void navigate("/");
                 }, 2000);
               }
             }}

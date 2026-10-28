@@ -1,7 +1,10 @@
-import { forwardRef, useState } from "react";
-import { Carousel, Empty } from "@/components/ui";
+import { forwardRef } from "react";
+import { Carousel } from "@/components/ui/carousel";
+import { Empty } from "@/components/ui/display";
 import DoctorCard from "@/components/doctor/doctor-card";
-import SearchFilter from "@/components/doctor/search-filter";
+import SearchFilter, {
+  type SearchFilterHandle,
+} from "@/components/doctor/search-filter";
 import Loader from "@/components/ui/loader";
 import ServerError from "@/components/ui/server-error";
 import TableGrid from "@/components/ui/table-grid";
@@ -9,12 +12,17 @@ import { useDoctorsContext } from "@/contexts/doctors-context";
 import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
 
-export default forwardRef(function Doctors({ home }: any, ref?: any) {
+export type DoctorsHandle = SearchFilterHandle;
+
+export default forwardRef<DoctorsHandle, { home?: boolean }>(function Doctors(
+  { home },
+  ref,
+) {
   const { socket, timeZone, isMobile } = useUtilsContext();
   const { userData: user } = useUserContext();
   const { doctorsData, isLoading, fetchDoctorsData, isError } =
     useDoctorsContext();
-  const [isPayment, setIsPayment] = useState<any>(null);
+  const doctors = doctorsData ?? [];
   return (
     <>
       {/* The home section keeps its own fixed query (top 5), so no filter there. */}
@@ -30,28 +38,15 @@ export default forwardRef(function Doctors({ home }: any, ref?: any) {
               className: "bg-gray-700 p-1 rounded-md",
             }}
           >
-            {doctorsData?.length > 0 ? (
-              doctorsData?.map(function (record?: any) {
+            {doctors.length > 0 ? (
+              doctors.map(function (doctor) {
                 return (
-                  <div className="mb-16" key={record?.doctor_id}>
+                  <div className="mb-16" key={doctor.doctor_id}>
                     <DoctorCard
-                      isMobile={isMobile}
+                      doctor={doctor}
                       user={user}
                       socket={socket}
-                      doctorId={record?.doctor_id}
-                      username={record?.user_name}
-                      profileImage={record?.img_url}
-                      rate={record?.rate}
-                      fees={record?.fees}
-                      isPayment={isPayment}
-                      setIsPayment={setIsPayment}
-                      street={record?.clinic_street}
-                      city={record?.clinic_city}
-                      phone={record?.clinic_pnumber}
-                      doctorName={record?.nick_name}
-                      about={record?.about}
-                      specialty={record?.specialty}
-                      timeZone={timeZone || ""}
+                      timeZone={timeZone}
                     />
                   </div>
                 );
@@ -59,7 +54,7 @@ export default forwardRef(function Doctors({ home }: any, ref?: any) {
             ) : isLoading ? (
               <Loader />
             ) : isError ? (
-              <ServerError errorTitle={"Doctors"} />
+              <ServerError errorTitle="Doctors" />
             ) : (
               <Empty
                 className="my-4 text-gray-500 font-medium"
@@ -70,36 +65,22 @@ export default forwardRef(function Doctors({ home }: any, ref?: any) {
         </div>
       ) : (
         <div className="flex flex-wrap justify-evenly gap-2">
-          {doctorsData?.length > 0 ? (
+          {doctors.length > 0 ? (
             <TableGrid
-              lastItem
-              colKey="doctor"
               heightFull
-              items={doctorsData?.map(function (record?: any, i?: any) {
+              items={doctors.map(function (doctor, i) {
                 return {
-                  key: record?.doctor_id,
+                  key: doctor.doctor_id,
                   element: (
                     <DoctorCard
-                      key={record?.doctor_id}
+                      doctor={doctor}
                       user={user}
                       socket={socket}
+                      // An odd last card takes the full row.
                       isLast={
-                        doctorsData?.length % 2 && doctorsData?.length == i + 1
+                        doctors.length % 2 === 1 && doctors.length === i + 1
                       }
-                      doctorId={record?.doctor_id}
-                      username={record?.user_name}
-                      profileImage={record?.img_url}
-                      rate={record?.rate}
-                      fees={record?.fees}
-                      isPayment={isPayment}
-                      setIsPayment={setIsPayment}
-                      doctorName={record?.nick_name}
-                      street={record?.clinic_street}
-                      city={record?.clinic_city}
-                      phone={record?.clinic_pnumber}
-                      about={record?.about}
-                      specialty={record?.specialty}
-                      timeZone={timeZone || ""}
+                      timeZone={timeZone}
                     />
                   ),
                 };
@@ -108,17 +89,17 @@ export default forwardRef(function Doctors({ home }: any, ref?: any) {
           ) : isLoading ? (
             <Loader />
           ) : isError ? (
-            <ServerError errorTitle={"Doctors"} />
+            <ServerError errorTitle="Doctors" />
           ) : (
             <Empty
               className={`${home ? "" : "mt-20"} mb-4 font-medium`}
               description={
                 <span
-                  className={`${
+                  className={
                     home
                       ? "text-white bg-blue-600/60 p-1 rounded"
                       : "text-gray-500"
-                  }`}
+                  }
                 >
                   There are no doctors
                 </span>

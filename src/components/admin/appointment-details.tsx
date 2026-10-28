@@ -1,25 +1,28 @@
-import { Empty } from "@/components/ui";
+import { Empty } from "@/components/ui/display";
 import dayjs from "dayjs";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import DatePicker from "@/components/doctor/date-picker";
+import DatePicker, { type SelectedDay } from "@/components/doctor/date-picker";
 import AppointmentCard from "@/components/schedule/appointment-card";
-import PopUp from "@/components/ui/pop-up";
+import CancelSlotPopUp from "@/components/schedule/cancel-slot-pop-up";
+import { useCancelPrompt } from "@/hooks/use-cancel-prompt";
 import { useSlotsContext } from "@/contexts/slots-context";
 import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
 import cancelAppointment from "@/services/cancel-appointment";
+import type { Id } from "@/types/user";
 
-export default function AppointmentDetails({ doctorId }: any) {
+// One doctor's day of slots, inside the admin's doctor list.
+export default function AppointmentDetails({ doctorId }: { doctorId: Id }) {
   const { timeZone, messageApi, socket } = useUtilsContext();
   const { fetchUserData } = useUserContext();
-  const [selectedDate, setSelectedDate] = useState({
+  const [selectedDate, setSelectedDate] = useState<SelectedDay>({
     count: 0,
     date: dayjs().format("YYYY-MM-DD"),
   });
   const { slotsData, isLoading, fetchSlotsData } = useSlotsContext();
-  const [selectedAppointment, setSelectedAppointment] = useState(null);
-  const [showPop, setShowPop] = useState<any>(null);
+  const cancel = useCancelPrompt();
+  const day = selectedDate.date;
   useEffect(
     function () {
       socket.emit("join_doctor", doctorId);
@@ -28,29 +31,19 @@ export default function AppointmentDetails({ doctorId }: any) {
   );
   useEffect(
     function () {
-      function getSlots(data?: any) {
-        if (selectedDate?.date == data?.date)
-          fetchSlotsData(
-            {
-              doctorId,
-              date: selectedDate?.date,
-            },
-            { silent: true },
-          );
+      function getSlots(data?: { date?: string }) {
+        if (day === data?.date)
+          void fetchSlotsData({ doctorId, date: day }, { silent: true });
       }
-      if (selectedDate?.date) {
-        socket.on("update_slots", getSlots);
-        fetchSlotsData({
-          doctorId,
-          date: selectedDate?.date,
-        });
-      }
+      socket.on("update_slots", getSlots);
+      void fetchSlotsData({ doctorId, date: day });
       return function () {
-        socket?.off("update_slots", getSlots);
+        socket.off("update_slots", getSlots);
       };
     },
-    [selectedDate, doctorId, fetchSlotsData, socket],
+    [day, doctorId, fetchSlotsData, socket],
   );
+  const slots = slotsData?.totalSlots ?? [];
   return (
     <>
       <DatePicker
@@ -60,52 +53,29 @@ export default function AppointmentDetails({ doctorId }: any) {
       />
       <div className="mt-2 max-h-52 overflow-auto p-1">
         <div className="flex gap-2 justify-evenly flex-wrap">
-          <PopUp
-            show={showPop}
-            handleClose={function () {
-              setShowPop(null);
-              setSelectedAppointment(null);
+          <CancelSlotPopUp
+            prompt={cancel.prompt}
+            onClose={cancel.close}
+            onConfirm={function (slot) {
+              void cancelAppointment({
+                date: day,
+                slotTime: slot.slotTime,
+                appointmentId: slot.appointmentId,
+                doctorId,
+                cancelFrom: "admin",
+                socket,
+                messageApi,
+                fetchUserData,
+              }).then(function (canceled) {
+                if (!canceled) return;
+                cancel.close();
+                void fetchSlotsData({ date: day, doctorId });
+              });
             }}
-          >
-            <div className="text-center text-sm sm:text-lg p-2 bg-blue-400 text-white font-medium rounded-lg">
-              {`${selectedAppointment?.slotTime} already booked`}
-              <br /> Are you sure that you want cancel it ?
-            </div>
-            <div className="flex justify-center gap-2 p-2 mt-4">
-              <div
-                onClick={async function () {
-                  const canceled = await cancelAppointment({
-                    date: selectedDate?.date,
-                    slotTime: selectedAppointment?.slotTime,
-                    appointmentId: selectedAppointment?.appointmentId,
-                    doctorId,
-                    cancelFrom: "admin",
-                    socket,
-                    messageApi,
-                    fetchUserData,
-                  });
-                  if (!canceled) return;
-                  setSelectedAppointment(null);
-                  setShowPop(null);
-                  fetchSlotsData({ date: selectedDate?.date, doctorId });
-                }}
-                className="cursor-pointer text-center bg-red-500 p-2 grow text-white font-medium rounded-lg shadow-sm"
-              >
-                Apply
-              </div>
-              <div
-                onClick={function () {
-                  setShowPop(null);
-                }}
-                className="cursor-pointer text-center bg-blue-400 p-2 text-white font-medium rounded-lg shadow-sm"
-              >
-                Cancel
-              </div>
-            </div>
-          </PopUp>
+          />
           {isLoading ? (
             <Loader2 className="animate-spin" />
-          ) : !slotsData?.totalSlots?.length ? (
+          ) : !slots.length ? (
             <Empty
               className="flex flex-col"
               description={
@@ -115,31 +85,21 @@ export default function AppointmentDetails({ doctorId }: any) {
               }
             />
           ) : (
-            slotsData?.totalSlots?.map(function ({
-              appointmentType,
-              appointmentState,
-              appointmentFees,
-              appointmentId,
-              slotTime,
-            }: any) {
+            slots.map(function (slot, i) {
               return (
-                <div key={appointmentId} className="grow">
+                <div key={slot.appointmentId} className="grow">
                   <AppointmentCard
+                    slot={slot}
+                    order={i + 1}
                     timeZone={timeZone}
-                    selectedDate={dayjs(selectedDate?.date)}
+                    selectedDate={dayjs(day)}
                     socket={socket}
-                    tAppointments={slotsData?.totalSlots}
-                    setShowPop={setShowPop}
-                    setBookedAppointment={setSelectedAppointment}
+                    tAppointments={slots}
+                    onCancel={cancel.open}
                     admin={true}
                     userid={doctorId}
-                    slotTime={slotTime}
                     fetchSlotsData={fetchSlotsData}
                     fetchUserData={fetchUserData}
-                    appointmentFees={appointmentFees}
-                    appointmentId={appointmentId}
-                    appointmentState={appointmentState}
-                    appointmentType={appointmentType}
                     messageApi={messageApi}
                   />
                 </div>

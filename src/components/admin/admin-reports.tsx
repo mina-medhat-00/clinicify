@@ -1,176 +1,37 @@
-import { Button, Input, Space, Table } from "@/components/ui";
-import {
-  Briefcase,
-  Flag,
-  Mail,
-  Search,
-  Stethoscope,
-  User,
-  UserRound,
-} from "lucide-react";
-import { useRef, useState } from "react";
+import { Button } from "@/components/ui/controls";
+import { Table, type TableColumn } from "@/components/ui/table";
+import { Flag, Mail } from "lucide-react";
+import { useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import ReportDetails from "@/components/admin/report-details";
+import {
+  useNameColumn,
+  userTypeColumn,
+  type NamedRow,
+} from "@/components/admin/user-columns";
 import PopUp from "@/components/ui/pop-up";
-import UserAvatar from "@/components/ui/user-avatar";
 import ReportContextProvider, {
   useReportContext,
 } from "@/contexts/report-context";
+import type { ReportSummary } from "@/types/content";
+import type { UserType } from "@/types/user";
+
+interface ReportRow extends NamedRow {
+  user_type: UserType;
+  action: ReactNode;
+}
 
 export default function AdminReports() {
-  const [selectedUser, setSelectedUser] = useState<any>("");
+  // The user whose reports are shown (kept while the popup closes).
+  const [selectedUser, setSelectedUser] = useState<ReportSummary | null>(null);
   const [showPop, setShowPop] = useState(false);
-  const { isLoading: isReportLoading, reportData } = useReportContext();
-  const searchInput = useRef(null);
-  function handleSearch(confirm?: any) {
-    confirm();
-  }
-  function handleReset(clearFilters?: any) {
-    clearFilters();
-  }
-  function getColumnSearchProps(dataIndex?: any) {
-    return {
-      filterDropdown: function ({
-        setSelectedKeys,
-        selectedKeys,
-        confirm,
-        clearFilters,
-        close,
-      }: any) {
-        return (
-          <div
-            className="p-2"
-            onKeyDown={function (e?: any) {
-              e.stopPropagation();
-            }}
-          >
-            <Input
-              ref={searchInput}
-              placeholder={`Search ${dataIndex}`}
-              value={selectedKeys[0]}
-              onChange={function (e?: any) {
-                setSelectedKeys(e.target.value ? [e.target.value] : []);
-              }}
-              onPressEnter={function () {
-                handleSearch(confirm);
-              }}
-              className="mb-2 block"
-            />
-            <Space>
-              <Button
-                type="primary"
-                className="flex items-center justify-center w-24"
-                onClick={function () {
-                  handleSearch(confirm);
-                }}
-                icon={<Search className="size-4" />}
-                size="small"
-              >
-                Search
-              </Button>
-              <Button
-                onClick={function () {
-                  if (clearFilters) handleReset(clearFilters);
-                }}
-                size="small"
-                className="w-24"
-              >
-                Reset
-              </Button>
-              <Button
-                type="link"
-                size="small"
-                onClick={function () {
-                  close();
-                }}
-              >
-                close
-              </Button>
-            </Space>
-          </div>
-        );
-      },
-      filterIcon: function (filtered?: any) {
-        return <Search className={filtered ? "text-blue-500" : undefined} />;
-      },
-      onFilter: function (value?: any, record?: any) {
-        return record[dataIndex].nick_name
-          .toString()
-          .toLowerCase()
-          .includes(value.toLowerCase());
-      },
-      filterDropdownProps: {
-        onOpenChange: function (visible?: any) {
-          if (visible) {
-            setTimeout(function () {
-              searchInput.current?.select();
-            }, 100);
-          }
-        },
-      },
-    };
-  }
-  const columns = [
-    {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
-      ...getColumnSearchProps("name"),
-      render: function (rec?: any, record?: any) {
-        return (
-          <Link
-            to={`/profile/${record?.key}`}
-            className="flex flex-col bg-gray-200/80 hover:bg-gray-100/80  px-4 py-2 text-center rounded-md shadow-md justify-center items-center gap-2"
-          >
-            <UserAvatar
-              className={"bg-gray-700/80"}
-              size="large"
-              src={rec?.img_url}
-              userType={rec?.user_type}
-            />
-            <span className="font-medium text-gray-700">{rec?.nick_name}</span>
-          </Link>
-        );
-      },
-    },
-    {
-      title: "Type",
-      dataIndex: "user_type",
-      key: "user_type",
-      filters: [
-        {
-          text: "doctor",
-          value: "doctor",
-        },
-        {
-          text: "user",
-          value: "user",
-        },
-        {
-          text: "admin",
-          value: "admin",
-        },
-      ],
-      onFilter: function (val?: any, rec?: any) {
-        return val?.toLowerCase() == rec?.user_type?.toLowerCase();
-      },
-      render: function (value?: any) {
-        return (
-          <div className="flex px-1 py-2 bg-blue-400/80 shadow-md  rounded-md flex-col justify-center gap-2 items-center">
-            {value == "doctor" ? (
-              <Stethoscope />
-            ) : value == "doctor" ? (
-              <User />
-            ) : value == "admin" ? (
-              <UserRound />
-            ) : (
-              <Briefcase />
-            )}
-            <span className="font-medium capitalize">{value}</span>
-          </div>
-        );
-      },
-    },
+  const { isLoading: isReportLoading, summaries } = useReportContext();
+  const nameColumn = useNameColumn({
+    cardClass: "bg-gray-200/80 hover:bg-gray-100/80",
+  });
+  const columns: TableColumn<ReportRow>[] = [
+    nameColumn,
+    userTypeColumn("bg-blue-400/80"),
     {
       title: "Action",
       key: "action",
@@ -178,12 +39,8 @@ export default function AdminReports() {
     },
   ];
 
-  const reportValues = reportData?.map(function ({
-    user_id,
-    img_url,
-    nick_name,
-    user_type,
-  }: any) {
+  const reportValues = summaries?.map(function (report): ReportRow {
+    const { user_id, img_url, nick_name, user_type } = report;
     return {
       key: user_id,
       user_type,
@@ -191,12 +48,7 @@ export default function AdminReports() {
         <div className="flex flex-col gap-2 items-center">
           <Button
             onClick={function () {
-              setSelectedUser({
-                user_id,
-                img_url,
-                nick_name,
-                user_type,
-              });
+              setSelectedUser(report);
               setShowPop(true);
             }}
             className="bg-red-400 hover:bg-red-500 rounded-lg font-medium text-white"
@@ -206,9 +58,9 @@ export default function AdminReports() {
             </div>
           </Button>
           <Link
-            to={"/chat"}
+            to="/chat"
             onClick={function () {
-              window.localStorage.setItem("chatTo", user_id);
+              window.localStorage.setItem("chatTo", String(user_id));
             }}
             className="p-2 bg-blue-400 border hover:bg-blue-600/80 rounded-lg font-medium text-white"
           >
@@ -218,46 +70,31 @@ export default function AdminReports() {
           </Link>
         </div>
       ),
-      name: {
-        nick_name,
-        img_url,
-        user_type,
-      },
+      name: { nick_name, img_url, user_type },
     };
   });
   return (
     <div className="px-4 admin--table">
       <PopUp
         mt="80px"
-        customWidth={"w-5/6 sm:w-4/5 lg:w-3/4"}
+        customWidth="w-5/6 sm:w-4/5 lg:w-3/4"
         handleClose={function () {
-          setShowPop(null);
+          setShowPop(false);
         }}
         show={showPop}
       >
-        <ReportContextProvider reportFrom={selectedUser?.user_id}>
-          <ReportDetails
-            selectedUser={{
-              user_id: selectedUser?.user_id,
-              nick_name: selectedUser?.nick_name,
-              img_url: selectedUser?.img_url,
-              user_type: selectedUser?.user_type,
-            }}
-          ></ReportDetails>
-        </ReportContextProvider>
+        {selectedUser && (
+          <ReportContextProvider reportFrom={selectedUser.user_id}>
+            <ReportDetails />
+          </ReportContextProvider>
+        )}
       </PopUp>
       <div className="flex overflow-auto scroll--h h-screen">
         <div className="grow">
-          <Table
+          <Table<ReportRow>
             className="reports--table"
-            pagination={
-              reportData?.length > 4
-                ? {
-                    pageSize: 4,
-                  }
-                : false
-            }
-            columns={columns as any}
+            pagination={(summaries?.length ?? 0) > 4 ? { pageSize: 4 } : false}
+            columns={columns}
             loading={isReportLoading}
             dataSource={reportValues}
           />

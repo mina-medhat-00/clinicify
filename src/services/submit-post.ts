@@ -1,12 +1,12 @@
 import {
-  api,
+  apiPost,
   handleFailure,
   notify,
   type ServiceContext,
   type Socket,
 } from "@/services/client";
 import { liveTimestamp } from "@/services/submit-comment";
-import type { User } from "@/types";
+import type { Id, User } from "@/types/user";
 
 export default async function submitPost({
   user,
@@ -22,7 +22,7 @@ export default async function submitPost({
 }) {
   notify(ctx, "loading", "posting your question ...", 8);
   try {
-    const { data } = await api.post("/submit/post", {
+    const data = await apiPost<{ post_id?: Id } | null>("/submit/post", {
       data: { content, postImg },
     });
     notify(ctx, "success", "thank you for your question", 2);
@@ -37,7 +37,7 @@ export default async function submitPost({
       angry: 0,
       dislike: 0,
       like_emoji: 0,
-      post_id: data?.data?.post_id,
+      post_id: data?.post_id,
     });
     return true;
   } catch (err) {

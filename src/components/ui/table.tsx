@@ -1,36 +1,110 @@
 import { ChevronDown, Filter, Loader2 } from "lucide-react";
-import { Fragment, useMemo, useState } from "react";
-import { cx } from "@/components/ui/cx";
+import { Fragment, useMemo, useState, type Key, type ReactNode } from "react";
+import { cx } from "@/utils/cx";
 
-const EXPAND_COLUMN = "EXPAND_COLUMN";
+const EXPAND_COLUMN = "EXPAND_COLUMN" as const;
 
-function Table({
+export type FilterValue = string | number | boolean;
+
+export interface FilterDropdownProps {
+  selectedKeys: FilterValue[];
+  setSelectedKeys: (keys: FilterValue[]) => void;
+  confirm: () => void;
+  clearFilters: () => void;
+  close: () => void;
+}
+
+interface ColumnBase<R> {
+  title?: ReactNode;
+  key?: string;
+  filters?: { text: ReactNode; value: FilterValue }[];
+  onFilter?: (value: FilterValue, record: R) => boolean;
+  filterDropdown?: (props: FilterDropdownProps) => ReactNode;
+  filterIcon?: (filtered: boolean) => ReactNode;
+  filterDropdownProps?: { onOpenChange?: (open: boolean) => void };
+}
+
+// A column shows one field of the row (`dataIndex`), or the whole row.
+type FieldColumn<R> = {
+  [K in keyof R & string]: ColumnBase<R> & {
+    dataIndex: K;
+    render?: (value: R[K], record: R, index: number) => ReactNode;
+  };
+}[keyof R & string];
+type RowColumn<R> = ColumnBase<R> & {
+  dataIndex?: undefined;
+  key: string;
+  render: (record: R, _: R, index: number) => ReactNode;
+};
+
+export type TableColumn<R> = FieldColumn<R> | RowColumn<R>;
+export interface TableRow {
+  key?: Key;
+}
+
+interface TableProps<R extends TableRow> {
+  columns?: (TableColumn<R> | typeof EXPAND_COLUMN)[];
+  dataSource?: R[] | null;
+  pagination?: false | { pageSize?: number; position?: string[] };
+  loading?: boolean;
+  rowClassName?: string | ((record: R, index: number) => string);
+  showHeader?: boolean;
+  className?: string;
+  expandable?: {
+    expandedRowKeys?: (Key | null)[];
+    expandedRowRender?: (record: R, index: number) => ReactNode;
+    onExpand?: (expanded: boolean, record: R) => void;
+  };
+}
+
+function columnKey<R>(column: TableColumn<R>) {
+  return column.key ?? column.dataIndex ?? "";
+}
+
+function isRowColumn<R>(column: TableColumn<R>): column is RowColumn<R> {
+  return column.dataIndex === undefined;
+}
+
+function cellValue<R>(column: TableColumn<R>, record: R, index: number) {
+  if (isRowColumn(column)) return column.render(record, record, index);
+  const raw = record[column.dataIndex];
+  if (column.render) {
+    return (column.render as (v: unknown, r: R, i: number) => ReactNode)(
+      raw,
+      record,
+      index,
+    );
+  }
+  return raw as ReactNode;
+}
+
+function TableBase<R extends TableRow>({
   columns = [],
-  dataSource = [],
+  dataSource,
   pagination,
   loading,
   rowClassName,
   showHeader = true,
   className,
-  size: _size,
   expandable,
-}: any) {
+}: TableProps<R>) {
   const [page, setPage] = useState(1);
   const [openFilter, setOpenFilter] = useState<string | null>(null);
-  const [draft, setDraft] = useState<Record<string, any[]>>({});
-  const [applied, setApplied] = useState<Record<string, any[]>>({});
+  const [draft, setDraft] = useState<Record<string, FilterValue[]>>({});
+  const [applied, setApplied] = useState<Record<string, FilterValue[]>>({});
 
-  const pageSize =
-    pagination && pagination !== false ? pagination.pageSize || 10 : Infinity;
+  const pageSize = pagination ? (pagination.pageSize ?? 10) : Infinity;
 
   const filtered = useMemo(
     function () {
-      return (dataSource || []).filter(function (record: any) {
-        return columns.every(function (column: any) {
-          const values = applied[column.key || column.dataIndex];
-          if (!values?.length || !column.onFilter) return true;
+      return (dataSource ?? []).filter(function (record) {
+        return columns.every(function (column) {
+          if (column === EXPAND_COLUMN) return true;
+          const values = applied[columnKey(column)];
+          const { onFilter } = column;
+          if (!values?.length || !onFilter) return true;
           return values.some(function (value) {
-            return column.onFilter(value, record);
+            return onFilter(value, record);
           });
         });
       });
@@ -40,16 +114,9 @@ function Table({
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const current = Math.min(page, totalPages);
-  const pageRows =
-    pagination === false
-      ? filtered
-      : filtered.slice((current - 1) * pageSize, current * pageSize);
-
-  function cellValue(column: any, record: any, index: number) {
-    const raw = column.dataIndex ? record[column.dataIndex] : record;
-    if (column.render) return column.render(raw, record, index);
-    return raw;
-  }
+  const pageRows = pagination
+    ? filtered.slice((current - 1) * pageSize, current * pageSize)
+    : filtered;
 
   return (
     <div className={cx("relative w-full", className)}>
@@ -62,7 +129,7 @@ function Table({
         {showHeader ? (
           <thead>
             <tr>
-              {columns.map(function (column: any) {
+              {columns.map(function (column) {
                 if (column === EXPAND_COLUMN) {
                   return (
                     <th
@@ -71,7 +138,7 @@ function Table({
                     />
                   );
                 }
-                const colKey = column.key || column.dataIndex;
+                const colKey = columnKey(column);
                 const filteredCol = Boolean(applied[colKey]?.length);
                 return (
                   <th
@@ -108,8 +175,8 @@ function Table({
                             <div className="absolute top-full left-0 z-20 mt-1 min-w-48 rounded-md border border-gray-200 bg-white p-2 shadow-lg">
                               {column.filterDropdown ? (
                                 column.filterDropdown({
-                                  selectedKeys: draft[colKey] || [],
-                                  setSelectedKeys: function (keys: any[]) {
+                                  selectedKeys: draft[colKey] ?? [],
+                                  setSelectedKeys: function (keys) {
                                     setDraft(function (current) {
                                       return { ...current, [colKey]: keys };
                                     });
@@ -118,7 +185,7 @@ function Table({
                                     setApplied(function (current) {
                                       return {
                                         ...current,
-                                        [colKey]: draft[colKey] || [],
+                                        [colKey]: draft[colKey] ?? [],
                                       };
                                     });
                                     setOpenFilter(null);
@@ -138,13 +205,13 @@ function Table({
                                 })
                               ) : (
                                 <div className="flex flex-col gap-1">
-                                  {column.filters.map(function (filter: any) {
+                                  {column.filters?.map(function (filter) {
                                     const selected = (
-                                      draft[colKey] || []
+                                      draft[colKey] ?? []
                                     ).includes(filter.value);
                                     return (
                                       <label
-                                        key={filter.value}
+                                        key={String(filter.value)}
                                         className="flex items-center gap-2 text-sm"
                                       >
                                         <input
@@ -153,7 +220,7 @@ function Table({
                                           onChange={function () {
                                             setDraft(function (current) {
                                               const prev =
-                                                current[colKey] || [];
+                                                current[colKey] ?? [];
                                               return {
                                                 ...current,
                                                 [colKey]: selected
@@ -180,7 +247,7 @@ function Table({
                                       setApplied(function (current) {
                                         return {
                                           ...current,
-                                          [colKey]: draft[colKey] || [],
+                                          [colKey]: draft[colKey] ?? [],
                                         };
                                       });
                                       setOpenFilter(null);
@@ -203,19 +270,22 @@ function Table({
           </thead>
         ) : null}
         <tbody className="ant-table-tbody">
-          {pageRows.map(function (record: any, index: number) {
+          {pageRows.map(function (record, index) {
             const extra =
               typeof rowClassName === "function"
                 ? rowClassName(record, index)
                 : rowClassName;
-            const expanded = expandable?.expandedRowKeys?.includes(record.key);
+            const expanded = Boolean(
+              record.key !== undefined &&
+              expandable?.expandedRowKeys?.includes(record.key),
+            );
             return (
               <Fragment key={record.key ?? index}>
                 <tr
                   key={record.key ?? index}
                   className={cx("ant-table-cell-row-hover", extra)}
                 >
-                  {columns.map(function (column: any) {
+                  {columns.map(function (column) {
                     if (column === EXPAND_COLUMN) {
                       return (
                         <td
@@ -240,7 +310,7 @@ function Table({
                     }
                     return (
                       <td
-                        key={column.key || column.dataIndex}
+                        key={columnKey(column)}
                         className="border-b border-gray-100 px-3 py-2"
                       >
                         {cellValue(column, record, index)}
@@ -249,7 +319,7 @@ function Table({
                   })}
                 </tr>
                 {expanded && expandable?.expandedRowRender ? (
-                  <tr key={`${record.key}-expanded`}>
+                  <tr key={`${String(record.key)}-expanded`}>
                     <td
                       colSpan={columns.length}
                       className="border-b border-gray-100 bg-gray-50 p-3"
@@ -263,7 +333,7 @@ function Table({
           })}
         </tbody>
       </table>
-      {pagination && pagination !== false && filtered.length > pageSize ? (
+      {pagination && filtered.length > pageSize ? (
         <div
           className={cx(
             "ant-table-pagination mt-3 flex gap-2",
@@ -272,10 +342,7 @@ function Table({
               : "justify-start",
           )}
         >
-          {Array.from({ length: totalPages }).map(function (
-            _: any,
-            index: number,
-          ) {
+          {Array.from({ length: totalPages }).map(function (_, index) {
             const number = index + 1;
             return (
               <button
@@ -301,6 +368,6 @@ function Table({
   );
 }
 
-Table.EXPAND_COLUMN = EXPAND_COLUMN;
+const Table = Object.assign(TableBase, { EXPAND_COLUMN });
 
 export { Table };

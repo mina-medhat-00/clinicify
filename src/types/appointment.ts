@@ -1,49 +1,49 @@
+import type { PatientRecords } from "@/types/clinic";
+import type { Id, Verification } from "@/types/user";
+
 export type AppointmentState =
-  "free" | "booked" | "running" | "done" | "canceled" | string;
+  "free" | "booked" | "running" | "done" | "canceled";
 
-export type AppointmentKind = "inClinic" | "chat" | "videoCall" | string;
+export type AppointmentKind = "inClinic" | "chat" | "videoCall";
 
-export type Appointment = {
-  appointment_id?: string | number;
-  appointmentId?: string | number;
-  appointment_state?: AppointmentState;
-  appointmentState?: AppointmentState;
-  appointment_type?: AppointmentKind;
-  appointmentType?: AppointmentKind;
-  appointment_fees?: number | string;
-  appointmentFees?: number | string;
-  appointment_duration?: number;
-  slot_time?: string;
-  slotTime?: string;
-  schedule_date?: string;
-  doctorId?: string | number;
-  doctor_id?: string | number;
-  patientId?: string | number;
-  patient_id?: string | number;
-  doctorName?: string;
-  username?: string;
-  fees?: number | string;
-  specialty?: string;
-  rate?: number;
-  dimgUrl?: string;
-  uimgUrl?: string;
-  clinic_city?: string;
-  clinic_street?: string;
-  [key: string]: any;
+// GET /get/appointments. The doctor's list also carries the patient's records.
+export type Appointment = Partial<PatientRecords> & {
+  appointmentId: Id;
+  patientId: Id;
+  doctorId: Id;
+  schedule_date: string;
+  booked_time: string;
+  slot_time: string;
+  appointment_state: AppointmentState;
+  appointment_type: AppointmentKind;
+  appointment_duration: number;
+  appointmentFees?: number;
+  fees: number;
+  clinic_city?: string | null;
+  clinic_street?: string | null;
+  uimgUrl: string;
+  dimgUrl: string;
+  username: string;
+  doctorName: string;
+  rate: string;
+  specialty: string;
+  is_verified: Verification;
 };
 
-export type Slot = {
-  slotTime?: string;
-  appointmentState?: AppointmentState;
-  appointmentType?: AppointmentKind;
-  appointmentFees?: number | string;
-  appointmentId?: string | number;
-  [key: string]: any;
-};
+// One slot of a doctor's day (POST /get/slots).
+export interface Slot {
+  appointmentId: Id;
+  appointmentState: AppointmentState;
+  appointmentType: AppointmentKind;
+  appointmentFees: number;
+  appointmentDuration: number;
+  schedule_date: string;
+  slotTime: string;
+}
 
-export type SlotsData = {
-  bookedSlots?: Slot[] | null;
-  totalSlots?: Slot[] | null;
-  freeSlots?: Slot[] | null;
-  [key: string]: any;
-};
+export interface SlotsData {
+  totalSlots: Slot[];
+  bookedSlots: Slot[];
+  freeSlots: Slot[] | null;
+  runningSlots: Slot[];
+}

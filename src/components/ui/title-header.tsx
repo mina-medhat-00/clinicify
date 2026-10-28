@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 
 export default function TitleHeader({
@@ -6,18 +7,26 @@ export default function TitleHeader({
   title,
   wrapperBg,
   contentBg,
-  contClass = "",
-}: any) {
+  contClass,
+}: {
+  icon?: ReactNode;
+  // Path without the leading slash.
+  to?: string;
+  title?: ReactNode;
+  wrapperBg?: string;
+  contentBg?: string;
+  contClass?: string;
+}) {
   const body = (
     <div
       className={`grow w-full py-3 border-y border-white text-center ${
-        contClass ? contClass : "mb-2"
-      } ${contentBg ? contentBg : "bg-blue-900/80 hover:bg-blue-900"}`}
+        contClass ?? "mb-2"
+      } ${contentBg ?? "bg-blue-900/80 hover:bg-blue-900"}`}
     >
       <h1 className="break-all text-2xl sm:text-3xl xl:text-4xl text-white text-center capitalize">
         {title}
       </h1>
-      {icon || null}
+      {icon ?? null}
     </div>
   );
 
@@ -26,7 +35,7 @@ export default function TitleHeader({
       <Link
         to={`/${to}`}
         className={`flex justify-center flex-col items-center gap-2 py-3 rounded-tr-lg rounded-tl-lg ${
-          wrapperBg ? wrapperBg : "bg-gray-200/50 hover:bg-gray-200"
+          wrapperBg ?? "bg-gray-200/50 hover:bg-gray-200"
         }`}
       >
         {body}
@@ -37,7 +46,7 @@ export default function TitleHeader({
   return (
     <div
       className={`flex justify-center flex-col items-center gap-2 py-3 rounded-tr-lg rounded-tl-lg ${
-        wrapperBg ? wrapperBg : "bg-gray-200/50"
+        wrapperBg ?? "bg-gray-200/50"
       }`}
     >
       {body}

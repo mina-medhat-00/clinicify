@@ -13,8 +13,8 @@ export default function OnlineMeeting() {
     <Loader />
   ) : user && session && appointment_id ? (
     <VideoMeeting
-      username={user?.user_name}
-      nickname={user?.nick_name}
+      username={user.user_name}
+      nickname={user.nick_name}
       appointmentId={appointment_id}
       session={session}
     />

@@ -1,39 +1,38 @@
-import {
-  Alert,
-  Button,
-  Empty,
-  Image,
-  Input,
-  message,
-  Upload,
-} from "@/components/ui";
+import { Alert, Empty, Image } from "@/components/ui/display";
+import { Button, Input } from "@/components/ui/controls";
+import { message } from "@/components/ui/message";
+import { Upload } from "@/components/ui/upload";
 import { ImagePlus, MessageCircleQuestion, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import type { ReactionUpdate } from "@/components/post/post";
 import PostWrapper from "@/components/post/post-wrapper";
 import Loader from "@/components/ui/loader";
 import ServerError from "@/components/ui/server-error";
 import TableGrid from "@/components/ui/table-grid";
 import TitleHeader from "@/components/ui/title-header";
-import { CommentsContextProvider } from "@/contexts";
+import CommentsContextProvider from "@/contexts/comments-context";
 import { usePostsContext } from "@/contexts/posts-context";
 import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
 import submitPost from "@/services/submit-post";
+import type { Id } from "@/types/user";
+import type { Post } from "@/types/content";
 
-function getBase64(img?: any, setPostImg?: any) {
+function getBase64(img: File, setPostImg: (url: string) => void) {
   const reader = new FileReader();
   reader.addEventListener("load", function () {
-    setPostImg(reader?.result);
+    if (typeof reader.result === "string") setPostImg(reader.result);
   });
   reader.readAsDataURL(img);
 }
-function beforeUpload(file?: any) {
-  const isImg =
-    file.type === "image/jpeg" ||
-    file.type === "image/jpg" ||
-    file.type === "image/png" ||
-    file.type === "image/gif" ||
-    file.type === "image/webp";
+function beforeUpload(file: File) {
+  const isImg = [
+    "image/jpeg",
+    "image/jpg",
+    "image/png",
+    "image/gif",
+    "image/webp",
+  ].includes(file.type);
   if (!isImg) {
     message.error("You can only upload images!");
   }
@@ -43,7 +42,7 @@ function beforeUpload(file?: any) {
   }
   return isImg && isLt2M ? true : Upload.LIST_IGNORE;
 }
-export default function Posts({ home }: any) {
+export default function Posts({ home }: { home?: boolean }) {
   const { socket } = useUtilsContext();
   const {
     fetchUserData,
@@ -52,76 +51,67 @@ export default function Posts({ home }: any) {
     userData: userAuth,
   } = useUserContext();
   const { postsData, isLoading, isError, fetchPostsData } = usePostsContext();
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState<Post[]>([]);
   const [prevPostsData, setPrevPostsData] = useState(postsData);
   if (postsData !== prevPostsData) {
     setPrevPostsData(postsData);
-    setPosts(postsData || []);
+    setPosts(postsData ?? []);
   }
-  const [content, setContent] = useState(null);
-  const [postImg, setPostImg] = useState(null);
+  const [content, setContent] = useState("");
+  const [postImg, setPostImg] = useState<string | null>(null);
   const [showWarn, setShowWarn] = useState(false);
-  const [showPost, setShowPost] = useState(false);
+  // The post open in a popup.
+  const [showPost, setShowPost] = useState<Id | null>(null);
   useEffect(
     function () {
-      function addPost(data?: any) {
-        const isUpdate = data?.updateEmoji;
-        if (isUpdate) {
+      function addPost(data: Post | ReactionUpdate) {
+        if ("updateEmoji" in data) {
           const { post_id, like_emoji, dislike, angry } = data;
-          setPosts(function (posts?: any) {
-            return posts?.map(function (post?: any) {
-              return post?.post_id == post_id
-                ? {
-                    ...post,
-                    like_emoji: like_emoji || 0,
-                    dislike: dislike || 0,
-                    angry: angry || 0,
-                  }
+          setPosts(function (current) {
+            return current.map(function (post) {
+              return post.post_id === post_id
+                ? { ...post, like_emoji, dislike, angry }
                 : post;
             });
           });
         } else
-          setPosts(function (p?: any) {
-            return p?.some(function ({ post_id }: any) {
-              return post_id == data?.post_id;
+          setPosts(function (current) {
+            return current.some(function ({ post_id }) {
+              return post_id === data.post_id;
             })
-              ? p
-              : [data, ...p];
+              ? current
+              : [data, ...current];
           });
       }
-      socket?.on(`receive_post`, addPost);
+      socket.on("receive_post", addPost);
       return function () {
-        socket?.off("receive_post", addPost);
+        socket.off("receive_post", addPost);
       };
     },
     [socket],
   );
 
-  const allPosts = posts?.map(function (
-    {
-      user_id: userid,
-      user_type: userType,
-      post_img: postImg,
-      img_url: imgUrl,
-      nick_name: nickname,
-      content,
-      issued_time: issuedTime,
-      num_comments: numComments,
-      angry: numAngry,
-      dislike: numDisLike,
-      like_emoji: numLike,
-      post_id: postId,
-    }: any,
-    i?: any,
-  ) {
+  const allPosts = posts.map(function ({
+    user_id: userid,
+    post_img: postImg,
+    img_url: imgUrl,
+    nick_name: nickname,
+    content,
+    issued_time: issuedTime,
+    num_comments: numComments,
+    angry: numAngry,
+    dislike: numDisLike,
+    like_emoji: numLike,
+    post_id: postId,
+  }) {
     return {
+      // Posts without a picture take a full row.
       is_img: !postImg,
       key: postId,
       element: (
-        <div className={`grow text-white`} key={postId}>
+        <div className="grow text-white" key={postId}>
           <CommentsContextProvider key={postId}>
             <PostWrapper
-              order={posts.length - i}
               setPosts={setPosts}
               showPost={showPost}
               setShowPost={setShowPost}
@@ -133,7 +123,6 @@ export default function Posts({ home }: any) {
               numLike={numLike}
               numDisLike={numDisLike}
               numComments={numComments}
-              userType={userType}
               content={content}
               issuedTime={issuedTime}
               postId={postId}
@@ -151,43 +140,37 @@ export default function Posts({ home }: any) {
         <div className="flex p-1 justify-center">
           <div className="border border-gray-200 shadow-md w-full p-4 bg-gray-300/30 rounded-lg sm:w-3/4 xl:w-1/2">
             <Input.TextArea
-              placeholder={
-                "Ask any question, state your condition or medical issue"
-              }
+              placeholder="Ask any question, state your condition or medical issue"
               className="rounded-lg border scroll--v border-gray-400 resize-none"
               value={content}
               rows={6}
-              onChange={function (e?: any) {
-                setContent(e?.target?.value);
+              onChange={function (event) {
+                setContent(event.target.value);
               }}
             />
             <div className="flex relative flex-wrap justify-between gap-2 items-center p-2">
               <Upload
                 name="avatar"
-                customRequest={function () {
-                  return true;
-                }}
                 beforeUpload={beforeUpload}
                 showUploadList={false}
-                onChange={function (inf?: any) {
-                  if (inf?.file?.status)
-                    getBase64(inf?.file?.originFileObj, setPostImg);
+                onChange={function ({ file }) {
+                  if (file.status) getBase64(file.originFileObj, setPostImg);
                 }}
               >
                 {postImg ? (
                   <div className="relative">
                     <Image
                       className="h-24 w-full rounded-xl select-none"
-                      onClick={function (e?: any) {
-                        e.stopPropagation();
-                        e.preventDefault();
+                      onClick={function (event) {
+                        event.stopPropagation();
+                        event.preventDefault();
                       }}
                       src={postImg}
                     />
                     <div
-                      onClick={function (e?: any) {
+                      onClick={function (event) {
                         setPostImg(null);
-                        e.stopPropagation();
+                        event.stopPropagation();
                       }}
                       className="text-2xl text-red-400/50 hover:text-red-400 absolute top-0 right-5"
                     >
@@ -202,8 +185,11 @@ export default function Posts({ home }: any) {
               </Upload>
               <Button
                 onClick={function () {
-                  if (!userid || !content) return setShowWarn(true);
-                  submitPost({
+                  if (!userid || !content) {
+                    setShowWarn(true);
+                    return;
+                  }
+                  void submitPost({
                     user: userData,
                     content,
                     postImg,
@@ -213,7 +199,8 @@ export default function Posts({ home }: any) {
                   }).then(function (posted) {
                     if (!posted) return;
                     setContent("");
-                    fetchPostsData(undefined, { silent: true });
+                    setPostImg(null);
+                    void fetchPostsData({}, { silent: true });
                   });
                 }}
                 className="rounded-lg py-4"
@@ -244,40 +231,37 @@ export default function Posts({ home }: any) {
       </div>
       <TitleHeader
         to={home ? "posts" : ""}
-        wrapperBg={"no"}
+        wrapperBg="no"
         icon={
           <MessageCircleQuestion className="text-3xl sm:text-5xl xl:text-6xl m-auto text-white" />
         }
         title={home ? "Latest Questions" : "All Questions"}
       />
       <div className="pr-2">
-        {posts?.length > 0 ? (
+        {posts.length > 0 ? (
           <TableGrid
             noMargin
             noGap
-            colKey="post"
-            isFull={
-              allPosts?.filter(function ({ is_img }: any) {
-                return is_img;
-              }) || []
-            }
-            customGrid={`${home ? "bg-white" : "bg-gray-100"}`}
+            isFull={allPosts.filter(function ({ is_img }) {
+              return is_img;
+            })}
+            customGrid={home ? "bg-white" : "bg-gray-100"}
             items={allPosts}
           />
         ) : isError ? (
-          <ServerError errorTitle={"Posts"} />
-        ) : isLoading || postsData?.length > 0 ? (
+          <ServerError errorTitle="Posts" />
+        ) : isLoading ? (
           <Loader />
         ) : (
           <Empty
             className={`${home ? "" : "mt-20"} w-full mb-4 font-medium`}
             description={
               <span
-                className={`${
+                className={
                   home
                     ? "text-white bg-blue-600/60 p-1 rounded"
                     : "text-gray-500"
-                }`}
+                }
               >
                 There are no posts
               </span>

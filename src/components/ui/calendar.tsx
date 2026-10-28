@@ -1,7 +1,7 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import dayjs from "dayjs";
+import dayjs, { type Dayjs } from "dayjs";
 import { useMemo, useState } from "react";
-import { cx, hasWidthClass } from "@/components/ui/cx";
+import { cx, hasWidthClass } from "@/utils/cx";
 
 function DatePicker({
   value,
@@ -9,7 +9,13 @@ function DatePicker({
   className,
   placeholder,
   disabled,
-}: any) {
+}: {
+  value?: Dayjs | string | null;
+  onChange?: (value: Dayjs | null) => void;
+  className?: string;
+  placeholder?: string;
+  disabled?: boolean;
+}) {
   return (
     <input
       type="date"
@@ -29,7 +35,15 @@ function DatePicker({
 }
 DatePicker.displayName = "DatePicker";
 
-function Calendar({ value, onSelect, fullscreen }: any) {
+function Calendar({
+  value,
+  onSelect,
+  fullscreen,
+}: {
+  value?: Dayjs | null;
+  onSelect?: (day: Dayjs) => void;
+  fullscreen?: boolean;
+}) {
   const selected = value ? dayjs(value) : dayjs();
   const [cursor, setCursor] = useState(function () {
     return selected.startOf("month");
@@ -42,11 +56,11 @@ function Calendar({ value, onSelect, fullscreen }: any) {
   const weeks = useMemo(
     function () {
       const start = cursor.startOf("month").startOf("week");
-      const days = [];
+      const days: Dayjs[] = [];
       for (let index = 0; index < 42; index += 1) {
         days.push(start.add(index, "day"));
       }
-      const rows = [];
+      const rows: Dayjs[][] = [];
       for (let index = 0; index < 6; index += 1) {
         rows.push(days.slice(index * 7, index * 7 + 7));
       }

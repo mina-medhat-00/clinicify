@@ -1,6 +1,11 @@
 import { CalendarCheck } from "lucide-react";
+import type { Slot } from "@/types/appointment";
 
-export default function AppointmentSuccess({ bookedAppointment }: any) {
+export default function AppointmentSuccess({
+  bookedAppointment,
+}: {
+  bookedAppointment: Slot | null;
+}) {
   return (
     <div>
       <div className="flex flex-col items-center justify-center gap-4">
@@ -16,7 +21,11 @@ export default function AppointmentSuccess({ bookedAppointment }: any) {
             Time: {bookedAppointment?.slotTime}
           </span>
           <span className="text-xl text-white bg-blue-800/60 p-2 rounded-md font-medium text-center">
-            Duration: {bookedAppointment?.appointmentDuration / (60 * 1000)} min
+            Duration:{" "}
+            {bookedAppointment
+              ? bookedAppointment.appointmentDuration / (60 * 1000)
+              : "-"}{" "}
+            min
           </span>
         </div>
         <span className="text-gray-700 bg-gray-300/60 p-2 rounded-md text-xl font-medium text-center">

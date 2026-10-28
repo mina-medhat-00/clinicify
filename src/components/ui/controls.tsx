@@ -11,14 +11,38 @@ import {
   useMemo,
   useRef,
   useState,
+  type ButtonHTMLAttributes,
+  type ChangeEvent,
+  type HTMLAttributes,
+  type InputHTMLAttributes,
+  type KeyboardEvent,
+  type ReactNode,
+  type TextareaHTMLAttributes,
 } from "react";
-import { cx, hasWidthClass } from "@/components/ui/cx";
-import { FormContext } from "@/components/ui/form";
+import { cx, hasWidthClass } from "@/utils/cx";
+import { FormContext, type ControlSize } from "@/components/ui/form";
 
-const sizePad = {
+const sizePad: Record<ControlSize, string> = {
   small: "h-7 px-2 text-xs",
   middle: "h-8 px-3 text-sm",
   large: "h-10 px-3 text-base",
+};
+
+function useControlSize(size?: ControlSize) {
+  const form = useContext(FormContext);
+  return size ?? form?.size ?? "middle";
+}
+
+export type ButtonProps = Omit<
+  ButtonHTMLAttributes<HTMLButtonElement>,
+  "type"
+> & {
+  type?: "default" | "primary" | "link";
+  htmlType?: "button" | "submit" | "reset";
+  icon?: ReactNode;
+  loading?: boolean;
+  shape?: "circle";
+  size?: ControlSize;
 };
 
 function Button({
@@ -33,19 +57,19 @@ function Button({
   children,
   onClick,
   ...props
-}: any) {
-  const form = useContext(FormContext);
-  const resolvedSize = size || form?.size || "middle";
+}: ButtonProps) {
+  const resolvedSize = useControlSize(size);
   const isPrimary = type === "primary";
   const isLink = type === "link";
+  const inactive = disabled === true || loading === true;
   return (
     <button
       type={htmlType}
-      disabled={disabled || loading}
+      disabled={inactive}
       onClick={onClick}
       className={cx(
         "inline-flex items-center justify-center gap-1.5 rounded-md border border-transparent font-medium transition",
-        sizePad[resolvedSize] || sizePad.middle,
+        sizePad[resolvedSize],
         shape === "circle" && "rounded-full p-0",
         isLink &&
           "h-auto border-0 bg-transparent px-1 text-blue-500 shadow-none hover:text-blue-600",
@@ -54,7 +78,7 @@ function Button({
         !isPrimary &&
           !isLink &&
           "border-gray-300 bg-white text-black/85 hover:border-blue-400 hover:text-blue-500",
-        (disabled || loading) && "cursor-not-allowed opacity-60",
+        inactive && "cursor-not-allowed opacity-60",
         className,
       )}
       {...props}
@@ -70,7 +94,18 @@ const inputShell =
 const inputField =
   "min-w-0 flex-1 bg-transparent py-1.5 outline-none placeholder:text-gray-400";
 
-const Input = forwardRef(function Input(
+export type InputProps = Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  "size" | "prefix" | "value"
+> & {
+  prefix?: ReactNode;
+  suffix?: ReactNode;
+  size?: ControlSize;
+  value?: string | number | null;
+  onPressEnter?: (event: KeyboardEvent<HTMLInputElement>) => void;
+};
+
+const BaseInput = forwardRef<HTMLInputElement, InputProps>(function Input(
   {
     prefix,
     suffix,
@@ -79,12 +114,12 @@ const Input = forwardRef(function Input(
     onPressEnter,
     onKeyDown,
     disabled,
+    value,
     ...props
-  }: any,
-  ref: any,
+  },
+  ref,
 ) {
-  const form = useContext(FormContext);
-  const resolvedSize = size || form?.size || "middle";
+  const resolvedSize = useControlSize(size);
   return (
     <span
       className={cx(
@@ -101,27 +136,24 @@ const Input = forwardRef(function Input(
         ref={ref}
         disabled={disabled}
         className={inputField}
-        onKeyDown={function (event?: any) {
+        onKeyDown={function (event) {
           onKeyDown?.(event);
           if (event.key === "Enter") onPressEnter?.(event);
         }}
         {...props}
-        value={props.value ?? ""}
+        value={value ?? ""}
       />
       {suffix ? <span className="shrink-0 text-gray-400">{suffix}</span> : null}
     </span>
   );
 });
-Input.displayName = "Input";
+BaseInput.displayName = "Input";
 
-function Password({ prefix, className, size, ...props }: any) {
+function Password(props: Omit<InputProps, "type" | "suffix">) {
   const [visible, setVisible] = useState(false);
   return (
-    <Input
+    <BaseInput
       {...props}
-      size={size}
-      prefix={prefix}
-      className={className}
       type={visible ? "text" : "password"}
       suffix={
         <button
@@ -141,46 +173,64 @@ function Password({ prefix, className, size, ...props }: any) {
 }
 Password.displayName = "Password";
 
-function TextArea({ className, rows = 3, ...props }: any) {
-  return (
+type TextAreaProps = Omit<
+  TextareaHTMLAttributes<HTMLTextAreaElement>,
+  "value"
+> & {
+  value?: string | null;
+  // Show "used / maxLength" under the box.
+  showCount?: boolean;
+};
+
+function TextArea({
+  className,
+  rows = 3,
+  value,
+  showCount,
+  maxLength,
+  ...props
+}: TextAreaProps) {
+  const text = value ?? "";
+  const box = (
     <textarea
       rows={rows}
+      maxLength={maxLength}
       className={cx(
         "rounded-md border border-gray-300 bg-white px-3 py-2 text-black/85 outline-none placeholder:text-gray-400 focus:border-blue-500",
         !hasWidthClass(className) && "w-full",
         className,
       )}
       {...props}
-      value={props.value ?? ""}
+      value={text}
     />
+  );
+  if (!showCount) return box;
+  return (
+    <div>
+      {box}
+      <div className="text-right text-xs text-gray-400">
+        {maxLength === undefined
+          ? text.length
+          : `${String(text.length)} / ${String(maxLength)}`}
+      </div>
+    </div>
   );
 }
 TextArea.displayName = "TextArea";
 
-const InputComponent: any = Input;
-InputComponent.Password = Password;
-InputComponent.TextArea = TextArea;
+const Input = Object.assign(BaseInput, { Password, TextArea });
 
-function InputNumber({
-  className,
-  min,
-  max,
-  value,
-  onChange,
-  placeholder,
-  disabled,
-  ...props
-}: any) {
+type InputNumberProps = Omit<InputProps, "value" | "onChange" | "type"> & {
+  value?: number | null;
+  onChange?: (value: number | null) => void;
+};
+
+function InputNumber({ value, onChange, ...props }: InputNumberProps) {
   return (
-    <Input
+    <BaseInput
       type="number"
-      className={className}
-      min={min}
-      max={max}
-      disabled={disabled}
-      placeholder={placeholder}
       value={value ?? ""}
-      onChange={function (event?: any) {
+      onChange={function (event) {
         const next = event.target.value;
         onChange?.(next === "" ? null : Number(next));
       }}
@@ -190,7 +240,26 @@ function InputNumber({
 }
 InputNumber.displayName = "InputNumber";
 
-function Select({
+export type SelectValue = string | number;
+export interface SelectOption<V extends SelectValue = SelectValue> {
+  value: V;
+  label?: ReactNode;
+}
+export type SelectProps<V extends SelectValue = SelectValue> = Omit<
+  HTMLAttributes<HTMLDivElement>,
+  "onChange" | "defaultValue"
+> & {
+  options?: SelectOption<V>[];
+  value?: V | null;
+  onChange?: (value: V, option: SelectOption<V>) => void;
+  showSearch?: boolean;
+  optionFilterProp?: "value" | "label";
+  placeholder?: ReactNode;
+  disabled?: boolean;
+  size?: ControlSize;
+};
+
+function Select<V extends SelectValue = SelectValue>({
   options = [],
   value,
   onChange,
@@ -201,21 +270,25 @@ function Select({
   disabled,
   size,
   ...props
-}: any) {
-  const form = useContext(FormContext);
-  const resolvedSize = size || form?.size || "middle";
+}: SelectProps<V>) {
+  const resolvedSize = useControlSize(size);
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const rootRef = useRef<HTMLDivElement>(null);
-  const selected = options.find(function (option: any) {
+  const selected = options.find(function (option) {
     return option.value === value;
   });
   const filtered = useMemo(
     function () {
       if (!showSearch || !query) return options;
       const needle = query.toLowerCase();
-      return options.filter(function (option: any) {
-        return String(option[optionFilterProp] ?? option.label ?? option.value)
+      return options.filter(function (option) {
+        const field = option[optionFilterProp] ?? option.label ?? option.value;
+        return (
+          typeof field === "string" || typeof field === "number"
+            ? String(field)
+            : ""
+        )
           .toLowerCase()
           .includes(needle);
       });
@@ -284,7 +357,7 @@ function Select({
               />
             </div>
           ) : null}
-          {filtered.map(function (option: any) {
+          {filtered.map(function (option) {
             const active = option.value === value;
             return (
               <button
@@ -315,6 +388,13 @@ function Select({
 }
 Select.displayName = "Select";
 
+type CheckboxProps = Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  "type" | "onChange"
+> & {
+  onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
+};
+
 function Checkbox({
   checked,
   defaultChecked,
@@ -323,7 +403,7 @@ function Checkbox({
   className,
   disabled,
   ...props
-}: any) {
+}: CheckboxProps) {
   const [uncontrolled, setUncontrolled] = useState(Boolean(defaultChecked));
   const isChecked = checked ?? uncontrolled;
   return (
@@ -337,7 +417,7 @@ function Checkbox({
       <input
         type="checkbox"
         className="size-4 accent-blue-500"
-        checked={Boolean(isChecked)}
+        checked={isChecked}
         disabled={disabled}
         onChange={function (event) {
           setUncontrolled(event.target.checked);
@@ -351,11 +431,34 @@ function Checkbox({
 }
 Checkbox.displayName = "Checkbox";
 
-const RadioContext = createContext<any>(null);
+type RadioValue = string | number;
+interface RadioGroupContext {
+  value?: RadioValue | null;
+  name: string;
+  onChange: (value: RadioValue) => void;
+}
 
-function Radio({ value, children, className, disabled, ...props }: any) {
+const RadioContext = createContext<RadioGroupContext | null>(null);
+
+interface RadioProps {
+  value: RadioValue;
+  children?: ReactNode;
+  className?: string;
+  disabled?: boolean;
+  checked?: boolean;
+  onChange?: (value: RadioValue) => void;
+}
+
+function Radio({
+  value,
+  children,
+  className,
+  disabled,
+  checked,
+  onChange,
+}: RadioProps) {
   const group = useContext(RadioContext);
-  const checked = group ? group.value === value : props.checked;
+  const isChecked = group ? group.value === value : checked;
   return (
     <label
       className={cx(
@@ -368,12 +471,12 @@ function Radio({ value, children, className, disabled, ...props }: any) {
         type="radio"
         className="size-4 accent-blue-500"
         value={value}
-        checked={Boolean(checked)}
+        checked={Boolean(isChecked)}
         disabled={disabled}
         name={group?.name}
         onChange={function () {
-          group?.onChange?.(value);
-          props.onChange?.(value);
+          group?.onChange(value);
+          onChange?.(value);
         }}
       />
       {children}
@@ -382,7 +485,12 @@ function Radio({ value, children, className, disabled, ...props }: any) {
 }
 Radio.displayName = "Radio";
 
-function RadioButton({ value, children, className, disabled }: any) {
+function RadioButton({
+  value,
+  children,
+  className,
+  disabled,
+}: Omit<RadioProps, "checked" | "onChange">) {
   const group = useContext(RadioContext);
   const checked = group?.value === value;
   return (
@@ -397,7 +505,7 @@ function RadioButton({ value, children, className, disabled }: any) {
         className,
       )}
       onClick={function () {
-        group?.onChange?.(value);
+        group?.onChange(value);
       }}
     >
       {children}
@@ -406,22 +514,31 @@ function RadioButton({ value, children, className, disabled }: any) {
 }
 RadioButton.displayName = "RadioButton";
 
-function RadioGroup({
+type RadioGroupProps<V extends RadioValue> = Omit<
+  HTMLAttributes<HTMLDivElement>,
+  "onChange" | "defaultValue"
+> & {
+  value?: V | null;
+  onChange?: (value: V) => void;
+  name?: string;
+};
+
+function RadioGroup<V extends RadioValue>({
   value,
   onChange,
   children,
   className,
   name,
   ...props
-}: any) {
+}: RadioGroupProps<V>) {
   const autoName = useId();
   return (
     <RadioContext.Provider
       value={{
         value,
-        name: name || autoName,
-        onChange: function (next: any) {
-          onChange?.(next);
+        name: name ?? autoName,
+        onChange: function (next) {
+          onChange?.(next as V);
         },
       }}
     >
@@ -436,6 +553,15 @@ RadioGroup.displayName = "RadioGroup";
 Radio.Group = RadioGroup;
 Radio.Button = RadioButton;
 
+interface SwitchProps {
+  checked?: boolean;
+  onChange?: (checked: boolean) => void;
+  checkedChildren?: ReactNode;
+  unCheckedChildren?: ReactNode;
+  className?: string;
+  disabled?: boolean;
+}
+
 function Switch({
   checked,
   onChange,
@@ -443,7 +569,7 @@ function Switch({
   unCheckedChildren,
   className,
   disabled,
-}: any) {
+}: SwitchProps) {
   return (
     <button
       type="button"
@@ -474,7 +600,11 @@ function Switch({
 }
 Switch.displayName = "Switch";
 
-function Space({ children, className, ...props }: any) {
+function Space({
+  children,
+  className,
+  ...props
+}: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       className={cx("flex flex-wrap items-center gap-2", className)}
@@ -485,20 +615,25 @@ function Space({ children, className, ...props }: any) {
   );
 }
 
-function Compact({ children, className, block, ...props }: any) {
-  const nodes = Children.toArray(children).filter(Boolean);
+function Compact({
+  children,
+  className,
+  block,
+  ...props
+}: HTMLAttributes<HTMLDivElement> & { block?: boolean }) {
+  const nodes = Children.toArray(children);
   return (
     <div className={cx("flex", block && "w-full", className)} {...props}>
-      {nodes.map(function (child: any, index) {
-        if (!isValidElement(child)) return child;
+      {nodes.map(function (child, index) {
+        if (!isValidElement<{ className?: string }>(child)) return child;
         return cloneElement(child, {
           className: cx(
-            (child.props as any).className,
+            child.props.className,
             "rounded-none",
             index === 0 && "rounded-l-md",
             index === nodes.length - 1 && "rounded-r-md",
           ),
-        } as any);
+        });
       })}
     </div>
   );
@@ -506,16 +641,4 @@ function Compact({ children, className, block, ...props }: any) {
 
 Space.Compact = Compact;
 
-export {
-  Button,
-  Checkbox,
-  InputComponent as Input,
-  InputNumber,
-  Radio,
-  Select,
-  Space,
-  Switch,
-};
-export type SelectProps = {
-  options?: { value: any; label?: any }[];
-};
+export { Button, Checkbox, Input, InputNumber, Radio, Select, Space, Switch };

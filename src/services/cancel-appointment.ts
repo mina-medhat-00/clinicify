@@ -6,12 +6,13 @@ import {
   type ServiceContext,
   type Socket,
 } from "@/services/client";
+import type { Id } from "@/types/user";
 
 type CancelParams = ServiceContext & {
   date: string;
   slotTime: string;
-  appointmentId: string | number;
-  doctorId: string | number;
+  appointmentId: Id;
+  doctorId: Id;
   cancelFrom: "patient" | "doctor" | "admin";
   socket?: Socket;
 };

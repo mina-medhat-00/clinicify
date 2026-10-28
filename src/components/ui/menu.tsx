@@ -1,89 +1,122 @@
 import { ChevronDown } from "lucide-react";
-import { forwardRef, useImperativeHandle, useRef, useState } from "react";
-import { cx } from "@/components/ui/cx";
+import {
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+  useState,
+  type CSSProperties,
+  type KeyboardEvent,
+  type MouseEvent,
+  type ReactNode,
+} from "react";
+import { cx } from "@/utils/cx";
 
-function MenuItem({ item, theme, onClick, depth = 0 }: any) {
+export interface MenuClickInfo {
+  key: string;
+  keyPath: string[];
+  domEvent: MouseEvent | KeyboardEvent;
+}
+
+export interface MenuItemType {
+  key: string;
+  label?: ReactNode;
+  icon?: ReactNode;
+  children?: MenuItemType[];
+  onClick?: (info: MenuClickInfo) => void;
+}
+
+type MenuTheme = "light" | "dark";
+
+function MenuItem({
+  item,
+  theme,
+  onClick,
+  depth = 0,
+}: {
+  item: MenuItemType;
+  theme: MenuTheme;
+  onClick?: (info: MenuClickInfo) => void;
+  depth?: number;
+}) {
   const [open, setOpen] = useState(false);
-  if (!item) return null;
-  const hasChildren = Boolean(item.children?.length);
+  const children = item.children ?? [];
+  const hasChildren = children.length > 0;
   const dark = theme === "dark";
 
-  function handleClick(event: any) {
+  function handleClick(event: MouseEvent | KeyboardEvent) {
     if (hasChildren) {
       setOpen(function (value) {
         return !value;
       });
       return;
     }
-    item.onClick?.({
-      key: item.key,
-      domEvent: event,
-      keyPath: [item.key],
-    });
-    onClick?.({
-      key: item.key,
-      domEvent: event,
-      keyPath: [item.key],
-      item,
-    });
+    const info = { key: item.key, domEvent: event, keyPath: [item.key] };
+    item.onClick?.(info);
+    onClick?.(info);
   }
 
-  // Leaf labels are often links or buttons themselves, which can't sit inside
-  // a <button>; render those as a focusable menu item instead.
-  const Trigger: any = hasChildren ? "button" : "div";
-  const triggerProps = hasChildren
-    ? { type: "button" }
-    : {
-        role: "menuitem",
-        tabIndex: 0,
-        onKeyDown: function (event: any) {
-          if (event.target !== event.currentTarget) return;
-          if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-            handleClick(event);
-          }
-        },
-      };
+  const className = cx(
+    "cursor-pointer",
+    "flex w-full items-center gap-2 rounded-md px-3 py-2 text-left",
+    dark
+      ? "text-gray-200 hover:bg-[#1f3458] hover:text-white"
+      : "text-gray-700 hover:bg-gray-100",
+    item.key.includes("user") && "justify-start pl-1",
+  );
+  const content = (
+    <>
+      {item.icon}
+      <span className="min-w-0 grow">{item.label}</span>
+      {hasChildren ? (
+        <ChevronDown
+          className={cx("size-4 shrink-0 transition", open && "rotate-180")}
+        />
+      ) : null}
+    </>
+  );
 
   return (
     <li data-menu-id={item.key}>
-      <Trigger
-        {...triggerProps}
-        onClick={handleClick}
-        className={cx(
-          "cursor-pointer",
-          "flex w-full items-center gap-2 rounded-md px-3 py-2 text-left",
-          dark
-            ? "text-gray-200 hover:bg-[#1f3458] hover:text-white"
-            : "text-gray-700 hover:bg-gray-100",
-          String(item.key).includes("user") && "justify-start pl-1",
-        )}
-      >
-        {item.icon}
-        <span className="min-w-0 grow">{item.label}</span>
-        {hasChildren ? (
-          <ChevronDown
-            className={cx("size-4 shrink-0 transition", open && "rotate-180")}
-          />
-        ) : null}
-      </Trigger>
+      {hasChildren ? (
+        <button type="button" onClick={handleClick} className={className}>
+          {content}
+        </button>
+      ) : (
+        // Leaf labels are often links or buttons themselves, which can't sit
+        // inside a <button>; render those as a focusable menu item instead.
+        <div
+          role="menuitem"
+          tabIndex={0}
+          onClick={handleClick}
+          onKeyDown={function (event) {
+            if (event.target !== event.currentTarget) return;
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              handleClick(event);
+            }
+          }}
+          className={className}
+        >
+          {content}
+        </div>
+      )}
       {hasChildren && open ? (
         <ul
-          id={String(item.key)}
+          id={item.key}
           className={cx(
             "ml-2 overflow-hidden rounded-t-2xl pr-2",
-            String(item.key).includes("sub31") &&
+            item.key.includes("sub31") &&
               "scroll--v max-h-52 overflow-y-auto bg-[rgb(31,88,126)]",
-            String(item.key).includes("subdoc") && "bg-[rgb(23,65,107)]",
+            item.key.includes("subdoc") && "bg-[rgb(23,65,107)]",
           )}
         >
-          {item.children.map(function (child: any) {
+          {children.map(function (child) {
             return (
               <MenuItem
                 key={child.key}
                 item={{
                   ...child,
-                  onClick: child.onClick || item.onClick,
+                  onClick: child.onClick ?? item.onClick,
                 }}
                 theme={theme}
                 onClick={onClick}
@@ -97,9 +130,22 @@ function MenuItem({ item, theme, onClick, depth = 0 }: any) {
   );
 }
 
-const Menu = forwardRef(function Menu(
-  { items = [], theme = "light", mode, className, onClick, style }: any,
-  ref: any,
+export interface MenuRef {
+  menu: { readonly list: HTMLUListElement | null };
+}
+
+interface MenuProps {
+  items?: (MenuItemType | null | false | undefined)[];
+  theme?: MenuTheme;
+  mode?: "vertical" | "inline" | "horizontal";
+  className?: string;
+  onClick?: (info: MenuClickInfo) => void;
+  style?: CSSProperties;
+}
+
+const Menu = forwardRef<MenuRef, MenuProps>(function Menu(
+  { items = [], theme = "light", mode, className, onClick, style },
+  ref,
 ) {
   const listRef = useRef<HTMLUListElement>(null);
   useImperativeHandle(ref, function () {
@@ -123,7 +169,8 @@ const Menu = forwardRef(function Menu(
         className,
       )}
     >
-      {items.filter(Boolean).map(function (item: any) {
+      {items.map(function (item) {
+        if (!item) return null;
         return (
           <MenuItem
             key={item.key}

@@ -1,29 +1,34 @@
-import { createContext, useContext } from "react";
-import { useRemoteData } from "@/contexts/use-remote-data";
-import { api } from "@/services/client";
+import type { ReactNode } from "react";
+import { createStrictContext } from "@/utils/create-strict-context";
+import { useRemoteData } from "@/hooks/use-remote-data";
+import { apiGet } from "@/services/client";
+import type { Dashboard } from "@/types/content";
 
-async function getDashboard() {
-  const { data } = await api.get("/dashboard");
-  return data?.data;
+function getDashboard() {
+  return apiGet<Dashboard>("/dashboard");
 }
 
-const DashboardData = createContext<any>(null);
-export default function DashboardContextProvider({ children }: any) {
+function useDashboardValue() {
   const {
     data: dashboardData,
     setData: setDashboardData,
     isLoading,
     load: fetchDashboardData,
   } = useRemoteData(getDashboard, { requiresAuth: true, autoLoad: {} });
-  return (
-    <DashboardData.Provider
-      value={{ isLoading, dashboardData, fetchDashboardData, setDashboardData }}
-    >
-      {children}
-    </DashboardData.Provider>
-  );
+  return { isLoading, dashboardData, fetchDashboardData, setDashboardData };
 }
 
-export function useDashboardContext() {
-  return useContext(DashboardData);
+const [DashboardData, useDashboardContext] =
+  createStrictContext<ReturnType<typeof useDashboardValue>>("DashboardContext");
+export { useDashboardContext };
+
+export default function DashboardContextProvider({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const value = useDashboardValue();
+  return (
+    <DashboardData.Provider value={value}>{children}</DashboardData.Provider>
+  );
 }

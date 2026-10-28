@@ -1,11 +1,7 @@
 import { Hospital, Loader2, MessageSquareText, Video } from "lucide-react";
+import type { AppointmentKind, AppointmentState } from "@/types/appointment";
+import { slotClock } from "@/utils/time";
 
-function adjustTime(date?: any, time?: any, timeZone?: any) {
-  return new Date(`${date} ${time} ${timeZone}`).toLocaleTimeString("en", {
-    hour: "numeric",
-    minute: "numeric",
-  });
-}
 export default function BookButton({
   appointmentType,
   appointmentFees,
@@ -13,36 +9,43 @@ export default function BookButton({
   slotTime,
   schedule_date,
   timeZone,
-}: any) {
+}: {
+  appointmentType: AppointmentKind;
+  appointmentFees: number;
+  appointmentState: AppointmentState;
+  slotTime: string;
+  schedule_date: string;
+  timeZone: string;
+}) {
   return (
     <div>
       <div className="flex flex-wrap justify-between gap-2">
-        <div className={`flex gap-2 bg-gray-400/40 p-2 rounded-lg`}>
+        <div className="flex gap-2 bg-gray-400/40 p-2 rounded-lg">
           <Loader2 className="flex items-center text-yellow-200 text-2xl animate-spin" />
           <span className="text-white font-medium">
-            {appointmentState?.toUpperCase()}
+            {appointmentState.toUpperCase()}
           </span>
         </div>
-        <div className={`flex gap-2 bg-gray-600/40 p-2 rounded-lg`}>
-          {appointmentType == "inClinic" ? (
+        <div className="flex gap-2 bg-gray-600/40 p-2 rounded-lg">
+          {appointmentType === "inClinic" ? (
             <Hospital className="flex items-center text-gray-200 text-xl" />
-          ) : appointmentType == "chat" ? (
+          ) : appointmentType === "chat" ? (
             <MessageSquareText className="flex items-center text-gray-200 text-xl" />
-          ) : appointmentType == "videoCall" ? (
+          ) : (
             <Video className="flex items-center text-gray-200 text-xl" />
-          ) : null}
+          )}
           <span className="text-white font-medium">
-            {appointmentType?.toUpperCase()}
+            {appointmentType.toUpperCase()}
           </span>
         </div>
-        <div className={`flex gap-2 bg-gray-400/40 p-2 rounded-lg`}>
+        <div className="flex gap-2 bg-gray-400/40 p-2 rounded-lg">
           <span className="text-white font-medium">{appointmentFees} L.E</span>
         </div>
       </div>
       <hr className="w-full my-2" />
       <div className="w-full text-center">
         <span className="text-white font-medium">
-          {adjustTime(schedule_date, slotTime, timeZone)}
+          {slotClock(schedule_date, slotTime, timeZone)}
         </span>
       </div>
     </div>

@@ -1,11 +1,17 @@
 import { Inbox, Pencil, Star, X } from "lucide-react";
-import { useState } from "react";
+import {
+  useState,
+  type HTMLAttributes,
+  type MouseEvent,
+  type ReactNode,
+} from "react";
 import SkeletonLib from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { cx } from "@/components/ui/cx";
+import { cx } from "@/utils/cx";
 import { imageUrl } from "@/utils/api";
 
-const avatarSize = {
+type AvatarSize = "small" | "default" | "large";
+const avatarSize: Record<AvatarSize, number> = {
   small: 24,
   default: 32,
   large: 40,
@@ -20,11 +26,17 @@ function Avatar({
   className,
   alt,
   ...props
-}: any) {
+}: Omit<HTMLAttributes<HTMLSpanElement>, "children"> & {
+  src?: string | null;
+  size?: AvatarSize | number;
+  shape?: "circle" | "square";
+  icon?: ReactNode;
+  children?: ReactNode;
+  alt?: string;
+}) {
   const [failed, setFailed] = useState(false);
-  const px =
-    typeof size === "number" ? size : avatarSize[size] || avatarSize.default;
-  const showImg = imageUrl(src) && !failed;
+  const px = typeof size === "number" ? size : avatarSize[size];
+  const shown = failed ? undefined : imageUrl(src);
   return (
     <span
       className={cx(
@@ -35,23 +47,31 @@ function Avatar({
       style={{ width: px, height: px, fontSize: px * 0.45 }}
       {...props}
     >
-      {showImg ? (
+      {shown ? (
         <img
-          src={src}
-          alt={alt || ""}
+          src={shown}
+          alt={alt ?? ""}
           className="size-full object-cover"
           onError={function () {
             setFailed(true);
           }}
         />
       ) : (
-        icon || children || null
+        (icon ?? children ?? null)
       )}
     </span>
   );
 }
 
-function Empty({ description, className, children }: any) {
+function Empty({
+  description,
+  className,
+  children,
+}: {
+  description?: ReactNode;
+  className?: string;
+  children?: ReactNode;
+}) {
   return (
     <div
       className={cx(
@@ -66,7 +86,8 @@ function Empty({ description, className, children }: any) {
   );
 }
 
-const tagColors: Record<string, string> = {
+type TagColor = "blue" | "red" | "gold" | "green" | "cyan";
+const tagColors: Record<TagColor, string> = {
   blue: "bg-blue-100 text-blue-700",
   red: "bg-red-100 text-red-700",
   gold: "bg-amber-100 text-amber-700",
@@ -74,12 +95,20 @@ const tagColors: Record<string, string> = {
   cyan: "bg-cyan-100 text-cyan-700",
 };
 
-function Tag({ color, className, children }: any) {
+function Tag({
+  color,
+  className,
+  children,
+}: {
+  color?: TagColor;
+  className?: string;
+  children?: ReactNode;
+}) {
   return (
     <span
       className={cx(
         "inline-flex items-center rounded px-2 py-0.5 text-sm font-medium",
-        tagColors[color] || "bg-gray-100 text-gray-700",
+        color ? tagColors[color] : "bg-gray-100 text-gray-700",
         className,
       )}
     >
@@ -88,10 +117,21 @@ function Tag({ color, className, children }: any) {
   );
 }
 
-function Alert({ description, closable, className, type = "error" }: any) {
+interface AlertProps {
+  description?: ReactNode;
+  closable?: { closeIcon?: ReactNode; onClose?: () => void };
+  className?: string;
+  type?: "error" | "warning" | "success" | "info";
+}
+
+function Alert({
+  description,
+  closable,
+  className,
+  type = "error",
+}: AlertProps) {
   const [closed, setClosed] = useState(false);
   if (closed) return null;
-  const closeIcon = closable?.closeIcon;
   return (
     <div
       className={cx(
@@ -109,18 +149,30 @@ function Alert({ description, closable, className, type = "error" }: any) {
           type="button"
           className="shrink-0"
           onClick={function () {
-            closable?.onClose?.();
+            closable.onClose?.();
             setClosed(true);
           }}
         >
-          {closeIcon || <X className="size-4" />}
+          {closable.closeIcon ?? <X className="size-4" />}
         </button>
       ) : null}
     </div>
   );
 }
 
-function Result({ status, title, subTitle, extra, className }: any) {
+function Result({
+  status,
+  title,
+  subTitle,
+  extra,
+  className,
+}: {
+  status?: ReactNode;
+  title?: ReactNode;
+  subTitle?: ReactNode;
+  extra?: ReactNode;
+  className?: string;
+}) {
   return (
     <div
       className={cx(
@@ -136,7 +188,20 @@ function Result({ status, title, subTitle, extra, className }: any) {
   );
 }
 
-function Skeleton({ className, active, ...props }: any) {
+type SkeletonSize = number | "default" | "large";
+
+function Skeleton({
+  className,
+  active,
+  ...props
+}: {
+  className?: string;
+  active?: boolean;
+  count?: number;
+  width?: number | string;
+  height?: number | string;
+  circle?: boolean;
+}) {
   return (
     <SkeletonLib
       className={className}
@@ -146,7 +211,15 @@ function Skeleton({ className, active, ...props }: any) {
   );
 }
 
-function SkeletonAvatar({ active, className, size = 32 }: any) {
+function SkeletonAvatar({
+  active,
+  className,
+  size = 32,
+}: {
+  active?: boolean;
+  className?: string;
+  size?: SkeletonSize;
+}) {
   const px = typeof size === "number" ? size : size === "large" ? 40 : 32;
   return (
     <SkeletonLib
@@ -159,7 +232,15 @@ function SkeletonAvatar({ active, className, size = 32 }: any) {
   );
 }
 
-function SkeletonButton({ active, className, size }: any) {
+function SkeletonButton({
+  active,
+  className,
+  size,
+}: {
+  active?: boolean;
+  className?: string;
+  size?: SkeletonSize;
+}) {
   const height = typeof size === "number" ? size : size === "large" ? 40 : 32;
   return (
     <SkeletonLib
@@ -176,15 +257,27 @@ Skeleton.Button = SkeletonButton;
 const titleTags = ["h1", "h2", "h3", "h4", "h5"] as const;
 const titleSizes = ["text-4xl", "text-3xl", "text-2xl", "text-xl", "text-base"];
 
-function Title({ level = 1, editable, className, children, ...props }: any) {
+type TitleProps = HTMLAttributes<HTMLHeadingElement> & {
+  level?: 1 | 2 | 3 | 4 | 5;
+  editable?: {
+    text?: string;
+    icon?: ReactNode;
+    onChange?: (value: string) => void;
+  };
+};
+
+function Title({
+  level = 1,
+  editable,
+  className,
+  children,
+  ...props
+}: TitleProps) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState("");
-  const TagName = titleTags[(level || 1) - 1] || "h1";
-  const canEdit = Boolean(editable);
+  const TagName = titleTags[level - 1] ?? "h1";
   function startEdit() {
-    setDraft(
-      editable?.text ?? (typeof children === "string" ? children : "") ?? "",
-    );
+    setDraft(editable?.text ?? (typeof children === "string" ? children : ""));
     setEditing(true);
   }
   function commit() {
@@ -193,7 +286,7 @@ function Title({ level = 1, editable, className, children, ...props }: any) {
   }
   return (
     <TagName
-      className={cx("font-semibold", titleSizes[(level || 1) - 1], className)}
+      className={cx("font-semibold", titleSizes[level - 1], className)}
       {...props}
     >
       {editing ? (
@@ -212,13 +305,13 @@ function Title({ level = 1, editable, className, children, ...props }: any) {
       ) : (
         children
       )}
-      {canEdit && !editing ? (
+      {editable && !editing ? (
         <button
           type="button"
           className="ml-2 inline-flex align-middle"
           onClick={startEdit}
         >
-          {editable?.icon || <Pencil className="size-4" />}
+          {editable.icon ?? <Pencil className="size-4" />}
         </button>
       ) : null}
     </TagName>
@@ -227,7 +320,20 @@ function Title({ level = 1, editable, className, children, ...props }: any) {
 
 const Typography = { Title };
 
-function Row({ children, className, justify, align, gutter, ...props }: any) {
+type RowProps = HTMLAttributes<HTMLDivElement> & {
+  justify?: "start" | "center" | "end" | "space-between";
+  align?: "top" | "middle" | "bottom";
+  gutter?: number | [number, number];
+};
+
+function Row({
+  children,
+  className,
+  justify,
+  align,
+  gutter,
+  ...props
+}: RowProps) {
   const justifyClass =
     justify === "space-between"
       ? "justify-between"
@@ -259,11 +365,16 @@ function Row({ children, className, justify, align, gutter, ...props }: any) {
   );
 }
 
-function Col({ children, className, span, ...props }: any) {
+function Col({
+  children,
+  className,
+  span,
+  ...props
+}: HTMLAttributes<HTMLDivElement> & { span?: number }) {
   return (
     <div
       className={className}
-      style={span ? { width: `${(span / 24) * 100}%` } : undefined}
+      style={span ? { width: `${String((span / 24) * 100)}%` } : undefined}
       {...props}
     >
       {children}
@@ -278,7 +389,14 @@ function Card({
   className,
   classNames,
   children,
-}: any) {
+}: {
+  title?: ReactNode;
+  hoverable?: boolean;
+  actions?: ReactNode[];
+  className?: string;
+  classNames?: { body?: string };
+  children?: ReactNode;
+}) {
   return (
     <div
       className={cx(
@@ -295,7 +413,7 @@ function Card({
       <div className={cx("p-4", classNames?.body)}>{children}</div>
       {actions?.length ? (
         <div className="flex border-t border-gray-100">
-          {actions.map(function (action: any, index: number) {
+          {actions.map(function (action, index) {
             return (
               <div key={index} className="flex-1">
                 {action}
@@ -316,10 +434,18 @@ function Statistic({
   formatter,
   precision,
   className,
-}: any) {
+}: {
+  title?: ReactNode;
+  value?: number | string;
+  prefix?: ReactNode;
+  suffix?: ReactNode;
+  formatter?: (value: number | string | undefined) => ReactNode;
+  precision?: number;
+  className?: string;
+}) {
   const shown =
     formatter?.(value) ??
-    (typeof value === "number" && precision != null
+    (typeof value === "number" && precision !== undefined
       ? value.toFixed(precision)
       : value);
   return (
@@ -341,7 +467,14 @@ function Rate({
   disabled,
   allowHalf,
   className,
-}: any) {
+}: {
+  value?: number;
+  defaultValue?: number;
+  onChange?: (value: number) => void;
+  disabled?: boolean;
+  allowHalf?: boolean;
+  className?: string;
+}) {
   const [internal, setInternal] = useState(defaultValue);
   const current = value ?? internal;
   function set(next: number) {
@@ -360,7 +493,7 @@ function Rate({
             key={star}
             disabled={disabled}
             className="relative p-0.5"
-            onClick={function (event: any) {
+            onClick={function (event) {
               if (allowHalf) {
                 const rect = event.currentTarget.getBoundingClientRect();
                 set(
@@ -391,7 +524,23 @@ function Rate({
   );
 }
 
-function Segmented({ options = [], value, onChange, size, className }: any) {
+type SegmentedValue = string | number;
+type SegmentedOption<V extends SegmentedValue> =
+  V | { label: ReactNode; value: V };
+
+function Segmented<V extends SegmentedValue>({
+  options = [],
+  value,
+  onChange,
+  size,
+  className,
+}: {
+  options?: SegmentedOption<V>[];
+  value?: V;
+  onChange?: (value: V) => void;
+  size?: "small" | "middle" | "large";
+  className?: string;
+}) {
   return (
     <div
       className={cx(
@@ -399,7 +548,7 @@ function Segmented({ options = [], value, onChange, size, className }: any) {
         className,
       )}
     >
-      {options.map(function (option: any) {
+      {options.map(function (option) {
         const item =
           typeof option === "object"
             ? option
@@ -426,13 +575,23 @@ function Segmented({ options = [], value, onChange, size, className }: any) {
   );
 }
 
-function Image({ src, className, onClick, alt }: any) {
+function Image({
+  src,
+  className,
+  onClick,
+  alt,
+}: {
+  src?: string;
+  className?: string;
+  onClick?: (event: MouseEvent<HTMLImageElement>) => void;
+  alt?: string;
+}) {
   const [open, setOpen] = useState(false);
   return (
     <>
       <img
         src={src}
-        alt={alt || ""}
+        alt={alt ?? ""}
         className={cx("cursor-pointer object-cover", className)}
         onClick={function (event) {
           event.stopPropagation();
@@ -449,7 +608,7 @@ function Image({ src, className, onClick, alt }: any) {
         >
           <img
             src={src}
-            alt={alt || ""}
+            alt={alt ?? ""}
             className="max-h-full max-w-full rounded"
           />
         </div>

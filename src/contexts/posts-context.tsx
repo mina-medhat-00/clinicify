@@ -1,37 +1,41 @@
-import { createContext, useContext } from "react";
-import { useRemoteData } from "@/contexts/use-remote-data";
-import { api } from "@/services/client";
-import type { Post } from "@/types";
+import type { ReactNode } from "react";
+import { createStrictContext } from "@/utils/create-strict-context";
+import { useRemoteData } from "@/hooks/use-remote-data";
+import { apiGet } from "@/services/client";
+import type { Post } from "@/types/content";
 import { toQuery } from "@/utils/query";
 
-export type PostsQuery = { limit?: number };
-
-async function getPosts(query?: PostsQuery) {
-  const { data } = await api.get(`/get/posts${toQuery(query)}`);
-  return data?.data as Post[];
+export interface PostsQuery {
+  limit?: number;
 }
 
-const PostsData = createContext<any>(null);
-export default function PostsContextProvider({
-  children,
-  noFirstRender,
-  query,
-}: any) {
+function getPosts(query?: PostsQuery) {
+  return apiGet<Post[]>(`/get/posts${toQuery(query ? { ...query } : null)}`);
+}
+
+function usePostsValue(query?: PostsQuery, noFirstRender?: boolean) {
   const {
     data: postsData,
     isLoading,
     isError,
     load: fetchPostsData,
   } = useRemoteData(getPosts, { autoLoad: !noFirstRender && { query } });
-  return (
-    <PostsData.Provider
-      value={{ isLoading, isError, postsData, fetchPostsData }}
-    >
-      {children}
-    </PostsData.Provider>
-  );
+  return { isLoading, isError, postsData, fetchPostsData };
 }
 
-export function usePostsContext() {
-  return useContext(PostsData);
+const [PostsData, usePostsContext] =
+  createStrictContext<ReturnType<typeof usePostsValue>>("PostsContext");
+export { usePostsContext };
+
+export default function PostsContextProvider({
+  children,
+  noFirstRender,
+  query,
+}: {
+  children: ReactNode;
+  noFirstRender?: boolean;
+  query?: PostsQuery;
+}) {
+  const value = usePostsValue(query, noFirstRender);
+  return <PostsData.Provider value={value}>{children}</PostsData.Provider>;
 }

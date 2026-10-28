@@ -1,9 +1,9 @@
 import { City, Country } from "country-state-city";
 import { data as isoCurrencies } from "currency-codes";
 import getSymbolFromCurrency from "currency-symbol-map";
-import type { SelectProps } from "@/components/ui";
+import type { SelectOption } from "@/components/ui/controls";
 
-type SelectOptions = NonNullable<SelectProps["options"]>;
+type SelectOptions = (SelectOption<string> & { label: string })[];
 
 function toOptions(values: readonly string[]): SelectOptions {
   return [...new Set(values.filter(Boolean))]
@@ -81,7 +81,7 @@ function getPhonePrefixOptions(): SelectOptions {
   const seen = new Set<string>();
   return Country.getAllCountries()
     .flatMap(function (country) {
-      const callingCode = country.phonecode?.replace(/\D/g, "");
+      const callingCode = country.phonecode.replace(/\D/g, "");
       if (!callingCode || seen.has(callingCode)) return [];
       seen.add(callingCode);
       return [
@@ -107,5 +107,5 @@ export const currencyOptions: SelectOptions = isoCurrencies
     };
   })
   .sort(function (a, b) {
-    return String(a.label).localeCompare(String(b.label));
+    return a.label.localeCompare(b.label);
   });

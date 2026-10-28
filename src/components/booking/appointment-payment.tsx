@@ -1,11 +1,16 @@
 import { Elements } from "@stripe/react-stripe-js";
-import { useEffect, useState } from "react";
+import type { StripeElementsOptions } from "@stripe/stripe-js";
+import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
+import type { Socket } from "socket.io-client";
 import CheckoutForm from "@/components/booking/checkout-form";
 import Loader from "@/components/ui/loader";
 import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
 import getStripe from "@/utils/get-stripe";
-import { api } from "@/services/client";
+import { api, errorStatus } from "@/services/client";
+import type { Id } from "@/types/user";
+import type { PaymentStep } from "@/types/payment-step";
+import type { Slot } from "@/types/appointment";
 
 const stripePromise = getStripe();
 export default function AppointmentPayment({
@@ -14,24 +19,38 @@ export default function AppointmentPayment({
   setBookedAppointment,
   setIsPayment,
   socket,
-}: any) {
-  const [clientSecret, setClientSecret] = useState<any>("");
+}: {
+  bookedAppointment: Slot;
+  doctorId: Id;
+  setBookedAppointment: Dispatch<SetStateAction<Slot | null>>;
+  setIsPayment: Dispatch<SetStateAction<PaymentStep>>;
+  socket: Socket;
+}) {
+  const [clientSecret, setClientSecret] = useState("");
   const { messageApi } = useUtilsContext();
   const { fetchUserData } = useUserContext();
   useEffect(
     function () {
-      if (bookedAppointment?.appointmentId && doctorId) {
+      {
+        // This endpoint answers { clientSecret } without the usual wrapper.
         api
-          .post("/create/payment", {
+          .post<{ clientSecret: string }>("/create/payment", {
             data: { doctorId, ...bookedAppointment },
           })
-          .then(function ({ data }: any) {
+          .then(function ({ data }) {
             setClientSecret(data.clientSecret);
           })
-          .catch(function (err?: any) {
+          .catch(function (err: unknown) {
             setIsPayment(null);
-            if (err?.response?.status == 401) {
-              fetchUserData({ silent: true });
+            if (errorStatus(err) === 401) {
+              void fetchUserData({ silent: true });
+            } else if (errorStatus(err) === 400) {
+              messageApi.open({
+                key: 1,
+                type: "error",
+                content: "this slot is no longer available, choose another one",
+                duration: 5,
+              });
             } else
               messageApi.open({
                 key: 1,
@@ -42,35 +61,25 @@ export default function AppointmentPayment({
           });
       }
     },
-    [
-      bookedAppointment,
-      bookedAppointment?.appointmentId,
-      doctorId,
-      fetchUserData,
-      messageApi,
-      setIsPayment,
-    ],
+    [bookedAppointment, doctorId, fetchUserData, messageApi, setIsPayment],
   );
 
-  const appearance = {
-    theme: "stripe",
-  };
-  const options = {
+  const options: StripeElementsOptions = {
     clientSecret,
-    appearance,
+    appearance: { theme: "stripe" },
   };
 
   return (
     <div className="App--payment">
       {clientSecret ? (
-        <Elements options={options as any} stripe={stripePromise}>
+        <Elements options={options} stripe={stripePromise}>
           <CheckoutForm
             socket={socket}
             setIsPayment={setIsPayment}
             setBookedAppointment={setBookedAppointment}
             bookedAppointment={bookedAppointment}
             doctorId={doctorId}
-            selectedDate={bookedAppointment?.schedule_date}
+            selectedDate={bookedAppointment.schedule_date}
             messageApi={messageApi}
           />
         </Elements>

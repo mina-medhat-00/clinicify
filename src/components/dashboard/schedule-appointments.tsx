@@ -1,15 +1,38 @@
-import { Drawer, Empty, message } from "@/components/ui";
-import dayjs from "dayjs";
+import { Drawer } from "@/components/ui/overlay";
+import { Empty } from "@/components/ui/display";
+import { message } from "@/components/ui/message";
+import dayjs, { type Dayjs } from "dayjs";
 import { LayoutGrid } from "lucide-react";
 import { useEffect, useState } from "react";
+import type { Socket } from "socket.io-client";
 import CalendarView from "@/components/profile/calendar-view";
 import AccountVerify from "@/components/schedule/account-verify";
 import AppointmentCard from "@/components/schedule/appointment-card";
 import AppointmentForm from "@/components/schedule/appointment-form";
+import CancelSlotPopUp from "@/components/schedule/cancel-slot-pop-up";
+import { useCancelPrompt } from "@/hooks/use-cancel-prompt";
 import Loader from "@/components/ui/loader";
-import PopUp from "@/components/ui/pop-up";
 import { useSlotsContext } from "@/contexts/slots-context";
 import cancelAppointment from "@/services/cancel-appointment";
+import type { ServiceContext } from "@/services/client";
+import type { Dashboard } from "@/types/content";
+import type { Id } from "@/types/user";
+import type { DoctorDashType } from "@/constants/dash-types";
+
+// The last day the doctor looked at, if it is later this month.
+function storedDate() {
+  let saved: string | null = null;
+  try {
+    saved = window.localStorage.getItem("schedule_date");
+  } catch {
+    // Storage can be blocked (private mode).
+  }
+  const day = saved ? dayjs(saved) : null;
+  const today = dayjs();
+  return day?.isValid() && day.isAfter(today) && day.isSame(today, "month")
+    ? day
+    : today;
+}
 
 export default function ScheduleAppointments({
   doctorData,
@@ -20,24 +43,24 @@ export default function ScheduleAppointments({
   setDashType,
   socket,
   timeZone,
-}: any) {
+}: Pick<ServiceContext, "fetchUserData"> & {
+  doctorData: Dashboard | null;
+  userid?: Id;
+  isDoctorLoading: boolean;
+  offsetWidth?: number;
+  setDashType: (type: DoctorDashType) => void;
+  socket: Socket;
+  timeZone: string;
+}) {
   const [handleDrawer, setHandleDrawer] = useState(false);
   const { slotsData, isLoading, fetchSlotsData } = useSlotsContext();
   const [messageApi, contextHolder] = message.useMessage();
-  const [bookedAppointment, setBookedAppointment] = useState(null);
-  const [showPop, setShowPop] = useState({ show: false, data: null });
-  const [isAction, setIsAction] = useState<any>(false);
-  const sDate = window?.localStorage?.getItem("schedule_date");
-  const [selectedDate, setSelectedDate] = useState(function () {
-    return sDate
-      ? dayjs(sDate) > dayjs() &&
-        dayjs(sDate).month() == dayjs().month() &&
-        dayjs(sDate).year() == dayjs().year()
-        ? dayjs(sDate)
-        : dayjs()
-      : dayjs();
-  });
+  const cancel = useCancelPrompt();
+  // Position (from 1) of the slot being edited; null adds new slots.
+  const [editIndex, setEditIndex] = useState<number | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Dayjs>(storedDate);
   const isVerified = doctorData?.is_verified;
+  const day = selectedDate.format("YYYY-MM-DD");
 
   useEffect(
     function () {
@@ -48,48 +71,39 @@ export default function ScheduleAppointments({
 
   useEffect(
     function () {
-      function getSlots(data?: any) {
-        if (selectedDate.format("YYYY-MM-DD") == data?.date)
-          fetchSlotsData(
-            {
-              date: selectedDate.format("YYYY-MM-DD"),
-              doctorId: userid,
-            },
-            { silent: true },
-          );
-      }
-
       // Only verified doctors have a schedule; wait until that is known.
-      if (userid && !isDoctorLoading && isVerified) {
-        socket.on("update_slots", getSlots);
-        fetchSlotsData({
-          date: selectedDate.format("YYYY-MM-DD"),
-          doctorId: userid,
-        });
+      if (!userid || isDoctorLoading || !isVerified) return;
+      const doctorId = userid;
+      function getSlots(data?: { date?: string }) {
+        if (day === data?.date)
+          void fetchSlotsData({ date: day, doctorId }, { silent: true });
       }
-
+      socket.on("update_slots", getSlots);
+      void fetchSlotsData({ date: day, doctorId });
       return function () {
-        socket?.off("update_slots", getSlots);
+        socket.off("update_slots", getSlots);
       };
     },
-    [selectedDate, userid, fetchSlotsData, isDoctorLoading, isVerified, socket],
+    [day, userid, fetchSlotsData, isDoctorLoading, isVerified, socket],
   );
 
-  function handleDate(val?: any) {
-    setSelectedDate(val);
-    window?.localStorage?.setItem("schedule_date", val?.format("YYYY-MM-DD"));
+  function handleDate(value: Dayjs | null) {
+    if (!value) return;
+    setSelectedDate(value);
+    try {
+      window.localStorage.setItem("schedule_date", value.format("YYYY-MM-DD"));
+    } catch {
+      // Storage can be blocked (private mode).
+    }
   }
 
-  const isUpToDate =
-    selectedDate?.toDate()?.setHours(0, 0, 0, 0) >=
-    new Date().setHours(0, 0, 0, 0);
-  const tAppointments = slotsData?.totalSlots;
+  const isUpToDate = !selectedDate.isBefore(dayjs(), "day");
+  const tAppointments = slotsData?.totalSlots ?? [];
+  const editAppointment =
+    editIndex === null ? undefined : tAppointments[editIndex - 1];
 
   return (
-    <div
-      className={`schedule--wrapper
-     p-3 rounded`}
-    >
+    <div className="schedule--wrapper p-3 rounded">
       <div className="text-right my-1">
         <span
           onClick={function () {
@@ -106,42 +120,29 @@ export default function ScheduleAppointments({
       {contextHolder}
       <CalendarView
         offsetWidth={offsetWidth}
-        colorView="black"
         selectedDate={selectedDate}
         handleDate={handleDate}
       />
-      {isUpToDate && !isLoading && !isDoctorLoading && isVerified ? (
+      {userid && isUpToDate && !isLoading && !isDoctorLoading && isVerified ? (
         <>
           <div className="flex gap-2 flex-wrap">
-            {tAppointments?.map(function (
-              {
-                slotTime,
-                appointmentState,
-                appointmentType,
-                appointmentFees,
-                appointmentId,
-              }: any,
-              i?: any,
-            ) {
+            {tAppointments.map(function (slot, i) {
               return (
                 <AppointmentCard
-                  key={i + 1}
+                  key={slot.appointmentId}
+                  slot={slot}
+                  order={i + 1}
                   fetchSlotsData={fetchSlotsData}
                   fetchUserData={fetchUserData}
                   selectedDate={selectedDate}
                   userid={userid}
                   messageApi={messageApi}
                   tAppointments={tAppointments}
-                  slotTime={slotTime}
-                  appointmentFees={appointmentFees}
-                  appointmentState={appointmentState}
-                  appointmentType={appointmentType}
-                  appointmentId={appointmentId}
-                  setIsEdit={setIsAction}
-                  setHandleDrawer={setHandleDrawer}
-                  order={i + 1}
-                  setBookedAppointment={setBookedAppointment}
-                  setShowPop={setShowPop}
+                  onEdit={function (order) {
+                    setEditIndex(order);
+                    setHandleDrawer(true);
+                  }}
+                  onCancel={cancel.open}
                   timeZone={timeZone}
                   socket={socket}
                 />
@@ -151,8 +152,7 @@ export default function ScheduleAppointments({
               onClick={function () {
                 setHandleDrawer(true);
               }}
-              className="bg-gray-300/50 gap-2 hover:bg-gray-300/80 flex justify-center items-center h-24 text-center cursor-pointer text-gray-500
-           text-lg sm:text-xl xl:text-2xl font-medium rounded-lg hover:shadow-sm p-3 hover:text-gray-700 grow"
+              className="bg-gray-300/50 gap-2 hover:bg-gray-300/80 flex justify-center items-center h-24 text-center cursor-pointer text-gray-500 text-lg sm:text-xl xl:text-2xl font-medium rounded-lg hover:shadow-sm p-3 hover:text-gray-700 grow"
             >
               <LayoutGrid className="w-7 h-7" />
               New Appointments
@@ -163,7 +163,7 @@ export default function ScheduleAppointments({
             onClose={function () {
               setHandleDrawer(false);
               setTimeout(function () {
-                setIsAction(false);
+                setEditIndex(null);
               }, 500);
             }}
             closable
@@ -172,20 +172,19 @@ export default function ScheduleAppointments({
               wrapper: "w-full",
             }}
             title={
-              isAction ? `Edit Appointment ${isAction}` : "New Appointment"
+              editIndex === null
+                ? "New Appointment"
+                : `Edit Appointment ${String(editIndex)}`
             }
           >
             <AppointmentForm
               socket={socket}
-              doctorData={doctorData}
-              key={isAction ? 1 : 2}
-              isEdit={isAction}
-              editAppointment={tAppointments?.[isAction - 1] || []}
+              key={editIndex === null ? "new" : "edit"}
+              editAppointment={editAppointment}
               selectedDate={selectedDate}
               messageApi={messageApi}
-              tAppointments={tAppointments || []}
+              tAppointments={tAppointments}
               userid={userid}
-              isLoading={isLoading}
               fetchUserData={fetchUserData}
               fetchSlotsData={fetchSlotsData}
               timeZone={timeZone}
@@ -206,78 +205,28 @@ export default function ScheduleAppointments({
           }
         />
       )}
-      {
-        <PopUp
-          show={showPop?.show}
-          handleClose={function () {
-            setShowPop(function (val?: any) {
-              return {
-                ...val,
-                show: false,
-              };
-            });
-            setTimeout(function () {
-              setShowPop(function (val?: any) {
-                return {
-                  ...val,
-                  data: null,
-                };
-              });
-            }, 400);
-          }}
-          closeColor={"text-red-800/80 hover:text-red-800"}
-        >
-          <div className="text-center text-sm sm:text-lg p-2 bg-blue-400 text-white font-medium rounded-lg">
-            {`${showPop?.data?.slotTime} already booked`}
-            <br /> Are you sure that you want cancel it ?
-          </div>
-          <div className="flex justify-center gap-2 p-2 mt-4">
-            <div
-              onClick={async function () {
-                const date = selectedDate.format("YYYY-MM-DD");
-                const canceled = await cancelAppointment({
-                  date,
-                  slotTime: bookedAppointment?.slotTime,
-                  appointmentId: bookedAppointment?.appointmentId,
-                  doctorId: userid,
-                  cancelFrom: "doctor",
-                  socket,
-                  messageApi,
-                  fetchUserData,
-                });
-                if (!canceled) return;
-                setBookedAppointment(null);
-                setShowPop(null);
-                fetchSlotsData({ date, doctorId: userid });
-              }}
-              className="cursor-pointer text-center bg-red-500 p-2 grow text-white font-medium rounded-lg shadow-sm"
-            >
-              Apply
-            </div>
-            <div
-              onClick={function () {
-                setShowPop(function (val?: any) {
-                  return {
-                    ...val,
-                    show: false,
-                  };
-                });
-                setTimeout(function () {
-                  setShowPop(function (val?: any) {
-                    return {
-                      ...val,
-                      data: null,
-                    };
-                  });
-                }, 400);
-              }}
-              className="cursor-pointer text-center bg-blue-400 p-2 text-white font-medium rounded-lg shadow-sm"
-            >
-              Cancel
-            </div>
-          </div>
-        </PopUp>
-      }
+      <CancelSlotPopUp
+        prompt={cancel.prompt}
+        onClose={cancel.close}
+        closeColor="text-red-800/80 hover:text-red-800"
+        onConfirm={function (slot) {
+          if (!userid) return;
+          void cancelAppointment({
+            date: day,
+            slotTime: slot.slotTime,
+            appointmentId: slot.appointmentId,
+            doctorId: userid,
+            cancelFrom: "doctor",
+            socket,
+            messageApi,
+            fetchUserData,
+          }).then(function (canceled) {
+            if (!canceled) return;
+            cancel.close();
+            void fetchSlotsData({ date: day, doctorId: userid });
+          });
+        }}
+      />
     </div>
   );
 }

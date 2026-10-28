@@ -1,5 +1,5 @@
-import { Col, Rate, Row, Statistic } from "@/components/ui";
-import React from "react";
+import { Col, Rate, Row, Statistic } from "@/components/ui/display";
+import { Fragment, type ReactNode } from "react";
 import CountUpPkg from "react-countup";
 import { Link } from "react-router-dom";
 import {
@@ -14,67 +14,69 @@ import {
 } from "lucide-react";
 import Loader from "@/components/ui/loader";
 import TitleHeader from "@/components/ui/title-header";
-import {
-  DoctorsContextProvider,
-  FeedbackContextProvider,
-  PostsContextProvider,
-} from "@/contexts";
+import DoctorsContextProvider from "@/contexts/doctors-context";
+import FeedbackContextProvider from "@/contexts/feedback-context";
+import PostsContextProvider from "@/contexts/posts-context";
 import { useHomeContext } from "@/contexts/home-context";
 import { useUserContext } from "@/contexts/user-context";
-import { useUtilsContext } from "@/contexts/utils-context";
 import Doctors from "@/pages/doctors";
 import Feedbacks from "@/pages/feedbacks";
 import Posts from "@/pages/posts";
+import { interopDefault } from "@/utils/interop";
 
-const Countup =
-  typeof CountUpPkg === "function" ? CountUpPkg : (CountUpPkg as any)?.default;
+const Countup = interopDefault(CountUpPkg);
+
+interface HomeStat {
+  // "2" draws a thicker separator above the tile.
+  borderLine: "1" | "2";
+  // "no": keep the separator on wide screens too.
+  noLine: "no" | "sm";
+  title: string;
+  value: number | undefined;
+  prefix?: ReactNode;
+  suffix?: ReactNode;
+}
 
 export default function HomePage() {
-  const { socket, isMobile } = useUtilsContext();
   const { userData: user } = useUserContext();
   const { homeData, isLoading } = useHomeContext();
   const globalStats = homeData;
-  const HomeData = [
+  const HomeData: HomeStat[] = [
     {
       borderLine: "2",
-      isLine: true,
       noLine: "no",
       title: "Total Doctors",
       value: globalStats?.totalDoctors,
     },
     {
       borderLine: "1",
-      isLine: true,
       noLine: "sm",
       title: "Average Rating",
-      value: globalStats?.avgRate || 0,
+      value: globalStats?.avgRate ?? 0,
       prefix: (
         <Rate
           disabled
           allowHalf
           className="block mr-2"
-          value={globalStats?.avgRate || 0}
+          value={globalStats?.avgRate ?? 0}
         />
       ),
       suffix: <span className="text-gray-600 font-normal">/5</span>,
     },
     {
       borderLine: "1",
-      isLine: true,
       noLine: "no",
       title: "Average Fees",
       value: globalStats?.avgFees,
     },
     {
       borderLine: "1",
-      isLine: true,
       noLine: "sm",
       title: "Total Appointments",
       value: globalStats?.totalAppointments,
     },
     {
       borderLine: "1",
-      isLine: true,
       noLine: "no",
       title: "Total Feedback",
       value: globalStats?.totalReviews,
@@ -94,14 +96,14 @@ export default function HomePage() {
             to={
               !user
                 ? "/login"
-                : user?.user_type == "user"
-                  ? `/profile/${user?.user_name}`
-                  : user?.user_type == "admin"
-                    ? `/admin`
-                    : `/dashboard`
+                : user.user_type === "user"
+                  ? `/profile/${user.user_name}`
+                  : user.user_type === "admin"
+                    ? "/admin"
+                    : "/dashboard"
             }
           >
-            {user?.user_type == "user" ? (
+            {user?.user_type === "user" ? (
               <User className="size-6" />
             ) : (
               <LayoutDashboard className="size-6" />
@@ -144,11 +146,11 @@ export default function HomePage() {
       </div>
 
       <PostsContextProvider>
-        <Posts socket={socket} home isMobile={isMobile} />
+        <Posts home />
       </PostsContextProvider>
       <TitleHeader
-        wrapperBg={"no"}
-        contentBg={"bg-blue-900/90"}
+        wrapperBg="no"
+        contentBg="bg-blue-900/90"
         title="Statistics"
         icon={
           <ChartColumn className="text-3xl sm:text-5xl xl:text-6xl m-auto" />
@@ -158,27 +160,23 @@ export default function HomePage() {
         <Loader />
       ) : (
         <Row className="text-center bg-gray-200/30 shadow-md mb-3.5 mx-2.5">
-          {HomeData?.map(function (
-            { title, value, prefix, suffix, isLine, noLine, borderLine }: any,
-            i?: any,
+          {HomeData.map(function (
+            { title, value, prefix, suffix, noLine, borderLine },
+            i,
           ) {
-            const homeDetails = (
-              <>
+            return (
+              <Fragment key={title}>
                 <hr
-                  className={`${
-                    isLine
-                      ? `w-full ${noLine == "no" ? "" : "sm:hidden sm:w-0"}`
-                      : ""
-                  } ${
-                    borderLine == "2"
+                  className={`w-full ${noLine === "no" ? "" : "sm:hidden sm:w-0"} ${
+                    borderLine === "2"
                       ? "border-gray-600 border-[1.5px]"
                       : "border border-gray-300"
                   }`}
                 />
                 <Col
-                  className={`w-full py-2 sm:w-1/2 home--col--${
-                    i + 1
-                  } hover:shadow-md hover:bg-blue-100`}
+                  className={`w-full py-2 sm:w-1/2 home--col--${String(
+                    i + 1,
+                  )} hover:shadow-md hover:bg-blue-100`}
                 >
                   {" "}
                   <Statistic
@@ -191,9 +189,9 @@ export default function HomePage() {
                     precision={2}
                     value={value}
                     formatter={
-                      title == "Average Rating"
+                      title === "Average Rating"
                         ? undefined
-                        : function (val?: any) {
+                        : function (val) {
                             return <Countup end={Number(val) || 0} />;
                           }
                     }
@@ -201,16 +199,15 @@ export default function HomePage() {
                     prefix={prefix}
                   />{" "}
                 </Col>
-              </>
+              </Fragment>
             );
-            return <React.Fragment key={title}>{homeDetails}</React.Fragment>;
           })}
         </Row>
       )}
 
       <div>
         <TitleHeader
-          wrapperBg={"no"}
+          wrapperBg="no"
           to="doctors"
           title="Doctors"
           icon={
@@ -221,7 +218,7 @@ export default function HomePage() {
           <Doctors home />
         </DoctorsContextProvider>
         <TitleHeader
-          wrapperBg={"no"}
+          wrapperBg="no"
           to="feedbacks"
           title="Feedbacks"
           icon={

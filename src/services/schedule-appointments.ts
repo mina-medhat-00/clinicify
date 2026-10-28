@@ -7,16 +7,17 @@ import {
   type ServiceContext,
   type Socket,
 } from "@/services/client";
+import type { Id } from "@/types/user";
 
 type ScheduleParams = ServiceContext & {
   date: string;
   // The doctor whose schedule changes (also the room to notify).
-  doctorId: string | number;
+  doctorId: Id;
   totalSlots?: unknown;
   addedAppointments?: unknown;
-  deletedAppointments?: (string | number)[];
+  deletedAppointments?: Id[];
   isEdit?: boolean;
-  editSlot?: (string | number | undefined)[];
+  editSlot?: (Id | undefined)[];
   socket?: Socket;
 };
 
@@ -48,8 +49,8 @@ export default async function scheduleAppointments({
     socket?.emit("update_appointments", { date, doctorId });
     return true;
   } catch (err) {
-    const timeSlots = errorData<{ timeSlots?: string[] }>(err)?.timeSlots;
-    if (errorStatus(err) === 400 && timeSlots)
+    const timeSlots = errorData(err)?.timeSlots;
+    if (errorStatus(err) === 400 && Array.isArray(timeSlots))
       notify(
         ctx,
         "error",

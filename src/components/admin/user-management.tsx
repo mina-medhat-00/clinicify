@@ -1,137 +1,35 @@
-import { Button, Input, Space, Table } from "@/components/ui";
-import {
-  Briefcase,
-  Mars,
-  Search,
-  Stethoscope,
-  User,
-  UserRound,
-  Venus,
-} from "lucide-react";
-import { useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/controls";
+import { Table, type TableColumn } from "@/components/ui/table";
+import { Mars, Venus } from "lucide-react";
+import { useState, type ReactNode } from "react";
 import Restrictions from "@/components/admin/restrictions";
+import {
+  useNameColumn,
+  userTypeColumn,
+  type NamedRow,
+} from "@/components/admin/user-columns";
 import PopUp from "@/components/ui/pop-up";
-import UserAvatar from "@/components/ui/user-avatar";
 import { useUserContext } from "@/contexts/user-context";
 import { useUsersContext } from "@/contexts/users-context";
 import changeState from "@/services/change-state";
+import type { ManagedUser, UserType } from "@/types/user";
 
-export default function UserManagement(_props?: any) {
-  const [selectedUser, setSelectedUser] = useState<any>("");
-  const [showPop, setShowPop] = useState(false);
-  const searchInput = useRef(null);
-  function handleSearch(_selectedKeys?: any, confirm?: any) {
-    confirm();
-  }
-  function handleReset(clearFilters?: any) {
-    clearFilters();
-  }
-  function getColumnSearchProps(dataIndex?: any) {
-    return {
-      filterDropdown: function ({
-        setSelectedKeys,
-        selectedKeys,
-        confirm,
-        clearFilters,
-        close,
-      }: any) {
-        return (
-          <div
-            className="p-2"
-            onKeyDown={function (e?: any) {
-              e.stopPropagation();
-            }}
-          >
-            <Input
-              ref={searchInput}
-              placeholder={`Search ${dataIndex}`}
-              value={selectedKeys[0]}
-              onChange={function (e?: any) {
-                setSelectedKeys(e.target.value ? [e.target.value] : []);
-              }}
-              onPressEnter={function () {
-                handleSearch(selectedKeys, confirm);
-              }}
-              className="mb-2 block"
-            />
-            <Space>
-              <Button
-                type="primary"
-                className="flex items-center justify-center w-24"
-                onClick={function () {
-                  handleSearch(selectedKeys, confirm);
-                }}
-                icon={<Search className="size-4" />}
-                size="small"
-              >
-                Search
-              </Button>
-              <Button
-                onClick={function () {
-                  if (clearFilters) handleReset(clearFilters);
-                }}
-                size="small"
-                className="w-24"
-              >
-                Reset
-              </Button>
-              <Button
-                type="link"
-                size="small"
-                onClick={function () {
-                  close();
-                }}
-              >
-                close
-              </Button>
-            </Space>
-          </div>
-        );
-      },
-      filterIcon: function (filtered?: any) {
-        return <Search className={filtered ? "text-blue-500" : undefined} />;
-      },
-      onFilter: function (value?: any, record?: any) {
-        return record[dataIndex].nick_name
-          .toString()
-          .toLowerCase()
-          .includes(value.toLowerCase());
-      },
-      filterDropdownProps: {
-        onOpenChange: function (visible?: any) {
-          if (visible) {
-            setTimeout(function () {
-              searchInput.current?.select();
-            }, 100);
-          }
-        },
-      },
-    };
-  }
-  const columns = [
-    {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
-      ...getColumnSearchProps("name"),
-      render: function (rec?: any, record?: any) {
-        return (
-          <Link
-            to={`/profile/${record?.key}`}
-            className="flex flex-col bg-gray-100/80 hover:bg-gray-200/80  px-4 py-2 text-center rounded-md shadow-md justify-center items-center gap-2"
-          >
-            <UserAvatar
-              className={"bg-gray-700/80"}
-              size="large"
-              src={rec?.img_url}
-              userType={rec?.user_type}
-            />
-            <span className="font-medium text-gray-700">{rec?.nick_name}</span>
-          </Link>
-        );
-      },
-    },
+interface UserRow extends NamedRow {
+  user_type: UserType;
+  gender: string;
+  age: number;
+  action: ReactNode;
+}
+
+export default function UserManagement() {
+  // The user whose chat restrictions are shown (kept while the popup closes).
+  const [selectedUser, setSelectedUser] = useState<ManagedUser | null>(null);
+  const [showRestrictions, setShowRestrictions] = useState(false);
+  const nameColumn = useNameColumn({
+    cardClass: "bg-gray-100/80 hover:bg-gray-200/80",
+  });
+  const columns: TableColumn<UserRow>[] = [
+    nameColumn,
     {
       title: "Age",
       key: "age",
@@ -142,22 +40,16 @@ export default function UserManagement(_props?: any) {
       key: "gender",
       dataIndex: "gender",
       filters: [
-        {
-          text: "male",
-          value: "male",
-        },
-        {
-          text: "female",
-          value: "female",
-        },
+        { text: "male", value: "male" },
+        { text: "female", value: "female" },
       ],
-      onFilter: function (val?: any, rec?: any) {
-        return val?.toLowerCase() == rec?.gender?.toLowerCase();
+      onFilter: function (value, record) {
+        return String(value).toLowerCase() === record.gender.toLowerCase();
       },
-      render: function (value?: any) {
+      render: function (value) {
         return (
           <div className="flex flex-col bg-gray-600/80 shadow-md px-1 py-2 rounded-md justify-center gap-2 items-center">
-            {value == "male" ? (
+            {value === "male" ? (
               <Mars className="text-white" />
             ) : (
               <Venus className="text-white" />
@@ -167,44 +59,7 @@ export default function UserManagement(_props?: any) {
         );
       },
     },
-    {
-      title: "Type",
-      dataIndex: "user_type",
-      key: "user_type",
-      filters: [
-        {
-          text: "doctor",
-          value: "doctor",
-        },
-        {
-          text: "user",
-          value: "user",
-        },
-        {
-          text: "admin",
-          value: "admin",
-        },
-      ],
-      onFilter: function (val?: any, rec?: any) {
-        return val?.toLowerCase() == rec?.user_type?.toLowerCase();
-      },
-      render: function (value?: any) {
-        return (
-          <div className="flex px-1 py-2 bg-gray-600/80 shadow-md  rounded-md flex-col justify-center gap-2 items-center">
-            {value == "doctor" ? (
-              <Stethoscope />
-            ) : value == "doctor" ? (
-              <User />
-            ) : value == "admin" ? (
-              <UserRound />
-            ) : (
-              <Briefcase />
-            )}
-            <span className="font-medium capitalize">{value}</span>
-          </div>
-        );
-      },
-    },
+    userTypeColumn("bg-gray-600/80"),
     {
       title: "Action",
       key: "action",
@@ -214,96 +69,102 @@ export default function UserManagement(_props?: any) {
 
   const { fetchUserData, messageApi } = useUserContext();
   const { usersData, isLoading, fetchUsersData } = useUsersContext();
-  const usersDetails = usersData?.map(function ({
-    user_id,
-    img_url,
-    nick_name,
-    user_type,
-    gender,
-    bdate,
-  }: any) {
+  // The user waiting for delete confirmation.
+  const [pendingDelete, setPendingDelete] = useState<ManagedUser | null>(null);
+  function deleteUser() {
+    const user = pendingDelete;
+    setPendingDelete(null);
+    if (!user) return;
+    void changeState({
+      action: "delete",
+      target: "user",
+      id: user.user_id,
+      messageApi,
+      fetchUserData,
+    }).then(function (changed) {
+      if (changed) void fetchUsersData(undefined, { silent: true });
+    });
+  }
+  const usersDetails = usersData?.map(function (user): UserRow {
+    const { user_id, img_url, nick_name, user_type, gender, age } = user;
     return {
       key: user_id,
       user_type,
       gender,
-      age: (new Date(bdate).getTime() / (1000 * 60 * 60 * 24 * 365)).toFixed(),
+      age,
       action: (
         <div className="flex flex-col gap-2 items-center">
-          {
-            <Button
-              onClick={function () {
-                changeState({
-                  action: "delete",
-                  target: "user",
-                  id: user_id,
-                  messageApi,
-                  fetchUserData,
-                }).then(function (changed) {
-                  if (changed) fetchUsersData(undefined, { silent: true });
-                });
-              }}
-              className="bg-blue-400 hover:bg-blue-600 rounded-lg font-medium text-white"
-            >
-              Delete
-            </Button>
-          }
-          {
-            <Button
-              onClick={function () {
-                setSelectedUser({
-                  user_id,
-                  img_url,
-                  nick_name,
-                  user_type,
-                });
-                setShowPop(true);
-              }}
-              className="bg-red-400 hover:bg-red-600 rounded-lg font-medium text-white"
-            >
-              Restrict
-            </Button>
-          }
+          <Button
+            onClick={function () {
+              setPendingDelete(user);
+            }}
+            className="bg-blue-400 hover:bg-blue-600 rounded-lg font-medium text-white"
+          >
+            Delete
+          </Button>
+          <Button
+            onClick={function () {
+              setSelectedUser(user);
+              setShowRestrictions(true);
+            }}
+            className="bg-red-400 hover:bg-red-600 rounded-lg font-medium text-white"
+          >
+            Restrict
+          </Button>
         </div>
       ),
-      name: {
-        nick_name,
-        img_url,
-        user_type,
-      },
+      name: { nick_name, img_url, user_type },
     };
   });
 
   return (
     <div className="px-4 admin--table">
       <PopUp
-        mt="80px"
-        customWidth={"w-5/6 sm:w-4/5 lg:w-3/4"}
+        show={Boolean(pendingDelete)}
         handleClose={function () {
-          setShowPop(null);
+          setPendingDelete(null);
         }}
-        show={showPop}
+        closeColor="text-red-800/80 hover:text-red-800"
       >
-        <Restrictions
-          selectedUser={{
-            user_id: selectedUser?.user_id,
-            nick_name: selectedUser?.nick_name,
-            img_url: selectedUser?.img_url,
-            user_type: selectedUser?.user_type,
-          }}
-        />
+        <div className="text-center text-sm sm:text-lg p-2 bg-blue-400 text-white font-medium rounded-lg">
+          Delete {pendingDelete?.nick_name}'s account?
+          <br /> This can't be undone.
+        </div>
+        <div className="flex justify-center gap-2 p-2 mt-4">
+          <button
+            type="button"
+            onClick={deleteUser}
+            className="cursor-pointer text-center bg-red-500 p-2 grow text-white font-medium rounded-lg shadow-sm"
+          >
+            Delete
+          </button>
+          <button
+            type="button"
+            onClick={function () {
+              setPendingDelete(null);
+            }}
+            className="cursor-pointer text-center bg-blue-400 p-2 text-white font-medium rounded-lg shadow-sm"
+          >
+            Cancel
+          </button>
+        </div>
+      </PopUp>
+      <PopUp
+        mt="80px"
+        customWidth="w-5/6 sm:w-4/5 lg:w-3/4"
+        handleClose={function () {
+          setShowRestrictions(false);
+        }}
+        show={showRestrictions}
+      >
+        {selectedUser && <Restrictions selectedUser={selectedUser} />}
       </PopUp>
       <div className="flex overflow-auto scroll--h h-screen">
         <div className="grow">
-          <Table
+          <Table<UserRow>
             className="users--table"
-            pagination={
-              usersData?.length > 4
-                ? {
-                    pageSize: 4,
-                  }
-                : false
-            }
-            columns={columns as any}
+            pagination={(usersData?.length ?? 0) > 4 ? { pageSize: 4 } : false}
+            columns={columns}
             loading={isLoading}
             dataSource={usersDetails}
           />

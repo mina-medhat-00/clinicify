@@ -1,24 +1,29 @@
-import { createContext, useContext } from "react";
-import { useRemoteData } from "@/contexts/use-remote-data";
-import { api } from "@/services/client";
+import type { ReactNode } from "react";
+import { createStrictContext } from "@/utils/create-strict-context";
+import { useRemoteData } from "@/hooks/use-remote-data";
+import { apiGet } from "@/services/client";
+import type { HomeStatistics } from "@/types/content";
 
-async function getStatistics() {
-  const { data } = await api.get("/general/statistics");
-  return data?.data;
+function getStatistics() {
+  return apiGet<HomeStatistics>("/general/statistics");
 }
 
-const HomeData = createContext<any>(null);
-export default function HomeContextProvider({ children }: any) {
+function useHomeValue() {
   const { data: homeData, isLoading } = useRemoteData(getStatistics, {
     autoLoad: {},
   });
-  return (
-    <HomeData.Provider value={{ isLoading, homeData }}>
-      {children}
-    </HomeData.Provider>
-  );
+  return { isLoading, homeData };
 }
 
-export function useHomeContext() {
-  return useContext(HomeData);
+const [HomeData, useHomeContext] =
+  createStrictContext<ReturnType<typeof useHomeValue>>("HomeContext");
+export { useHomeContext };
+
+export default function HomeContextProvider({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const value = useHomeValue();
+  return <HomeData.Provider value={value}>{children}</HomeData.Provider>;
 }

@@ -1,8 +1,10 @@
 import { X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import { cx } from "@/components/ui/cx";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { cx } from "@/utils/cx";
 
-const placementClass: Record<string, string> = {
+type Placement = "top" | "topLeft" | "bottom" | "bottomLeft" | "right" | "left";
+
+const placementClass: Record<Placement, string> = {
   top: "bottom-full left-1/2 mb-2 -translate-x-1/2",
   topLeft: "bottom-full left-0 mb-2",
   bottom: "top-full left-1/2 mt-2 -translate-x-1/2",
@@ -26,9 +28,19 @@ function Popover({
   placement = "top",
   color,
   className,
-}: any) {
+}: {
+  children?: ReactNode;
+  content?: ReactNode;
+  // An empty array turns the popover off.
+  trigger?: "hover" | "click" | [];
+  // true/false force it open or closed; null/undefined leave it to the trigger.
+  open?: boolean | null;
+  placement?: Placement;
+  color?: string;
+  className?: string;
+}) {
   const [internal, setInternal] = useState(false);
-  const disabled = Array.isArray(trigger) && trigger.length === 0;
+  const disabled = Array.isArray(trigger);
   const isClick = trigger === "click";
   const shown =
     open === false || disabled ? false : open === true ? true : internal;
@@ -76,8 +88,8 @@ function Popover({
         <div
           className={cx(
             "absolute z-40 whitespace-nowrap rounded-md px-3 py-1.5 text-sm shadow-lg",
-            namedColors[color] || "bg-white text-black/85",
-            placementClass[placement] || placementClass.top,
+            (color && namedColors[color]) ?? "bg-white text-black/85",
+            placementClass[placement],
             className,
           )}
         >
@@ -97,7 +109,16 @@ function Drawer({
   className,
   classNames,
   children,
-}: any) {
+}: {
+  open?: boolean;
+  onClose?: () => void;
+  title?: ReactNode;
+  placement?: "left" | "right";
+  closable?: boolean;
+  className?: string;
+  classNames?: { wrapper?: string; body?: string };
+  children?: ReactNode;
+}) {
   if (!open) return null;
   const fromLeft = placement === "left";
   return (
@@ -107,7 +128,7 @@ function Drawer({
         className={cx(
           "absolute top-0 flex h-full flex-col bg-white shadow-xl",
           fromLeft ? "left-0" : "right-0",
-          classNames?.wrapper || "w-full max-w-md",
+          classNames?.wrapper ?? "w-full max-w-md",
           className,
         )}
       >

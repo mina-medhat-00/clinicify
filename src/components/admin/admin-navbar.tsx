@@ -1,21 +1,35 @@
-import { Popover } from "@/components/ui";
+import { Popover } from "@/components/ui/overlay";
 import { Bell, ChevronDown, Menu, MessageSquare } from "lucide-react";
+import type { ReactNode } from "react";
+import type { User } from "@/types/user";
 import { imageUrl } from "@/utils/api";
+import type { AdminDashType } from "@/constants/dash-types";
 
-function NavButton({ name, title, customFunc, icon, dotColor, dashType }: any) {
+function NavButton({
+  name,
+  title,
+  customFunc,
+  icon,
+  dotColor,
+  dashType,
+}: {
+  name: AdminDashType | "menu";
+  title: string;
+  customFunc: () => void;
+  icon: ReactNode;
+  dotColor?: string;
+  dashType: AdminDashType;
+}) {
   return (
     <Popover
-      open={title == "Menu" || dashType == name ? false : null}
-      arrow={false}
+      open={title === "Menu" || dashType === name ? false : null}
       content={<span className="text-gray-700 font-medium">{title}</span>}
     >
       <button
         type="button"
-        onClick={function () {
-          customFunc();
-        }}
+        onClick={customFunc}
         className={`relative text-xl rounded-full p-3 ${
-          dashType == name ? "bg-gray-700 text-gray-100" : "hover:bg-gray-200"
+          dashType === name ? "bg-gray-700 text-gray-100" : "hover:bg-gray-200"
         }`}
       >
         <span
@@ -34,7 +48,13 @@ export default function Navbar({
   activeMenu,
   setDashType,
   user,
-}: any) {
+}: {
+  dashType: AdminDashType;
+  setActiveMenu: (active: boolean) => void;
+  activeMenu: boolean;
+  setDashType: (type: AdminDashType) => void;
+  user: User | null;
+}) {
   function handleActiveMenu() {
     setActiveMenu(!activeMenu);
   }
@@ -42,7 +62,7 @@ export default function Navbar({
   return (
     <div
       className={`flex justify-between border-b-2 bg-white shadow-md border-gray-700/50 p-2 h-16 ${
-        dashType == "chat" ? "" : "xl:mx-6"
+        dashType === "chat" ? "" : "xl:mx-6"
       } relative`}
     >
       <NavButton
@@ -75,7 +95,7 @@ export default function Navbar({
         />
         <div
           className={`${
-            dashType == "profile"
+            dashType === "profile"
               ? "bg-gray-700 text-gray-100"
               : "hover:bg-gray-100 text-gray-400"
           } flex items-center gap-2 cursor-pointer p-1 rounded-lg`}

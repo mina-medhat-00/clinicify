@@ -3,38 +3,42 @@ import { Link } from "react-router-dom";
 import Loader from "@/components/ui/loader";
 import { useAppointmentContext } from "@/contexts/appointment-context";
 import { useChatContext } from "@/contexts/chat-context";
+import type { Appointment } from "@/types/appointment";
+import type { Id, UserType } from "@/types/user";
 
-function nearestRemaining(appointmentData?: any, timeZone?: any, now?: any) {
-  let temp_app = new Array(...(appointmentData ? appointmentData : []));
-  while (temp_app?.length) {
-    const nearestTime = temp_app?.reduce(function (pre?: any, curr?: any) {
-      return new Date(`${pre?.schedule_date} ${pre?.slot_time}`) <
-        new Date(`${curr?.schedule_date} ${curr?.slot_time}`)
-        ? pre
-        : curr;
-    }, null);
-    if (nearestTime) {
-      const targetDate = new Date(
-        `${nearestTime?.schedule_date} ${nearestTime?.slot_time} ${timeZone}`,
-      );
-      if (now < targetDate.getTime()) {
-        return {
-          remainingTime: targetDate.toLocaleString(),
-          targetDate,
-          mode: "later",
-        };
-      }
-      if (now < targetDate.getTime() + nearestTime?.appointment_duration) {
-        return {
-          remainingTime: "Right Now !!",
-          targetDate,
-          mode: "now",
-        };
-      }
-      temp_app = temp_app?.filter(function ({ appointmentId }: any) {
-        return appointmentId != nearestTime?.appointmentId;
-      });
-    } else break;
+type Remaining =
+  | { remainingTime: string; targetDate: Date; mode: "later" | "now" }
+  | { remainingTime: null; targetDate: null; mode: null };
+
+// The next appointment that isn't over yet (canceled ones don't count):
+// "later" before it starts, "now" while it runs.
+function nearestRemaining(
+  appointments: Appointment[],
+  timeZone: string,
+  now: number,
+): Remaining {
+  const starts = appointments
+    .filter(function ({ appointment_state }) {
+      return appointment_state !== "canceled";
+    })
+    .map(function ({ schedule_date, slot_time, appointment_duration }) {
+      return {
+        start: new Date(`${schedule_date} ${slot_time} ${timeZone}`),
+        duration: appointment_duration,
+      };
+    })
+    .sort(function (a, b) {
+      return a.start.getTime() - b.start.getTime();
+    });
+  for (const { start, duration } of starts) {
+    if (now < start.getTime())
+      return {
+        remainingTime: start.toLocaleString(),
+        targetDate: start,
+        mode: "later",
+      };
+    if (now < start.getTime() + duration)
+      return { remainingTime: "Right Now !!", targetDate: start, mode: "now" };
   }
   return { remainingTime: null, targetDate: null, mode: null };
 }
@@ -44,30 +48,36 @@ export default function ChatAvailability({
   withUserType,
   timeZone,
   withNickName,
-}: any) {
+}: {
+  withUser: Id;
+  withUserType?: UserType;
+  timeZone: string;
+  withNickName?: string;
+}) {
   const { appointmentData, isLoading, fetchAppointmentData } =
     useAppointmentContext();
   const { fetchChatData } = useChatContext();
   const [now] = useState(Date.now);
-  const remaining = nearestRemaining(appointmentData, timeZone, now);
+  const remaining = nearestRemaining(appointmentData ?? [], timeZone, now);
   useEffect(
     function () {
-      fetchAppointmentData({ doctorId: withUser });
+      void fetchAppointmentData({ doctorId: withUser });
     },
     [fetchAppointmentData, withUser],
   );
+  // Reload the chat when the appointment starts, so the input opens.
   useEffect(
     function () {
-      let timeId;
-      if (remaining.mode === "later" && remaining.targetDate) {
+      let timeId: ReturnType<typeof setTimeout> | undefined;
+      if (remaining.mode === "later") {
         timeId = setTimeout(
           function () {
-            fetchChatData({ chat_to: withUser }, { silent: true });
+            void fetchChatData({ chat_to: withUser }, { silent: true });
           },
           remaining.targetDate.getTime() + 1000 - now,
         );
       } else if (remaining.mode === "now") {
-        fetchChatData({ chat_to: withUser }, { silent: true });
+        void fetchChatData({ chat_to: withUser }, { silent: true });
       }
       return function () {
         clearTimeout(timeId);
@@ -85,22 +95,21 @@ export default function ChatAvailability({
   );
   return (
     <div className="bg-gray-600 px-1 rounded-tr-lg py-8 rounded-tl-lg font-medium text-white">
-      {appointmentData?.length && remaining.remainingTime ? (
+      {remaining.remainingTime ? (
         <div className="flex flex-wrap justify-evenly gap-1">
-          <div className="text-lg text-gray-300  font-bold">
+          <div className="text-lg text-gray-300 font-bold">
             Chatting with Your Doctor opens at
           </div>
           <span className="text-lg font-bold">{remaining.remainingTime}</span>
         </div>
       ) : isLoading ? (
         <Loader />
-      ) : withUserType == "doctor" ? (
+      ) : withUserType === "doctor" ? (
         <div className="flex flex-wrap px-1 justify-evenly gap-2 text-lg items-center">
           <div>There's no Appointments Booked yet</div>
           <Link
-            to={`/profile/${withUser}`}
-            className="hover:bg-blue-500 bg-blue-400 p-4 text-center text-sm 
-          rounded-md text-white hover:text-gray-100"
+            to={`/profile/${String(withUser)}`}
+            className="hover:bg-blue-500 bg-blue-400 p-4 text-center text-sm rounded-md text-white hover:text-gray-100"
           >
             Book Now
           </Link>

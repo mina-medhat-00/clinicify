@@ -6,6 +6,7 @@ import {
   notify,
   type ServiceContext,
 } from "@/services/client";
+import type { Id } from "@/types/user";
 import { toQuery } from "@/utils/query";
 
 export type BookResult = "booked" | "unavailable" | "failed";
@@ -13,8 +14,8 @@ export type BookResult = "booked" | "unavailable" | "failed";
 type BookParams = ServiceContext & {
   date: string;
   slotTime: string;
-  appointmentId: string | number;
-  doctorId: string | number;
+  appointmentId: Id;
+  doctorId: Id;
   // Only checks the slot is still free (and emails the doctor), no booking.
   check?: boolean;
   // Stripe payment intent to capture once the slot is booked.
@@ -37,12 +38,13 @@ export default async function bookAppointment({
     );
     return "booked";
   } catch (err) {
-    const data = errorData<{ isCanceled?: boolean; isBooked?: boolean }>(err);
-    if (errorStatus(err) === 400 && (data?.isCanceled || data?.isBooked)) {
+    const data = errorData(err);
+    const isCanceled = Boolean(data?.isCanceled);
+    if (errorStatus(err) === 400 && (isCanceled || Boolean(data?.isBooked))) {
       notify(
         ctx,
         "error",
-        data.isCanceled
+        isCanceled
           ? "this slot has been canceled"
           : "this slot is already booked, try another slot",
         5,

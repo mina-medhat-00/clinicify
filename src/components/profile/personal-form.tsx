@@ -1,16 +1,25 @@
-import {
-  Button,
-  DatePicker,
-  Form,
-  Input,
-  Select,
-  Space,
-} from "@/components/ui";
+import { Button, Input, Select, Space } from "@/components/ui/controls";
+import { DatePicker } from "@/components/ui/calendar";
+import { Form } from "@/components/ui/form";
+import type { Dayjs } from "dayjs";
 import { Mail } from "lucide-react";
 import ProfileTable from "@/components/profile/profile-table";
+import type { LoadOptions, ServiceContext } from "@/services/client";
 import submitProfile from "@/services/submit-profile";
-import { cityOptions } from "@/utils/sign-data";
-import { prefixSelector } from "@/components/signup/signup-utils";
+import type { Id } from "@/types/user";
+import { cityOptions } from "@/constants/sign-data";
+import { minimumAgeRule, phoneRule } from "@/utils/validators";
+import { prefixSelector } from "@/components/signup/form-selectors";
+
+export interface PersonalValues {
+  nickname: string;
+  gender: string;
+  birth: Dayjs | null;
+  address: { city: string | null; street: string | null };
+  phone: string | null;
+  prefix: string | null;
+  email: string;
+}
 
 const { Item } = Form;
 export default function PersonalForm({
@@ -19,7 +28,11 @@ export default function PersonalForm({
   fetchUserData,
   userName,
   initialValues,
-}: any) {
+}: ServiceContext & {
+  userName: Id;
+  fetchProfileData: (user: Id, options?: LoadOptions) => Promise<unknown>;
+  initialValues: PersonalValues;
+}) {
   const editData = [
     {
       headers: ["Personal"],
@@ -70,14 +83,7 @@ export default function PersonalForm({
                   required: true,
                   message: "please enter your birthdate",
                 },
-                {
-                  message: "your age must be more than 13",
-                  validator(_, value) {
-                    if (new Date().getFullYear() - value?.year() < 13)
-                      return Promise.reject();
-                    else return Promise.resolve();
-                  },
-                },
+                minimumAgeRule,
               ]}
             >
               <DatePicker className="w-full" placeholder="birthdate" />
@@ -100,11 +106,7 @@ export default function PersonalForm({
                   required: true,
                   message: "Please write your phone number!",
                 },
-                {
-                  message:
-                    "please write phone number with 8 digits after 01x or 1x",
-                  pattern: new RegExp("^0?(10|11|12|15)[0-9]{8,8}$"),
-                },
+                phoneRule,
               ]}
             >
               <Space.Compact className="w-full">
@@ -143,20 +145,21 @@ export default function PersonalForm({
   ];
   return (
     <div className="bg-gray-200 p-2 w-full rounded-lg">
-      <Form
-        initialValues={{ ...initialValues }}
-        onFinish={async function (values?: any) {
-          const saved = await submitProfile({
+      <Form<PersonalValues>
+        initialValues={initialValues}
+        onFinish={function (values) {
+          void submitProfile({
             section: "personal",
-            values: { ...values, birth: values?.birth?.format("YYYY-MM-DD") },
+            values: { ...values, birth: values.birth?.format("YYYY-MM-DD") },
             messageApi,
             fetchUserData,
+          }).then(function (saved) {
+            if (saved) void fetchProfileData(userName, { silent: true });
           });
-          if (saved) fetchProfileData(userName, { silent: true });
         }}
       >
-        {editData?.map(function ({ data, headers }: any, i?: any) {
-          return <ProfileTable key={i + 1} data={data} headers={headers} />;
+        {editData.map(function ({ data, headers }, i) {
+          return <ProfileTable key={i} data={data} headers={headers} />;
         })}
         <div>
           <Item className="w-full">
@@ -215,9 +218,7 @@ export default function PersonalForm({
           <Button
             type="primary"
             htmlType="submit"
-            className={`rounded-lg text-xs lg:text-sm
-          bg-gray-600 py-6 font-medium text-white
-          border-gray-700 px-8 flex items-center hover:bg-gray-700`}
+            className="rounded-lg text-xs lg:text-sm bg-gray-600 py-6 font-medium text-white border-gray-700 px-8 flex items-center hover:bg-gray-700"
           >
             Edit Now
           </Button>

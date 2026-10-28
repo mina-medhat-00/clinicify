@@ -1,14 +1,27 @@
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import type { Socket } from "socket.io-client";
 import BookButton from "@/components/booking/book-button";
 import DatePicker from "@/components/doctor/date-picker";
 import Loader from "@/components/ui/loader";
-import { Button, Empty, Popover } from "@/components/ui";
+import { Button } from "@/components/ui/controls";
+import { Empty } from "@/components/ui/display";
+import { Popover } from "@/components/ui/overlay";
 import { useSlotsContext } from "@/contexts/slots-context";
 import { useUserContext } from "@/contexts/user-context";
+import type { Id } from "@/types/user";
+import type { Slot } from "@/types/appointment";
 
-export default function BookCard({ doctorId, socket, timeZone }: any) {
+export default function BookCard({
+  doctorId,
+  socket,
+  timeZone,
+}: {
+  doctorId: Id;
+  socket: Socket;
+  timeZone: string;
+}) {
   const [now] = useState(Date.now);
   const { slotsData, isLoading, fetchSlotsData } = useSlotsContext();
   const { userData } = useUserContext();
@@ -19,20 +32,23 @@ export default function BookCard({ doctorId, socket, timeZone }: any) {
       date: dayjs().format("YYYY-MM-DD"),
     };
   });
-  const [bookedAppointment, setBookedAppointment] = useState<any>(null);
+  const [bookedAppointment, setBookedAppointment] = useState<Slot | null>(null);
+  const canBook = Boolean(
+    bookedAppointment && userData && userData.user_id !== doctorId,
+  );
 
   useEffect(
     function () {
-      socket?.emit("join_doctor", doctorId);
+      socket.emit("join_doctor", doctorId);
     },
     [doctorId, socket],
   );
 
   useEffect(
     function () {
-      function fetchSlots(data?: any) {
-        if (selectedDate.date == data?.date)
-          fetchSlotsData(
+      function fetchSlots(data?: { date?: string }) {
+        if (selectedDate.date === data?.date)
+          void fetchSlotsData(
             {
               date: selectedDate.date,
               doctorId,
@@ -41,90 +57,75 @@ export default function BookCard({ doctorId, socket, timeZone }: any) {
           );
       }
 
-      if (doctorId && selectedDate.date) {
-        fetchSlotsData({
-          date: selectedDate.date,
-          doctorId,
-        });
-        socket?.on("update_slots", fetchSlots);
-      }
+      void fetchSlotsData({
+        date: selectedDate.date,
+        doctorId,
+      });
+      socket.on("update_slots", fetchSlots);
 
       return function () {
-        socket?.off("update_slots", fetchSlots);
+        socket.off("update_slots", fetchSlots);
       };
     },
     [selectedDate.date, doctorId, fetchSlotsData, socket],
   );
 
-  function isToday(val?: any) {
-    return new Date(selectedDate.date + " " + val).getTime() > now + 1000 * 60;
+  // Only slots starting more than a minute from now can be booked.
+  function isUpcoming(time: string) {
+    return new Date(`${selectedDate.date} ${time}`).getTime() > now + 1000 * 60;
   }
+  const upcoming =
+    slotsData?.freeSlots?.filter(function ({ slotTime }) {
+      return isUpcoming(slotTime);
+    }) ?? [];
 
   return (
     <div
-      onClick={function (e?: any) {
-        e.stopPropagation();
-        e.preventDefault();
+      onClick={function (event) {
+        event.stopPropagation();
+        event.preventDefault();
       }}
-      className={`doctor--slots flex flex-col shadow-lg rounded bg-gray-200`}
+      className="doctor--slots flex flex-col shadow-lg rounded bg-gray-200"
     >
       <DatePicker
         selectedDate={selectedDate}
         setSelectedDate={setSelectedDate}
       />
       <div className="flex flex-col py-2 grow justify-center items-center">
-        {slotsData?.freeSlots?.some(function ({ slotTime: value }: any) {
-          return isToday(value);
-        }) ? (
+        {upcoming.length ? (
           <>
             <div className="flex items-center justify-center flex-wrap rounded-md shadow-2xl p-2 grow gap-2 scroll--h scroll--v scroll--v--chat w-3/4 h-48 overflow-auto">
-              {slotsData?.freeSlots?.map(function (
-                {
-                  slotTime: value,
-                  appointmentType,
-                  appointmentFees,
-                  appointmentState,
-                  schedule_date,
-                }: any,
-                i?: any,
-              ) {
+              {upcoming.map(function (slot) {
+                const value = slot.slotTime;
                 return (
-                  isToday(value) && (
-                    <div
-                      className={`flex cursor-pointer flex-col relative rounded-lg 
-    ${
-      bookedAppointment?.slotTime == value ? "bg-gray-700" : "bg-blue-800/80"
-    } p-2`}
-                      onClick={function () {
-                        setBookedAppointment(function (val?: any) {
-                          return val?.slotTime == value
-                            ? null
-                            : slotsData?.freeSlots?.[i];
-                        });
-                      }}
-                      key={value}
-                    >
-                      <BookButton
-                        slotTime={value}
-                        timeZone={timeZone || ""}
-                        schedule_date={schedule_date}
-                        appointmentState={appointmentState}
-                        appointmentType={appointmentType}
-                        appointmentFees={appointmentFees}
-                      />
-                    </div>
-                  )
+                  <div
+                    className={`flex cursor-pointer flex-col relative rounded-lg ${
+                      bookedAppointment?.slotTime === value
+                        ? "bg-gray-700"
+                        : "bg-blue-800/80"
+                    } p-2`}
+                    onClick={function () {
+                      setBookedAppointment(function (current) {
+                        return current?.slotTime === value ? null : slot;
+                      });
+                    }}
+                    key={value}
+                  >
+                    <BookButton
+                      slotTime={value}
+                      timeZone={timeZone}
+                      schedule_date={slot.schedule_date}
+                      appointmentState={slot.appointmentState}
+                      appointmentType={slot.appointmentType}
+                      appointmentFees={slot.appointmentFees}
+                    />
+                  </div>
                 );
               })}
             </div>
             <Popover
-              trigger={"click"}
-              arrow={false}
-              open={
-                bookedAppointment && userData && userData?.user_id != doctorId
-                  ? false
-                  : null
-              }
+              trigger="click"
+              open={canBook ? false : null}
               content={
                 <span className="font-medium">
                   {!bookedAppointment
@@ -137,24 +138,20 @@ export default function BookCard({ doctorId, socket, timeZone }: any) {
             >
               <Button
                 onClick={function () {
-                  if (
-                    bookedAppointment &&
-                    userData &&
-                    userData?.user_id != doctorId
-                  )
-                    navigate(`/profile/${doctorId}`);
-                  window?.localStorage?.setItem(
+                  if (!canBook || !bookedAppointment) return;
+                  // The profile page opens the booking for this slot.
+                  window.localStorage.setItem(
                     "book_appointment",
-                    bookedAppointment?.appointmentId,
+                    String(bookedAppointment.appointmentId),
                   );
+                  void navigate(`/profile/${String(doctorId)}`);
                 }}
                 type="primary"
                 className={`my-4 m-auto sm:font-medium h-12 w-2/3 block ${
-                  !bookedAppointment ||
-                  !(userData && userData?.user_id != doctorId)
-                    ? "bg-gray-100 text-gray-400 border-gray-400"
-                    : "hover:bg-gray-800 bg-gray-700"
-                }  rounded-lg`}
+                  canBook
+                    ? "hover:bg-gray-800 bg-gray-700"
+                    : "bg-gray-100 text-gray-400 border-gray-400"
+                } rounded-lg`}
               >
                 Book Now
               </Button>

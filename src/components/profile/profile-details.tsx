@@ -1,7 +1,32 @@
 import { Contact, FileHeart } from "lucide-react";
+import type { ReactNode } from "react";
+import type { SetProfileDrawer } from "@/types/profile-drawer";
 import ProfileTable from "@/components/profile/profile-table";
-import { FeedbackContextProvider } from "@/contexts";
+import FeedbackContextProvider from "@/contexts/feedback-context";
 import Feedbacks from "@/pages/feedbacks";
+
+// The profile's fields as shown (missing ones are already an icon).
+export interface ProfileValues {
+  nickname: ReactNode;
+  about: ReactNode;
+  specialty: ReactNode;
+  age: ReactNode;
+  bdate: ReactNode;
+  pnumber: ReactNode;
+  email: ReactNode;
+  city: ReactNode;
+  street: ReactNode;
+  images: { img_url: string }[];
+}
+
+type ShownField = Exclude<keyof ProfileValues, "images">;
+
+interface DetailsSection {
+  headerColor?: string;
+  propColor?: string;
+  headers?: string[];
+  data: { label: string; name: ShownField }[];
+}
 
 function UserDetails({
   headers,
@@ -9,16 +34,16 @@ function UserDetails({
   userValues,
   headerColor,
   propColor,
-}: any) {
+}: DetailsSection & { userValues: ProfileValues }) {
   return (
     <div className="flex justify-between gap-2 flex-wrap items-center">
       <ProfileTable
         headerColor={headerColor}
         propColor={propColor}
-        data={data?.map(function ({ label, name }: any) {
+        data={data.map(function ({ label, name }) {
           return {
             name: label,
-            value: userValues?.[name],
+            value: userValues[name],
           };
         })}
         headers={headers}
@@ -30,30 +55,29 @@ function UserDetails({
 export default function ProfileDetails({
   isAuth,
   isUser,
-  showEdit,
-  setUserValues,
   userValues,
   username,
   setHandleDrawer,
   fetchFeedback,
-}: any) {
-  const profileDetails = [
-    !isUser
-      ? {
-          data: [
-            {
-              label: "Specialty",
-              name: "specialty",
-            },
-          ],
-        }
-      : {},
+}: {
+  isAuth: boolean;
+  // A patient (or admin) profile rather than a doctor's.
+  isUser: boolean;
+  userValues: ProfileValues;
+  username?: string;
+  setHandleDrawer: SetProfileDrawer;
+  fetchFeedback: number | null;
+}) {
+  const profileDetails: DetailsSection[] = [
+    ...(!isUser
+      ? [{ data: [{ label: "Specialty", name: "specialty" as const }] }]
+      : []),
     {
       headerColor: "bg-blue-800/80",
       headers: ["Personal Details"],
       data: [
         {
-          label: !isUser ? "Age" : "Birh Date",
+          label: !isUser ? "Age" : "Birth Date",
           name: !isUser ? "age" : "bdate",
         },
         {
@@ -97,52 +121,18 @@ export default function ProfileDetails({
             fetchFeedback={fetchFeedback}
           />
         </FeedbackContextProvider>
-      ) : (
-        <></>
-      )}
-      <div
-        className="profile--wrapper--details 
-my-5 rounded-xl"
-      >
+      ) : null}
+      <div className="profile--wrapper--details my-5 rounded-xl">
         <div className="flex justify-center items-center gap-2 mt-4 mb-4 text-white font-medium text-lg sm:text-xl p-4 bg-blue-600">
           <Contact /> Personal Information
         </div>
-        {profileDetails?.map(function (
-          { data, headers, headerColor, propColor }: any,
-          i?: any,
-        ) {
-          return (
-            <UserDetails
-              key={i + 1}
-              isAuth={isAuth}
-              data={data}
-              headerColor={headerColor}
-              propColor={propColor}
-              headers={headers}
-              showEdit={showEdit}
-              setUserValues={setUserValues}
-              userValues={userValues}
-            />
-          );
+        {profileDetails.map(function (section, i) {
+          return <UserDetails key={i} {...section} userValues={userValues} />;
         })}
-        {!isUser && (
-          <UserDetails
-            isAuth={isAuth}
-            showEdit={showEdit}
-            setUserValues={setUserValues}
-            userValues={userValues}
-            data={[
-              {
-                label: "Specialty",
-                name: "specialty",
-              },
-            ]}
-          />
-        )}
         {isAuth && (
           <div
             onClick={function () {
-              setHandleDrawer(function (draw?: any) {
+              setHandleDrawer(function (draw) {
                 return {
                   ...draw,
                   isOpen: true,
@@ -151,8 +141,7 @@ my-5 rounded-xl"
                 };
               });
             }}
-            className="bg-gray-300/50 gap-2 hover:bg-gray-300/80 flex justify-center items-center h-24 text-center cursor-pointer text-gray-500
-           text-lg sm:text-xl xl:text-2xl font-medium rounded-lg hover:shadow-sm p-3 hover:text-gray-700 grow"
+            className="bg-gray-300/50 gap-2 hover:bg-gray-300/80 flex justify-center items-center h-24 text-center cursor-pointer text-gray-500 text-lg sm:text-xl xl:text-2xl font-medium rounded-lg hover:shadow-sm p-3 hover:text-gray-700 grow"
           >
             <FileHeart className="w-7 h-7" />
             Edit Personal Information

@@ -1,8 +1,21 @@
-import { Button, Form, Input, Select, Space } from "@/components/ui";
+import { Button, Input, Select, Space } from "@/components/ui/controls";
+import { Form } from "@/components/ui/form";
 import ProfileTable from "@/components/profile/profile-table";
+import type { ClinicValues } from "@/components/profile/clinic-register";
+import type { LoadOptions, ServiceContext } from "@/services/client";
 import submitProfile from "@/services/submit-profile";
-import { cityOptions } from "@/utils/sign-data";
-import { prefixSelector } from "@/components/signup/signup-utils";
+import type { Id } from "@/types/user";
+import { cityOptions } from "@/constants/sign-data";
+import { phoneRule } from "@/utils/validators";
+import { prefixSelector } from "@/components/signup/form-selectors";
+
+// Saved values can have empty columns; the form fills them in.
+export interface ClinicInitialValues {
+  address: { city?: string | null; street?: string | null };
+  phone?: string | null;
+  telephone?: string | null;
+  prefix?: string | null;
+}
 
 const { Item } = Form;
 export default function ClinicForm({
@@ -11,7 +24,11 @@ export default function ClinicForm({
   fetchUserData,
   userName,
   initialValues,
-}: any) {
+}: ServiceContext & {
+  userName: Id;
+  fetchProfileData: (user: Id, options?: LoadOptions) => Promise<unknown>;
+  initialValues: ClinicInitialValues;
+}) {
   const editData = [
     {
       headers: ["Contact"],
@@ -27,11 +44,7 @@ export default function ClinicForm({
                   required: true,
                   message: "Please write clinic phone number!",
                 },
-                {
-                  message:
-                    "please write phone number with 8 digits after 01x or 1x",
-                  pattern: new RegExp("^0?(10|11|12|15)[0-9]{8,8}$"),
-                },
+                phoneRule,
               ]}
             >
               <Space.Compact className="w-full">
@@ -57,17 +70,18 @@ export default function ClinicForm({
   ];
   return (
     <div className="bg-gray-200 p-2 w-full rounded-lg">
-      <Form
-        initialValues={{ ...initialValues }}
-        onFinish={async function (values?: any) {
-          const saved = await submitProfile({
+      <Form<ClinicValues>
+        initialValues={initialValues as Partial<ClinicValues>}
+        onFinish={function (values) {
+          void submitProfile({
             section: "clinic",
-            values,
+            values: { ...values },
             isEdit: true,
             messageApi,
             fetchUserData,
+          }).then(function (saved) {
+            if (saved) void fetchProfileData(userName, { silent: true });
           });
-          if (saved) fetchProfileData(userName, { silent: true });
         }}
       >
         <div>
@@ -123,16 +137,14 @@ export default function ClinicForm({
             </div>
           </Item>
         </div>
-        {editData?.map(function ({ data, headers }: any, i?: any) {
-          return <ProfileTable key={i + 1} data={data} headers={headers} />;
+        {editData.map(function ({ data, headers }, i) {
+          return <ProfileTable key={i} data={data} headers={headers} />;
         })}
         <div className="flex mt-2 justify-end">
           <Button
             type="primary"
             htmlType="submit"
-            className={`rounded-lg text-xs lg:text-sm
-              bg-gray-600 py-4 font-medium text-white
-              border-gray-700 px-8 flex items-center hover:bg-gray-700`}
+            className="rounded-lg text-xs lg:text-sm bg-gray-600 py-4 font-medium text-white border-gray-700 px-8 flex items-center hover:bg-gray-700"
           >
             Edit Now
           </Button>

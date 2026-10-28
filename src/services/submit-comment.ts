@@ -1,11 +1,11 @@
 import {
-  api,
+  apiPost,
   handleFailure,
   notify,
   type ServiceContext,
   type Socket,
 } from "@/services/client";
-import type { User } from "@/types";
+import type { Id, User } from "@/types/user";
 
 // Timestamp for the copy broadcast over the socket, in the server's
 // "YYYY-MM-DD HH:mm:ss" shape (UTC, two minutes ahead, as before).
@@ -26,19 +26,19 @@ export default async function submitComment({
 }: ServiceContext & {
   user: User | null;
   content: string;
-  postId: string | number;
-  commentId?: string | number | null;
+  postId: Id;
+  commentId?: Id | null;
   socket?: Socket;
 }) {
   notify(ctx, "loading", "adding your comment ...", 8);
   try {
-    const { data } = await api.post("/submit/comment", {
+    const data = await apiPost<{ comment_id?: Id } | null>("/submit/comment", {
       data: { content, postId, commentId },
     });
     notify(ctx, "success", "thank you for your comment", 2);
     socket?.emit("send_comment", {
       reply_on: commentId,
-      comment_id: data?.data?.comment_id,
+      comment_id: data?.comment_id,
       post_id: postId,
       user_id: user?.user_id,
       content,

@@ -1,9 +1,10 @@
 import {
-  api,
+  apiPost,
   handleFailure,
   notify,
   type ServiceContext,
 } from "@/services/client";
+import type { Id } from "@/types/user";
 
 export default async function submitFeedback({
   rate,
@@ -13,21 +14,25 @@ export default async function submitFeedback({
 }: ServiceContext & {
   rate?: number;
   feedback?: string;
-  doctorId: string | number;
+  doctorId: Id;
 }) {
   notify(ctx, "loading", "submitting your feedback ...", 8);
   try {
-    const { data } = await api.post("/submit/feedback", {
-      data: {
-        rate: rate || 0,
-        feedback: feedback || null,
-        feedback_to: doctorId,
+    const data = await apiPost<{ update?: boolean } | null>(
+      "/submit/feedback",
+      {
+        data: {
+          rate: rate ?? 0,
+          // An empty review is sent as no review.
+          feedback: feedback?.trim() ? feedback : null,
+          feedback_to: doctorId,
+        },
       },
-    });
+    );
     notify(
       ctx,
       "success",
-      data?.data?.update
+      data?.update
         ? "thank you for your feedback update"
         : "thank you for your feedback",
       2,
