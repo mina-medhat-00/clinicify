@@ -1,17 +1,9 @@
-import {
-  apiPost,
-  errorStatus,
-  handleFailure,
-  notify,
-  type ServiceContext,
-  type Socket,
-} from "@/services/client";
+import { apiPost, errorStatus, handleFailure, notify } from "@/services/client";
 import type { ChatMessage } from "@/types/content";
 import type { Id } from "@/types/user";
-
-export type MessageResult = "sent" | "closed" | "failed";
-
-// Both users join the same room, named "<higher id>,<lower id>".
+import type { ServiceContext, Socket } from "@/types/api";
+import type { MessageResult } from "@/types/services";
+// Both users join one room named by their ids with the higher first
 export function chatRoomId(a: Id, b: Id) {
   return a > b ? `${String(a)},${String(b)}` : `${String(b)},${String(a)}`;
 }

@@ -12,32 +12,15 @@ import {
 import HeaderLine from "@/components/ui/header-line";
 import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
-import {
-  api,
-  errorData,
-  type ApiResponse,
-  setToken,
-  type MessageApi,
-  type ServiceContext,
-} from "@/services/client";
+import { api, errorData, setToken } from "@/services/client";
 import { passwordRule, usernameRule } from "@/utils/validators";
+import type { LoginValues, ValidState } from "@/types/auth";
+import type { ApiResponse, MessageApi, ServiceContext } from "@/types/api";
 
 const { Title } = Typography;
-
-interface LoginValues {
-  username: string;
-  password: string;
-  remember?: boolean;
-}
-
-interface ValidState {
-  invalidUser: boolean;
-  invalidPass: boolean;
-}
-
 const noErrors: ValidState = { invalidUser: false, invalidPass: false };
 
-// Only follow in-app paths, never another origin (e.g. "//evil.com").
+// Only follow in-app paths and never another origin
 function getRedirect(search?: string) {
   const target = new URLSearchParams(search).get("redirect");
   return target?.startsWith("/") && !target.startsWith("//") ? target : "/";
@@ -78,7 +61,7 @@ function signing(
       }, 2000);
     })
     .catch(function (err: unknown) {
-      // The API flags which part was wrong with 0.
+      // API flags the wrong field with 0
       const data = errorData(err);
       if (data?.isExist === 0) {
         messageApi.open({

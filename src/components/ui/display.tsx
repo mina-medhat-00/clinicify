@@ -9,8 +9,16 @@ import SkeletonLib from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { cx } from "@/utils/cx";
 import { imageUrl } from "@/utils/api";
-
-type AvatarSize = "small" | "default" | "large";
+import type {
+  AvatarSize,
+  TagColor,
+  AlertProps,
+  SkeletonSize,
+  TitleProps,
+  RowProps,
+  SegmentedValue,
+  SegmentedOption,
+} from "@/types/ui";
 const avatarSize: Record<AvatarSize, number> = {
   small: 24,
   default: 32,
@@ -86,7 +94,6 @@ function Empty({
   );
 }
 
-type TagColor = "blue" | "red" | "gold" | "green" | "cyan";
 const tagColors: Record<TagColor, string> = {
   blue: "bg-blue-100 text-blue-700",
   red: "bg-red-100 text-red-700",
@@ -115,13 +122,6 @@ function Tag({
       {children}
     </span>
   );
-}
-
-interface AlertProps {
-  description?: ReactNode;
-  closable?: { closeIcon?: ReactNode; onClose?: () => void };
-  className?: string;
-  type?: "error" | "warning" | "success" | "info";
 }
 
 function Alert({
@@ -187,8 +187,6 @@ function Result({
     </div>
   );
 }
-
-type SkeletonSize = number | "default" | "large";
 
 function Skeleton({
   className,
@@ -257,15 +255,6 @@ Skeleton.Button = SkeletonButton;
 const titleTags = ["h1", "h2", "h3", "h4", "h5"] as const;
 const titleSizes = ["text-4xl", "text-3xl", "text-2xl", "text-xl", "text-base"];
 
-type TitleProps = HTMLAttributes<HTMLHeadingElement> & {
-  level?: 1 | 2 | 3 | 4 | 5;
-  editable?: {
-    text?: string;
-    icon?: ReactNode;
-    onChange?: (value: string) => void;
-  };
-};
-
 function Title({
   level = 1,
   editable,
@@ -319,12 +308,6 @@ function Title({
 }
 
 const Typography = { Title };
-
-type RowProps = HTMLAttributes<HTMLDivElement> & {
-  justify?: "start" | "center" | "end" | "space-between";
-  align?: "top" | "middle" | "bottom";
-  gutter?: number | [number, number];
-};
 
 function Row({
   children,
@@ -523,10 +506,6 @@ function Rate({
     </div>
   );
 }
-
-type SegmentedValue = string | number;
-type SegmentedOption<V extends SegmentedValue> =
-  V | { label: ReactNode; value: V };
 
 function Segmented<V extends SegmentedValue>({
   options = [],

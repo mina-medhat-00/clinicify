@@ -1,9 +1,7 @@
 import { X } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { cx } from "@/utils/cx";
-
-type Placement = "top" | "topLeft" | "bottom" | "bottomLeft" | "right" | "left";
-
+import type { Placement } from "@/types/ui";
 const placementClass: Record<Placement, string> = {
   top: "bottom-full left-1/2 mb-2 -translate-x-1/2",
   topLeft: "bottom-full left-0 mb-2",
@@ -31,9 +29,9 @@ function Popover({
 }: {
   children?: ReactNode;
   content?: ReactNode;
-  // An empty array turns the popover off.
+  // An empty array disables the popover
   trigger?: "hover" | "click" | [];
-  // true/false force it open or closed; null/undefined leave it to the trigger.
+  // true or false forces it open or closed and null leaves it to the trigger
   open?: boolean | null;
   placement?: Placement;
   color?: string;

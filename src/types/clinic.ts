@@ -1,6 +1,6 @@
 import type { DoctorFields, Id, UserType, Verification } from "@/types/user";
+import type { ReactNode } from "react";
 
-// The clinic columns as the admin and profile pages show them.
 export type Clinic = Pick<
   DoctorFields,
   | "clinic_prefix"
@@ -45,4 +45,27 @@ export interface ProfileData {
   user: ProfileUser;
   doctor?: ProfileDoctor;
   patientRecords?: PatientRecords;
+}
+
+export interface ClinicSection {
+  headerColor: string;
+  propColor?: string;
+  headers: ReactNode[];
+  data: { label: string; name: keyof Clinic; preValue?: keyof Clinic }[];
+  icon?: ReactNode;
+}
+
+// Saved values may have empty columns that the form fills in
+export interface ClinicInitialValues {
+  address: { city?: string | null; street?: string | null };
+  phone?: string | null;
+  telephone?: string | null;
+  prefix?: string | null;
+}
+
+export interface ClinicValues {
+  address: { city: string; street: string };
+  phone: string;
+  telephone?: string;
+  prefix: string;
 }

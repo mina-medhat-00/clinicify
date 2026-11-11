@@ -4,23 +4,11 @@ import {
   errorStatus,
   handleFailure,
   notify,
-  type ServiceContext,
 } from "@/services/client";
-import type { Id } from "@/types/user";
+import "@/types/user";
 import { toQuery } from "@/utils/query";
-
-export type BookResult = "booked" | "unavailable" | "failed";
-
-type BookParams = ServiceContext & {
-  date: string;
-  slotTime: string;
-  appointmentId: Id;
-  doctorId: Id;
-  // Only checks the slot is still free (and emails the doctor), no booking.
-  check?: boolean;
-  // Stripe payment intent to capture once the slot is booked.
-  paymentIntentId?: string;
-};
+import type { BookResult, BookParams } from "@/types/services";
+import "@/types/api";
 
 export default async function bookAppointment({
   date,

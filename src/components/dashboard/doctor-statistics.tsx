@@ -2,7 +2,7 @@ import { Star } from "lucide-react";
 import Loader from "@/components/ui/loader";
 import type { DoctorStatistics } from "@/types/content";
 
-// The doctor's own numbers, from /dashboard.
+// Doctor's own numbers from /dashboard
 export default function DoctorStatisticsView({
   statistics,
   isLoading,

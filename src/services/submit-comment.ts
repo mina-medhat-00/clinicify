@@ -1,14 +1,8 @@
-import {
-  apiPost,
-  handleFailure,
-  notify,
-  type ServiceContext,
-  type Socket,
-} from "@/services/client";
+import { apiPost, handleFailure, notify } from "@/services/client";
 import type { Id, User } from "@/types/user";
+import type { ServiceContext, Socket } from "@/types/api";
 
-// Timestamp for the copy broadcast over the socket, in the server's
-// "YYYY-MM-DD HH:mm:ss" shape (UTC, two minutes ahead, as before).
+// Socket copy timestamp as "YYYY-MM-DD HH:mm:ss" in UTC two minutes ahead
 export function liveTimestamp() {
   return new Date(Date.now() + 2 * 60 * 1000)
     .toISOString()

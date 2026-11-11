@@ -1,48 +1,12 @@
 import { ImagePlus, X } from "lucide-react";
-import { useRef, useState, type ReactNode } from "react";
+import { useRef, useState } from "react";
 import { cx } from "@/utils/cx";
+import type { UploadFile, UploadProps } from "@/types/ui";
 
 const LIST_IGNORE = "LIST_IGNORE" as const;
 
-// true: keep and upload; false: keep without uploading; LIST_IGNORE: drop.
-export type BeforeUploadResult = boolean | typeof LIST_IGNORE;
-
-export interface UploadFile {
-  uid: string;
-  name: string;
-  status?: "done";
-  originFileObj: File;
-}
-
-export interface UploadChange {
-  file: UploadFile;
-  fileList: UploadFile[];
-}
-
-export interface UploadProps {
-  children?: ReactNode;
-  beforeUpload?: (
-    file: File,
-  ) => BeforeUploadResult | Promise<BeforeUploadResult>;
-  customRequest?: (options: {
-    file: File;
-    onSuccess: () => void;
-    onError: () => void;
-  }) => void;
-  showUploadList?: boolean;
-  onChange?: (change: UploadChange) => void;
-  accept?: string;
-  multiple?: boolean;
-  maxCount?: number;
-  listType?: "text" | "picture";
-  name?: string;
-  fileList?: UploadFile[];
-  className?: string;
-  dragger?: boolean;
-}
-
 function noop() {
-  // Uploads finish instantly; there is nothing to report.
+  // Uploads finish instantly so there is nothing to report
 }
 
 function toItem(file: File, status?: "done"): UploadFile {

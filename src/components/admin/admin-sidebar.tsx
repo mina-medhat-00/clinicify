@@ -10,17 +10,11 @@ import {
   UserCog,
   X,
 } from "lucide-react";
-import type { ReactNode } from "react";
+import "react";
 import { Link } from "react-router-dom";
-import type { AdminDashType } from "@/constants/dash-types";
-
-interface SidebarLink {
-  key: string;
-  value: string;
-  icon: ReactNode;
-}
-
-// Dashboard links switch the admin tab; general links leave the dashboard.
+import type { AdminDashType } from "@/types/dashboard";
+import type { SidebarLink } from "@/types/admin";
+// Dashboard links switch the admin tab and general links leave the dashboard
 const dashboardLinks: (SidebarLink & { key: AdminDashType })[] = [
   { key: "profile", value: "My Profile", icon: <Shield /> },
   { key: "user", value: "Users Management", icon: <UserCheck /> },

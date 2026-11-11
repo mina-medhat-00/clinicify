@@ -4,11 +4,7 @@ import { useRemoteData } from "@/hooks/use-remote-data";
 import { apiGet } from "@/services/client";
 import type { Feedback } from "@/types/content";
 import { toQuery } from "@/utils/query";
-
-export interface FeedbackQuery {
-  username?: string;
-  limit?: number;
-}
+import type { FeedbackQuery } from "@/types/queries";
 
 function getFeedback(query?: FeedbackQuery) {
   return apiGet<Feedback[]>(
@@ -35,7 +31,7 @@ const [FeedbackData, useFeedbackContext] =
   createStrictContext<ReturnType<typeof useFeedbackValue>>("FeedbackContext");
 export { useFeedbackContext };
 
-// Loads `contextQuery` on mount unless `noDirectFetch` (the page loads it).
+// Loads contextQuery on mount unless noDirectFetch is set
 export default function FeedbackContextProvider({
   children,
   noDirectFetch,

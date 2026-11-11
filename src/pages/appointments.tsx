@@ -15,7 +15,7 @@ import { Link } from "react-router-dom";
 import AppointmentStart from "@/components/appointment/appointment-start";
 import AppointmentTime from "@/components/appointment/appointment-time";
 import DoctorDetails from "@/components/appointment/doctor-details";
-import DatePicker, { type SelectedDay } from "@/components/doctor/date-picker";
+import DatePicker from "@/components/doctor/date-picker";
 import CancelSlotPopUp from "@/components/schedule/cancel-slot-pop-up";
 import { useCancelPrompt } from "@/hooks/use-cancel-prompt";
 import Loader from "@/components/ui/loader";
@@ -24,10 +24,12 @@ import { useAppointmentContext } from "@/contexts/appointment-context";
 import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
 import cancelAppointment from "@/services/cancel-appointment";
-import type { AppointmentKind, AppointmentState } from "@/types/appointment";
-
-type StateFilter = AppointmentState | "total";
-
+import type {
+  AppointmentKind,
+  AppointmentState,
+  StateFilter,
+  SelectedDay,
+} from "@/types/appointment";
 const stateColors: Record<AppointmentState, string> = {
   done: "bg-green-700/50",
   booked: "bg-yellow-600/50",

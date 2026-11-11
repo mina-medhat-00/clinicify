@@ -8,24 +8,7 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 import { cx } from "@/utils/cx";
-
-export type MessageType = "loading" | "success" | "error" | "warning" | "info";
-
-type ToastKey = string | number;
-
-interface Toast {
-  id: ToastKey;
-  type: MessageType;
-  content?: ReactNode;
-}
-
-export interface MessageConfig {
-  key?: ToastKey;
-  type?: MessageType;
-  content?: ReactNode;
-  duration?: number;
-}
-
+import type { Toast, MessageConfig } from "@/types/ui";
 let toastCount = 0;
 
 function createStore() {

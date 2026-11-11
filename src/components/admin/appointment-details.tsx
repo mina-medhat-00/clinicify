@@ -2,7 +2,7 @@ import { Empty } from "@/components/ui/display";
 import dayjs from "dayjs";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import DatePicker, { type SelectedDay } from "@/components/doctor/date-picker";
+import DatePicker from "@/components/doctor/date-picker";
 import AppointmentCard from "@/components/schedule/appointment-card";
 import CancelSlotPopUp from "@/components/schedule/cancel-slot-pop-up";
 import { useCancelPrompt } from "@/hooks/use-cancel-prompt";
@@ -11,8 +11,9 @@ import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
 import cancelAppointment from "@/services/cancel-appointment";
 import type { Id } from "@/types/user";
+import type { SelectedDay } from "@/types/appointment";
 
-// One doctor's day of slots, inside the admin's doctor list.
+// One doctor's day of slots inside the admin doctor list
 export default function AppointmentDetails({ doctorId }: { doctorId: Id }) {
   const { timeZone, messageApi, socket } = useUtilsContext();
   const { fetchUserData } = useUserContext();

@@ -18,8 +18,7 @@ export default function UserItem() {
   const [showLogout, setShowLogout] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const location = useLocation();
-  // Sign out only once the home page shows: clearing the user while still on
-  // a protected page would bounce to the login page instead.
+  // Sign out after reaching home so protected pages don't redirect to login
   useEffect(
     function () {
       if (loggingOut && location.pathname === "/") setUserData(null);

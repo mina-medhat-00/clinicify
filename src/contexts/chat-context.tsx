@@ -3,14 +3,9 @@ import { createStrictContext } from "@/utils/create-strict-context";
 import { useRemoteData } from "@/hooks/use-remote-data";
 import { apiGet } from "@/services/client";
 import type { ChatThread } from "@/types/content";
-import type { Id } from "@/types/user";
+import "@/types/user";
 import { toQuery } from "@/utils/query";
-
-// chat_to: also return this user's chat; userid: (admin) list another user's chats.
-export interface ChatQuery {
-  chat_to?: Id | null;
-  userid?: Id;
-}
+import type { ChatQuery } from "@/types/queries";
 
 function getChats(query?: ChatQuery) {
   return apiGet<ChatThread[]>(

@@ -10,7 +10,7 @@ export default function TitleHeader({
   contClass,
 }: {
   icon?: ReactNode;
-  // Path without the leading slash.
+  // Path without the leading slash
   to?: string;
   title?: ReactNode;
   wrapperBg?: string;

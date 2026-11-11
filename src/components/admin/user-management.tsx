@@ -1,28 +1,19 @@
 import { Button } from "@/components/ui/controls";
-import { Table, type TableColumn } from "@/components/ui/table";
+import { Table } from "@/components/ui/table";
 import { Mars, Venus } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
 import Restrictions from "@/components/admin/restrictions";
-import {
-  useNameColumn,
-  userTypeColumn,
-  type NamedRow,
-} from "@/components/admin/user-columns";
+import { useNameColumn, userTypeColumn } from "@/components/admin/user-columns";
 import PopUp from "@/components/ui/pop-up";
 import { useUserContext } from "@/contexts/user-context";
 import { useUsersContext } from "@/contexts/users-context";
 import changeState from "@/services/change-state";
-import type { ManagedUser, UserType } from "@/types/user";
-
-interface UserRow extends NamedRow {
-  user_type: UserType;
-  gender: string;
-  age: number;
-  action: ReactNode;
-}
+import type { ManagedUser } from "@/types/user";
+import type { UserRow } from "@/types/admin";
+import type { TableColumn } from "@/types/ui";
 
 export default function UserManagement() {
-  // The user whose chat restrictions are shown (kept while the popup closes).
+  // User whose chat restrictions are shown and stays set while the popup closes
   const [selectedUser, setSelectedUser] = useState<ManagedUser | null>(null);
   const [showRestrictions, setShowRestrictions] = useState(false);
   const nameColumn = useNameColumn({
@@ -69,7 +60,7 @@ export default function UserManagement() {
 
   const { fetchUserData, messageApi } = useUserContext();
   const { usersData, isLoading, fetchUsersData } = useUsersContext();
-  // The user waiting for delete confirmation.
+  // User awaiting delete confirmation
   const [pendingDelete, setPendingDelete] = useState<ManagedUser | null>(null);
   function deleteUser() {
     const user = pendingDelete;

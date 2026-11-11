@@ -1,4 +1,7 @@
 import type { Id, UserType } from "@/types/user";
+import type { ReactNode, Dispatch, SetStateAction } from "react";
+import type { CommentsQuery } from "@/types/queries";
+import type { LoadOptions } from "@/types/api";
 
 export interface Reactions {
   like_emoji: number;
@@ -20,7 +23,7 @@ export type Post = Reactions & {
   num_comments: number;
 };
 
-// GET /get/comments. A reply has `reply_on` set to its parent comment.
+// GET /get/comments
 export type Comment = Reactions & {
   comment_id: Id;
   post_id: Id;
@@ -33,12 +36,12 @@ export type Comment = Reactions & {
   img_url: string;
 };
 
-// GET /get/like: the signed-in user's reaction, if any.
+// GET /get/like returns the signed-in user's reaction
 export interface Like {
   like_type: LikeType;
 }
 
-// GET /get/chat: one conversation partner.
+// GET /get/chat returns one conversation partner
 export interface ChatThread {
   chat_from: Id;
   chat_to: Id;
@@ -75,7 +78,7 @@ export interface Feedback {
   doctorName: string;
 }
 
-// GET /get/reports: one row per user who reported something.
+// GET /get/reports returns one row per reporting user
 export interface ReportSummary {
   report_from: Id;
   num_reports: number;
@@ -118,4 +121,52 @@ export interface DoctorStatistics {
 export interface Dashboard {
   is_verified: 0 | 1 | null;
   statistics?: DoctorStatistics;
+}
+
+export interface HomeStat {
+  // "2" draws a thicker separator above the tile
+  borderLine: "1" | "2";
+  // "no" keeps the separator on wide screens too
+  noLine: "no" | "sm";
+  title: string;
+  value: number | undefined;
+  prefix?: ReactNode;
+  suffix?: ReactNode;
+}
+
+export interface ReportValues {
+  issue: string;
+  reportType: string;
+}
+
+// Open reply box keyed by kind since post and comment ids overlap
+export type ReplyTarget = `post:${string}` | `comment:${string}` | null;
+
+// Live reaction counts sent over the socket
+export type ReactionUpdate = Reactions & {
+  post_id: Id;
+  comment_id?: Id | null;
+  updateEmoji: true;
+};
+
+export type SetComments = Dispatch<SetStateAction<Comment[] | null>>;
+
+export type SetPosts = Dispatch<SetStateAction<Post[]>>;
+
+export type FetchComments = (
+  query: CommentsQuery,
+  options?: LoadOptions,
+) => Promise<unknown>;
+
+export interface PostFields {
+  postId: Id;
+  userid: Id;
+  imgUrl: string;
+  nickname: string;
+  numAngry: number;
+  numLike: number;
+  numDisLike: number;
+  content: string;
+  issuedTime: string;
+  postImg: string | null;
 }

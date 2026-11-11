@@ -3,12 +3,9 @@ import { createStrictContext } from "@/utils/create-strict-context";
 import { useRemoteData } from "@/hooks/use-remote-data";
 import { apiGet } from "@/services/client";
 import type { ChatMessage } from "@/types/content";
-import type { Id } from "@/types/user";
+import "@/types/user";
 import { toQuery } from "@/utils/query";
-
-export interface MessagesQuery {
-  message_to: Id;
-}
+import type { MessagesQuery } from "@/types/queries";
 
 function getMessages(query: MessagesQuery) {
   return apiGet<ChatMessage[]>(`/get/messages${toQuery({ ...query })}`);

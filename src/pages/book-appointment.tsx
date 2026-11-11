@@ -24,12 +24,12 @@ function readStorage(key: string) {
   try {
     return window.localStorage.getItem(key);
   } catch {
-    // Storage can be blocked (private mode).
+    // Storage may be blocked in private mode
     return null;
   }
 }
 
-// The last day the patient looked at, if it is later this month.
+// Last viewed day if it is later this month
 function storedDate() {
   const saved = readStorage("book_date");
   const day = saved ? dayjs(saved) : null;
@@ -39,7 +39,7 @@ function storedDate() {
     : today;
 }
 
-// The payment's description holds the booked slot as JSON.
+// Payment description holds the booked slot as JSON
 function parseSlot(description: string | null): Slot | null {
   if (!description) return null;
   try {
@@ -54,7 +54,7 @@ function parseSlot(description: string | null): Slot | null {
     )
       return value as Slot;
   } catch {
-    // Not JSON: nothing to show.
+    // Not JSON so nothing to show
   }
   return null;
 }
@@ -83,7 +83,7 @@ export default function BookAppointment({
   const clientSecret = new URLSearchParams(window.location.search).get(
     "payment_intent_client_secret",
   );
-  // A slot picked on the doctors page, to open straight away.
+  // Slot picked on the doctors page to open right away
   const [appointmentId] = useState(function () {
     return readStorage("book_appointment");
   });
@@ -106,7 +106,7 @@ export default function BookAppointment({
     [appointmentId, isLoading],
   );
 
-  // Back from a Stripe redirect: show the booked slot once it succeeded.
+  // Back from a Stripe redirect so show the booked slot once it succeeded
   useEffect(
     function () {
       if (!clientSecret || isLoading) return;
@@ -157,10 +157,10 @@ export default function BookAppointment({
     try {
       window.localStorage.setItem("book_date", value.format("YYYY-MM-DD"));
     } catch {
-      // Storage can be blocked (private mode).
+      // Storage may be blocked in private mode
     }
   }
-  // True when the slot starts at least a minute from now.
+  // True when the slot starts at least a minute from now
   function isUpcoming(slotTime: string) {
     return (
       new Date(`${day} ${slotTime}${timeZone}`).getTime() > now + 1000 * 60

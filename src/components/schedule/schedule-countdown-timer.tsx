@@ -1,15 +1,7 @@
 import { Clock, SquareArrowDown, SquareArrowUp } from "lucide-react";
-import { FlipNumber, type FlipPalette } from "@/components/ui/flip-clock";
-
-export type TimeMode = "AM" | "PM";
-
-// A slot's start as the doctor sets it: 12-hour clock plus AM/PM.
-export interface SlotTimeParts {
-  h: number;
-  m: number;
-  timeMode: TimeMode;
-}
-
+import { FlipNumber } from "@/components/ui/flip-clock";
+import type { TimeMode, SlotTimeParts } from "@/types/appointment";
+import type { FlipPalette } from "@/types/ui";
 const palette: FlipPalette = {
   top: "bg-blue-800",
   bottom: "bg-blue-500",
@@ -21,7 +13,7 @@ function otherMode(mode: TimeMode): TimeMode {
   return mode === "AM" ? "PM" : "AM";
 }
 
-// 11 -> 12 and 12 -> 11 cross noon/midnight, so AM/PM flips there.
+// 11 -> 12 and 12 -> 11 cross noon or midnight so AM/PM flips
 function stepHour(parts: SlotTimeParts, delta: 1 | -1): SlotTimeParts {
   const h = ((parts.h - 1 + delta + 12) % 12) + 1;
   const crosses = (delta === 1 && h === 12) || (delta === -1 && h === 11);
@@ -40,8 +32,7 @@ const arrowClass =
   "cursor-pointer sm:h-6 sm:w-6 h-5 w-5 rounded-lg text-gray-500";
 const sectionClass = "text-gray-700 font-medium text-xs sm:text-sm";
 
-// Picks a slot's start time. The cards show `shownHour`/`shownMode`, the
-// same time on the viewer's clock.
+// Picks a slot start time while cards show it on the viewer's clock
 export default function TimeSlotPicker({
   value,
   onChange,

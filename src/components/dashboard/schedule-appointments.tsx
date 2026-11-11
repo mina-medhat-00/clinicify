@@ -14,18 +14,18 @@ import { useCancelPrompt } from "@/hooks/use-cancel-prompt";
 import Loader from "@/components/ui/loader";
 import { useSlotsContext } from "@/contexts/slots-context";
 import cancelAppointment from "@/services/cancel-appointment";
-import type { ServiceContext } from "@/services/client";
 import type { Dashboard } from "@/types/content";
 import type { Id } from "@/types/user";
-import type { DoctorDashType } from "@/constants/dash-types";
+import type { DoctorDashType } from "@/types/dashboard";
+import type { ServiceContext } from "@/types/api";
 
-// The last day the doctor looked at, if it is later this month.
+// Last viewed day if it is later this month
 function storedDate() {
   let saved: string | null = null;
   try {
     saved = window.localStorage.getItem("schedule_date");
   } catch {
-    // Storage can be blocked (private mode).
+    // Storage may be blocked in private mode
   }
   const day = saved ? dayjs(saved) : null;
   const today = dayjs();
@@ -56,7 +56,7 @@ export default function ScheduleAppointments({
   const { slotsData, isLoading, fetchSlotsData } = useSlotsContext();
   const [messageApi, contextHolder] = message.useMessage();
   const cancel = useCancelPrompt();
-  // Position (from 1) of the slot being edited; null adds new slots.
+  // Position from 1 of the edited slot or null to add new slots
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [selectedDate, setSelectedDate] = useState<Dayjs>(storedDate);
   const isVerified = doctorData?.is_verified;
@@ -71,7 +71,7 @@ export default function ScheduleAppointments({
 
   useEffect(
     function () {
-      // Only verified doctors have a schedule; wait until that is known.
+      // Only verified doctors have a schedule
       if (!userid || isDoctorLoading || !isVerified) return;
       const doctorId = userid;
       function getSlots(data?: { date?: string }) {
@@ -93,7 +93,7 @@ export default function ScheduleAppointments({
     try {
       window.localStorage.setItem("schedule_date", value.format("YYYY-MM-DD"));
     } catch {
-      // Storage can be blocked (private mode).
+      // Storage may be blocked in private mode
     }
   }
 

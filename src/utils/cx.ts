@@ -1,4 +1,4 @@
-export type ClassValue = string | false | null | undefined | 0 | ClassValue[];
+import type { ClassValue } from "@/types/ui";
 
 function collect(parts: ClassValue[], into: string[]) {
   for (const part of parts) {

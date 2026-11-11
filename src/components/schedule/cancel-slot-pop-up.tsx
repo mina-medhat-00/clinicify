@@ -1,6 +1,5 @@
-import type { SlotRef } from "@/components/schedule/appointment-card";
-import type { CancelPrompt } from "@/hooks/use-cancel-prompt";
 import PopUp from "@/components/ui/pop-up";
+import type { CancelPrompt, SlotRef } from "@/types/appointment";
 
 export default function CancelSlotPopUp({
   prompt,

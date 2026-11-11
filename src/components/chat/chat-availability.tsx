@@ -3,15 +3,9 @@ import { Link } from "react-router-dom";
 import Loader from "@/components/ui/loader";
 import { useAppointmentContext } from "@/contexts/appointment-context";
 import { useChatContext } from "@/contexts/chat-context";
-import type { Appointment } from "@/types/appointment";
+import type { Appointment, Remaining } from "@/types/appointment";
 import type { Id, UserType } from "@/types/user";
-
-type Remaining =
-  | { remainingTime: string; targetDate: Date; mode: "later" | "now" }
-  | { remainingTime: null; targetDate: null; mode: null };
-
-// The next appointment that isn't over yet (canceled ones don't count):
-// "later" before it starts, "now" while it runs.
+// Next unfinished appointment as later before it starts or now while it runs
 function nearestRemaining(
   appointments: Appointment[],
   timeZone: string,
@@ -65,7 +59,7 @@ export default function ChatAvailability({
     },
     [fetchAppointmentData, withUser],
   );
-  // Reload the chat when the appointment starts, so the input opens.
+  // Reload the chat when the appointment starts to open the input
   useEffect(
     function () {
       let timeId: ReturnType<typeof setTimeout> | undefined;

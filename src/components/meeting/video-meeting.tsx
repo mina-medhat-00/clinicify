@@ -1,13 +1,6 @@
 import { Button, Input } from "@/components/ui/controls";
 import { Loader2, Settings, Video } from "lucide-react";
-import {
-  OpenVidu,
-  type Device,
-  type Publisher,
-  type Session,
-  type StreamManager,
-  type Subscriber,
-} from "openvidu-browser";
+import { OpenVidu, type Session } from "openvidu-browser";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import UserVideoComponent from "@/components/meeting/user-video";
@@ -16,28 +9,9 @@ import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
 import { api, errorData, errorStatus } from "@/services/client";
 import { toQuery } from "@/utils/query";
+import type { MeetingState } from "@/types/meeting";
 
-// Why the call is not showing: it ended, the other side closed it, it needs
-// a booked appointment, or the session expired.
-type SessionException = false | "End" | "Closed" | "noSchedule" | "Expired";
-
-interface MeetingState {
-  myNickName: string;
-  username: string;
-  appointmentId: string;
-  // The OpenVidu session id.
-  mySession: string;
-  isLoading: boolean;
-  isError: boolean;
-  session?: Session;
-  sessionException: SessionException;
-  mainStreamManager?: StreamManager;
-  publisher?: Publisher;
-  subscribers: Subscriber[];
-  currentVideoDevice?: Device;
-}
-
-// Everything about a live call, cleared when it stops.
+// Everything about a live call cleared when it stops
 const noCall = {
   session: undefined,
   mainStreamManager: undefined,
@@ -102,8 +76,7 @@ export default function VideoMeeting({
     [leaveSession],
   );
 
-  // A 401 with noSchedule means there is no running appointment; any other
-  // 401 means the sign-in expired.
+  // A 401 with noSchedule means no running appointment and any other 401 means the session expired
   function handleCallError(err: unknown) {
     if (errorStatus(err) === 401) {
       if (errorData(err)?.noSchedule) {
@@ -135,7 +108,7 @@ export default function VideoMeeting({
     return ok;
   }
 
-  // The token that lets this user into the OpenVidu session (plain text).
+  // Token that lets this user join the OpenVidu session
   async function createToken() {
     const response = await api.post<string>(
       `/join/meeting/${toQuery({ session: sessionDetails.mySession })}`,
@@ -236,7 +209,7 @@ export default function VideoMeeting({
       publishVideo: true,
       mirror: true,
     });
-    // Replace our own camera, whichever video is enlarged.
+    // Replace our own camera whichever video is enlarged
     if (publisher) await mySession.unpublish(publisher);
     await mySession.publish(newPublisher);
     update({
@@ -246,7 +219,7 @@ export default function VideoMeeting({
     });
   }
 
-  // Asks the API for a fresh session for this appointment.
+  // Ask the API for a fresh session for this appointment
   function createSession() {
     update({ isLoading: true });
     api

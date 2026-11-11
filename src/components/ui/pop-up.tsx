@@ -12,7 +12,7 @@ export default function PopUp({
 }: {
   children?: ReactNode;
   show?: unknown;
-  // A CSS length, e.g. "80px".
+  // CSS length like "80px"
   mt?: string;
   handleClose?: () => void;
   customWidth?: string;

@@ -70,7 +70,7 @@ export default function BookCard({
     [selectedDate.date, doctorId, fetchSlotsData, socket],
   );
 
-  // Only slots starting more than a minute from now can be booked.
+  // Only slots starting over a minute from now can be booked
   function isUpcoming(time: string) {
     return new Date(`${selectedDate.date} ${time}`).getTime() > now + 1000 * 60;
   }
@@ -139,7 +139,7 @@ export default function BookCard({
               <Button
                 onClick={function () {
                   if (!canBook || !bookedAppointment) return;
-                  // The profile page opens the booking for this slot.
+                  // Profile page opens the booking for this slot
                   window.localStorage.setItem(
                     "book_appointment",
                     String(bookedAppointment.appointmentId),

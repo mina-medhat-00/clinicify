@@ -7,7 +7,7 @@ const DAY = 1000 * 60 * 60 * 24;
 
 export default function ReportDetails() {
   const { reports: reportDetailsData, isLoading } = useReportContext();
-  // Ages are measured from when the list was opened.
+  // Ages are measured from when the list opened
   const [now] = useState(Date.now);
   return (
     <div>

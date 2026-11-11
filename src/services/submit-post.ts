@@ -1,12 +1,7 @@
-import {
-  apiPost,
-  handleFailure,
-  notify,
-  type ServiceContext,
-  type Socket,
-} from "@/services/client";
+import { apiPost, handleFailure, notify } from "@/services/client";
 import { liveTimestamp } from "@/services/submit-comment";
 import type { Id, User } from "@/types/user";
+import type { ServiceContext, Socket } from "@/types/api";
 
 export default async function submitPost({
   user,

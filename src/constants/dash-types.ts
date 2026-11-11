@@ -1,3 +1,5 @@
+import "@/types/dashboard";
+
 export const doctorDashTypes = [
   "profile",
   "schedule",
@@ -5,8 +7,6 @@ export const doctorDashTypes = [
   "chat",
   "statistics",
 ] as const;
-export type DoctorDashType = (typeof doctorDashTypes)[number];
-
 export const adminDashTypes = [
   "profile",
   "doctor",
@@ -14,4 +14,3 @@ export const adminDashTypes = [
   "chat",
   "reports",
 ] as const;
-export type AdminDashType = (typeof adminDashTypes)[number];

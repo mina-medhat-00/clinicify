@@ -1,11 +1,13 @@
+import type { Dispatch, SetStateAction } from "react";
+
 export type Id = number;
 
 export type UserType = "admin" | "doctor" | "user";
 
-// 1 = verified, 0 = rejected, null = waiting for an admin.
+// 1 is verified and 0 is rejected while null awaits an admin
 export type Verification = 0 | 1 | null;
 
-// GET /user: the signed-in account.
+// GET /user returns the signed-in account
 export interface User {
   user_id: Id;
   user_name: string;
@@ -16,7 +18,7 @@ export interface User {
   img_url: string;
 }
 
-// Doctor columns shared by the doctor list, profiles and the admin list.
+// Doctor columns shared across doctor lists and profiles
 export interface DoctorFields {
   doctor_id: Id;
   specialty: string;
@@ -38,7 +40,7 @@ export type Doctor = DoctorFields & {
   img_urls: string;
 };
 
-// GET /users (admin): every account, with doctor columns filled for doctors.
+// GET /users for admins with doctor columns filled for doctors
 export type ManagedUser = Partial<DoctorFields> & {
   user_id: Id;
   user_name?: string;
@@ -58,4 +60,20 @@ export type ManagedUser = Partial<DoctorFields> & {
 export interface AuthTokenPayload {
   exp?: number;
   iat?: number;
+}
+
+export type DoctorsHandle = SearchFilterHandle;
+
+export interface SearchFilterValues {
+  specialty: string;
+  doctorName: string;
+  location: string;
+}
+
+// Lets the navbar specialty menu read and set the filter
+export interface SearchFilterHandle {
+  doctorName: string;
+  location: string;
+  specialtyValue: string;
+  setSearchFilter: Dispatch<SetStateAction<SearchFilterValues>>;
 }

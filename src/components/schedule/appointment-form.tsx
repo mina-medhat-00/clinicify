@@ -10,15 +10,19 @@ import {
   type SetStateAction,
 } from "react";
 import type { Socket } from "socket.io-client";
-import TimeSlotPicker, {
-  type SlotTimeParts,
-  type TimeMode,
-} from "@/components/schedule/schedule-countdown-timer";
-import type { LoadOptions, ServiceContext } from "@/services/client";
+import TimeSlotPicker from "@/components/schedule/schedule-countdown-timer";
 import scheduleAppointments from "@/services/schedule-appointments";
-import type { SlotsQuery } from "@/contexts/slots-context";
-import type { AppointmentKind, Slot } from "@/types/appointment";
+import type {
+  AppointmentKind,
+  Slot,
+  SlotDraft,
+  BlockValues,
+  TimeMode,
+  SlotTimeParts,
+} from "@/types/appointment";
 import type { Id } from "@/types/user";
+import type { SlotsQuery } from "@/types/queries";
+import type { LoadOptions, ServiceContext } from "@/types/api";
 
 const DEFAULT_FEES = 300;
 const MINUTE = 60 * 1000;
@@ -41,18 +45,6 @@ const typeOptions: { value: AppointmentKind; label: string }[] = [
   { value: "videoCall", label: "Video Call" },
 ];
 
-// A slot as the API takes it ("hh:mm AM").
-export interface SlotDraft {
-  slotTime: string;
-  appointmentDuration: number;
-  appointmentFees: number | string;
-  appointmentType?: AppointmentKind;
-  appointmentId?: Id;
-}
-
-// The same slot while it is edited, with its time split up.
-type BlockValues = Omit<SlotDraft, "slotTime"> & { slotTime: SlotTimeParts };
-
 function twoDigits(value: number) {
   return String(value).padStart(2, "0");
 }
@@ -61,7 +53,7 @@ function joinTime({ h, m, timeMode }: SlotTimeParts) {
   return `${twoDigits(h)}:${twoDigits(m)} ${timeMode}`;
 }
 
-// "03:30 PM" -> { h: 3, m: 30, timeMode: "PM" }
+// Splits "03:30 PM" into hour and minute and AM/PM
 function splitTime(slotTime: string): SlotTimeParts {
   const [clock = "", mode] = slotTime.split(" ");
   const [h = "1", m = "0"] = clock.split(":");
@@ -76,7 +68,7 @@ function startOf(slotTime: string) {
   return new Date(`1970 ${slotTime}`).getTime();
 }
 
-// No two slots overlap.
+// No two slots overlap
 function chkTimeSlot(
   slots: Pick<SlotDraft, "slotTime" | "appointmentDuration">[],
 ) {
@@ -91,7 +83,7 @@ function chkTimeSlot(
   });
 }
 
-// Every slot starts in the future and on the chosen day.
+// Every slot starts in the future on the chosen day
 function chkUpToDate(slots: SlotDraft[], date: Dayjs | null, timeZone: string) {
   if (!date) return false;
   return slots.every(function ({ slotTime }) {
@@ -112,7 +104,7 @@ function chkFillingData(slots: SlotDraft[]) {
   });
 }
 
-// The slot's start on the viewer's own clock.
+// Slot start on the viewer's clock
 function localClock(
   date: string | undefined,
   { h, m, timeMode }: SlotTimeParts,
@@ -156,7 +148,7 @@ function AppointmentDetails({
           };
     },
   );
-  // Report this block's values to the form (also after its position changes).
+  // Report this block's values to the form and again when its position changes
   useEffect(
     function () {
       setAppointDetails(function (all) {
@@ -319,17 +311,16 @@ export default function AppointmentForm({
     options?: LoadOptions,
   ) => Promise<unknown>;
   userid: Id;
-  // The day's current slots.
+  // Day's current slots
   tAppointments: Slot[];
-  // The slot being edited; without it the form adds new slots.
+  // Slot being edited or add new slots when missing
   editAppointment?: Slot;
   socket: Socket;
   timeZone: string;
 }) {
   const isEdit = editAppointment !== undefined;
   const [appointmentDetails, setAppointmentDetails] = useState<SlotDraft[]>([]);
-  // One stable id per appointment block, so removing a block keeps the
-  // others' inputs attached to the right block.
+  // Stable id per block so removing one keeps other inputs attached
   const nextId = useRef(1);
   const [appointmentElements, setAppointmentElements] = useState<number[]>([0]);
   const isFilled = chkFillingData(appointmentDetails);
@@ -430,7 +421,7 @@ export default function AppointmentForm({
                 messageApi,
                 fetchUserData,
               }).then(function () {
-                // Reload either way: on a conflict the list shows which slots are taken.
+                // Reload either way so conflicts show which slots are taken
                 void fetchSlotsData(
                   { date: scheduleDate, doctorId: userid },
                   { silent: true },

@@ -1,19 +1,7 @@
 import { useState } from "react";
 import { cx } from "@/utils/cx";
-
-export interface FlipPalette {
-  // Background of the upper and lower halves.
-  top: string;
-  bottom: string;
-  // Width of one digit card.
-  width: string;
-  // A shorter flip, for values the user changes by hand.
-  fast?: boolean;
-}
-
-// One digit card that flips down to its new value. While it flips, the
-// upper half already shows the new value and the lower half the old one;
-// the CSS on `.flip` animates the overlay between them.
+import type { FlipPalette } from "@/types/ui";
+// Digit card that flips down to its new value using the flip CSS animation
 function FlipDigit({
   value,
   palette,
@@ -80,7 +68,7 @@ function FlipDigit({
   );
 }
 
-// A two-digit value (0-99) with a caption, e.g. "05 Minutes".
+// Two-digit value from 0 to 99 with a caption like "05 Minutes"
 export function FlipNumber({
   value,
   label,

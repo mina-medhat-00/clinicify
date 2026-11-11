@@ -2,18 +2,14 @@ import { forwardRef } from "react";
 import { Carousel } from "@/components/ui/carousel";
 import { Empty } from "@/components/ui/display";
 import DoctorCard from "@/components/doctor/doctor-card";
-import SearchFilter, {
-  type SearchFilterHandle,
-} from "@/components/doctor/search-filter";
+import SearchFilter from "@/components/doctor/search-filter";
 import Loader from "@/components/ui/loader";
 import ServerError from "@/components/ui/server-error";
 import TableGrid from "@/components/ui/table-grid";
 import { useDoctorsContext } from "@/contexts/doctors-context";
 import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
-
-export type DoctorsHandle = SearchFilterHandle;
-
+import type { DoctorsHandle } from "@/types/user";
 export default forwardRef<DoctorsHandle, { home?: boolean }>(function Doctors(
   { home },
   ref,
@@ -25,7 +21,6 @@ export default forwardRef<DoctorsHandle, { home?: boolean }>(function Doctors(
   const doctors = doctorsData ?? [];
   return (
     <>
-      {/* The home section keeps its own fixed query (top 5), so no filter there. */}
       {!home && <SearchFilter ref={ref} fetchDoctorsData={fetchDoctorsData} />}
       {home && isMobile ? (
         <div className="px-2 my-2">
@@ -76,7 +71,7 @@ export default forwardRef<DoctorsHandle, { home?: boolean }>(function Doctors(
                       doctor={doctor}
                       user={user}
                       socket={socket}
-                      // An odd last card takes the full row.
+                      // An odd last card takes the full row
                       isLast={
                         doctors.length % 2 === 1 && doctors.length === i + 1
                       }

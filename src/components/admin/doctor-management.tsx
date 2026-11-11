@@ -1,23 +1,19 @@
 import { Button } from "@/components/ui/controls";
-import { Table, type TableColumn } from "@/components/ui/table";
+import { Table } from "@/components/ui/table";
 import { Tag } from "@/components/ui/display";
-import { useState, type Key, type ReactNode } from "react";
+import { useState, type Key } from "react";
 import AppointmentDetails from "@/components/admin/appointment-details";
-import { useNameColumn, type NamedRow } from "@/components/admin/user-columns";
+import { useNameColumn } from "@/components/admin/user-columns";
 import ClinicDetails from "@/components/profile/clinic-details";
 import PopUp from "@/components/ui/pop-up";
 import SlotsContextProvider from "@/contexts/slots-context";
 import { useDoctorsContext } from "@/contexts/doctors-context";
 import { useUserContext } from "@/contexts/user-context";
-import changeState, { type AccountAction } from "@/services/change-state";
-import type { Doctor, Id, Verification } from "@/types/user";
-
-interface DoctorRow extends NamedRow {
-  key: Id;
-  specialty: ReactNode;
-  verified: Verification;
-  action: ReactNode;
-}
+import changeState from "@/services/change-state";
+import type { Doctor, Id } from "@/types/user";
+import type { AccountAction } from "@/types/services";
+import type { DoctorRow } from "@/types/admin";
+import type { TableColumn } from "@/types/ui";
 
 export default function DoctorManagement() {
   const nameColumn = useNameColumn({
@@ -52,9 +48,9 @@ export default function DoctorManagement() {
   ];
   const { isLoading, doctorsData, fetchDoctorsData } = useDoctorsContext();
   const { fetchUserData, messageApi } = useUserContext();
-  // The doctor whose slots are expanded in the table.
+  // Doctor whose slots are expanded
   const [openKey, setOpenKey] = useState<Key | null>(null);
-  // The doctor whose clinic is shown (kept while the popup closes).
+  // Doctor whose clinic is shown and stays set while the popup closes
   const [doctorRecord, setDoctorRecord] = useState<Doctor | null>(null);
   const [showPopUp, setShowPopUp] = useState(false);
   function changeDoctor(action: AccountAction, doctorId: Id) {

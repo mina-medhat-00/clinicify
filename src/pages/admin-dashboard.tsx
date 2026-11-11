@@ -13,8 +13,9 @@ import ReportContextProvider from "@/contexts/report-context";
 import { useUserContext } from "@/contexts/user-context";
 import Chat from "@/pages/chat";
 import UserProfile from "@/pages/user-profile";
-import { adminDashTypes, type AdminDashType } from "@/constants/dash-types";
+import { adminDashTypes } from "@/constants/dash-types";
 import { readStoredChoice, storeChoice } from "@/utils/storage";
+import type { AdminDashType } from "@/types/dashboard";
 
 export default function AdminDashboard() {
   const isMobile = useMediaQuery({
@@ -22,13 +23,13 @@ export default function AdminDashboard() {
   });
   const { userData: user } = useUserContext();
   const [activeMenu, setActiveMenu] = useState(false);
-  // Open the sidebar on desktop and close it on mobile whenever the size changes.
+  // Open the sidebar on desktop and close it on mobile when the size changes
   const [prevIsMobile, setPrevIsMobile] = useState<boolean | null>(null);
   if (prevIsMobile !== isMobile) {
     setPrevIsMobile(isMobile);
     setActiveMenu(!isMobile);
   }
-  // Open the profile section on first visit instead of a blank page.
+  // Start on the profile section instead of a blank page
   const [dashType, setDashType] = useState<AdminDashType>(function () {
     return readStoredChoice("adminDashType", adminDashTypes, "profile");
   });

@@ -9,7 +9,7 @@ export default function CalendarView({
   selectedDate,
   handleDate,
 }: {
-  // Extra width (px) before switching to the compact date input.
+  // Extra width in px before switching to the compact date input
   offsetWidth?: number;
   selectedDate: Dayjs | null;
   handleDate: (date: Dayjs | null) => void;

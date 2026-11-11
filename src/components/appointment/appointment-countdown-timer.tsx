@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { FlipNumber, type FlipPalette } from "@/components/ui/flip-clock";
+import { FlipNumber } from "@/components/ui/flip-clock";
+import type { FlipPalette } from "@/types/ui";
 
 const palette: FlipPalette = {
   top: "bg-gray-800",
@@ -7,7 +8,7 @@ const palette: FlipPalette = {
   width: "w-6 sm:w-10",
 };
 
-// Hours, minutes and seconds left until `targetDate`, ticking every second.
+// Time left until targetDate updated every second
 export default function CountdownTimer({ targetDate }: { targetDate: Date }) {
   const target = targetDate.getTime();
   const [now, setNow] = useState(Date.now);

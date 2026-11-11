@@ -1,9 +1,5 @@
-import {
-  api,
-  handleFailure,
-  notify,
-  type ServiceContext,
-} from "@/services/client";
+import { api, handleFailure, notify } from "@/services/client";
+import type { ServiceContext } from "@/types/api";
 
 export default async function submitReport({
   issue,

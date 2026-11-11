@@ -4,7 +4,6 @@ import { message } from "@/components/ui/message";
 import { Upload } from "@/components/ui/upload";
 import { ImagePlus, MessageCircleQuestion, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import type { ReactionUpdate } from "@/components/post/post";
 import PostWrapper from "@/components/post/post-wrapper";
 import Loader from "@/components/ui/loader";
 import ServerError from "@/components/ui/server-error";
@@ -16,7 +15,7 @@ import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
 import submitPost from "@/services/submit-post";
 import type { Id } from "@/types/user";
-import type { Post } from "@/types/content";
+import type { Post, ReactionUpdate } from "@/types/content";
 
 function getBase64(img: File, setPostImg: (url: string) => void) {
   const reader = new FileReader();
@@ -60,7 +59,7 @@ export default function Posts({ home }: { home?: boolean }) {
   const [content, setContent] = useState("");
   const [postImg, setPostImg] = useState<string | null>(null);
   const [showWarn, setShowWarn] = useState(false);
-  // The post open in a popup.
+  // Post open in a popup
   const [showPost, setShowPost] = useState<Id | null>(null);
   useEffect(
     function () {
@@ -105,7 +104,7 @@ export default function Posts({ home }: { home?: boolean }) {
     post_id: postId,
   }) {
     return {
-      // Posts without a picture take a full row.
+      // Posts without a picture take a full row
       is_img: !postImg,
       key: postId,
       element: (

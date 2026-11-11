@@ -4,22 +4,10 @@ import {
   errorStatus,
   handleFailure,
   notify,
-  type ServiceContext,
-  type Socket,
 } from "@/services/client";
-import type { Id } from "@/types/user";
-
-type ScheduleParams = ServiceContext & {
-  date: string;
-  // The doctor whose schedule changes (also the room to notify).
-  doctorId: Id;
-  totalSlots?: unknown;
-  addedAppointments?: unknown;
-  deletedAppointments?: Id[];
-  isEdit?: boolean;
-  editSlot?: (Id | undefined)[];
-  socket?: Socket;
-};
+import "@/types/user";
+import "@/types/api";
+import type { ScheduleParams } from "@/types/services";
 
 export default async function scheduleAppointments({
   date,

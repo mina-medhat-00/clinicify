@@ -1,36 +1,16 @@
-import {
-  forwardRef,
-  useEffect,
-  useImperativeHandle,
-  useState,
-  type Dispatch,
-  type SetStateAction,
-} from "react";
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { Search } from "lucide-react";
 import { Button, Input, Select } from "@/components/ui/controls";
-import type { DoctorsQuery } from "@/contexts/doctors-context";
 import { doctorSpecialtyOptions } from "@/constants/sign-data";
-
-export interface SearchFilterValues {
-  specialty: string;
-  doctorName: string;
-  location: string;
-}
-
-// Lets the navbar's specialty menu read and set the filter.
-export interface SearchFilterHandle {
-  doctorName: string;
-  location: string;
-  specialtyValue: string;
-  setSearchFilter: Dispatch<SetStateAction<SearchFilterValues>>;
-}
+import type { DoctorsQuery } from "@/types/queries";
+import type { SearchFilterValues, SearchFilterHandle } from "@/types/user";
 
 function stored(key: keyof SearchFilterValues) {
   let value: string | null = null;
   try {
     value = window.localStorage.getItem(key);
   } catch {
-    // Storage can be blocked (private mode); start with an empty filter.
+    // Storage may be blocked so start with an empty filter
   }
   return value === null || value === "null" ? "" : value;
 }
@@ -49,7 +29,7 @@ function store(values: SearchFilterValues) {
     window.localStorage.setItem("doctorName", values.doctorName);
     window.localStorage.setItem("location", values.location);
   } catch {
-    // Storage can be blocked (private mode); the filter just isn't kept.
+    // Storage may be blocked so the filter is not kept
   }
 }
 
@@ -75,7 +55,7 @@ export default forwardRef<
   useEffect(
     function () {
       store(searchFilter);
-      // Wait for typing to pause before searching.
+      // Wait for typing to pause before searching
       const timeId = setTimeout(function () {
         void fetchDoctorsData({
           specialty: searchFilter.specialty,

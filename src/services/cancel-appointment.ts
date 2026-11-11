@@ -1,21 +1,7 @@
-import {
-  api,
-  errorStatus,
-  handleFailure,
-  notify,
-  type ServiceContext,
-  type Socket,
-} from "@/services/client";
-import type { Id } from "@/types/user";
-
-type CancelParams = ServiceContext & {
-  date: string;
-  slotTime: string;
-  appointmentId: Id;
-  doctorId: Id;
-  cancelFrom: "patient" | "doctor" | "admin";
-  socket?: Socket;
-};
+import { api, errorStatus, handleFailure, notify } from "@/services/client";
+import "@/types/user";
+import type { CancelParams } from "@/types/services";
+import "@/types/api";
 
 export default async function cancelAppointment({
   date,

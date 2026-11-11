@@ -1,5 +1,5 @@
 import { Col, Rate, Row, Statistic } from "@/components/ui/display";
-import { Fragment, type ReactNode } from "react";
+import { Fragment } from "react";
 import CountUpPkg from "react-countup";
 import { Link } from "react-router-dom";
 import {
@@ -23,19 +23,9 @@ import Doctors from "@/pages/doctors";
 import Feedbacks from "@/pages/feedbacks";
 import Posts from "@/pages/posts";
 import { interopDefault } from "@/utils/interop";
+import type { HomeStat } from "@/types/content";
 
 const Countup = interopDefault(CountUpPkg);
-
-interface HomeStat {
-  // "2" draws a thicker separator above the tile.
-  borderLine: "1" | "2";
-  // "no": keep the separator on wide screens too.
-  noLine: "no" | "sm";
-  title: string;
-  value: number | undefined;
-  prefix?: ReactNode;
-  suffix?: ReactNode;
-}
 
 export default function HomePage() {
   const { userData: user } = useUserContext();

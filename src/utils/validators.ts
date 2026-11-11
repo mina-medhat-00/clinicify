@@ -1,9 +1,8 @@
 import type { Dayjs } from "dayjs";
-import type { Rule } from "@/components/ui/form";
+import type { Rule } from "@/types/form";
 
-const MIN_AGE = 13;
+const MIN_AGE = 18;
 
-// Born at least 13 years ago (by calendar year, as the API checks).
 export const minimumAgeRule: Rule = {
   message: `your age must be more than ${String(MIN_AGE)}`,
   validator(_, value) {

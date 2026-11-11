@@ -1,10 +1,6 @@
-import {
-  apiPost,
-  handleFailure,
-  notify,
-  type ServiceContext,
-} from "@/services/client";
+import { apiPost, handleFailure, notify } from "@/services/client";
 import type { Id } from "@/types/user";
+import type { ServiceContext } from "@/types/api";
 
 export default async function submitFeedback({
   rate,
@@ -23,7 +19,7 @@ export default async function submitFeedback({
       {
         data: {
           rate: rate ?? 0,
-          // An empty review is sent as no review.
+          // Empty review is sent as null
           feedback: feedback?.trim() ? feedback : null,
           feedback_to: doctorId,
         },

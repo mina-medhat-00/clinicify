@@ -7,14 +7,7 @@ import submitProfile from "@/services/submit-profile";
 import { cityOptions } from "@/constants/sign-data";
 import { phoneRule } from "@/utils/validators";
 import { prefixSelector } from "@/components/signup/form-selectors";
-
-export interface ClinicValues {
-  address: { city: string; street: string };
-  phone: string;
-  telephone?: string;
-  prefix: string;
-}
-
+import type { ClinicValues } from "@/types/clinic";
 const { Item } = Form;
 export default function ClinicRegister() {
   const { messageApi, fetchUserData, userData } = useUserContext();

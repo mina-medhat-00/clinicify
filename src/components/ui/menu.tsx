@@ -4,28 +4,17 @@ import {
   useImperativeHandle,
   useRef,
   useState,
-  type CSSProperties,
   type KeyboardEvent,
   type MouseEvent,
-  type ReactNode,
 } from "react";
 import { cx } from "@/utils/cx";
-
-export interface MenuClickInfo {
-  key: string;
-  keyPath: string[];
-  domEvent: MouseEvent | KeyboardEvent;
-}
-
-export interface MenuItemType {
-  key: string;
-  label?: ReactNode;
-  icon?: ReactNode;
-  children?: MenuItemType[];
-  onClick?: (info: MenuClickInfo) => void;
-}
-
-type MenuTheme = "light" | "dark";
+import type {
+  MenuClickInfo,
+  MenuItemType,
+  MenuTheme,
+  MenuRef,
+  MenuProps,
+} from "@/types/ui";
 
 function MenuItem({
   item,
@@ -82,8 +71,7 @@ function MenuItem({
           {content}
         </button>
       ) : (
-        // Leaf labels are often links or buttons themselves, which can't sit
-        // inside a <button>; render those as a focusable menu item instead.
+        // Leaf labels may be links or buttons so render a focusable div instead of a button
         <div
           role="menuitem"
           tabIndex={0}
@@ -128,19 +116,6 @@ function MenuItem({
       ) : null}
     </li>
   );
-}
-
-export interface MenuRef {
-  menu: { readonly list: HTMLUListElement | null };
-}
-
-interface MenuProps {
-  items?: (MenuItemType | null | false | undefined)[];
-  theme?: MenuTheme;
-  mode?: "vertical" | "inline" | "horizontal";
-  className?: string;
-  onClick?: (info: MenuClickInfo) => void;
-  style?: CSSProperties;
 }
 
 const Menu = forwardRef<MenuRef, MenuProps>(function Menu(

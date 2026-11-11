@@ -10,10 +10,10 @@ import Message from "@/components/chat/chat-message";
 import AppointmentContextProvider from "@/contexts/appointment-context";
 import { useChatContext } from "@/contexts/chat-context";
 import { useMessagesContext } from "@/contexts/messages-context";
-import type { ServiceContext } from "@/services/client";
 import submitMessage, { chatRoomId } from "@/services/submit-message";
 import type { ChatMessage } from "@/types/content";
 import type { Id, UserType } from "@/types/user";
+import type { ServiceContext } from "@/types/api";
 
 function getDate(message: ChatMessage | undefined, timeZone: string) {
   return message
@@ -39,7 +39,7 @@ export default function Messages({
   withUser: Id;
   user_id: Id;
   socket: Socket;
-  // The signed-in user may write in this chat now.
+  // Signed-in user can write in this chat now
   isOpen: boolean;
   withUserType?: UserType;
   withNickName?: string;
@@ -65,7 +65,7 @@ export default function Messages({
   useEffect(
     function () {
       void fetchMessagesData({ message_to: withUser });
-      // Skip a message we already have (the sender also reloads its list).
+      // Skip messages we already have
       function addMessage(incoming: ChatMessage) {
         setMessages(function (current) {
           const known = current.slice(-2).some(function ({ message_id }) {
@@ -103,7 +103,6 @@ export default function Messages({
                 const day = getDate(item, timeZone);
                 return (
                   <Fragment key={item.message_id ?? i}>
-                    {/* A date line before each new day. */}
                     {getDate(arr[i - 1], timeZone) !== day && (
                       <div className="block w-fit mr-auto ml-auto text-white grow border border-white bg-blue-500/50 rounded-lg text-center py-1 my-2 px-4 font-medium overflow-auto">
                         {day}
@@ -169,7 +168,7 @@ export default function Messages({
                       content: message,
                       messageTo: withUser,
                       userId: user_id,
-                      // First message of the conversation: tell the other user.
+                      // Notify the other user on the first message
                       isFirst: !messages.length,
                       socket,
                       messageApi,

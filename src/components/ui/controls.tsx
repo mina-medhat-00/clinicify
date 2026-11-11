@@ -11,16 +11,25 @@ import {
   useMemo,
   useRef,
   useState,
-  type ButtonHTMLAttributes,
-  type ChangeEvent,
   type HTMLAttributes,
-  type InputHTMLAttributes,
-  type KeyboardEvent,
-  type ReactNode,
-  type TextareaHTMLAttributes,
 } from "react";
 import { cx, hasWidthClass } from "@/utils/cx";
-import { FormContext, type ControlSize } from "@/components/ui/form";
+import { FormContext } from "@/components/ui/form";
+import type {
+  ButtonProps,
+  InputProps,
+  TextAreaProps,
+  InputNumberProps,
+  SelectValue,
+  SelectProps,
+  CheckboxProps,
+  RadioValue,
+  RadioGroupContext,
+  RadioProps,
+  RadioGroupProps,
+  SwitchProps,
+} from "@/types/ui";
+import type { ControlSize } from "@/types/form";
 
 const sizePad: Record<ControlSize, string> = {
   small: "h-7 px-2 text-xs",
@@ -32,18 +41,6 @@ function useControlSize(size?: ControlSize) {
   const form = useContext(FormContext);
   return size ?? form?.size ?? "middle";
 }
-
-export type ButtonProps = Omit<
-  ButtonHTMLAttributes<HTMLButtonElement>,
-  "type"
-> & {
-  type?: "default" | "primary" | "link";
-  htmlType?: "button" | "submit" | "reset";
-  icon?: ReactNode;
-  loading?: boolean;
-  shape?: "circle";
-  size?: ControlSize;
-};
 
 function Button({
   type = "default",
@@ -93,18 +90,6 @@ const inputShell =
   "flex items-center gap-2 rounded-md border border-gray-300 bg-white px-3 text-black/85 transition focus-within:border-blue-500";
 const inputField =
   "min-w-0 flex-1 bg-transparent py-1.5 outline-none placeholder:text-gray-400";
-
-export type InputProps = Omit<
-  InputHTMLAttributes<HTMLInputElement>,
-  "size" | "prefix" | "value"
-> & {
-  prefix?: ReactNode;
-  suffix?: ReactNode;
-  size?: ControlSize;
-  value?: string | number | null;
-  onPressEnter?: (event: KeyboardEvent<HTMLInputElement>) => void;
-};
-
 const BaseInput = forwardRef<HTMLInputElement, InputProps>(function Input(
   {
     prefix,
@@ -173,15 +158,6 @@ function Password(props: Omit<InputProps, "type" | "suffix">) {
 }
 Password.displayName = "Password";
 
-type TextAreaProps = Omit<
-  TextareaHTMLAttributes<HTMLTextAreaElement>,
-  "value"
-> & {
-  value?: string | null;
-  // Show "used / maxLength" under the box.
-  showCount?: boolean;
-};
-
 function TextArea({
   className,
   rows = 3,
@@ -220,11 +196,6 @@ TextArea.displayName = "TextArea";
 
 const Input = Object.assign(BaseInput, { Password, TextArea });
 
-type InputNumberProps = Omit<InputProps, "value" | "onChange" | "type"> & {
-  value?: number | null;
-  onChange?: (value: number | null) => void;
-};
-
 function InputNumber({ value, onChange, ...props }: InputNumberProps) {
   return (
     <BaseInput
@@ -239,25 +210,6 @@ function InputNumber({ value, onChange, ...props }: InputNumberProps) {
   );
 }
 InputNumber.displayName = "InputNumber";
-
-export type SelectValue = string | number;
-export interface SelectOption<V extends SelectValue = SelectValue> {
-  value: V;
-  label?: ReactNode;
-}
-export type SelectProps<V extends SelectValue = SelectValue> = Omit<
-  HTMLAttributes<HTMLDivElement>,
-  "onChange" | "defaultValue"
-> & {
-  options?: SelectOption<V>[];
-  value?: V | null;
-  onChange?: (value: V, option: SelectOption<V>) => void;
-  showSearch?: boolean;
-  optionFilterProp?: "value" | "label";
-  placeholder?: ReactNode;
-  disabled?: boolean;
-  size?: ControlSize;
-};
 
 function Select<V extends SelectValue = SelectValue>({
   options = [],
@@ -388,13 +340,6 @@ function Select<V extends SelectValue = SelectValue>({
 }
 Select.displayName = "Select";
 
-type CheckboxProps = Omit<
-  InputHTMLAttributes<HTMLInputElement>,
-  "type" | "onChange"
-> & {
-  onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
-};
-
 function Checkbox({
   checked,
   defaultChecked,
@@ -430,24 +375,7 @@ function Checkbox({
   );
 }
 Checkbox.displayName = "Checkbox";
-
-type RadioValue = string | number;
-interface RadioGroupContext {
-  value?: RadioValue | null;
-  name: string;
-  onChange: (value: RadioValue) => void;
-}
-
 const RadioContext = createContext<RadioGroupContext | null>(null);
-
-interface RadioProps {
-  value: RadioValue;
-  children?: ReactNode;
-  className?: string;
-  disabled?: boolean;
-  checked?: boolean;
-  onChange?: (value: RadioValue) => void;
-}
 
 function Radio({
   value,
@@ -514,15 +442,6 @@ function RadioButton({
 }
 RadioButton.displayName = "RadioButton";
 
-type RadioGroupProps<V extends RadioValue> = Omit<
-  HTMLAttributes<HTMLDivElement>,
-  "onChange" | "defaultValue"
-> & {
-  value?: V | null;
-  onChange?: (value: V) => void;
-  name?: string;
-};
-
 function RadioGroup<V extends RadioValue>({
   value,
   onChange,
@@ -552,15 +471,6 @@ RadioGroup.displayName = "RadioGroup";
 
 Radio.Group = RadioGroup;
 Radio.Button = RadioButton;
-
-interface SwitchProps {
-  checked?: boolean;
-  onChange?: (checked: boolean) => void;
-  checkedChildren?: ReactNode;
-  unCheckedChildren?: ReactNode;
-  className?: string;
-  disabled?: boolean;
-}
 
 function Switch({
   checked,

@@ -1,14 +1,11 @@
 import { useEffect, useState } from "react";
 import type { Socket } from "socket.io-client";
-import Post, {
-  type PostFields,
-  type ReplyTarget,
-  type SetPosts,
-} from "@/components/post/post";
+import Post from "@/components/post/post";
 import PopUp from "@/components/ui/pop-up";
 import type { Id } from "@/types/user";
+import type { ReplyTarget, SetPosts, PostFields } from "@/types/content";
 
-// A post in the list; while it is the open one it moves into a popup.
+// A post in the list that moves into a popup while open
 export default function PostWrapper({
   setPosts,
   showPost,
@@ -24,7 +21,7 @@ export default function PostWrapper({
   numComments: number;
 }) {
   const { postId } = post;
-  // Stays set while the popup slides away.
+  // Stays set while the popup slides away
   const [showPopUp, setShowPopUp] = useState<Id | null>(null);
   const [len, setLen] = useState(numComments);
   const [prevNumComments, setPrevNumComments] = useState(numComments);

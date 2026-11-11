@@ -1,61 +1,15 @@
 import { ChevronDown, Filter, Loader2 } from "lucide-react";
-import { Fragment, useMemo, useState, type Key, type ReactNode } from "react";
+import { Fragment, useMemo, useState, type ReactNode } from "react";
 import { cx } from "@/utils/cx";
+import type {
+  FilterValue,
+  RowColumn,
+  TableColumn,
+  TableRow,
+  TableProps,
+} from "@/types/ui";
 
 const EXPAND_COLUMN = "EXPAND_COLUMN" as const;
-
-export type FilterValue = string | number | boolean;
-
-export interface FilterDropdownProps {
-  selectedKeys: FilterValue[];
-  setSelectedKeys: (keys: FilterValue[]) => void;
-  confirm: () => void;
-  clearFilters: () => void;
-  close: () => void;
-}
-
-interface ColumnBase<R> {
-  title?: ReactNode;
-  key?: string;
-  filters?: { text: ReactNode; value: FilterValue }[];
-  onFilter?: (value: FilterValue, record: R) => boolean;
-  filterDropdown?: (props: FilterDropdownProps) => ReactNode;
-  filterIcon?: (filtered: boolean) => ReactNode;
-  filterDropdownProps?: { onOpenChange?: (open: boolean) => void };
-}
-
-// A column shows one field of the row (`dataIndex`), or the whole row.
-type FieldColumn<R> = {
-  [K in keyof R & string]: ColumnBase<R> & {
-    dataIndex: K;
-    render?: (value: R[K], record: R, index: number) => ReactNode;
-  };
-}[keyof R & string];
-type RowColumn<R> = ColumnBase<R> & {
-  dataIndex?: undefined;
-  key: string;
-  render: (record: R, _: R, index: number) => ReactNode;
-};
-
-export type TableColumn<R> = FieldColumn<R> | RowColumn<R>;
-export interface TableRow {
-  key?: Key;
-}
-
-interface TableProps<R extends TableRow> {
-  columns?: (TableColumn<R> | typeof EXPAND_COLUMN)[];
-  dataSource?: R[] | null;
-  pagination?: false | { pageSize?: number; position?: string[] };
-  loading?: boolean;
-  rowClassName?: string | ((record: R, index: number) => string);
-  showHeader?: boolean;
-  className?: string;
-  expandable?: {
-    expandedRowKeys?: (Key | null)[];
-    expandedRowRender?: (record: R, index: number) => ReactNode;
-    onExpand?: (expanded: boolean, record: R) => void;
-  };
-}
 
 function columnKey<R>(column: TableColumn<R>) {
   return column.key ?? column.dataIndex ?? "";

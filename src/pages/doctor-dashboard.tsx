@@ -13,8 +13,9 @@ import { useUtilsContext } from "@/contexts/utils-context";
 import Appointments from "@/pages/appointments";
 import Chat from "@/pages/chat";
 import UserProfile from "@/pages/user-profile";
-import { doctorDashTypes, type DoctorDashType } from "@/constants/dash-types";
+import { doctorDashTypes } from "@/constants/dash-types";
 import { readStoredChoice, storeChoice } from "@/utils/storage";
+import type { DoctorDashType } from "@/types/dashboard";
 
 export default function DoctorDashboard({
   setNavActive,
@@ -24,7 +25,7 @@ export default function DoctorDashboard({
   const { timeZone, socket } = useUtilsContext();
   const { userData: user, fetchUserData } = useUserContext();
   const userid = user?.user_id;
-  // The dashboard provider loads its data on mount.
+  // Dashboard provider loads its data on mount
   const { dashboardData, isLoading } = useDashboardContext();
   const isMobile = useMediaQuery({
     query: "(max-width:678px)",

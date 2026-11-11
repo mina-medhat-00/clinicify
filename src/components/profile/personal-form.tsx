@@ -1,26 +1,16 @@
 import { Button, Input, Select, Space } from "@/components/ui/controls";
 import { DatePicker } from "@/components/ui/calendar";
 import { Form } from "@/components/ui/form";
-import type { Dayjs } from "dayjs";
+import "dayjs";
 import { Mail } from "lucide-react";
 import ProfileTable from "@/components/profile/profile-table";
-import type { LoadOptions, ServiceContext } from "@/services/client";
 import submitProfile from "@/services/submit-profile";
 import type { Id } from "@/types/user";
 import { cityOptions } from "@/constants/sign-data";
 import { minimumAgeRule, phoneRule } from "@/utils/validators";
 import { prefixSelector } from "@/components/signup/form-selectors";
-
-export interface PersonalValues {
-  nickname: string;
-  gender: string;
-  birth: Dayjs | null;
-  address: { city: string | null; street: string | null };
-  phone: string | null;
-  prefix: string | null;
-  email: string;
-}
-
+import type { LoadOptions, ServiceContext } from "@/types/api";
+import type { PersonalValues } from "@/types/profile";
 const { Item } = Form;
 export default function PersonalForm({
   messageApi,

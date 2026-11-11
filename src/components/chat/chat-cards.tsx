@@ -58,7 +58,7 @@ export default function Cards({
   userId?: Id;
   isLoading: boolean;
 }) {
-  // The first row, measured to place the highlight behind the selected row.
+  // First row measured to place the highlight behind the selected row
   const [element, setElement] = useState<HTMLDivElement | null>(null);
   const threads = chatData ?? [];
   const selectedIndex = threads.findIndex(function ({ user_id }) {

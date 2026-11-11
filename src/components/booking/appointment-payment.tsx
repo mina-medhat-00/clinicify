@@ -32,7 +32,7 @@ export default function AppointmentPayment({
   useEffect(
     function () {
       {
-        // This endpoint answers { clientSecret } without the usual wrapper.
+        // This endpoint returns clientSecret without the usual data wrapper
         api
           .post<{ clientSecret: string }>("/create/payment", {
             data: { doctorId, ...bookedAppointment },

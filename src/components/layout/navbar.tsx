@@ -1,13 +1,14 @@
 import { Menu, EllipsisVertical, Hospital } from "lucide-react";
 import { Button } from "@/components/ui/controls";
-import { Menu as AntMenu, type MenuRef } from "@/components/ui/menu";
+import { Menu as AntMenu } from "@/components/ui/menu";
 import { Typography } from "@/components/ui/display";
 import { useEffect, useRef, useState, type RefObject } from "react";
 import { useMediaQuery } from "react-responsive";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import items from "@/components/layout/nav-items";
 import { useUserContext } from "@/contexts/user-context";
-import type { DoctorsHandle } from "@/pages/doctors";
+import type { DoctorsHandle } from "@/types/user";
+import type { MenuRef } from "@/types/ui";
 
 const { Title } = Typography;
 export default function Navbar({
@@ -42,7 +43,7 @@ export default function Navbar({
       return !state;
     });
   }
-  // Skip the slide animation when switching between mobile and desktop.
+  // Skip the slide animation when switching between mobile and desktop
   useEffect(
     function () {
       setTimeout(function () {

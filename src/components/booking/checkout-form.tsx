@@ -20,15 +20,15 @@ import type { Socket } from "socket.io-client";
 import { useSlotsContext } from "@/contexts/slots-context";
 import { useUserContext } from "@/contexts/user-context";
 import bookAppointment from "@/services/book-appointment";
-import type { MessageApi } from "@/services/client";
 import type { Id } from "@/types/user";
 import type { PaymentStep } from "@/types/payment-step";
 import type { Slot } from "@/types/appointment";
 import { toQuery } from "@/utils/query";
+import type { MessageApi } from "@/types/api";
 
 const paymentElementOptions: StripePaymentElementOptions = { layout: "tabs" };
 
-// What to tell the user when Stripe sends them back after a redirect.
+// Messages for the user after a Stripe redirect
 const statusMessages: Partial<Record<PaymentIntent.Status, string>> = {
   succeeded: "Payment succeeded!",
   processing: "Your payment is processing.",
@@ -108,7 +108,7 @@ export default function CheckoutForm({
     }
 
     setIsLoading(true);
-    // Make sure the slot is still free before charging the card.
+    // Make sure the slot is still free before charging
     const check = await bookAppointment({ ...booking, check: true });
     if (check !== "booked") {
       setIsLoading(false);

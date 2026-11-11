@@ -1,21 +1,13 @@
 import { Button, Input, Select, Space } from "@/components/ui/controls";
 import { Form } from "@/components/ui/form";
 import ProfileTable from "@/components/profile/profile-table";
-import type { ClinicValues } from "@/components/profile/clinic-register";
-import type { LoadOptions, ServiceContext } from "@/services/client";
 import submitProfile from "@/services/submit-profile";
 import type { Id } from "@/types/user";
 import { cityOptions } from "@/constants/sign-data";
 import { phoneRule } from "@/utils/validators";
 import { prefixSelector } from "@/components/signup/form-selectors";
-
-// Saved values can have empty columns; the form fills them in.
-export interface ClinicInitialValues {
-  address: { city?: string | null; street?: string | null };
-  phone?: string | null;
-  telephone?: string | null;
-  prefix?: string | null;
-}
+import type { LoadOptions, ServiceContext } from "@/types/api";
+import type { ClinicInitialValues, ClinicValues } from "@/types/clinic";
 
 const { Item } = Form;
 export default function ClinicForm({

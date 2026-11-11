@@ -1,7 +1,7 @@
 import { Ban, ClipboardPlus, FileHeart } from "lucide-react";
-import type { MedicalValues } from "@/components/profile/medical-form";
 import type { SetProfileDrawer } from "@/types/profile-drawer";
 import ProfileTable from "@/components/profile/profile-table";
+import type { MedicalValues } from "@/types/profile";
 
 export default function PatientRecords({
   records,

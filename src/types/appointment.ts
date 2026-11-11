@@ -6,7 +6,6 @@ export type AppointmentState =
 
 export type AppointmentKind = "inClinic" | "chat" | "videoCall";
 
-// GET /get/appointments. The doctor's list also carries the patient's records.
 export type Appointment = Partial<PatientRecords> & {
   appointmentId: Id;
   patientId: Id;
@@ -30,7 +29,6 @@ export type Appointment = Partial<PatientRecords> & {
   is_verified: Verification;
 };
 
-// One slot of a doctor's day (POST /get/slots).
 export interface Slot {
   appointmentId: Id;
   appointmentState: AppointmentState;
@@ -46,4 +44,56 @@ export interface SlotsData {
   bookedSlots: Slot[];
   freeSlots: Slot[] | null;
   runningSlots: Slot[];
+}
+
+export interface CancelPrompt {
+  show: boolean;
+  slot: SlotRef | null;
+}
+
+export type StateFilter = AppointmentState | "total";
+
+export interface AppointmentDetails {
+  // Other person in the appointment
+  withNickName: string;
+  withId: Id;
+  appointmentId: Id;
+  appointment_state: AppointmentState;
+  appointment_type: AppointmentKind;
+}
+
+export type Remaining =
+  | { remainingTime: string; targetDate: Date; mode: "later" | "now" }
+  | { remainingTime: null; targetDate: null; mode: null };
+
+// Days from today with date as "YYYY-MM-DD"
+export interface SelectedDay {
+  count: number;
+  date: string;
+}
+
+// Slot a cancel button refers to
+export type SlotRef = Pick<Slot, "slotTime" | "appointmentId">;
+
+// Slot as the API takes it with time as "hh:mm AM"
+export interface SlotDraft {
+  slotTime: string;
+  appointmentDuration: number;
+  appointmentFees: number | string;
+  appointmentType?: AppointmentKind;
+  appointmentId?: Id;
+}
+
+// Slot while edited with its time split up
+export type BlockValues = Omit<SlotDraft, "slotTime"> & {
+  slotTime: SlotTimeParts;
+};
+
+export type TimeMode = "AM" | "PM";
+
+// Slot start on a 12-hour clock with AM/PM
+export interface SlotTimeParts {
+  h: number;
+  m: number;
+  timeMode: TimeMode;
 }

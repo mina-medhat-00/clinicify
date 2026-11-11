@@ -12,9 +12,7 @@ import ClinicRegister from "@/components/profile/clinic-register";
 import MedicalForm from "@/components/profile/medical-form";
 import PatientRecords from "@/components/profile/patient-records";
 import PersonalForm from "@/components/profile/personal-form";
-import ProfileDetails, {
-  type ProfileValues,
-} from "@/components/profile/profile-details";
+import ProfileDetails from "@/components/profile/profile-details";
 import AccountVerify from "@/components/schedule/account-verify";
 import Loader from "@/components/ui/loader";
 import ServerError from "@/components/ui/server-error";
@@ -27,15 +25,16 @@ import BookAppointment from "@/pages/book-appointment";
 import submitFeedback from "@/services/submit-feedback";
 import type { ProfileData } from "@/types/clinic";
 import type { ProfileDrawer } from "@/types/profile-drawer";
+import type { ProfileValues } from "@/types/profile";
 
 const { Title } = Typography;
 
-// Empty strings count as missing too.
+// Empty strings count as missing
 function filled(value: string | null | undefined): value is string {
   return Boolean(value);
 }
 
-// Missing values show as a "none" icon.
+// Missing values show as a "none" icon
 function orBan(value: string | null | undefined) {
   return filled(value) ? value : <Ban />;
 }
@@ -73,12 +72,12 @@ export default function UserProfile() {
     userData: user,
   } = useUserContext();
   const [rateValue, setRateValue] = useState(0);
-  // Counts submitted reviews, so the review list reloads after each one.
+  // Counts submitted reviews so the review list reloads after each
   const [fetchFeedback, setFetchFeedback] = useState<number | null>(null);
   const { isLoading, profileData, fetchProfileData, isError } =
     useProfileContext();
   const userid = user?.user_id;
-  // The URL names the profile; dashboards (no URL param) show the user's own.
+  // URL names the profile and dashboards without it show the user's own
   const profileKey = username ?? userid;
   useEffect(
     function () {

@@ -1,12 +1,7 @@
 import dayjs from "dayjs";
 import { ChevronsLeft, ChevronsRight } from "lucide-react";
 import type { Dispatch, SetStateAction } from "react";
-
-// `count` days from today; `date` is that day as "YYYY-MM-DD".
-export interface SelectedDay {
-  count: number;
-  date: string;
-}
+import type { SelectedDay } from "@/types/appointment";
 
 function dayFromToday(count: number): SelectedDay {
   return { count, date: dayjs().add(count, "day").format("YYYY-MM-DD") };

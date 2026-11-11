@@ -5,12 +5,7 @@ import { apiGet } from "@/services/client";
 import type { Id } from "@/types/user";
 import type { Report, ReportSummary } from "@/types/content";
 import { toQuery } from "@/utils/query";
-
-// Without `reportFrom`: one summary row per reporting user (admin list).
-// With it: that user's reports.
-type ReportsResult =
-  | { kind: "summaries"; rows: ReportSummary[] }
-  | { kind: "reports"; rows: Report[] };
+import type { ReportsResult } from "@/types/queries";
 
 function useReportValue(reportFrom?: Id) {
   const getReports = useCallback(

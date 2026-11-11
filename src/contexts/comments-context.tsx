@@ -3,13 +3,9 @@ import { createStrictContext } from "@/utils/create-strict-context";
 import { useRemoteData } from "@/hooks/use-remote-data";
 import { apiGet } from "@/services/client";
 import type { Comment } from "@/types/content";
-import type { Id } from "@/types/user";
+import "@/types/user";
 import { toQuery } from "@/utils/query";
-
-export interface CommentsQuery {
-  postId: Id;
-  limit?: number;
-}
+import type { CommentsQuery } from "@/types/queries";
 
 function getComments(query: CommentsQuery) {
   return apiGet<Comment[]>(`/get/comments${toQuery({ ...query })}`);

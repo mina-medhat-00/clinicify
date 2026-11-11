@@ -1,20 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { useUserContext } from "@/contexts/user-context";
-import { errorStatus, getToken, type LoadOptions } from "@/services/client";
-
-interface Options<Q> {
-  // Skip the request (and show nothing) when nobody is signed in.
-  requiresAuth?: boolean;
-  // Load on mount (and when the query changes); omit to load manually.
-  autoLoad?: { query?: Q } | false;
-  // Statuses that mean "nothing here" rather than an error (e.g. 400 = not found).
-  emptyOn?: number[];
-  initialLoading?: boolean;
-}
-
-// Shared state for one API resource: data, loading and error flags, and a
-// `load(query, { silent })` function. An expired session is handed to the
-// user context, which signs the user out.
+import { errorStatus, getToken } from "@/services/client";
+import type { RemoteDataOptions, LoadOptions } from "@/types/api";
+// Data and loading and error state for one API resource with expired sessions handed to the user context
 export function useRemoteData<T, Q = undefined>(
   request: (query: Q) => Promise<T>,
   {
@@ -22,7 +10,7 @@ export function useRemoteData<T, Q = undefined>(
     autoLoad = false,
     emptyOn,
     initialLoading = true,
-  }: Options<Q> = {},
+  }: RemoteDataOptions<Q> = {},
 ) {
   const { handleSessionError } = useUserContext();
   const [data, setData] = useState<T | null>(null);
@@ -30,7 +18,7 @@ export function useRemoteData<T, Q = undefined>(
   const [isError, setIsError] = useState(false);
   const emptyKey = (emptyOn ?? []).join(",");
 
-  // The request alone, with no state changes, so effects can start it directly.
+  // Request alone without state changes so effects can start it directly
   const fetchData = useCallback(
     async function (query: Q) {
       if (requiresAuth && !getToken()) return null;
@@ -39,7 +27,7 @@ export function useRemoteData<T, Q = undefined>(
     [request, requiresAuth],
   );
 
-  // Store the outcome once the request settles.
+  // Store the outcome once the request settles
   const settle = useCallback(
     function (pending: Promise<T | null>) {
       return pending.then(
@@ -70,7 +58,7 @@ export function useRemoteData<T, Q = undefined>(
     [fetchData, settle],
   );
 
-  // Compare by value so an inline query object doesn't refetch every render.
+  // Compare by value so an inline query doesn't refetch every render
   const autoKey = autoLoad ? JSON.stringify(autoLoad.query ?? null) : null;
   useEffect(
     function () {

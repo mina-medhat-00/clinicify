@@ -1,28 +1,21 @@
 import { Button } from "@/components/ui/controls";
-import { Table, type TableColumn } from "@/components/ui/table";
+import { Table } from "@/components/ui/table";
 import { Flag, Mail } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import ReportDetails from "@/components/admin/report-details";
-import {
-  useNameColumn,
-  userTypeColumn,
-  type NamedRow,
-} from "@/components/admin/user-columns";
+import { useNameColumn, userTypeColumn } from "@/components/admin/user-columns";
 import PopUp from "@/components/ui/pop-up";
 import ReportContextProvider, {
   useReportContext,
 } from "@/contexts/report-context";
 import type { ReportSummary } from "@/types/content";
-import type { UserType } from "@/types/user";
-
-interface ReportRow extends NamedRow {
-  user_type: UserType;
-  action: ReactNode;
-}
+import "@/types/user";
+import type { ReportRow } from "@/types/admin";
+import type { TableColumn } from "@/types/ui";
 
 export default function AdminReports() {
-  // The user whose reports are shown (kept while the popup closes).
+  // Stays set while the popup closes
   const [selectedUser, setSelectedUser] = useState<ReportSummary | null>(null);
   const [showPop, setShowPop] = useState(false);
   const { isLoading: isReportLoading, summaries } = useReportContext();

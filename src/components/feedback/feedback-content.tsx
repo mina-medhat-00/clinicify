@@ -21,7 +21,7 @@ export default function FeedbackContent({
 > & {
   order: number;
   isMobile?: boolean;
-  // Opens or closes the review text of card `order`.
+  // Toggles the review text of the card at order
   bodyHandler: (order: number) => void;
   setShowFeedback?: (shown: number) => void;
   showFeedback?: number;

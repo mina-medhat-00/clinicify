@@ -1,25 +1,7 @@
-import {
-  api,
-  handleFailure,
-  notify,
-  type ServiceContext,
-} from "@/services/client";
-import type { Id } from "@/types/user";
-
-export type AccountAction = "verify" | "reject" | "delete" | "restrict";
-
-type ChangeStateParams = ServiceContext & {
-  action: AccountAction;
-  target: "user" | "doctor";
-  // The account to change; for "restrict" this is the chat to open/close.
-  id?: Id;
-  chat?: {
-    chat_from: Id;
-    chat_to: Id;
-    is_open: boolean;
-  };
-};
-
+import { api, handleFailure, notify } from "@/services/client";
+import "@/types/user";
+import type { AccountAction, ChangeStateParams } from "@/types/services";
+import "@/types/api";
 const progress: Record<AccountAction, string> = {
   verify: "Verifying",
   reject: "Rejecting",

@@ -1,19 +1,10 @@
 import { Button, Input } from "@/components/ui/controls";
 import { Form } from "@/components/ui/form";
 import ProfileTable from "@/components/profile/profile-table";
-import type { LoadOptions, ServiceContext } from "@/services/client";
 import submitProfile from "@/services/submit-profile";
 import type { Id } from "@/types/user";
-
-// The names the API expects for each medical field.
-export interface MedicalValues {
-  currentIssue?: string | null;
-  illnessesHistory?: string | null;
-  allergies?: string | null;
-  immunizations?: string | null;
-  surgeries?: string | null;
-  testResults?: string | null;
-}
+import type { LoadOptions, ServiceContext } from "@/types/api";
+import type { MedicalValues } from "@/types/profile";
 
 const { Item } = Form;
 export default function MedicalForm({

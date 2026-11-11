@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { cx } from "@/utils/cx";
 
-// Full class names so Tailwind can find them; "no" leaves the size unset.
+// Full class names so Tailwind can find them and no leaves the size unset
 const textSizes = { sm: "text-sm", lg: "text-lg", no: "" } as const;
 const fontWeights = { medium: "font-medium", bold: "font-bold" } as const;
 

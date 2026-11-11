@@ -6,11 +6,7 @@ import { apiGet, apiPost } from "@/services/client";
 import type { Appointment } from "@/types/appointment";
 import type { Id } from "@/types/user";
 import { toQuery } from "@/utils/query";
-
-export interface AppointmentQuery {
-  date?: string;
-  doctorId?: Id;
-}
+import type { AppointmentQuery } from "@/types/queries";
 
 function useAppointmentValue(isDoctor: boolean) {
   const { handleSessionError } = useUserContext();
@@ -33,8 +29,7 @@ function useAppointmentValue(isDoctor: boolean) {
     load: fetchAppointmentData,
   } = useRemoteData(getAppointments, { requiresAuth: true });
 
-  // Asks the API to move an appointment along (booked -> running -> done)
-  // once its time comes; the reply is the refreshed list for that date.
+  // Advance an appointment when its time comes and get the refreshed list for that date
   const updateAppointment = useCallback(
     async function (
       appointment: { doctorId: Id; patientId: Id; appointmentId: Id },

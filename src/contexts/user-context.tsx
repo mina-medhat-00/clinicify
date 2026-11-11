@@ -15,14 +15,14 @@ import {
   errorStatus,
   getToken,
   sessionError,
-  type LoadOptions,
 } from "@/services/client";
 import type { AuthTokenPayload, User } from "@/types/user";
+import type { LoadOptions } from "@/types/api";
 
-// setTimeout fires immediately for delays above this.
+// setTimeout fires immediately for delays above this
 const MAX_TIMEOUT = 2 ** 31 - 1;
 
-// The signed-in user, or null when there is no token.
+// Signed-in user or null without a token
 async function requestUser() {
   if (!getToken()) return null;
   return apiGet<User | null>("/user");
@@ -37,7 +37,7 @@ function useUserValue() {
   const { pathname } = useLocation();
   const [messageApi, contextHolder] = message.useMessage();
 
-  // Read inside callbacks without making them change on every navigation.
+  // Read inside callbacks without changing them on every navigation
   const pathnameRef = useRef(pathname);
   const userDataRef = useRef(userData);
   const navigateRef = useRef(navigate);
@@ -52,8 +52,7 @@ function useUserValue() {
     [pathname, userData, navigate, messageApi],
   );
 
-  // The token expired: drop it, and if someone was signed in, tell them and
-  // send them to login so they can come back to the same page.
+  // Drop the expired token and send a signed-in user to login to come back after
   const expireSession = useCallback(function () {
     clearToken();
     if (!userDataRef.current || pathnameRef.current.includes("login")) return;
@@ -72,11 +71,10 @@ function useUserValue() {
     }, 3000);
   }, []);
 
-  // Returns true when the error meant "your session is over" and was handled.
+  // Returns true when an expired session was handled
   const handleSessionError = useCallback(
     function (err: unknown) {
-      // Most protected routes answer a bad or expired token with a bare 401
-      // ("Unauthenticated."), so treat any 401 like an expired session.
+      // Most protected routes answer a bad token with a bare 401 so treat any 401 as expired
       const name =
         sessionError(err) ??
         (errorStatus(err) === 401 ? "TokenExpiredError" : undefined);
@@ -90,7 +88,7 @@ function useUserValue() {
     [expireSession],
   );
 
-  // Store the outcome of a /user request.
+  // Store the outcome of a /user request
   const settleUser = useCallback(
     function (pending: Promise<User | null>) {
       return pending.then(
@@ -128,7 +126,7 @@ function useUserValue() {
     [settleUser],
   );
 
-  // Re-check the session the moment the current token expires.
+  // Re-check the session when the current token expires
   const userId = userData?.user_id;
   useEffect(
     function () {

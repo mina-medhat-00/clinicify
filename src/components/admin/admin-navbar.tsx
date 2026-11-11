@@ -3,7 +3,7 @@ import { Bell, ChevronDown, Menu, MessageSquare } from "lucide-react";
 import type { ReactNode } from "react";
 import type { User } from "@/types/user";
 import { imageUrl } from "@/utils/api";
-import type { AdminDashType } from "@/constants/dash-types";
+import type { AdminDashType } from "@/types/dashboard";
 
 function NavButton({
   name,

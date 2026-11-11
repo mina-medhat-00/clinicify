@@ -1,20 +1,13 @@
-import {
-  api,
-  handleFailure,
-  notify,
-  type ServiceContext,
-} from "@/services/client";
-
-type ProfileSection = "personal" | "medical" | "clinic";
-
+import { api, handleFailure, notify } from "@/services/client";
+import type { ServiceContext } from "@/types/api";
+import type { ProfileSection } from "@/types/services";
 const labels: Record<ProfileSection, string> = {
   personal: "your information",
   medical: "your medical information",
   clinic: "clinic information",
 };
 
-// Saves one section of the profile. The API expects personal and medical
-// values under `values`, and clinic values at the top level.
+// Personal and medical values go under values while clinic values go at the top level
 export default async function submitProfile({
   section,
   values,

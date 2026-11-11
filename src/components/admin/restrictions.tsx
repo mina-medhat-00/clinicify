@@ -3,7 +3,7 @@ import UserAvatar from "@/components/ui/user-avatar";
 import ChatContextProvider from "@/contexts/chat-context";
 import type { ManagedUser } from "@/types/user";
 
-// Chat is the only kind of restriction so far.
+// Chat is the only restriction type for now
 const restrictType = "chat";
 
 export default function Restrictions({

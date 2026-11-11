@@ -24,26 +24,25 @@ import {
 import { Link } from "react-router-dom";
 import type { Socket } from "socket.io-client";
 import UserAvatar from "@/components/ui/user-avatar";
-import {
-  type CommentsQuery,
-  useCommentsContext,
-} from "@/contexts/comments-context";
+import { useCommentsContext } from "@/contexts/comments-context";
 import { useUserContext } from "@/contexts/user-context";
-import { apiGet, type LoadOptions } from "@/services/client";
+import { apiGet } from "@/services/client";
 import submitComment from "@/services/submit-comment";
 import submitLike, { type LikeType } from "@/services/submit-like";
 import type {
   Comment,
   Like,
-  Post as PostData,
-  Reactions,
+  ReplyTarget,
+  ReactionUpdate,
+  SetComments,
+  SetPosts,
+  FetchComments,
+  PostFields,
 } from "@/types/content";
 import type { Id } from "@/types/user";
 import { toQuery } from "@/utils/query";
-
-// The post or comment whose reply box is open. Post and comment ids are
-// separate sequences, so the kind is part of the key.
-export type ReplyTarget = `post:${string}` | `comment:${string}` | null;
+import "@/types/queries";
+import "@/types/api";
 
 function postTarget(postId: Id): ReplyTarget {
   return `post:${String(postId)}`;
@@ -52,20 +51,6 @@ function postTarget(postId: Id): ReplyTarget {
 function commentTarget(commentId: Id): ReplyTarget {
   return `comment:${String(commentId)}`;
 }
-
-// Live reaction counts sent over the socket.
-export type ReactionUpdate = Reactions & {
-  post_id: Id;
-  comment_id?: Id | null;
-  updateEmoji: true;
-};
-
-type SetComments = Dispatch<SetStateAction<Comment[] | null>>;
-export type SetPosts = Dispatch<SetStateAction<PostData[]>>;
-type FetchComments = (
-  query: CommentsQuery,
-  options?: LoadOptions,
-) => Promise<unknown>;
 
 function getLike(postId: Id, commentId?: Id) {
   return apiGet<Like | null>(`/get/like${toQuery({ postId, commentId })}`);
@@ -96,7 +81,7 @@ function CommentActions({
   commentId?: Id;
   fetchCommentsData: FetchComments;
   setComments: SetComments;
-  // Offer to load more comments here.
+  // Offer to load more comments here
   show: boolean;
   setReply: Dispatch<SetStateAction<ReplyTarget>>;
   numComments: number;
@@ -121,7 +106,7 @@ function CommentActions({
     function () {
       if (!signedIn) return;
       getLike(postId, commentId).then(setLikeData, function () {
-        // Without the user's reaction the buttons just show no highlight.
+        // Without the user's reaction no button is highlighted
       });
     },
     [signedIn, commentId, postId],
@@ -148,7 +133,7 @@ function CommentActions({
     if (!counts) return;
     setLikeData(counts);
     const { like_emoji, dislike, angry } = counts;
-    // Show the new totals on this post or comment right away.
+    // Show the new totals right away
     if (isComment)
       setComments(function (comments) {
         return (
@@ -282,7 +267,7 @@ function CommentActions({
           <div
             onClick={function () {
               setShowPost?.(postId);
-              // Let the popup open before the reply box appears in it.
+              // Let the popup open before showing the reply box
               if (showPost !== postId) setTimeout(toggleReply, 100);
               else toggleReply();
             }}
@@ -376,7 +361,7 @@ function ReplyBox({
                 fetchUserData,
               }).then(function (sent) {
                 if (!sent) return;
-                // Load one more so the new comment shows up in the list.
+                // Load one more so the new comment shows up
                 void fetchCommentsData(
                   { postId, limit: lenViewedComments + 1 },
                   { silent: true },
@@ -443,7 +428,7 @@ function CommentTemplate({
   comment: Comment;
   postId: Id;
   makeComment: ReplyTarget;
-  // The last comment offers to load more.
+  // Last comment offers to load more
   show: boolean;
   setComments: SetComments;
   setMakeComment: Dispatch<SetStateAction<ReplyTarget>>;
@@ -523,19 +508,6 @@ function CommentTemplate({
   );
 }
 
-export interface PostFields {
-  postId: Id;
-  userid: Id;
-  imgUrl: string;
-  nickname: string;
-  numAngry: number;
-  numLike: number;
-  numDisLike: number;
-  content: string;
-  issuedTime: string;
-  postImg: string | null;
-}
-
 function PostTemplate({
   userid,
   setPosts,
@@ -579,7 +551,7 @@ function PostTemplate({
   showPost: Id | null;
   setLen: Dispatch<SetStateAction<number>>;
 }) {
-  // Shows the full text once the popup has finished opening.
+  // Show the full text once the popup has opened
   const [showPopUp, setShowPopUp] = useState<Id | null>(null);
   useEffect(
     function () {
@@ -710,7 +682,7 @@ export default function Post({
   ...post
 }: PostFields & {
   socket: Socket;
-  // The post shown in the popup, if any.
+  // Post shown in the popup if any
   setShowPost: (postId: Id | null) => void;
   showPost: Id | null;
   setPosts: SetPosts;
@@ -718,13 +690,13 @@ export default function Post({
   setLen: Dispatch<SetStateAction<number>>;
   setMakeComment: Dispatch<SetStateAction<ReplyTarget>>;
   makeComment: ReplyTarget;
-  // The post whose popup is open (stays set while it slides away).
+  // Post whose popup is open and stays set while it slides away
   showPopUp: Id | null;
 }) {
   const { postId } = post;
   const { isLoading, fetchCommentsData, commentsData, setCommentsData } =
     useCommentsContext();
-  // Comments are only listed inside the open popup.
+  // Comments are only listed inside the open popup
   const inPopUp = showPopUp === postId;
   const comments = inPopUp ? (commentsData ?? []) : [];
   useEffect(
@@ -764,7 +736,7 @@ export default function Post({
           return;
         setCommentsData(function (current) {
           if (!current?.length) return [data];
-          // A reply also bumps its parent's reply count.
+          // A reply also bumps its parent's reply count
           return [
             data,
             ...current.map(function (c) {

@@ -5,7 +5,7 @@ export default function Message({
   issued_time,
 }: {
   isMobile?: boolean;
-  // Sent by the signed-in user.
+  // Sent by the signed-in user
   me?: boolean;
   content: string;
   issued_time?: string;

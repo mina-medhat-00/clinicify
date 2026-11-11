@@ -4,18 +4,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
 import { api, errorStatus } from "@/services/client";
-import type { AppointmentKind, AppointmentState } from "@/types/appointment";
-import type { Id } from "@/types/user";
+import type { AppointmentDetails } from "@/types/appointment";
+import "@/types/user";
 import { toQuery } from "@/utils/query";
-
-export interface AppointmentDetails {
-  // The other person in the appointment.
-  withNickName: string;
-  withId: Id;
-  appointmentId: Id;
-  appointment_state: AppointmentState;
-  appointment_type: AppointmentKind;
-}
 
 export default function AppointmentStart({
   appointmentDetails,
@@ -30,7 +21,7 @@ export default function AppointmentStart({
   const { fetchUserData } = useUserContext();
   function createSession() {
     setIsLoading(true);
-    // The reply is the meeting's session id as plain text.
+    // Reply is the meeting session id as plain text
     api
       .post<string>("/join/meeting", {
         data: { appointment_id: appointmentId },

@@ -1,6 +1,5 @@
-type QueryValue = string | number | boolean | null | undefined;
+import type { QueryValue } from "@/types/api";
 
-// Builds "?a=1&b=2" from an object, skipping empty values and encoding the rest.
 export function toQuery(params?: Record<string, QueryValue> | null) {
   if (!params) return "";
   const search = new URLSearchParams();

@@ -4,15 +4,7 @@ import { useRemoteData } from "@/hooks/use-remote-data";
 import { apiGet } from "@/services/client";
 import type { Doctor } from "@/types/user";
 import { toQuery } from "@/utils/query";
-
-export interface DoctorsQuery {
-  // Include unverified doctors (admin).
-  total?: boolean;
-  limit?: number;
-  specialty?: string;
-  dname?: string;
-  location?: string;
-}
+import type { DoctorsQuery } from "@/types/queries";
 
 function getDoctors(query?: DoctorsQuery) {
   return apiGet<Doctor[]>(`/doctors${toQuery(query ? { ...query } : null)}`);
@@ -32,8 +24,7 @@ const [DoctorsData, useDoctorsContext] =
   createStrictContext<ReturnType<typeof useDoctorsValue>>("DoctorsContext");
 export { useDoctorsContext };
 
-// `query` loads on mount; `noFirstRender` leaves loading to the page (the
-// search filter on /doctors).
+// query loads on mount unless noFirstRender leaves loading to the page
 export default function DoctorsContextProvider({
   children,
   query,

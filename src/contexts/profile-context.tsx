@@ -5,7 +5,7 @@ import { apiGet } from "@/services/client";
 import type { Id } from "@/types/user";
 import type { ProfileData } from "@/types/clinic";
 
-// Accepts a username or a user id.
+// Accepts a username or a user id
 function getProfile(user: string | Id) {
   return apiGet<ProfileData>(`/profile/${encodeURIComponent(user)}`);
 }
@@ -16,7 +16,7 @@ function useProfileValue() {
     isLoading,
     isError,
     load: fetchProfileData,
-    // 400 = no such user: show "cannot find any profile", not an error page.
+    // 400 means no such user so show an empty profile instead of an error
   } = useRemoteData(getProfile, { emptyOn: [400] });
   return { isLoading, profileData, isError, fetchProfileData };
 }

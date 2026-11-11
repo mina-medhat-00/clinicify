@@ -8,7 +8,7 @@ import PopUp from "@/components/ui/pop-up";
 import ServerError from "@/components/ui/server-error";
 import { useFeedbackContext } from "@/contexts/feedback-context";
 
-// Opens or closes a review's text by animating its height.
+// Toggle a review's text by animating its height
 function bodyHandler(order: number) {
   const bodyElement = document.getElementById(
     `feedback--body--${String(order + 1)}`,
@@ -37,10 +37,10 @@ export default function Feedbacks({
   fetchFeedback,
 }: {
   home?: boolean;
-  // The page loads the list itself (for one doctor's profile).
+  // Page loads the list itself for one doctor's profile
   noDirectFetch?: boolean;
   username?: string;
-  // Changes after a new review, to reload the list in the background.
+  // Changes after a new review to reload the list in the background
   fetchFeedback?: number | null;
 }) {
   const { feedbackData, isLoading, isError, fetchFeedbackData } =
@@ -48,7 +48,7 @@ export default function Feedbacks({
   const isMobile = useMediaQuery({
     query: "(max-width:778px)",
   });
-  // The open review's position + 1, or null when none is open.
+  // Open review position plus 1 or null when none is open
   const [showFeedback, setShowFeedback] = useState<number | null>(null);
   const [showPopUp, setShowPopUp] = useState<number | null>(null);
   if (showFeedback && showPopUp !== showFeedback) setShowPopUp(showFeedback);
@@ -67,7 +67,7 @@ export default function Feedbacks({
   useEffect(
     function () {
       if (noDirectFetch)
-        // After a new feedback (fetchFeedback changed), refresh without a spinner.
+        // Refresh without a spinner after a new feedback
         void fetchFeedbackData(
           { username },
           { silent: fetchFeedback !== null && fetchFeedback !== undefined },

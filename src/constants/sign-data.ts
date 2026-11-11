@@ -1,9 +1,7 @@
 import { City, Country } from "country-state-city";
 import { data as isoCurrencies } from "currency-codes";
 import getSymbolFromCurrency from "currency-symbol-map";
-import type { SelectOption } from "@/components/ui/controls";
-
-type SelectOptions = (SelectOption<string> & { label: string })[];
+import type { SelectOptions } from "@/types/ui";
 
 function toOptions(values: readonly string[]): SelectOptions {
   return [...new Set(values.filter(Boolean))]

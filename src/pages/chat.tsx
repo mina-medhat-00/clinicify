@@ -12,13 +12,13 @@ import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
 import type { Id } from "@/types/user";
 
-// The conversation to reopen, saved by pages that link to a chat.
+// Conversation to reopen saved by pages that link to a chat
 function storedChat(): Id | null {
   let saved: string | null = null;
   try {
     saved = window.localStorage.getItem("chatTo");
   } catch {
-    // Storage can be blocked (private mode).
+    // Storage may be blocked in private mode
   }
   const id = Number(saved);
   return Number.isInteger(id) && id > 0 ? id : null;
@@ -54,7 +54,7 @@ export default function Chat() {
       try {
         window.localStorage.setItem("chatTo", String(withUser));
       } catch {
-        // Storage can be blocked (private mode).
+        // Storage may be blocked in private mode
       }
     },
     [withUser],
@@ -63,8 +63,7 @@ export default function Chat() {
     return user_id === withUser;
   });
   const me = user?.user_id === withUser;
-  // Who may write: admins' own chats are always open; patients need an open
-  // chat with the doctor; doctors and admins can answer chats started with them.
+  // Admins can always write and patients need an open chat while others answer chats started with them
   const isOpen =
     chatRecord?.user_type === "admin" && !chatRecord.chat_from
       ? true

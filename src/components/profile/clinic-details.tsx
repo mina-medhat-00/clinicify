@@ -1,17 +1,8 @@
 import { Ban, Hospital, MapPin, Pencil, Phone } from "lucide-react";
-import type { ReactNode } from "react";
+import "react";
 import ProfileTable from "@/components/profile/profile-table";
-import type { Clinic } from "@/types/clinic";
+import type { Clinic, ClinicSection } from "@/types/clinic";
 import type { SetProfileDrawer } from "@/types/profile-drawer";
-
-interface ClinicSection {
-  headerColor: string;
-  propColor?: string;
-  headers: ReactNode[];
-  data: { label: string; name: keyof Clinic; preValue?: keyof Clinic }[];
-  icon?: ReactNode;
-}
-
 const clinicDetails: ClinicSection[] = [
   {
     headerColor: "bg-gray-800/80",

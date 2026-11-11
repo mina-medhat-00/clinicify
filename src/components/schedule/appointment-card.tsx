@@ -14,15 +14,12 @@ import {
 } from "lucide-react";
 import type { ReactNode } from "react";
 import type { Socket } from "socket.io-client";
-import type { SlotsQuery } from "@/contexts/slots-context";
-import type { LoadOptions, ServiceContext } from "@/services/client";
 import scheduleAppointments from "@/services/schedule-appointments";
-import type { AppointmentState, Slot } from "@/types/appointment";
+import type { AppointmentState, Slot, SlotRef } from "@/types/appointment";
 import type { Id } from "@/types/user";
 import { slotClock } from "@/utils/time";
-
-// The slot a cancel button refers to.
-export type SlotRef = Pick<Slot, "slotTime" | "appointmentId">;
+import type { SlotsQuery } from "@/types/queries";
+import type { LoadOptions, ServiceContext } from "@/types/api";
 
 const stateColors: Partial<Record<AppointmentState, string>> = {
   done: "bg-gray-800/80",
@@ -64,10 +61,10 @@ export default function AppointmentCard({
   timeZone,
 }: ServiceContext & {
   slot: Slot;
-  // Position in the day's list, starting at 1.
+  // Position in the day's list starting at 1
   order: number;
   onEdit?: (order: number) => void;
-  // Asks before canceling a booked slot.
+  // Asks before canceling a booked slot
   onCancel: (slot: SlotRef) => void;
   tAppointments: Slot[];
   selectedDate: Dayjs;
@@ -77,7 +74,7 @@ export default function AppointmentCard({
     options?: LoadOptions,
   ) => Promise<unknown>;
   socket: Socket;
-  // Shown inside the admin's doctor list (no editing).
+  // Shown in the admin doctor list without editing
   admin?: boolean;
   timeZone: string;
 }) {

@@ -28,14 +28,13 @@ export default function AppointmentTime({
   updateAppointment: ReturnType<
     typeof useAppointmentContext
   >["updateAppointment"];
-  // The day the list shows (the API returns that day's list).
+  // Day shown in the list
   date: string;
   appointment_duration: number;
   timeZone: string;
   socket: Socket;
 }) {
-  // When a booked appointment starts, or a running one ends, ask the API to
-  // move it to its next state.
+  // Ask the API to advance an appointment when it starts or ends
   useEffect(
     function () {
       const startsAt = new Date(

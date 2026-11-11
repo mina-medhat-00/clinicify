@@ -19,7 +19,7 @@ export default function ServerError({
   status?: number | string;
   statusTitle?: ReactNode;
   message?: ReactNode;
-  // What failed to load, e.g. "doctors".
+  // What failed to load like "doctors"
   errorTitle?: string;
 }) {
   const code = String(status ?? "500");

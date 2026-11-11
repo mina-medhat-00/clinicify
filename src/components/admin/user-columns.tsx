@@ -1,26 +1,11 @@
 import { Search, Stethoscope, User, UserRound } from "lucide-react";
-import { useRef, type Key, type ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { Button, Input, Space } from "@/components/ui/controls";
-import type {
-  FilterDropdownProps,
-  FilterValue,
-  TableColumn,
-} from "@/components/ui/table";
 import UserAvatar from "@/components/ui/user-avatar";
 import type { UserType } from "@/types/user";
-
-export interface NameValue {
-  nick_name: string;
-  img_url?: string | null;
-  user_type?: UserType;
-}
-
-export interface NamedRow {
-  key: Key;
-  name: NameValue;
-}
-
+import type { NameValue, NamedRow, TypedRow } from "@/types/admin";
+import type { FilterValue, FilterDropdownProps, TableColumn } from "@/types/ui";
 const typeFilters: { text: UserType; value: UserType }[] = [
   { text: "doctor", value: "doctor" },
   { text: "user", value: "user" },
@@ -37,14 +22,13 @@ function matches(value: FilterValue, text: string) {
   return text.toLowerCase().includes(String(value).toLowerCase());
 }
 
-// The "Name" column: avatar and nickname linking to the profile, with a
-// search box that filters by nickname.
+// Name column with avatar profile link and nickname search
 export function useNameColumn({
   cardClass,
   avatarUserType,
 }: {
   cardClass: string;
-  // Force one avatar icon (the doctors table); otherwise use the row's type.
+  // Forces one avatar icon instead of the row type
   avatarUserType?: UserType;
 }): TableColumn<NamedRow> {
   const searchInput = useRef<HTMLInputElement>(null);
@@ -128,11 +112,6 @@ export function useNameColumn({
       );
     },
   };
-}
-
-// The "Type" column, filterable by account type.
-export interface TypedRow {
-  user_type: UserType;
 }
 
 export function userTypeColumn(cardClass: string): TableColumn<TypedRow> {

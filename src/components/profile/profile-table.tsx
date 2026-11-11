@@ -1,12 +1,6 @@
 import type { ReactNode } from "react";
 import { Skeleton } from "@/components/ui/display";
-
-export interface ProfileRow {
-  name: ReactNode;
-  value?: ReactNode;
-  // Shown before the value, e.g. a phone prefix.
-  preValue?: ReactNode;
-}
+import type { ProfileRow } from "@/types/profile";
 
 function isBlank(value: ReactNode) {
   return (
@@ -26,14 +20,14 @@ export default function ProfileTable({
   headers?: ReactNode[];
   headerColor?: string;
   propColor?: string;
-  // Shown for rows without a value.
+  // Shown for rows without a value
   icon?: ReactNode;
   loadingProps?: { active?: boolean; numCol?: number; numRow?: number };
 }) {
   const loading = Boolean(loadingProps?.active);
   const numCol = loadingProps?.numCol ?? 3;
   const numRow = loadingProps?.numRow ?? 4;
-  // Each row has a name and a value cell; headers share those two columns.
+  // Each row has a name and a value cell and headers share those columns
   const headerSpan = 2 / Math.max(headers?.length ?? 1, 1);
   return (
     <div className="w-full overflow-auto scroll--h">

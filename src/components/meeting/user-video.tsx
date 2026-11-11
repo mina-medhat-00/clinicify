@@ -2,8 +2,7 @@ import type { StreamManager } from "openvidu-browser";
 import { Component } from "react";
 import OpenViduVideoComponent from "@/components/meeting/ov-video";
 
-// The name each participant sent when joining, stored as
-// '{"clientData": "<name>"}' in the connection data.
+// Nickname each participant sent as clientData JSON when joining
 function nicknameOf(streamManager: StreamManager) {
   const [first = ""] = streamManager.stream.connection.data.split("%/%");
   try {
@@ -11,7 +10,7 @@ function nicknameOf(streamManager: StreamManager) {
     if (typeof parsed === "object" && parsed && "clientData" in parsed)
       return String(parsed.clientData);
   } catch {
-    // Not JSON: show nothing rather than break the call.
+    // Not JSON so show nothing
   }
   return "";
 }

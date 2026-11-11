@@ -15,7 +15,7 @@ export default function TableGrid({
   customGrid?: string;
   items?: { key: Key; element: ReactNode }[];
   maxPageSize?: number;
-  // Keys of the items that take a full row.
+  // Keys of items that take a full row
   isFull?: { key: Key }[];
   heightFull?: boolean;
 }) {

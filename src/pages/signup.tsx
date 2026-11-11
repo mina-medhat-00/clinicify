@@ -2,13 +2,8 @@ import { Button, Input, Radio, Select, Space } from "@/components/ui/controls";
 import { DatePicker } from "@/components/ui/calendar";
 import { Form } from "@/components/ui/form";
 import { message } from "@/components/ui/message";
-import {
-  Upload,
-  type BeforeUploadResult,
-  type UploadChange,
-  type UploadFile,
-} from "@/components/ui/upload";
-import type { Dayjs } from "dayjs";
+import { Upload } from "@/components/ui/upload";
+import "dayjs";
 import { ImagePlus, Lock, Mail, User } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useMediaQuery } from "react-responsive";
@@ -26,36 +21,8 @@ import {
 } from "@/utils/validators";
 import { prefixSelector } from "@/components/signup/form-selectors";
 import { api, errorData, errorStatus } from "@/services/client";
-
-interface SignupValues {
-  nickname: string;
-  username: string;
-  password: string;
-  confirm: string;
-  gender: string;
-  birth: Dayjs | null;
-  address: { city: string; street: string };
-  prefix: string;
-  phone: string;
-  email: string;
-  images?: UploadFile[];
-  userType: "user" | "doctor";
-  // Doctors only.
-  specialty?: string;
-  currentHospital?: string;
-  graduationYear?: number | null;
-  experienceYears?: number | null;
-  fees?: number | null;
-  salary?: number | null;
-  about?: string;
-  achievement?: string;
-  // The doctor opened the optional fields.
-  moreInf?: boolean;
-}
-
-// "error1": the server could not be reached.
-type UsernameState = "" | "validating" | "success" | "error" | "error1";
-
+import type { SignupValues, UsernameState } from "@/types/auth";
+import type { BeforeUploadResult, UploadChange } from "@/types/ui";
 const imageTypes = [
   "image/jpeg",
   "image/jpg",
@@ -69,7 +36,7 @@ function beforeUpload(file: File): BeforeUploadResult {
   const isLt5M = file.size / 1024 / 1024 <= 5;
   if (!isImg) message.error("You can only upload images", 4);
   else if (!isLt5M) message.error("Image must smaller than 5MB!", 4);
-  // false = keep the file in the list without uploading it.
+  // false keeps the file in the list without uploading it
   return isImg && isLt5M ? false : Upload.LIST_IGNORE;
 }
 
@@ -91,7 +58,7 @@ function normFile(
   setImageUrls: (urls: string[]) => void,
 ) {
   const files = change.fileList;
-  // Store the data URLs only once every file has been read.
+  // Store the data URLs once every file has been read
   Promise.all(
     files.map(function (file) {
       return readAsDataUrl(file.originFileObj);
@@ -201,8 +168,7 @@ export default function Signup() {
   function setValues(changedVal: Partial<SignupValues>, values: SignupValues) {
     const { username } = changedVal;
     if (username !== undefined) {
-      // Only the latest check may update the field, so a slow response for
-      // an older value can't overwrite the current one.
+      // Only the latest check updates the field so slow older responses are ignored
       usernameCheck.current += 1;
       const checkId = usernameCheck.current;
       if (username && /^([A-Z]|[a-z])+.{0,22}$/.test(username)) {

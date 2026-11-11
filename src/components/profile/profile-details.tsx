@@ -1,32 +1,10 @@
 import { Contact, FileHeart } from "lucide-react";
-import type { ReactNode } from "react";
+import "react";
 import type { SetProfileDrawer } from "@/types/profile-drawer";
 import ProfileTable from "@/components/profile/profile-table";
 import FeedbackContextProvider from "@/contexts/feedback-context";
 import Feedbacks from "@/pages/feedbacks";
-
-// The profile's fields as shown (missing ones are already an icon).
-export interface ProfileValues {
-  nickname: ReactNode;
-  about: ReactNode;
-  specialty: ReactNode;
-  age: ReactNode;
-  bdate: ReactNode;
-  pnumber: ReactNode;
-  email: ReactNode;
-  city: ReactNode;
-  street: ReactNode;
-  images: { img_url: string }[];
-}
-
-type ShownField = Exclude<keyof ProfileValues, "images">;
-
-interface DetailsSection {
-  headerColor?: string;
-  propColor?: string;
-  headers?: string[];
-  data: { label: string; name: ShownField }[];
-}
+import type { ProfileValues, DetailsSection } from "@/types/profile";
 
 function UserDetails({
   headers,
@@ -61,7 +39,7 @@ export default function ProfileDetails({
   fetchFeedback,
 }: {
   isAuth: boolean;
-  // A patient (or admin) profile rather than a doctor's.
+  // Patient or admin profile rather than a doctor's
   isUser: boolean;
   userValues: ProfileValues;
   username?: string;

@@ -4,10 +4,7 @@ import { useRemoteData } from "@/hooks/use-remote-data";
 import { apiGet } from "@/services/client";
 import type { Post } from "@/types/content";
 import { toQuery } from "@/utils/query";
-
-export interface PostsQuery {
-  limit?: number;
-}
+import type { PostsQuery } from "@/types/queries";
 
 function getPosts(query?: PostsQuery) {
   return apiGet<Post[]>(`/get/posts${toQuery(query ? { ...query } : null)}`);

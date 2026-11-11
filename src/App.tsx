@@ -18,7 +18,7 @@ import AdminDashboard from "@/pages/admin-dashboard";
 import Appointments from "@/pages/appointments";
 import Chat from "@/pages/chat";
 import DoctorDashboard from "@/pages/doctor-dashboard";
-import Doctors, { type DoctorsHandle } from "@/pages/doctors";
+import Doctors from "@/pages/doctors";
 import Feedbacks from "@/pages/feedbacks";
 import HomePage from "@/pages/home-page";
 import Login from "@/pages/login";
@@ -27,6 +27,7 @@ import Posts from "@/pages/posts";
 import ReportProblem from "@/pages/report-problem";
 import Signup from "@/pages/signup";
 import UserProfile from "@/pages/user-profile";
+import type { DoctorsHandle } from "@/types/user";
 
 function handleRoute(
   element: ReactNode,
@@ -39,7 +40,7 @@ function handleRoute(
   if (permission) return element;
   if (isLoading) return <Loader />;
   if (isError) return <Navigate to="/error" replace />;
-  // Logged-out visitors should sign in, then come back here.
+  // Send guests to login and back here after
   if (!isLoggedIn)
     return (
       <Navigate

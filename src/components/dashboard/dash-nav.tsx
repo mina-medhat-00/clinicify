@@ -7,7 +7,7 @@ import {
   User,
 } from "lucide-react";
 import { Popover } from "@/components/ui/overlay";
-import type { DoctorDashType } from "@/constants/dash-types";
+import type { DoctorDashType } from "@/types/dashboard";
 
 const items: { name: DoctorDashType; icon: ReactNode }[] = [
   {
@@ -43,7 +43,7 @@ export default function DashNav({
     query: "(max-width:678px)",
   });
   const [hoverIdx, setHoverIdx] = useState<number | null>(null);
-  // The underline moves to the hovered tab (each tab is 20% wide).
+  // Underline follows the hovered tab and each tab is 20% wide
   const offset = `${String((hoverIdx ?? 0) * 20)}%`;
   return (
     <div

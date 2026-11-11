@@ -13,11 +13,10 @@ import {
 import type { ReactNode, RefObject } from "react";
 import { Link, type Location, type NavigateFunction } from "react-router-dom";
 import { Avatar, Skeleton } from "@/components/ui/display";
-import type { MenuClickInfo, MenuItemType } from "@/components/ui/menu";
 import UserItem from "@/components/layout/user-item";
-import type { DoctorsHandle } from "@/pages/doctors";
-import type { User } from "@/types/user";
+import type { User, DoctorsHandle } from "@/types/user";
 import { doctorSpecialties } from "@/constants/sign-data";
+import type { MenuClickInfo, MenuItemType } from "@/types/ui";
 
 const ALL_DOCTORS = "sub30";
 
@@ -30,7 +29,7 @@ function getItem(
   return { key, icon, children, label };
 }
 
-// Opens /doctors filtered by the clicked specialty (the item's key).
+// Open /doctors filtered by the clicked specialty
 function toDoctors(
   { key }: MenuClickInfo,
   navigate: NavigateFunction,
@@ -38,7 +37,7 @@ function toDoctors(
 ) {
   const specialty = key === ALL_DOCTORS ? "" : key;
   void navigate("/doctors");
-  // Wait for the doctors page to mount its filter, but give up after ~2s.
+  // Wait for the doctors page filter to mount and give up after about 2s
   let attempts = 0;
   const id = setInterval(function () {
     attempts += 1;

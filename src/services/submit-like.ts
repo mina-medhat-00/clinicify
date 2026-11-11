@@ -1,21 +1,11 @@
-import {
-  apiPost,
-  handleFailure,
-  type ServiceContext,
-  type Socket,
-} from "@/services/client";
+import { apiPost, handleFailure } from "@/services/client";
 import type { Id } from "@/types/user";
-import type { LikeType, Reactions } from "@/types/content";
+import type { LikeType } from "@/types/content";
+import type { ServiceContext, Socket } from "@/types/api";
+import type { LikeCounts } from "@/types/services";
 
 export type { LikeType };
-
-export type LikeCounts = Reactions & {
-  // The user's reaction after the toggle; null when it was removed.
-  like_type?: LikeType | null;
-};
-
-// Toggles a reaction on a post or a comment, broadcasts the new
-// counts, and returns them so the caller can update its list.
+// Toggle a reaction then broadcast and return the new counts
 export default async function submitLike({
   likeType,
   postId,

@@ -6,6 +6,7 @@ import TitleHeader from "@/components/ui/title-header";
 import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
 import submitReport from "@/services/submit-report";
+import type { ReportValues } from "@/types/content";
 
 const { Item } = Form;
 const reportTypeData = [
@@ -38,10 +39,6 @@ const reportTypeData = [
     value: "Other issue",
   },
 ];
-interface ReportValues {
-  issue: string;
-  reportType: string;
-}
 
 export default function ReportProblem() {
   const { messageApi } = useUtilsContext();

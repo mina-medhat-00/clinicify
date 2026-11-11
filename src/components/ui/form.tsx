@@ -9,29 +9,23 @@ import {
   useMemo,
   useState,
   type SubmitEvent,
-  type FormHTMLAttributes,
-  type ReactElement,
   type ReactNode,
 } from "react";
 import { Check, CircleAlert, Loader2 } from "lucide-react";
 import { cx } from "@/utils/cx";
-
-export type NamePath = string | (string | number)[];
-export type FormValues = Record<string, unknown>;
-export type ControlSize = "small" | "middle" | "large";
-
-type Bag = Record<string | number, unknown>;
-
-export interface Rule {
-  required?: boolean;
-  message?: string;
-  pattern?: RegExp;
-  type?: "email";
-  validator?: (rule: Rule, value: unknown) => Promise<void> | void;
-}
-export type RuleFactory = (form: {
-  getFieldValue: (name: NamePath) => unknown;
-}) => Rule;
+import type {
+  NamePath,
+  FormValues,
+  Bag,
+  Rule,
+  RuleFactory,
+  FieldMeta,
+  FormInstance,
+  FormContextValue,
+  ControlProps,
+  FormItemProps,
+  FormProps,
+} from "@/types/form";
 
 function toPath(name: NamePath) {
   return Array.isArray(name) ? name : [name];
@@ -110,7 +104,7 @@ async function runRules(
       try {
         await rule.validator(rule, value);
       } catch (err) {
-        // A validator that fails without saying why shows the rule's message.
+        // A validator failing without a reason shows the rule message
         const reason = err instanceof Error ? err.message : "";
         throw new Error(reason || (rule.message ?? "Invalid value"), {
           cause: err,
@@ -137,23 +131,6 @@ function cloneDeep<T>(value: T): T {
     next[key] = cloneDeep(value[key]);
   });
   return next as T;
-}
-
-interface FieldMeta {
-  name: NamePath;
-  validate: () => Promise<void>;
-}
-
-export interface FormInstance<T extends object = FormValues> {
-  getFieldsValue: () => T;
-  getFieldValue: (name: NamePath) => unknown;
-  setFieldsValue: (next: Partial<T>) => void;
-  resetFields: () => void;
-  setInitial: (next: Partial<T>) => void;
-  setValue: (name: NamePath, value: unknown) => void;
-  register: (key: string, meta: FieldMeta) => () => void;
-  getFields: () => FieldMeta[];
-  subscribe: (listener: () => void) => () => void;
 }
 
 function createFormStore<T extends object>(): FormInstance<T> {
@@ -214,12 +191,6 @@ function useForm<T extends object = FormValues>(): [FormInstance<T>] {
   return [store];
 }
 
-interface FormContextValue {
-  store: FormInstance<object>;
-  size: ControlSize;
-  onValuesChange?: (changed: FormValues, all: FormValues) => void;
-}
-
 const FormContext = createContext<FormContextValue | null>(null);
 
 export { FormContext };
@@ -235,15 +206,6 @@ function defaultFromEvent(event: unknown) {
     return target.value;
   }
   return event;
-}
-
-// The props Form.Item hands to the control it wraps.
-interface ControlProps {
-  value?: unknown;
-  checked?: unknown;
-  fileList?: unknown;
-  onChange?: (...args: unknown[]) => void;
-  children?: ReactNode;
 }
 
 const controlNames = new Set([
@@ -266,7 +228,7 @@ function typeName(type: unknown) {
   return component.displayName ?? component.name;
 }
 
-// Wires the first form control found in `node` to the form store.
+// Wires the first form control in node to the form store
 function injectControl(node: ReactNode, control: ControlProps): ReactNode {
   if (!isValidElement<ControlProps>(node)) return node;
   const name = typeName(node.type);
@@ -292,24 +254,6 @@ function injectControl(node: ReactNode, control: ControlProps): ReactNode {
     });
   }
   return node;
-}
-
-type ValidateStatus = "" | "success" | "error" | "validating";
-
-export interface FormItemProps {
-  name?: NamePath;
-  rules?: readonly (Rule | RuleFactory)[];
-  children: ReactElement;
-  valuePropName?: "value" | "checked" | "fileList";
-  getValueFromEvent?: (...args: never[]) => unknown;
-  help?: ReactNode;
-  validateStatus?: ValidateStatus;
-  hasFeedback?: boolean;
-  noStyle?: boolean;
-  className?: string;
-  dependencies?: NamePath[];
-  label?: ReactNode;
-  initialValue?: unknown;
 }
 
 const noRules: readonly Rule[] = [];
@@ -381,7 +325,7 @@ function Item({
         prev = next;
         if (changed && !isEmpty(form.store.getFieldValue(name))) {
           validate().catch(function () {
-            // The error is already shown under the field.
+            // Error is already shown under the field
           });
         }
       });
@@ -405,7 +349,7 @@ function Item({
         form.store.getFieldsValue() as FormValues,
       );
       validate().catch(function () {
-        // The error is already shown under the field.
+        // Error is already shown under the field
       });
     },
   };
@@ -447,20 +391,6 @@ function Item({
   );
 }
 Item.displayName = "FormItem";
-
-export type FormProps<T extends object> = Omit<
-  FormHTMLAttributes<HTMLFormElement>,
-  "onSubmit"
-> & {
-  form?: FormInstance<T>;
-  initialValues?: Partial<T>;
-  onFinish?: (values: T) => void;
-  onValuesChange?: (changed: Partial<T>, all: T) => void;
-  size?: ControlSize;
-  scrollToFirstError?: boolean;
-  layout?: string;
-  colon?: boolean;
-};
 
 function Form<T extends object = FormValues>({
   form,
@@ -508,7 +438,7 @@ function Form<T extends object = FormValues>({
       }
     }
     if (hasErrors) {
-      // Wait a frame so the error messages are on the page.
+      // Wait a frame so error messages are rendered
       if (scrollToFirstError) {
         requestAnimationFrame(function () {
           formElement

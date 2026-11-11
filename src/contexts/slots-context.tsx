@@ -2,13 +2,9 @@ import type { ReactNode } from "react";
 import { createStrictContext } from "@/utils/create-strict-context";
 import { useRemoteData } from "@/hooks/use-remote-data";
 import { apiPost } from "@/services/client";
-import type { Id } from "@/types/user";
+import "@/types/user";
 import type { SlotsData } from "@/types/appointment";
-
-export interface SlotsQuery {
-  date: string;
-  doctorId: Id;
-}
+import type { SlotsQuery } from "@/types/queries";
 
 function getSlots(query: SlotsQuery) {
   return apiPost<SlotsData>("/get/slots", { data: query });
