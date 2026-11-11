@@ -8,7 +8,7 @@ import type {
 
 // Why the call is not showing
 export type SessionException =
-  false | "End" | "Closed" | "noSchedule" | "Expired";
+  false | "End" | "Closed" | "noSchedule" | "Expired" | "NoDevice";
 
 export interface MeetingState {
   myNickName: string;

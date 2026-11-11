@@ -9,7 +9,7 @@ import { useUserContext } from "@/contexts/user-context";
 import { useUtilsContext } from "@/contexts/utils-context";
 import { api, errorData, errorStatus } from "@/services/client";
 import { toQuery } from "@/utils/query";
-import type { MeetingState } from "@/types/meeting";
+import type { MeetingState, SessionException } from "@/types/meeting";
 
 // Everything about a live call cleared when it stops
 const noCall = {
@@ -18,6 +18,25 @@ const noCall = {
   publisher: undefined,
   subscribers: [],
 } satisfies Partial<MeetingState>;
+
+// OpenVidu and browser errors that mean the camera or microphone is missing or blocked
+const deviceErrors = new Set([
+  "INPUT_VIDEO_DEVICE_NOT_FOUND",
+  "INPUT_AUDIO_DEVICE_NOT_FOUND",
+  "DEVICE_ACCESS_DENIED",
+  "DEVICE_ALREADY_IN_USE",
+  "NO_INPUT_SOURCE_SET",
+  "NotFoundError",
+  "NotAllowedError",
+]);
+
+const exceptionMessages: Record<Exclude<SessionException, false>, string> = {
+  End: "The call has ended",
+  Closed: "The other side closed the call",
+  noSchedule: "This call needs a running appointment",
+  Expired: "Your session expired",
+  NoDevice: "No camera or microphone found or access was blocked",
+};
 
 export default function VideoMeeting({
   nickname,
@@ -78,6 +97,11 @@ export default function VideoMeeting({
 
   // A 401 with noSchedule means no running appointment and any other 401 means the session expired
   function handleCallError(err: unknown) {
+    const errName = (err as { name?: unknown } | null)?.name;
+    if (typeof errName === "string" && deviceErrors.has(errName)) {
+      update({ ...noCall, isLoading: false, sessionException: "NoDevice" });
+      return;
+    }
     if (errorStatus(err) === 401) {
       if (errorData(err)?.noSchedule) {
         update({
@@ -290,27 +314,24 @@ export default function VideoMeeting({
             ) : null}
             <Video className="text-5xl sm:text-6xl my-12 lg:text-7xl text-blue-700" />
             {sessionDetails.isError ? (
-              <div className="flex bg-red-500/70 my-8 rounded p-4 items-center justify-center gap-2">
+              <div className="my-8 flex flex-wrap items-center justify-center gap-2 rounded bg-red-700 p-4">
                 <span className="rounded p-2 font-medium text-white">
                   Some Thing goes Wrong
                 </span>
                 <Link
-                  className="rounded-lg text-center p-4 m-0 flex items-center text-white font-medium bg-blue-500/80"
+                  className="rounded-lg text-center p-4 m-0 flex items-center text-white font-medium bg-blue-600"
                   to="/"
                 >
                   Go Home
                 </Link>
               </div>
             ) : sessionDetails.sessionException ? (
-              <div className="flex bg-red-500/70 my-8 rounded p-4 items-center justify-center gap-2">
+              <div className="my-8 flex flex-wrap items-center justify-center gap-2 rounded bg-red-700 p-4">
                 <span className="rounded p-2 font-medium text-white">
-                  Session{" "}
-                  {sessionDetails.sessionException === "noSchedule"
-                    ? "Require Schedule"
-                    : sessionDetails.sessionException}
+                  {exceptionMessages[sessionDetails.sessionException]}
                 </span>
                 <Button
-                  className="rounded-lg p-4 m-0 flex items-center text-white font-medium bg-blue-500/80"
+                  className="rounded-lg p-4 m-0 flex items-center text-white font-medium bg-blue-600"
                   disabled={sessionDetails.isLoading}
                   onClick={function () {
                     if (hasDetails()) createSession();
@@ -323,7 +344,7 @@ export default function VideoMeeting({
                 </Button>
                 {sessionDetails.sessionException !== "noSchedule" ? (
                   <Link
-                    className="rounded-lg m-0 p-1 text-center border flex items-center text-white font-medium bg-blue-400/80"
+                    className="rounded-lg m-0 p-1 text-center border flex items-center text-white font-medium bg-blue-600"
                     to="/doctors"
                   >
                     find doctors
@@ -334,7 +355,7 @@ export default function VideoMeeting({
             {!sessionDetails.sessionException && !sessionDetails.isError ? (
               <Button
                 disabled={sessionDetails.isLoading}
-                className="rounded-lg px-8 p-4 text-white flex justify-center font-medium m-0 items-center bg-blue-500 hover:bg-blue-800"
+                className="rounded-lg px-8 p-4 text-white flex justify-center font-medium m-0 items-center bg-blue-600 hover:bg-blue-800"
                 onClick={function () {
                   if (hasDetails()) joinSession();
                 }}
@@ -356,7 +377,7 @@ export default function VideoMeeting({
           >
             <div id="session-header" className="flex gap-2">
               <Button
-                className="p-1 bg-red-500/70 text-white hover:bg-red-700 rounded"
+                className="rounded bg-red-600 p-1 text-white hover:bg-red-700"
                 onClick={leaveSession}
               >
                 Leave Now
@@ -394,7 +415,7 @@ export default function VideoMeeting({
               {sessionDetails.subscribers.map(function (sub) {
                 return (
                   <div
-                    key={sub.id}
+                    key={sub.stream.streamId}
                     className="stream-container w-1/5 sm:w-1/4 lg:w-1/4 xl:w-1/5"
                     onClick={function () {
                       update({ mainStreamManager: sub });

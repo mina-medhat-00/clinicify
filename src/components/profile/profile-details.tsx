@@ -51,7 +51,6 @@ export default function ProfileDetails({
       ? [{ data: [{ label: "Specialty", name: "specialty" as const }] }]
       : []),
     {
-      headerColor: "bg-blue-800/80",
       headers: ["Personal Details"],
       data: [
         {
@@ -65,7 +64,6 @@ export default function ProfileDetails({
       ],
     },
     {
-      headerColor: "bg-blue-700/80",
       headers: ["Address"],
       data: [
         {
@@ -79,7 +77,6 @@ export default function ProfileDetails({
       ],
     },
     {
-      headerColor: "bg-blue-600/80",
       headers: ["Contact"],
       data: [
         {
@@ -101,7 +98,7 @@ export default function ProfileDetails({
         </FeedbackContextProvider>
       ) : null}
       <div className="profile--wrapper--details my-5 rounded-xl">
-        <div className="flex justify-center items-center gap-2 mt-4 mb-4 text-white font-medium text-lg sm:text-xl p-4 bg-blue-600">
+        <div className="flex justify-center items-center gap-2 mt-4 mb-4 text-white font-medium text-lg sm:text-xl p-4 bg-blue-900">
           <Contact /> Personal Information
         </div>
         {profileDetails.map(function (section, i) {

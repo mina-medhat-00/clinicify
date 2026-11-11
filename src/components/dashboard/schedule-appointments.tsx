@@ -188,6 +188,12 @@ export default function ScheduleAppointments({
               fetchUserData={fetchUserData}
               fetchSlotsData={fetchSlotsData}
               timeZone={timeZone}
+              onDone={function () {
+                setHandleDrawer(false);
+                setTimeout(function () {
+                  setEditIndex(null);
+                }, 500);
+              }}
             />
           </Drawer>
         </>
@@ -206,6 +212,7 @@ export default function ScheduleAppointments({
         />
       )}
       <CancelSlotPopUp
+        date={day}
         prompt={cancel.prompt}
         onClose={cancel.close}
         closeColor="text-red-800/80 hover:text-red-800"

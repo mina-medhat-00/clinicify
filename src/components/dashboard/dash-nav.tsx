@@ -12,23 +12,23 @@ import type { DoctorDashType } from "@/types/dashboard";
 const items: { name: DoctorDashType; icon: ReactNode }[] = [
   {
     name: "profile",
-    icon: <User className="w-full text-lg sm:text-2xl" />,
+    icon: <User className="mx-auto size-5 sm:size-6" />,
   },
   {
     name: "schedule",
-    icon: <Calendar className="w-full text-lg sm:text-2xl" />,
+    icon: <Calendar className="mx-auto size-5 sm:size-6" />,
   },
   {
     name: "appointments",
-    icon: <User className="w-full text-lg sm:text-2xl" />,
+    icon: <User className="mx-auto size-5 sm:size-6" />,
   },
   {
     name: "chat",
-    icon: <MessageCircleQuestion className="w-full text-lg sm:text-2xl" />,
+    icon: <MessageCircleQuestion className="mx-auto size-5 sm:size-6" />,
   },
   {
     name: "statistics",
-    icon: <ChartColumn className="w-full text-lg sm:text-2xl" />,
+    icon: <ChartColumn className="mx-auto size-5 sm:size-6" />,
   },
 ];
 
@@ -64,6 +64,7 @@ export default function DashNav({
               content={<span className="text-white">{name}</span>}
               color="blue-inverse"
               className="bg-gray-600 font-medium"
+              rootClassName={isMobile ? "w-full" : "w-1/5 grow"}
             >
               <div
                 onClick={function () {
@@ -76,18 +77,19 @@ export default function DashNav({
                   setHoverIdx(null);
                 }}
                 className={`box-border flex flex-wrap hover:underline sm:hover:no-underline hover:shadow-md ${
-                  dashType === name ? "bg-yellow-600" : "hover:bg-gray-400"
+                  dashType === name
+                    ? "bg-amber-400 text-gray-900"
+                    : "text-white hover:bg-gray-600"
                 } ${
                   isMobile
                     ? "w-full px-3 py-6 text-xs font-medium"
-                    : "w-1/5 grow p-3"
-                } text-white sm:text-sm sm:font-medium lg:text-lg`}
+                    : "w-full p-3"
+                } sm:text-sm sm:font-medium lg:text-lg`}
               >
                 <button
                   type="button"
-                  className={`w-full h-full ${
-                    dashType === name ? "" : "hover:text-gray-700"
-                  }`}
+                  aria-label={name}
+                  className="h-full w-full"
                 >
                   {icon}
                 </button>

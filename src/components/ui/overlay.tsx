@@ -1,6 +1,7 @@
 import { X } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { cx } from "@/utils/cx";
+import { useEscape } from "@/hooks/use-escape";
 import type { Placement } from "@/types/ui";
 const placementClass: Record<Placement, string> = {
   top: "bottom-full left-1/2 mb-2 -translate-x-1/2",
@@ -26,6 +27,7 @@ function Popover({
   placement = "top",
   color,
   className,
+  rootClassName,
 }: {
   children?: ReactNode;
   content?: ReactNode;
@@ -36,6 +38,8 @@ function Popover({
   placement?: Placement;
   color?: string;
   className?: string;
+  // Sizes the wrapper when the trigger must fill its parent
+  rootClassName?: string;
 }) {
   const [internal, setInternal] = useState(false);
   const disabled = Array.isArray(trigger);
@@ -63,7 +67,7 @@ function Popover({
   return (
     <div
       ref={rootRef}
-      className="relative inline-flex"
+      className={cx("relative inline-flex", rootClassName)}
       onMouseEnter={function () {
         if (!isClick && !disabled && open !== false) setInternal(true);
       }}
@@ -72,6 +76,7 @@ function Popover({
       }}
     >
       <div
+        className={rootClassName ? "flex w-full" : undefined}
         onClick={function () {
           if (isClick && !disabled && open !== false) {
             setInternal(function (value) {
@@ -117,6 +122,7 @@ function Drawer({
   classNames?: { wrapper?: string; body?: string };
   children?: ReactNode;
 }) {
+  useEscape(Boolean(open), onClose);
   if (!open) return null;
   const fromLeft = placement === "left";
   return (

@@ -31,11 +31,11 @@ import type {
   SelectedDay,
 } from "@/types/appointment";
 const stateColors: Record<AppointmentState, string> = {
-  done: "bg-green-700/50",
-  booked: "bg-yellow-600/50",
-  canceled: "bg-red-700/50",
-  free: "bg-blue-700/50",
-  running: "bg-blue-800/50",
+  done: "bg-green-700",
+  booked: "bg-amber-700",
+  canceled: "bg-red-700",
+  free: "bg-blue-700",
+  running: "bg-blue-800",
 };
 
 const stateIcons: Record<AppointmentState, ReactNode> = {
@@ -111,7 +111,7 @@ export default function Appointments({ fromDash }: { fromDash?: boolean }) {
               key={state}
               className={`flex items-center hover:shadow-xl ${
                 appointmentState === state
-                  ? "bg-yellow-500"
+                  ? "bg-amber-400 text-gray-900"
                   : "hover:bg-gray-600 bg-gray-800"
               } p-2 ${
                 i === 0 ? (fromDash ? "lg:ml-2" : "sm:ml-2") : ""
@@ -305,6 +305,7 @@ export default function Appointments({ fromDash }: { fromDash?: boolean }) {
         />
       )}
       <CancelSlotPopUp
+        date={selectedDate.date}
         prompt={cancel.prompt}
         onClose={cancel.close}
         closeColor="text-red-800/80 hover:text-red-800"

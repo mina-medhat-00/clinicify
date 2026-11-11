@@ -1,3 +1,4 @@
+import { twMerge } from "tailwind-merge";
 import type { ClassValue } from "@/types/ui";
 
 function collect(parts: ClassValue[], into: string[]) {
@@ -8,8 +9,9 @@ function collect(parts: ClassValue[], into: string[]) {
   return into;
 }
 
+// Later classes win over earlier conflicting ones so callers can override defaults
 function cx(...parts: ClassValue[]) {
-  return collect(parts, []).join(" ");
+  return twMerge(collect(parts, []).join(" "));
 }
 
 function hasWidthClass(className?: string) {

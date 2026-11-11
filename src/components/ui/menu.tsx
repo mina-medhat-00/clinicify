@@ -48,7 +48,7 @@ function MenuItem({
     "cursor-pointer",
     "flex w-full items-center gap-2 rounded-md px-3 py-2 text-left",
     dark
-      ? "text-gray-200 hover:bg-[#1f3458] hover:text-white"
+      ? "text-gray-200 hover:bg-blue-900 hover:text-white [&_a]:text-inherit"
       : "text-gray-700 hover:bg-gray-100",
     item.key.includes("user") && "justify-start pl-1",
   );
@@ -94,8 +94,8 @@ function MenuItem({
           className={cx(
             "ml-2 overflow-hidden rounded-t-2xl pr-2",
             item.key.includes("sub31") &&
-              "scroll--v max-h-52 overflow-y-auto bg-[rgb(31,88,126)]",
-            item.key.includes("subdoc") && "bg-[rgb(23,65,107)]",
+              "scroll--v max-h-52 overflow-y-auto bg-sky-900",
+            item.key.includes("subdoc") && "bg-blue-900",
           )}
         >
           {children.map(function (child) {

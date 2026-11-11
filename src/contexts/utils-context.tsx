@@ -6,7 +6,8 @@ import { createStrictContext } from "@/utils/create-strict-context";
 import { apiOrigin } from "@/utils/api";
 
 const socket = io(apiOrigin);
-const timeZone = " gmt+0300";
+// Clinic times are stored as Cairo wall clock times
+const timeZone = "Africa/Cairo";
 
 function useUtilsValue() {
   const [messageApi, contextHolder] = message.useMessage();

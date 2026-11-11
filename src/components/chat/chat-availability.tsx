@@ -5,6 +5,7 @@ import { useAppointmentContext } from "@/contexts/appointment-context";
 import { useChatContext } from "@/contexts/chat-context";
 import type { Appointment, Remaining } from "@/types/appointment";
 import type { Id, UserType } from "@/types/user";
+import { clinicDate } from "@/utils/time";
 // Next unfinished appointment as later before it starts or now while it runs
 function nearestRemaining(
   appointments: Appointment[],
@@ -17,7 +18,7 @@ function nearestRemaining(
     })
     .map(function ({ schedule_date, slot_time, appointment_duration }) {
       return {
-        start: new Date(`${schedule_date} ${slot_time} ${timeZone}`),
+        start: clinicDate(schedule_date, slot_time, timeZone),
         duration: appointment_duration,
       };
     })
@@ -103,7 +104,7 @@ export default function ChatAvailability({
           <div>There's no Appointments Booked yet</div>
           <Link
             to={`/profile/${String(withUser)}`}
-            className="hover:bg-blue-500 bg-blue-400 p-4 text-center text-sm rounded-md text-white hover:text-gray-100"
+            className="hover:bg-blue-700 bg-blue-600 p-4 text-center text-sm rounded-md text-white hover:text-gray-100"
           >
             Book Now
           </Link>

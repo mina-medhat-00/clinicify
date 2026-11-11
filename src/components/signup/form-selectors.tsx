@@ -5,7 +5,7 @@ import { currencyOptions, phonePrefixOptions } from "@/constants/sign-data";
 const prefixSelector = (
   <Form.Item name="prefix" noStyle rules={[{ required: true }]}>
     <Select
-      className="w-24 bg-gray-100 flex items-center"
+      className="flex w-28 items-center whitespace-nowrap bg-gray-100"
       showSearch
       optionFilterProp="label"
       options={phonePrefixOptions}

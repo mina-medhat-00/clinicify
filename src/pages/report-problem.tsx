@@ -49,7 +49,6 @@ export default function ReportProblem() {
       <TitleHeader
         icon={<Flag className="text-white size-6 m-auto" />}
         title="Report a problem"
-        contentBg="bg-gray-400"
         wrapperBg="no"
       />
       <div

@@ -1,5 +1,6 @@
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import { X } from "lucide-react";
+import { useEscape } from "@/hooks/use-escape";
 
 export default function PopUp({
   children,
@@ -20,6 +21,7 @@ export default function PopUp({
   customStyle?: CSSProperties;
 }) {
   const [showPop, setShowPop] = useState(false);
+  useEscape(Boolean(show), handleClose);
   if (show && !showPop) setShowPop(true);
   useEffect(
     function () {

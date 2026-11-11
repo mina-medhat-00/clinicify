@@ -52,9 +52,9 @@ export default function Sidebar({
   }
 
   const activeLink =
-    "flex items-center gap-5 px-4 pt-3 pb-2.5 rounded-lg text-white bg-blue-700 text-md m-2";
+    "flex items-center gap-5 px-4 pt-3 pb-2.5 rounded-lg text-white bg-blue-700 text-base m-2";
   const normalLink =
-    "flex items-center gap-5 px-4 pt-3 pb-2.5 rounded-lg text-md text-gray-700 dark:text-gray-200 dark:hover:text-black hover:bg-gray-100 m-2";
+    "flex items-center gap-5 px-4 pt-3 pb-2.5 rounded-lg text-base text-gray-700 dark:text-gray-200 dark:hover:text-black hover:bg-gray-100 m-2";
 
   return (
     <div className="ml-3 h-screen md:overflow-hidden overflow-auto md:hover:overflow-auto pb-10">
@@ -81,9 +81,7 @@ export default function Sidebar({
             </button>
           </div>
           <div className="mt-10">
-            <p className="text-gray-400 dark:text-gray-400 m-3 mt-4 uppercase">
-              Dashboard
-            </p>
+            <p className="text-gray-500 m-3 mt-4 uppercase">Dashboard</p>
             {dashboardLinks.map(function (link) {
               return (
                 <button
@@ -99,9 +97,7 @@ export default function Sidebar({
                 </button>
               );
             })}
-            <p className="text-gray-400 dark:text-gray-400 m-3 mt-4 uppercase">
-              General
-            </p>
+            <p className="text-gray-500 m-3 mt-4 uppercase">General</p>
             {generalLinks.map(function (link) {
               return (
                 <Link

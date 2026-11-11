@@ -2,9 +2,14 @@ import type { ReactNode } from "react";
 import { Skeleton } from "@/components/ui/display";
 import type { ProfileRow } from "@/types/profile";
 
+// The API stores missing numbers as the text none
 function isBlank(value: ReactNode) {
   return (
-    value === null || value === undefined || value === "" || value === false
+    value === null ||
+    value === undefined ||
+    value === "" ||
+    value === false ||
+    value === "none"
   );
 }
 
@@ -86,20 +91,20 @@ export default function ProfileTable({
                   <tr key={i}>
                     <th
                       scope="row"
-                      className={`text-gray-500/80 border-b border-gray-300 capitalize ${
+                      className={`text-gray-600 border-b border-gray-300 capitalize ${
                         propColor ?? "bg-gray-100"
                       } text-sm sm:text-lg p-3 font-medium w-1/3`}
                     >
                       {name}
                     </th>
                     <td
-                      className={`px-2 text-gray-400 ${
+                      className={`px-2 text-gray-800 ${
                         i + 1 === arr.length ? "" : "border-b border-gray-100"
                       } break-all text-sm sm:text-lg font-medium`}
                     >
                       {!isBlank(preValue) && !isBlank(value) ? (
                         <>
-                          {preValue} {value}
+                          +{preValue} {value}
                         </>
                       ) : isBlank(value) ? (
                         <div>{icon}</div>

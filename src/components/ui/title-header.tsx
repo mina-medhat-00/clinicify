@@ -21,7 +21,7 @@ export default function TitleHeader({
     <div
       className={`grow w-full py-3 border-y border-white text-center ${
         contClass ?? "mb-2"
-      } ${contentBg ?? "bg-blue-900/80 hover:bg-blue-900"}`}
+      } ${contentBg ?? (to ? "bg-blue-900 hover:bg-blue-950" : "bg-blue-900")}`}
     >
       <h1 className="break-all text-2xl sm:text-3xl xl:text-4xl text-white text-center capitalize">
         {title}

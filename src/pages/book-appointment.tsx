@@ -17,6 +17,7 @@ import type { Id } from "@/types/user";
 import type { PaymentStep } from "@/types/payment-step";
 import type { Slot } from "@/types/appointment";
 import getStripe from "@/utils/get-stripe";
+import { clinicDate } from "@/utils/time";
 
 const { Title } = Typography;
 
@@ -29,14 +30,12 @@ function readStorage(key: string) {
   }
 }
 
-// Last viewed day if it is later this month
+// Last viewed or picked day if it is still upcoming
 function storedDate() {
   const saved = readStorage("book_date");
   const day = saved ? dayjs(saved) : null;
   const today = dayjs();
-  return day?.isValid() && day.isAfter(today) && day.isSame(today, "month")
-    ? day
-    : today;
+  return day?.isValid() && !day.isBefore(today, "day") ? day : today;
 }
 
 // Payment description holds the booked slot as JSON
@@ -162,9 +161,7 @@ export default function BookAppointment({
   }
   // True when the slot starts at least a minute from now
   function isUpcoming(slotTime: string) {
-    return (
-      new Date(`${day} ${slotTime}${timeZone}`).getTime() > now + 1000 * 60
-    );
+    return clinicDate(day, slotTime, timeZone).getTime() > now + 1000 * 60;
   }
   const isUpToDate = !selectedDate.isBefore(dayjs(), "day");
   const isUser = userid !== undefined && userid !== doctorId;
@@ -185,7 +182,7 @@ export default function BookAppointment({
               <Empty
                 className="mt-3"
                 description={
-                  <span className="font-medium text-gray-400">
+                  <span className="font-medium text-gray-600">
                     there's no Appointments available yet
                   </span>
                 }

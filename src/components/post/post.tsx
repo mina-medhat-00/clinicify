@@ -162,7 +162,7 @@ function CommentActions({
     {
       type: "like",
       total: numLike,
-      color: "text-blue-400",
+      color: "text-blue-700",
       icon: (
         <ThumbsUp
           onClick={function () {
@@ -179,7 +179,7 @@ function CommentActions({
     {
       type: "dislike",
       total: numDisLike,
-      color: "text-yellow-400",
+      color: "text-yellow-700",
       icon: (
         <ThumbsDown
           fill="white"
@@ -198,7 +198,7 @@ function CommentActions({
     {
       type: "angry",
       total: numAngry,
-      color: "text-red-400",
+      color: "text-red-700",
       icon: (
         <Angry
           onClick={function () {
@@ -231,13 +231,13 @@ function CommentActions({
               return (
                 <div key={type}>
                   {icon}
-                  <span className={`${color} rounded-md p-1 z-20`}>
+                  <span className={`${color} z-20 rounded-md p-1 font-medium`}>
                     {total}
                   </span>
                 </div>
               );
             })}
-            <div className="p-1 flex flex-col gap-1 items-center shadow bg-blue-500/60 rounded-md">
+            <div className="flex flex-col items-center gap-1 rounded-md bg-blue-600 p-1 text-white shadow">
               <MessageCircle /> {numComments}
             </div>
           </div>
@@ -264,17 +264,18 @@ function CommentActions({
           </div>
         )}
         {!isComment ? (
-          <div
+          <button
+            type="button"
             onClick={function () {
               setShowPost?.(postId);
               // Let the popup open before showing the reply box
               if (showPost !== postId) setTimeout(toggleReply, 100);
               else toggleReply();
             }}
-            className="cursor-pointer p-2 rounded-lg text-gray-700 hover:bg-gray-100 bg-white"
+            className="cursor-pointer rounded-lg bg-white p-2 text-gray-700 hover:bg-gray-100"
           >
             Comment
-          </div>
+          </button>
         ) : (
           <Reply
             onClick={toggleReply}
@@ -294,7 +295,6 @@ function ReplyBox({
   fetchCommentsData,
   socket,
   lenViewedComments,
-  setLen,
 }: {
   isComment: boolean;
   setReply: Dispatch<SetStateAction<ReplyTarget>>;
@@ -320,7 +320,7 @@ function ReplyBox({
           isComment ? "text-white" : "text-gray-700"
         } rounded`}
       >
-        <div className="flex justify-left items-center gap-1">
+        <div className="flex justify-start items-center gap-1">
           <UserAvatar src={userData?.img_url} userType={userData?.user_type} />
           {userData?.nick_name ?? "user"}
         </div>
@@ -337,7 +337,7 @@ function ReplyBox({
       </div>
       <div className="p-3 relative">
         <Input.TextArea
-          className="rounded-xl h-20 sm:w-1/2"
+          className="h-20 w-full rounded-xl"
           value={content}
           onChange={function (event) {
             setContent(event.target.value);
@@ -345,7 +345,7 @@ function ReplyBox({
         />
         <div className="p-3 flex justify-between gap-2">
           <Button
-            className="rounded-lg justify-center font-medium flex items-center border border-blue-600 text-white m-0 py-4 bg-blue-500/60 hover:bg-blue-400"
+            className="m-0 flex items-center justify-center rounded-lg border border-blue-700 bg-blue-600 py-4 font-medium text-white hover:bg-blue-700"
             onClick={function () {
               if (!userData || !content) {
                 setShowWarn(true);
@@ -361,14 +361,11 @@ function ReplyBox({
                 fetchUserData,
               }).then(function (sent) {
                 if (!sent) return;
-                // Load one more so the new comment shows up
+                // Load one more so the new comment shows up and the socket echo updates the count
                 void fetchCommentsData(
                   { postId, limit: lenViewedComments + 1 },
                   { silent: true },
                 );
-                setLen(function (len) {
-                  return len + 1;
-                });
                 setReply(null);
               });
             }}
@@ -461,12 +458,12 @@ function CommentTemplate({
       <div className="p-1 flex gap-1 flex-wrap justify-between mr-1 text-gray-700 rounded">
         <Link
           to={`/profile/${String(userid)}`}
-          className="flex hover:text-gray-100 justify-left text-gray-700 items-center gap-2"
+          className="flex hover:text-gray-100 justify-start text-gray-700 items-center gap-2"
         >
           <UserAvatar src={imgUrl} />
           {nickname || "Message 1"}
         </Link>
-        <div className="flex justify-left items-center gap-2">
+        <div className="flex justify-start items-center gap-2">
           <span className="text-xs text-gray-700">
             {new Date(issuedTime).toLocaleString()}
           </span>
@@ -576,12 +573,12 @@ function PostTemplate({
       <div className="p-1 flex gap-1 flex-wrap justify-between text-white rounded">
         <Link
           to={`/profile/${String(userid)}`}
-          className="flex hover:text-gray-100 justify-left text-white items-center gap-2"
+          className="flex hover:text-gray-100 justify-start text-white items-center gap-2"
         >
           <UserAvatar src={imgUrl} />
           {nickname || "Message 1"}
         </Link>
-        <div className="flex justify-left items-center gap-2">
+        <div className="flex justify-start items-center gap-2">
           <span className="text-xs text-gray-300">
             {new Date(issuedTime).toLocaleString()}
           </span>

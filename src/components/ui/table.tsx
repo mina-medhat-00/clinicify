@@ -308,8 +308,8 @@ function TableBase<R extends TableRow>({
                 className={cx(
                   "size-8 rounded border text-sm",
                   current === number
-                    ? "border-blue-500 bg-blue-500 text-white"
-                    : "border-gray-300 bg-white",
+                    ? "border-blue-600 bg-blue-600 text-white"
+                    : "border-gray-300 bg-white text-gray-700",
                 )}
               >
                 {number}

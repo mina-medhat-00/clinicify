@@ -24,7 +24,7 @@ export default function PatientRecords({
   }
   return (
     <>
-      <div className="flex justify-center gap-2 items-center mt-4 mb-4 text-lg sm:text-xl text-white font-medium p-4 bg-gray-600">
+      <div className="flex justify-center gap-2 items-center mt-4 mb-4 text-lg sm:text-xl text-white font-medium p-4 bg-blue-900">
         <ClipboardPlus className="text-xl" />
         Medical History
       </div>

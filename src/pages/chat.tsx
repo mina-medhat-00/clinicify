@@ -161,17 +161,25 @@ export default function Chat() {
           ) : (
             <>
               <span className="text-gray-700 font-medium text-xl">
-                No Users
+                No conversations yet
               </span>
-              <Link to="/doctors">
-                <UserPlus className="text-blue-950 size-32 md:size-36" />
-              </Link>
-              <Link
-                to="/doctors"
-                className="p-3 sm:p-4 text-xl sm:text-3xl rounded-lg text-white bg-gray-800 hover:bg-gray-900"
-              >
-                Chat with Doctor Now
-              </Link>
+              {user?.user_type === "user" ? (
+                <>
+                  <Link to="/doctors">
+                    <UserPlus className="text-blue-950 size-32 md:size-36" />
+                  </Link>
+                  <Link
+                    to="/doctors"
+                    className="p-3 sm:p-4 text-xl sm:text-3xl rounded-lg text-white bg-gray-800 hover:bg-gray-900"
+                  >
+                    Chat with Doctor Now
+                  </Link>
+                </>
+              ) : (
+                <span className="max-w-sm text-center text-gray-600">
+                  Patients who message you will show up here
+                </span>
+              )}
             </>
           )}
         </div>

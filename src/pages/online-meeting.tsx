@@ -19,7 +19,7 @@ export default function OnlineMeeting() {
       session={session}
     />
   ) : !user ? (
-    <div className="w-1/2 text-center m-auto text-white font-medium p-2 bg-blue-400 rounded-md">
+    <div className="w-1/2 text-center m-auto text-white font-medium p-2 bg-blue-600 rounded-md">
       <div className="bg-blue-500 rounded text-lg py-8 shadow">
         Sign Up or Login First
       </div>
@@ -39,7 +39,7 @@ export default function OnlineMeeting() {
       </div>
     </div>
   ) : (
-    <div className="w-1/2 text-center m-auto text-white font-medium p-2 bg-blue-500/80 rounded-md">
+    <div className="w-1/2 text-center m-auto text-white font-medium p-2 bg-blue-600 rounded-md">
       <div className="bg-red-500/80 rounded text-lg py-8 shadow">
         Please fill all required information
       </div>

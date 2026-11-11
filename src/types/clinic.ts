@@ -48,7 +48,7 @@ export interface ProfileData {
 }
 
 export interface ClinicSection {
-  headerColor: string;
+  headerColor?: string;
   propColor?: string;
   headers: ReactNode[];
   data: { label: string; name: keyof Clinic; preValue?: keyof Clinic }[];

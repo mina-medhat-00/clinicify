@@ -97,7 +97,7 @@ export default function Navbar({
           className={`${
             dashType === "profile"
               ? "bg-gray-700 text-gray-100"
-              : "hover:bg-gray-100 text-gray-400"
+              : "hover:bg-gray-100 text-gray-600"
           } flex items-center gap-2 cursor-pointer p-1 rounded-lg`}
           onClick={function () {
             setDashType("profile");

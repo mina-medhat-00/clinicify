@@ -180,7 +180,7 @@ function Result({
         className,
       )}
     >
-      <div className="text-6xl font-semibold text-gray-300">{status}</div>
+      <div className="text-6xl font-semibold text-gray-500">{status}</div>
       <div className="text-2xl font-medium">{title}</div>
       <div>{subTitle}</div>
       {extra}

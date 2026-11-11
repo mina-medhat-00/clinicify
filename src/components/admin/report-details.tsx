@@ -5,6 +5,14 @@ import { useReportContext } from "@/contexts/report-context";
 
 const DAY = 1000 * 60 * 60 * 24;
 
+// Report age as today or yesterday or N days ago
+function ageText(elapsed: number) {
+  const days = Math.floor(elapsed / DAY);
+  if (days < 1) return "today";
+  if (days === 1) return "yesterday";
+  return `${String(days)} days ago`;
+}
+
 export default function ReportDetails() {
   const { reports: reportDetailsData, isLoading } = useReportContext();
   // Ages are measured from when the list opened
@@ -27,9 +35,8 @@ export default function ReportDetails() {
               value: (
                 <div className="w-full flex justify-between gap-2">
                   <div>{issue}</div>
-                  <div className="font-bold text-blue-500">
-                    {Math.floor((now - new Date(issued_time).getTime()) / DAY)}{" "}
-                    days ago
+                  <div className="shrink-0 font-bold text-blue-700">
+                    {ageText(now - new Date(issued_time).getTime())}
                   </div>
                 </div>
               ),

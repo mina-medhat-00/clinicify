@@ -25,7 +25,7 @@ export default class UserVideoComponent extends Component<{
         {streamManager ? (
           <div className="relative">
             <OpenViduVideoComponent streamManager={streamManager} />
-            <div className="absolute rounded-br bg-neutral-50 px-1 font-bold text-neutral-500">
+            <div className="absolute whitespace-nowrap rounded-br bg-neutral-50 px-1 font-bold text-neutral-700">
               <p className="m-0">{nicknameOf(streamManager)}</p>
             </div>
           </div>

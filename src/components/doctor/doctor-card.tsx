@@ -153,6 +153,7 @@ export default function DoctorCard({
             </div>
             <Popover
               trigger="click"
+              rootClassName="w-full"
               open={user ? false : null}
               content={
                 <span className="font-medium">
@@ -160,8 +161,9 @@ export default function DoctorCard({
                 </span>
               }
             >
-              <div
-                className="flex justify-center items-center hover:bg-yellow-700 bg-yellow-500 hover:text-black gap-2 rounded w-full text-gray-700 h-9"
+              <button
+                type="button"
+                className="flex min-h-9 w-full items-center justify-center gap-2 rounded bg-amber-400 px-2 py-1 text-center text-sm font-medium text-gray-900 hover:bg-amber-500"
                 onClick={function (event) {
                   event.stopPropagation();
                   event.preventDefault();
@@ -171,9 +173,9 @@ export default function DoctorCard({
                   }
                 }}
               >
-                <MessageCircle className="hover:text-black rounded py-2 text-gray-700" />
-                <span className="font-medium">Ask your Question</span>
-              </div>
+                <MessageCircle className="size-4 shrink-0" />
+                <span>Ask your Question</span>
+              </button>
             </Popover>
           </div>
         </div>

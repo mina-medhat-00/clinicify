@@ -140,7 +140,6 @@ export default function HomePage() {
       </PostsContextProvider>
       <TitleHeader
         wrapperBg="no"
-        contentBg="bg-blue-900/90"
         title="Statistics"
         icon={
           <ChartColumn className="text-3xl sm:text-5xl xl:text-6xl m-auto" />
@@ -171,7 +170,7 @@ export default function HomePage() {
                   {" "}
                   <Statistic
                     title={
-                      <span className="text-gray-500 font-medium text-sm sm:text-lg">
+                      <span className="text-gray-600 font-medium text-sm sm:text-lg">
                         {title}
                       </span>
                     }

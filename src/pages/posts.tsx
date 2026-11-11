@@ -257,9 +257,7 @@ export default function Posts({ home }: { home?: boolean }) {
             description={
               <span
                 className={
-                  home
-                    ? "text-white bg-blue-600/60 p-1 rounded"
-                    : "text-gray-500"
+                  home ? "rounded bg-blue-700 p-1 text-white" : "text-gray-500"
                 }
               >
                 There are no posts

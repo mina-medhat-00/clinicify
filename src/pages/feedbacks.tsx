@@ -206,7 +206,7 @@ export default function Feedbacks({
                     ? username
                       ? "text-white"
                       : "text-gray-500"
-                    : "text-white bg-blue-600/60 p-1 rounded"
+                    : "rounded bg-blue-700 p-1 text-white"
                 } font-medium`}
               >
                 There are no feedbacks

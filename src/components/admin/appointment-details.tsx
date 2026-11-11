@@ -55,6 +55,7 @@ export default function AppointmentDetails({ doctorId }: { doctorId: Id }) {
       <div className="mt-2 max-h-52 overflow-auto p-1">
         <div className="flex gap-2 justify-evenly flex-wrap">
           <CancelSlotPopUp
+            date={day}
             prompt={cancel.prompt}
             onClose={cancel.close}
             onConfirm={function (slot) {
@@ -80,7 +81,7 @@ export default function AppointmentDetails({ doctorId }: { doctorId: Id }) {
             <Empty
               className="flex flex-col"
               description={
-                <span className="font-medium text-white bg-gray-400 p-1 rounded-md">
+                <span className="rounded-md bg-gray-600 p-1 font-medium text-white">
                   No Appointments Scheduled
                 </span>
               }

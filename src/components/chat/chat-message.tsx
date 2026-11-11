@@ -17,21 +17,21 @@ export default function Message({
           isMobile ? "min-w-48" : "min-w-32"
         } ${
           me
-            ? "rounded-tl-lg ml-auto rounded-lg text-white bg-blue-500"
+            ? "rounded-tl-lg ml-auto rounded-lg text-white bg-blue-600"
             : "rounded-br-lg bg-white"
         } p-2`}
       >
         <span className={me ? "block" : ""}>{content}</span>
         <span
           className={`${
-            me ? "text-gray-400  block ml-auto" : "ml-auto text-gray-200"
+            me ? "block ml-auto text-blue-100" : "ml-auto text-gray-500"
           } text-xs`}
         >
           {issued_time}
         </span>
         <div
           className={`absolute top-0 border-8 border-x-transparent border-t-8 ${
-            me ? "-left-3 border-t-white" : "-right-3 border-t-blue-500"
+            me ? "-right-2 border-t-blue-600" : "-left-2 border-t-white"
           }`}
         ></div>
       </div>

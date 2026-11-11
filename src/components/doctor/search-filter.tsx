@@ -131,7 +131,7 @@ export default forwardRef<
               location: "",
             });
           }}
-          className="bg-red-400 hover:bg-red-500"
+          className="bg-red-600 text-white hover:bg-red-700"
         >
           Reset
         </Button>

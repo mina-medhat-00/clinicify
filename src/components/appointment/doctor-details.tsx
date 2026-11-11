@@ -16,7 +16,7 @@ export default function DoctorDetails({
           >
             <span className="capitalize text-gray-700 font-medium sm:text-sm xl:text-base">
               {label}:{" "}
-              <span className="text-gray-500">
+              <span className="text-gray-700">
                 {value === null || value === undefined || value === "" ? (
                   <Ban />
                 ) : (

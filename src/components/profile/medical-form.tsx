@@ -53,7 +53,7 @@ export default function MedicalForm({
                 >
                   <Input.TextArea
                     maxLength={250}
-                    className="scroll--v text-md font-medium 
+                    className="scroll--v text-base font-medium 
 rounded-lg resize-none"
                     placeholder="State your current issue"
                   />
@@ -66,7 +66,7 @@ rounded-lg resize-none"
                 <Item className="my-0 p-1" name="illnessesHistory">
                   <Input.TextArea
                     maxLength={250}
-                    className="scroll--v text-md font-medium 
+                    className="scroll--v text-base font-medium 
             rounded-lg resize-none"
                     placeholder="Your diseases, illness history or other issues"
                   />
@@ -79,7 +79,7 @@ rounded-lg resize-none"
                 <Item className="my-0 p-1" name="allergies">
                   <Input.TextArea
                     maxLength={250}
-                    className="scroll--v text-md font-medium 
+                    className="scroll--v text-base font-medium 
 rounded-lg resize-none"
                     placeholder="Allergies"
                   />
@@ -87,14 +87,14 @@ rounded-lg resize-none"
               ),
             },
             {
-              name: "Immunzations",
+              name: "Immunizations",
               value: (
                 <Item className="my-0 p-1" name="immunizations">
                   <Input.TextArea
                     maxLength={250}
-                    className="scroll--v text-md font-medium 
+                    className="scroll--v text-base font-medium 
             rounded-lg resize-none"
-                    placeholder="Immunzations"
+                    placeholder="Immunizations"
                   />
                 </Item>
               ),
@@ -105,7 +105,7 @@ rounded-lg resize-none"
                 <Item className="my-0 p-1" name="surgeries">
                   <Input.TextArea
                     maxLength={250}
-                    className="scroll--v text-md font-medium 
+                    className="scroll--v text-base font-medium 
             rounded-lg resize-none"
                     placeholder="Surgeries"
                   />

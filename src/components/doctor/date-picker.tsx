@@ -20,50 +20,52 @@ export default function DatePicker({
     weekday: "long",
   });
 
+  const textColor = fromAppointment ? "text-gray-700" : "text-white";
+  const arrow =
+    "flex size-9 shrink-0 items-center justify-center rounded-xl shadow-lg";
   return (
     <div
       className={`${
         fromAppointment ? "bg-gray-200/80" : "bg-gray-500"
-      } flex items-center`}
+      } flex items-center gap-1 px-1 py-1`}
     >
-      <ChevronsLeft
+      <button
+        type="button"
+        aria-label="Previous day"
+        disabled={!selectedDate.count}
         onClick={function () {
           setSelectedDate(function (value) {
             return value.count ? dayFromToday(value.count - 1) : value;
           });
         }}
-        className={`${
+        className={`${arrow} ${
           selectedDate.count
             ? "bg-white hover:bg-gray-200"
-            : "bg-gray-300 cursor-not-allowed"
-        } rounded-xl h-10 w-10 shadow-lg ml-1`}
-      />
+            : "cursor-not-allowed bg-gray-300"
+        }`}
+      >
+        <ChevronsLeft className="size-6" />
+      </button>
 
-      <div className="text-center grow">
-        <div
-          className={`font-medium select-none ${
-            fromAppointment ? "text-gray-700" : "text-white"
-          }`}
-        >
-          {day}
-        </div>
-        <div
-          className={`font-medium select-none ${
-            fromAppointment ? "text-gray-700" : "text-white"
-          }`}
-        >
-          {selectedDate.date}
-        </div>
+      <div
+        className={`min-w-0 grow text-center text-sm font-medium select-none ${textColor}`}
+      >
+        <div className="truncate">{day}</div>
+        <div className="truncate">{selectedDate.date}</div>
       </div>
 
-      <ChevronsRight
+      <button
+        type="button"
+        aria-label="Next day"
         onClick={function () {
           setSelectedDate(function (value) {
             return dayFromToday(value.count + 1);
           });
         }}
-        className="bg-white rounded-xl hover:bg-gray-200 h-10 w-10 shadow-lg mr-1"
-      />
+        className={`${arrow} bg-white hover:bg-gray-200`}
+      >
+        <ChevronsRight className="size-6" />
+      </button>
     </div>
   );
 }

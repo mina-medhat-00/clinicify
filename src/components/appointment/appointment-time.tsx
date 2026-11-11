@@ -4,7 +4,7 @@ import CountdownTimer from "@/components/appointment/appointment-countdown-timer
 import type { useAppointmentContext } from "@/contexts/appointment-context";
 import type { AppointmentState } from "@/types/appointment";
 import type { Id } from "@/types/user";
-import { slotClock } from "@/utils/time";
+import { slotClock, clinicDate } from "@/utils/time";
 
 export default function AppointmentTime({
   appointmentId,
@@ -37,9 +37,7 @@ export default function AppointmentTime({
   // Ask the API to advance an appointment when it starts or ends
   useEffect(
     function () {
-      const startsAt = new Date(
-        schedule_date + " " + slot_time + timeZone,
-      ).getTime();
+      const startsAt = clinicDate(schedule_date, slot_time, timeZone).getTime();
       if (isNaN(startsAt)) return;
       function advance() {
         void updateAppointment(
@@ -79,7 +77,7 @@ export default function AppointmentTime({
   return (
     <div className="flex gap-4 items-center">
       <div className="flex flex-wrap grow gap-2 justify-center items-center">
-        <div className="text-white grow bg-gray-300/50 rounded-lg p-1 font-medium text-center">
+        <div className="grow rounded-lg bg-black/25 p-1 text-center font-medium text-white">
           <div className="text-white flex justify-center">
             <table className="grow">
               <tbody>
@@ -112,19 +110,18 @@ export default function AppointmentTime({
         </div>
         {(appointment_state === "booked" ||
           appointment_state === "running") && (
-          <div className="text-white bg-gray-300/50 rounded-lg p-1 font-medium text-center">
-            <span className="text-gray-700 font-medium text-base lg:text-lg 2xl:text-xl">
+          <div className="rounded-lg bg-black/25 p-1 text-center font-medium text-white">
+            <span className="font-medium text-white text-base lg:text-lg 2xl:text-xl">
               Remaining Time
             </span>
-            <hr className="border-gray-700" />
+            <hr className="border-white/40" />
             <CountdownTimer
               targetDate={
                 appointment_state === "booked"
-                  ? new Date(schedule_date + " " + slot_time + timeZone)
+                  ? clinicDate(schedule_date, slot_time, timeZone)
                   : new Date(
-                      new Date(
-                        schedule_date + " " + slot_time + timeZone,
-                      ).getTime() + appointment_duration,
+                      clinicDate(schedule_date, slot_time, timeZone).getTime() +
+                        appointment_duration,
                     )
               }
             />

@@ -120,7 +120,7 @@ function Calendar({
                 "m-0.5 rounded-md",
                 fullscreen ? "h-16" : "h-9",
                 !inMonth && "text-gray-300",
-                isSelected && "bg-blue-500 text-white",
+                isSelected && "bg-blue-600 text-white",
                 !isSelected && isToday && "border border-blue-400",
                 !isSelected && inMonth && "hover:bg-blue-50",
               )}

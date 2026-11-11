@@ -14,12 +14,13 @@ import submitMessage, { chatRoomId } from "@/services/submit-message";
 import type { ChatMessage } from "@/types/content";
 import type { Id, UserType } from "@/types/user";
 import type { ServiceContext } from "@/types/api";
+import { clinicDate } from "@/utils/time";
 
 function getDate(message: ChatMessage | undefined, timeZone: string) {
   return message
-    ? dayjs(`${message.issued_date} ${message.issued_time} ${timeZone}`).format(
-        "YYYY-MM-DD",
-      )
+    ? dayjs(
+        clinicDate(message.issued_date, message.issued_time, timeZone),
+      ).format("YYYY-MM-DD")
     : null;
 }
 
@@ -88,6 +89,29 @@ export default function Messages({
     [withUser, user_id, socket],
   );
 
+  function sendMessage() {
+    if (!message.trim() || isLoading) return;
+    setIsLoading(true);
+    void submitMessage({
+      content: message,
+      messageTo: withUser,
+      userId: user_id,
+      // Notify the other user on the first message
+      isFirst: !messages.length,
+      socket,
+      messageApi,
+      fetchUserData,
+    }).then(function (result) {
+      setIsLoading(false);
+      if (result === "sent") {
+        setMessage("");
+        void fetchMessagesData({ message_to: withUser }, { silent: true });
+      } else if (result === "closed") {
+        void fetchChatData({ chat_to: withUser }, { silent: true });
+      }
+    });
+  }
+
   return (
     <>
       <div className="message--container flex flex-col-reverse border-gray-100 px-4 overflow-auto scroll--v scroll--v--chat">
@@ -104,7 +128,7 @@ export default function Messages({
                 return (
                   <Fragment key={item.message_id ?? i}>
                     {getDate(arr[i - 1], timeZone) !== day && (
-                      <div className="block w-fit mr-auto ml-auto text-white grow border border-white bg-blue-500/50 rounded-lg text-center py-1 my-2 px-4 font-medium overflow-auto">
+                      <div className="block w-fit mr-auto ml-auto text-white grow border border-white bg-blue-600 rounded-lg text-center py-1 my-2 px-4 font-medium overflow-auto">
                         {day}
                       </div>
                     )}
@@ -112,8 +136,10 @@ export default function Messages({
                       isMobile={isMobile}
                       content={content}
                       me={message_from === user_id}
-                      issued_time={new Date(
-                        `${issued_date} ${issued_time} ${timeZone}`,
+                      issued_time={clinicDate(
+                        issued_date,
+                        issued_time,
+                        timeZone,
                       ).toLocaleTimeString("en", {
                         hour: "numeric",
                         minute: "numeric",
@@ -143,6 +169,7 @@ export default function Messages({
               onChange={function (event) {
                 setMessage(event.target.value);
               }}
+              onPressEnter={sendMessage}
               className="rounded-lg"
               value={message}
             />
@@ -160,36 +187,14 @@ export default function Messages({
               (isLoading ? (
                 <Loader2 className="flex hover:text-blue-600 cursor-pointer items-center text-3xl text-blue-700 animate-spin" />
               ) : (
-                <Send
-                  className="flex hover:text-blue-600 cursor-pointer items-center text-3xl text-blue-700"
-                  onClick={function () {
-                    setIsLoading(true);
-                    void submitMessage({
-                      content: message,
-                      messageTo: withUser,
-                      userId: user_id,
-                      // Notify the other user on the first message
-                      isFirst: !messages.length,
-                      socket,
-                      messageApi,
-                      fetchUserData,
-                    }).then(function (result) {
-                      setIsLoading(false);
-                      if (result === "sent") {
-                        setMessage("");
-                        void fetchMessagesData(
-                          { message_to: withUser },
-                          { silent: true },
-                        );
-                      } else if (result === "closed") {
-                        void fetchChatData(
-                          { chat_to: withUser },
-                          { silent: true },
-                        );
-                      }
-                    });
-                  }}
-                />
+                <button
+                  type="button"
+                  aria-label="Send message"
+                  onClick={sendMessage}
+                  className="flex cursor-pointer items-center text-blue-700 hover:text-blue-600"
+                >
+                  <Send className="size-7" />
+                </button>
               ))}
           </div>
           {emojiOpen && (

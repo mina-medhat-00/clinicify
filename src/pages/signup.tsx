@@ -458,16 +458,20 @@ export default function Signup() {
         >
           <Radio.Group>
             <Radio.Button
-              className={`hover:bg-gray-200 border-2 bg-gray-700 text-white ${
-                formValues.userType === "user" ? "bg-purple-500" : ""
+              className={`border-2 text-white ${
+                formValues.userType === "user"
+                  ? "border-purple-600 bg-purple-600 hover:bg-purple-700"
+                  : "border-gray-700 bg-gray-700 hover:bg-gray-600"
               }`}
               value="user"
             >
               user
             </Radio.Button>
             <Radio.Button
-              className={`ml-1 hover:bg-gray-200 border-2 bg-gray-700 text-white ${
-                formValues.userType === "doctor" ? "bg-purple-500" : ""
+              className={`ml-1 border-2 text-white ${
+                formValues.userType === "doctor"
+                  ? "border-purple-600 bg-purple-600 hover:bg-purple-700"
+                  : "border-gray-700 bg-gray-700 hover:bg-gray-600"
               }`}
               value="doctor"
             >

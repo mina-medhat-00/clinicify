@@ -89,7 +89,7 @@ export default function UserManagement() {
             onClick={function () {
               setPendingDelete(user);
             }}
-            className="bg-blue-400 hover:bg-blue-600 rounded-lg font-medium text-white"
+            className="bg-blue-600 hover:bg-blue-700 rounded-lg font-medium text-white"
           >
             Delete
           </Button>
@@ -98,7 +98,7 @@ export default function UserManagement() {
               setSelectedUser(user);
               setShowRestrictions(true);
             }}
-            className="bg-red-400 hover:bg-red-600 rounded-lg font-medium text-white"
+            className="bg-red-600 hover:bg-red-700 rounded-lg font-medium text-white"
           >
             Restrict
           </Button>
@@ -117,7 +117,7 @@ export default function UserManagement() {
         }}
         closeColor="text-red-800/80 hover:text-red-800"
       >
-        <div className="text-center text-sm sm:text-lg p-2 bg-blue-400 text-white font-medium rounded-lg">
+        <div className="text-center text-sm sm:text-lg p-2 bg-blue-600 text-white font-medium rounded-lg">
           Delete {pendingDelete?.nick_name}'s account?
           <br /> This can't be undone.
         </div>
@@ -125,7 +125,7 @@ export default function UserManagement() {
           <button
             type="button"
             onClick={deleteUser}
-            className="cursor-pointer text-center bg-red-500 p-2 grow text-white font-medium rounded-lg shadow-sm"
+            className="cursor-pointer text-center bg-red-600 p-2 grow text-white font-medium rounded-lg shadow-sm"
           >
             Delete
           </button>
@@ -134,7 +134,7 @@ export default function UserManagement() {
             onClick={function () {
               setPendingDelete(null);
             }}
-            className="cursor-pointer text-center bg-blue-400 p-2 text-white font-medium rounded-lg shadow-sm"
+            className="cursor-pointer text-center bg-blue-600 p-2 text-white font-medium rounded-lg shadow-sm"
           >
             Cancel
           </button>

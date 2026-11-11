@@ -92,7 +92,7 @@ export default forwardRef<DoctorsHandle, { home?: boolean }>(function Doctors(
                 <span
                   className={
                     home
-                      ? "text-white bg-blue-600/60 p-1 rounded"
+                      ? "rounded bg-blue-700 p-1 text-white"
                       : "text-gray-500"
                   }
                 >

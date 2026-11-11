@@ -36,7 +36,7 @@ export default function FeedbackContent({
         <Row
           justify="space-between"
           align="middle"
-          className={`cursor-pointer rounded-2xl border-2 border-white bg-blue-400/90 hover:bg-blue-500/90 ${
+          className={`cursor-pointer rounded-2xl border-2 border-white bg-blue-700 hover:bg-blue-800 ${
             isMobile ? "text-xs" : ""
           }`}
           onClick={function () {
@@ -46,7 +46,7 @@ export default function FeedbackContent({
             if (mobile) setShowFeedback?.(order + 1);
           }}
         >
-          <div className="p-2 flex items-center justify-between grow gap-2 bg-blue-600/80 shadow-md rounded-lg">
+          <div className="flex grow items-center justify-between gap-2 rounded-lg bg-blue-900/60 p-2 shadow-md">
             <Col className="flex gap-1 flex-wrap items-center justify-between">
               <UserAvatar src={dimgUrl} userType="doctor" size="large" />
               <span className="text-white font-medium text-lg sm:text-xl lg:text-xl">
@@ -57,9 +57,9 @@ export default function FeedbackContent({
               <Rate disabled value={rate} />
             </Col>
           </div>
-          <div className="p-2 flex grow gap-2 bg-blue-200/30 rounded-lg">
+          <div className="flex grow gap-2 rounded-lg p-2">
             <Col className="flex flex-wrap items-center">
-              <span className="text-gray-100 bg-blue-600/70 shadow-md rounded p-0.5 font-medium text-lg sm:text-xl lg:text-xl">
+              <span className="p-0.5 font-medium text-blue-100 text-lg sm:text-xl lg:text-xl">
                 by
               </span>
             </Col>
@@ -73,7 +73,7 @@ export default function FeedbackContent({
         </Row>
         <Col
           id={`feedback--body--${String(order + 1)}`}
-          className="box-content h-0 min-h-0 overflow-hidden rounded-lg bg-blue-500/80 p-0 transition-all duration-500 ease-in-out"
+          className="box-content h-0 min-h-0 overflow-hidden rounded-lg bg-blue-900 p-0 transition-all duration-500 ease-in-out"
         >
           <div id={`feedback--paragraph--${String(order + 1)}`}>
             <span className="text-white break-all font-medium">

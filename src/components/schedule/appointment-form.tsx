@@ -23,6 +23,7 @@ import type {
 import type { Id } from "@/types/user";
 import type { SlotsQuery } from "@/types/queries";
 import type { LoadOptions, ServiceContext } from "@/types/api";
+import { clinicDate } from "@/utils/time";
 
 const DEFAULT_FEES = 300;
 const MINUTE = 60 * 1000;
@@ -40,7 +41,7 @@ const durationOptions = [
 ];
 
 const typeOptions: { value: AppointmentKind; label: string }[] = [
-  { value: "chat", label: "Chating" },
+  { value: "chat", label: "Chat" },
   { value: "inClinic", label: "in Clinic" },
   { value: "videoCall", label: "Video Call" },
 ];
@@ -87,11 +88,19 @@ function chkTimeSlot(
 function chkUpToDate(slots: SlotDraft[], date: Dayjs | null, timeZone: string) {
   if (!date) return false;
   return slots.every(function ({ slotTime }) {
-    const start = new Date(
-      `${date.format("YYYY-MM-DD")} ${slotTime}${timeZone}`,
-    );
+    const start = clinicDate(date.format("YYYY-MM-DD"), slotTime, timeZone);
     return start.getTime() > Date.now() && date.date() === start.getDate();
   });
+}
+
+// Label of the first field still empty in any slot
+function missingField(slots: SlotDraft[]) {
+  for (const slot of slots) {
+    if (!slot.appointmentDuration) return "an appointment duration";
+    if (!slot.appointmentFees) return "the appointment fees";
+    if (!slot.appointmentType) return "an appointment type";
+  }
+  return null;
 }
 
 function chkFillingData(slots: SlotDraft[]) {
@@ -110,8 +119,10 @@ function localClock(
   { h, m, timeMode }: SlotTimeParts,
   timeZone: string,
 ): { hour: number; mode: TimeMode } {
-  const start = new Date(
-    `${date ?? ""} ${String(h)}:${String(m)}:${timeMode} ${timeZone}`,
+  const start = clinicDate(
+    date ?? "",
+    `${String(h)}:${String(m)} ${timeMode}`,
+    timeZone,
   );
   if (Number.isNaN(start.getTime())) return { hour: h, mode: timeMode };
   return {
@@ -198,7 +209,7 @@ function AppointmentDetails({
       </div>
       <div className="w-fit mb-2">
         <span className="font-medium text-gray-500 xl:text-lg">Time Slot</span>
-        <hr className="border-gray-500 w-fill border-2" />
+        <hr className="border-gray-500 w-full border-2" />
       </div>
       <div className="flex flex-wrap mb-2 justify-center">
         <TimeSlotPicker
@@ -215,7 +226,7 @@ function AppointmentDetails({
               <span className="font-medium text-gray-500 xl:text-lg">
                 Appointment Duration
               </span>
-              <hr className="border-gray-500 w-fill border-2" />
+              <hr className="border-gray-500 w-full border-2" />
             </div>
             <div className="flex gap-2 items-center justify-center">
               <Clock className="w-5 h-5 sm:w-8 sm:h-8 text-gray-400" />
@@ -235,7 +246,7 @@ function AppointmentDetails({
               <span className="font-medium text-gray-500 xl:text-lg">
                 Appointment Fees
               </span>
-              <hr className="border-gray-500 w-fill border-2" />
+              <hr className="border-gray-500 w-full border-2" />
             </div>
             <div className="flex gap-2">
               <PoundSterling className="flex justify-center items-center text-xl sm:text-2xl text-gray-400" />
@@ -260,7 +271,7 @@ function AppointmentDetails({
           <span className="font-medium text-gray-500 xl:text-lg">
             Appointment Type
           </span>
-          <hr className="border-gray-500 w-fill border-2" />
+          <hr className="border-gray-500 w-full border-2" />
         </div>
         <div className="my-4 flex justify-center sm:flex-nowrap gap-4 sm:gap-6 border border-white bg-gray-200 p-2 rounded-lg shadow-md">
           {typeOptions.map(function ({ value, label }) {
@@ -304,6 +315,7 @@ export default function AppointmentForm({
   editAppointment,
   socket,
   timeZone,
+  onDone,
 }: ServiceContext & {
   selectedDate: Dayjs | null;
   fetchSlotsData: (
@@ -317,6 +329,8 @@ export default function AppointmentForm({
   editAppointment?: Slot;
   socket: Socket;
   timeZone: string;
+  // Called after the slots were saved
+  onDone?: () => void;
 }) {
   const isEdit = editAppointment !== undefined;
   const [appointmentDetails, setAppointmentDetails] = useState<SlotDraft[]>([]);
@@ -350,7 +364,7 @@ export default function AppointmentForm({
   const scheduleDate = selectedDate?.format("YYYY-MM-DD");
   return (
     <div className="p-2 sm:p-4">
-      <div className="scroll--h scroll--v overflow-auto max-h-96">
+      <div>
         <div className="flex flex-wrap gap-2">
           {appointmentElements.map(function (id, i) {
             return (
@@ -371,7 +385,8 @@ export default function AppointmentForm({
       <div className="flex flex-wrap gap-2">
         {!isEdit && (
           <div className="text-left">
-            <div
+            <button
+              type="button"
               onClick={function () {
                 const id = nextId.current;
                 nextId.current += 1;
@@ -379,13 +394,11 @@ export default function AppointmentForm({
                   return [...ids, id];
                 });
               }}
-              className="inline-block sm:w-fit text-center cursor-pointer hover:bg-gray-600 p-2 text-white font-medium bg-gray-500 rounded-lg"
+              className="mt-2 flex h-10 cursor-pointer items-center gap-2 rounded-lg bg-gray-600 px-3 font-medium text-white hover:bg-gray-700"
             >
-              <div className="flex gap-2">
-                <Plus className="text-2xl" />
-                <span>other appointment</span>
-              </div>
-            </div>
+              <Plus className="size-5" />
+              <span>Add another slot</span>
+            </button>
           </div>
         )}
         <Popover
@@ -396,7 +409,7 @@ export default function AppointmentForm({
           content={
             <span className="text-white font-medium">
               {!isFilled
-                ? "please, fill your information"
+                ? `Please choose ${missingField(appointmentDetails) ?? "all fields"}`
                 : !isUpToDate
                   ? "please choose a recent date"
                   : !isAdjusted
@@ -420,7 +433,8 @@ export default function AppointmentForm({
                 socket,
                 messageApi,
                 fetchUserData,
-              }).then(function () {
+              }).then(function (saved) {
+                if (saved) onDone?.();
                 // Reload either way so conflicts show which slots are taken
                 void fetchSlotsData(
                   { date: scheduleDate, doctorId: userid },
@@ -431,8 +445,8 @@ export default function AppointmentForm({
             type="primary"
             className={`m-auto mt-2 w-full sm:w-fit font-medium h-10 grow block ${
               !isDone
-                ? "bg-gray-50/50 text-gray-500 border-gray-400"
-                : "hover:bg-blue-700 bg-blue-400"
+                ? "border-gray-300 bg-gray-200 text-gray-600"
+                : "bg-blue-600 hover:bg-blue-700"
             } rounded-lg`}
           >
             {isEdit ? "Edit Now" : "Add Now"}

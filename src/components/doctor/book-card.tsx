@@ -12,6 +12,7 @@ import { useSlotsContext } from "@/contexts/slots-context";
 import { useUserContext } from "@/contexts/user-context";
 import type { Id } from "@/types/user";
 import type { Slot } from "@/types/appointment";
+import { clinicDate } from "@/utils/time";
 
 export default function BookCard({
   doctorId,
@@ -72,7 +73,9 @@ export default function BookCard({
 
   // Only slots starting over a minute from now can be booked
   function isUpcoming(time: string) {
-    return new Date(`${selectedDate.date} ${time}`).getTime() > now + 1000 * 60;
+    return (
+      clinicDate(selectedDate.date, time, timeZone).getTime() > now + 1000 * 60
+    );
   }
   const upcoming =
     slotsData?.freeSlots?.filter(function ({ slotTime }) {
@@ -143,6 +146,10 @@ export default function BookCard({
                   window.localStorage.setItem(
                     "book_appointment",
                     String(bookedAppointment.appointmentId),
+                  );
+                  window.localStorage.setItem(
+                    "book_date",
+                    bookedAppointment.schedule_date,
                   );
                   void navigate(`/profile/${String(doctorId)}`);
                 }}

@@ -8,6 +8,7 @@ import {
   useEffect,
   useMemo,
   useState,
+  useSyncExternalStore,
   type SubmitEvent,
   type ReactNode,
 } from "react";
@@ -258,6 +259,11 @@ function injectControl(node: ReactNode, control: ControlProps): ReactNode {
 
 const noRules: readonly Rule[] = [];
 
+// Items outside a form have nothing to unsubscribe from
+function noUnsubscribe() {
+  return undefined;
+}
+
 function Item({
   name,
   rules = noRules,
@@ -273,7 +279,16 @@ function Item({
 }: FormItemProps) {
   const form = useContext(FormContext);
   const key = pathKey(name);
-  const [, bump] = useState(0);
+  const subscribe = useCallback(
+    function (listener: () => void) {
+      return form ? form.store.subscribe(listener) : noUnsubscribe;
+    },
+    [form],
+  );
+  // Read through React so the compiler never serves a stale field value
+  const value = useSyncExternalStore(subscribe, function () {
+    return form && name ? form.store.getFieldValue(name) : undefined;
+  });
   const [error, setError] = useState<string | null>(null);
 
   const validate = useCallback(
@@ -295,16 +310,7 @@ function Item({
   useEffect(
     function () {
       if (!form || !name) return;
-      const unsubStore = form.store.subscribe(function () {
-        bump(function (n) {
-          return n + 1;
-        });
-      });
-      const unsubField = form.store.register(key, { name, validate });
-      return function () {
-        unsubStore();
-        unsubField();
-      };
+      return form.store.register(key, { name, validate });
     },
     [form, key, name, validate],
   );
@@ -335,7 +341,6 @@ function Item({
 
   if (!form) return <div className={className}>{children}</div>;
 
-  const value = name ? form.store.getFieldValue(name) : undefined;
   const fromEvent = (getValueFromEvent ?? defaultFromEvent) as (
     ...args: unknown[]
   ) => unknown;
@@ -379,9 +384,12 @@ function Item({
       </div>
       {message ? (
         <div
+          data-field-error={status === "error" || error ? "" : undefined}
           className={cx(
-            "mt-1 text-xs",
-            status === "error" || error ? "text-red-500" : "text-gray-500",
+            "mt-1 w-fit rounded px-1.5 py-0.5 text-xs font-medium",
+            status === "error" || error
+              ? "bg-red-50 text-red-700"
+              : "bg-gray-50 text-gray-600",
           )}
         >
           {message}
@@ -442,7 +450,7 @@ function Form<T extends object = FormValues>({
       if (scrollToFirstError) {
         requestAnimationFrame(function () {
           formElement
-            .querySelector(".text-red-500")
+            .querySelector("[data-field-error]")
             ?.scrollIntoView({ behavior: "smooth", block: "center" });
         });
       }

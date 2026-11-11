@@ -63,7 +63,12 @@ export default function App() {
     <div className="overflow-x-hidden app flex flex-col min-h-screen">
       <div className="relative flex grow flex-row flex-nowrap justify-between max-md:min-h-full max-md:flex-col max-md:justify-start">
         {navActive && <Navbar DoctorRef={DoctorRef} />}
-        <div className="flex w-4/5 grow flex-col bg-neutral-100 max-md:w-full">
+        <div
+          className={`flex w-4/5 grow flex-col bg-neutral-100 max-md:w-full ${
+            // Leave room for the desktop sidebar toggle
+            location.pathname.includes("/admin") ? "" : "min-[679px]:pl-7"
+          }`}
+        >
           <Routes>
             <Route
               path="/"

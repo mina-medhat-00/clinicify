@@ -27,28 +27,28 @@ export default function UserType<T extends { moreInf?: boolean }>({
             checked={moreInf}
             unCheckedChildren="Show More"
             checkedChildren="Hide More"
-            className="block m-auto mb-3"
+            className="mx-auto mb-3 flex w-fit"
           />
           {moreInf && (
             <>
               <HeaderLine value="Introducing Your Self" />
               <div className="flex gap-1 flex-wrap justify-between">
-                <div className="grow">
+                <div className="min-w-40 grow">
                   <Item name="currentHospital">
                     <Input className="w-full" placeholder="Current hospital" />
                   </Item>
                 </div>
-                <div className="grow">
+                <div className="min-w-40 grow">
                   <Item name="graduationYear">
                     <InputNumber
                       min={1960}
-                      max={2023}
+                      max={new Date().getFullYear()}
                       className="w-full"
                       placeholder="Graduation year"
                     />
                   </Item>
                 </div>
-                <div className="grow">
+                <div className="min-w-40 grow">
                   <Item name="experienceYears">
                     <InputNumber
                       min={0}
@@ -58,17 +58,17 @@ export default function UserType<T extends { moreInf?: boolean }>({
                     />
                   </Item>
                 </div>
-                <div className="grow">
+                <div className="min-w-40 grow">
                   <Item name="fees">
                     <InputNumber
                       className="w-full"
                       placeholder="Fees"
-                      min={1000}
+                      min={1}
                       max={500000}
                     ></InputNumber>
                   </Item>
                 </div>
-                <div className="grow">
+                <div className="min-w-40 grow">
                   <Item name="salary">
                     <InputNumber
                       className="w-full"

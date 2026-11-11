@@ -39,6 +39,12 @@ function orBan(value: string | null | undefined) {
   return filled(value) ? value : <Ban />;
 }
 
+// Shows "+20 1012345678" or the none icon when there is no number
+function phoneText(prefix: string | null, number: string | null) {
+  if (!filled(number)) return <Ban />;
+  return filled(prefix) ? `+${prefix} ${number}` : number;
+}
+
 function profileValues({ user, doctor }: ProfileData): ProfileValues {
   return {
     nickname: user.nick_name,
@@ -46,9 +52,7 @@ function profileValues({ user, doctor }: ProfileData): ProfileValues {
     specialty: orBan(doctor?.specialty),
     age: user.age ? `${String(user.age)} years` : <Ban />,
     bdate: orBan(user.bdate),
-    pnumber: user.prefix
-      ? `${user.prefix} ${user.pnumber ?? ""}`
-      : user.pnumber,
+    pnumber: phoneText(user.prefix, user.pnumber),
     email: orBan(user.email),
     city: user.city,
     street: orBan(user.street),
@@ -185,31 +189,33 @@ export default function UserProfile() {
                 </div>
               )}
             </div>
-            <div className="profile--about text-white p-2 my-2 text-xs md:text-sm rounded bg-gray-200/50">
-              <Title className="text-xs text-gray-100">
-                {!isUser ? (
-                  filled(doctor?.about) ? (
-                    doctor.about
+            {(!isUser || patientRecords) && (
+              <div className="profile--about text-white p-2 my-2 text-xs md:text-sm rounded bg-black/25">
+                <Title className="text-xs text-gray-100">
+                  {!isUser ? (
+                    filled(doctor?.about) ? (
+                      doctor.about
+                    ) : !isAuth ? (
+                      <>
+                        <Ban /> there's no introduction yet
+                      </>
+                    ) : (
+                      <span className="text-gray-200">about me...</span>
+                    )
+                  ) : filled(patientRecords?.current_issue) ? (
+                    patientRecords.current_issue
                   ) : !isAuth ? (
                     <>
-                      <Ban /> there's no introduction yet
+                      <Ban /> there's no issues described
                     </>
                   ) : (
-                    <span className="text-gray-200">about me...</span>
-                  )
-                ) : filled(patientRecords?.current_issue) ? (
-                  patientRecords.current_issue
-                ) : !isAuth ? (
-                  <>
-                    <Ban /> there's no issues described
-                  </>
-                ) : (
-                  <span className="text-gray-200">
-                    describe any current issues...
-                  </span>
-                )}
-              </Title>
-            </div>
+                    <span className="text-gray-200">
+                      describe any current issues...
+                    </span>
+                  )}
+                </Title>
+              </div>
+            )}
             {!isUser ? (
               <div className="profile--rating flex justify-evenly items-center flex-wrap p-2 rounded bg-gray-300">
                 <div>
@@ -387,18 +393,18 @@ export default function UserProfile() {
         </div>
       ) : null}
       <div className="mt-2">
-        {isUser && !isAdmin ? (
+        {isUser && !isAdmin && patientRecords ? (
           <div>
             <PatientRecords
               isAuth={isAuth}
               setHandleDrawer={setHandleDrawer}
               records={{
-                currentIssue: patientRecords?.current_issue,
-                immunizations: patientRecords?.immunizations,
-                allergies: patientRecords?.allergies,
-                surgeries: patientRecords?.surgeries,
-                illnessesHistory: patientRecords?.illnesses_history,
-                testResults: patientRecords?.test_results,
+                currentIssue: patientRecords.current_issue,
+                immunizations: patientRecords.immunizations,
+                allergies: patientRecords.allergies,
+                surgeries: patientRecords.surgeries,
+                illnessesHistory: patientRecords.illnesses_history,
+                testResults: patientRecords.test_results,
               }}
             />
           </div>

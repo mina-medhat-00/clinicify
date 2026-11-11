@@ -71,7 +71,7 @@ function Button({
         isLink &&
           "h-auto border-0 bg-transparent px-1 text-blue-500 shadow-none hover:text-blue-600",
         isPrimary &&
-          "border-blue-500 bg-blue-500 text-white hover:bg-blue-600 disabled:border-blue-300 disabled:bg-blue-300",
+          "border-blue-600 bg-blue-600 text-white hover:bg-blue-700 disabled:border-blue-300 disabled:bg-blue-300",
         !isPrimary &&
           !isLink &&
           "border-gray-300 bg-white text-black/85 hover:border-blue-400 hover:text-blue-500",
@@ -89,7 +89,7 @@ function Button({
 const inputShell =
   "flex items-center gap-2 rounded-md border border-gray-300 bg-white px-3 text-black/85 transition focus-within:border-blue-500";
 const inputField =
-  "min-w-0 flex-1 bg-transparent py-1.5 outline-none placeholder:text-gray-400";
+  "min-w-0 flex-1 bg-transparent py-1.5 outline-none placeholder:text-gray-500";
 const BaseInput = forwardRef<HTMLInputElement, InputProps>(function Input(
   {
     prefix,
@@ -172,7 +172,7 @@ function TextArea({
       rows={rows}
       maxLength={maxLength}
       className={cx(
-        "rounded-md border border-gray-300 bg-white px-3 py-2 text-black/85 outline-none placeholder:text-gray-400 focus:border-blue-500",
+        "rounded-md border border-gray-300 bg-white px-3 py-2 text-black/85 outline-none placeholder:text-gray-500 focus:border-blue-500",
         !hasWidthClass(className) && "w-full",
         className,
       )}
@@ -181,10 +181,11 @@ function TextArea({
     />
   );
   if (!showCount) return box;
+  // Counter sits inside the box so it stays readable on any page background
   return (
-    <div>
+    <div className="relative">
       {box}
-      <div className="text-right text-xs text-gray-400">
+      <div className="pointer-events-none absolute right-2 bottom-2 rounded bg-white/90 px-1 text-xs text-gray-600">
         {maxLength === undefined
           ? text.length
           : `${String(text.length)} / ${String(maxLength)}`}
@@ -282,13 +283,14 @@ function Select<V extends SelectValue = SelectValue>({
         }}
         className={cx(
           inputShell,
-          "w-full justify-between text-left",
+          // Same vertical padding as text inputs so rows line up
+          "w-full justify-between py-1.5 text-left",
           resolvedSize === "large" && "min-h-10",
           resolvedSize === "small" && "min-h-7 text-xs",
           disabled && "cursor-not-allowed bg-gray-100 opacity-70",
         )}
       >
-        <span className={cx(!selected && "text-gray-400")}>
+        <span className={cx(!selected && "text-gray-500")}>
           {selected?.label ?? placeholder ?? "Select"}
         </span>
         <ChevronDown className="size-4 shrink-0 text-gray-400" />
@@ -428,7 +430,7 @@ function RadioButton({
       className={cx(
         "inline-flex items-center justify-center rounded-md border px-4 py-2 font-medium",
         checked
-          ? "border-blue-500 bg-blue-500 text-white"
+          ? "border-blue-600 bg-blue-600 text-white"
           : "border-gray-300 bg-white",
         className,
       )}
@@ -491,7 +493,7 @@ function Switch({
       }}
       className={cx(
         "relative inline-flex h-6 min-w-11 items-center rounded-full px-1 text-xs font-medium text-white transition",
-        checked ? "bg-blue-500" : "bg-gray-400",
+        checked ? "bg-blue-600" : "bg-gray-500",
         disabled && "cursor-not-allowed opacity-60",
         className,
       )}
@@ -502,7 +504,7 @@ function Switch({
           checked ? "right-1" : "left-1",
         )}
       />
-      <span className={cx("px-4", checked ? "pr-1 pl-2" : "pl-1 pr-2")}>
+      <span className={checked ? "pr-5 pl-1" : "pl-5 pr-1"}>
         {checked ? checkedChildren : unCheckedChildren}
       </span>
     </button>

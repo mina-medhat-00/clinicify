@@ -93,7 +93,7 @@
   }
 
   a {
-    color: var(--color-blue-500);
+    color: var(--color-blue-700);
     text-decoration: none;
   }
 }
@@ -205,23 +205,5 @@
 
   .ant-upload-list-item-action svg:hover {
     color: #b12051 !important;
-  }
-
-  .users--table {
-    background-color: var(--color-gray-700);
-    color: var(--color-white);
-  }
-
-  .users--table tr:hover {
-    background-color: rgb(75 85 99) !important;
-  }
-
-  .reports--table {
-    background-color: var(--color-sky-700);
-    color: var(--color-white);
-  }
-
-  .reports--table tr:hover {
-    background-color: rgb(64, 136, 172) !important;
   }
 }

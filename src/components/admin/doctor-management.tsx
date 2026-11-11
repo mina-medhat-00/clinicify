@@ -85,7 +85,7 @@ export default function DoctorManagement() {
                 setDoctorRecord(doctor);
                 setShowPopUp(true);
               }}
-              className="bg-green-400 hover:bg-green-600 rounded-lg font-medium text-white"
+              className="bg-green-700 hover:bg-green-800 rounded-lg font-medium text-white"
             >
               Clinic Details
             </Button>
@@ -95,7 +95,7 @@ export default function DoctorManagement() {
               onClick={function () {
                 changeDoctor("verify", doctor_id);
               }}
-              className="bg-blue-400 hover:bg-blue-600 rounded-lg font-medium text-white"
+              className="bg-blue-600 hover:bg-blue-700 rounded-lg font-medium text-white"
             >
               VERIFY
             </Button>
@@ -105,7 +105,7 @@ export default function DoctorManagement() {
               onClick={function () {
                 changeDoctor("reject", doctor_id);
               }}
-              className="bg-red-400 hover:bg-red-600 rounded-lg font-medium text-white"
+              className="bg-red-600 hover:bg-red-700 rounded-lg font-medium text-white"
             >
               REJECT
             </Button>

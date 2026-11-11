@@ -5,7 +5,6 @@ import type { Clinic, ClinicSection } from "@/types/clinic";
 import type { SetProfileDrawer } from "@/types/profile-drawer";
 const clinicDetails: ClinicSection[] = [
   {
-    headerColor: "bg-gray-800/80",
     headers: [
       <div key="location" className="flex gap-2 items-center">
         <MapPin />
@@ -24,7 +23,6 @@ const clinicDetails: ClinicSection[] = [
     ],
   },
   {
-    headerColor: "bg-gray-700/80",
     headers: [
       <div key="contact" className="flex gap-2 items-center">
         <Phone />
